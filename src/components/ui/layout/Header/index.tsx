@@ -3,7 +3,7 @@ import Title from "../Title";
 import EsaLogo from "../../../atoms/EsaLogo";
 import "./style.scss";
 
-const Header = ({ tourGuideIsOpen }) => {
+const Header = () => {
   return (
     <div className="worldCereal-Header">
       <Title />

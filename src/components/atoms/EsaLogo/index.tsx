@@ -3,7 +3,9 @@ import classNames from "classnames";
 
 import "./style.scss";
 
-const EsaLogo = ({ className }) => {
+const EsaLogo = ({ className }: Readonly<{
+  className: string
+}>) => {
   const classes = classNames("worldCereal-esaLogo", {}, className);
 
   return (
@@ -23,10 +25,6 @@ const EsaLogo = ({ className }) => {
       </svg>
     </a>
   );
-};
-
-EsaLogo.propTypes = {
-  className: PropTypes.string,
 };
 
 export default EsaLogo;
