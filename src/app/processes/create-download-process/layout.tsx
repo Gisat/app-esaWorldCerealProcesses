@@ -1,5 +1,5 @@
 "use client"
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Stepper, Button, Group } from '@mantine/core';
 import { useRouter, useSearchParams } from 'next/navigation';
 // import { useRouter, } from 'next/router';
@@ -12,7 +12,7 @@ export default function DownloadLayout({ children }: { children: React.ReactNode
 	// const [active, setActive] = useState(1);
 	// const nextStep = () => setActive((current) => (current < 3 ? current + 1 : current));
 	// const prevStep = () => setActive((current) => (current > 0 ? current - 1 : current));
-	const activeStep = Number.parseInt(params.get('step') || "1");
+	const activeStep = Number.parseInt(params.get('step') || "");
 
 
 	const setActive = (step: any) => {
@@ -20,6 +20,13 @@ export default function DownloadLayout({ children }: { children: React.ReactNode
 		url.searchParams.set('step', step);
 		router.push(url.toString())
 	}
+	useEffect(() => {
+		const activeStep = Number.parseInt(params.get('step') || "");
+		if (activeStep > 3 || activeStep < 1 || Number.isNaN(activeStep)) {
+			setActive(1)
+		}
+
+	}, [])
 
 	const nextStep = () => setActive(activeStep + 1);
 	const prevStep = () => setActive(activeStep - 1);
