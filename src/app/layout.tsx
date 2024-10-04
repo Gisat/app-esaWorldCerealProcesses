@@ -8,6 +8,7 @@ import '../styles/_variables.scss';
 import Header from "@/components/ui/layout/Header";
 import MantineProvider from '@/components/providers/Mantine';
 import '@mantine/core/styles.css';
+import '@mantine/dates/styles.css';
 
 export const metadata: Metadata = {
   title: "WorldCereals Processes",

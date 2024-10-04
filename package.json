@@ -9,17 +9,18 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@gisatcz/ptr-core": "^1.8.0",
+    "@mantine/core": "^7.13.2",
+    "@mantine/dates": "^7.13.2",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
-    "@gisatcz/ptr-core": "^1.8.0",
-    "@mantine/core": "^7.13.2",
-    "typescript": "^5",
     "classnames": "^2.5.1",
     "next": "14.2.13",
     "react": "^18",
     "react-dom": "^18",
-    "sass": "^1.79.4"
+    "sass": "^1.79.4",
+    "typescript": "^5"
   },
   "devDependencies": {
     "eslint": "^8",
