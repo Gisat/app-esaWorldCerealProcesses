@@ -9,7 +9,7 @@ import './style.scss'
 // import { BiMenuAltRight } from 'react-icons/bi'
 // import { AiOutlineClose } from 'react-icons/ai'
 
-const Navbar = ({ title, icon, href, active }: { title: string, icon: string, href: string, active: boolean }) => {
+const Navbar = ({ title, icon, href, active, value }: { title: string, icon: string, href: string, active: boolean, value: string }) => {
 	const currentPath = usePathname();
 
 	return (
@@ -19,7 +19,7 @@ const Navbar = ({ title, icon, href, active }: { title: string, icon: string, hr
 		// <NavLink component={Link} href={href} className={classNames('NavbarItem', { active: active || currentPath === href })} label={title}>
 		// </NavLink>
 		// <Tabs.Tab value={href} leftSection={<IconPhoto style={iconStyle} />}>
-		<Tabs.Tab value={href} >
+		<Tabs.Tab value={value}>
 			<Link href={href} >{title}</Link>
 		</Tabs.Tab>
 		// </Link>

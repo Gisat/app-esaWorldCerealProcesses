@@ -3,14 +3,9 @@ import React from 'react'
 import { Tabs } from '@mantine/core';
 import './style.scss'
 
-const Navbar = ({ children }: { children: React.ReactNode }) => {
+const Navbar = ({ children, activeValue }: { children: React.ReactNode, activeValue: string }) => {
 	return (
-		// <nav className='ptr-navbar'>
-		// 	<div className="container flex justify-between h-[14vh] items-center">
-		// 		{children}
-		// 	</div>
-		// </nav>
-		<Tabs defaultValue="first">
+		<Tabs value={activeValue}>
 			<Tabs.List>
 				{children}
 			</Tabs.List>

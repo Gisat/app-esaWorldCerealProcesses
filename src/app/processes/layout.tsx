@@ -21,14 +21,14 @@ export default function ProcessesLayout({
   children: React.ReactNode;
 }>) {
   const currentPath = usePathname();
-  const segment = useSelectedLayoutSegment()
+  const segment = useSelectedLayoutSegment() || navbarItems[0].key
 
   const basePath = currentPath.split(`/${segment}`)[0]
   return (
 
     <div className={`ptr-processes`}>
-      <Navbar>
-        {navbarItems.map((item) => <NavbarItem key={item.key} active={segment === item.key} title={item.title} icon={item.icon} href={`${basePath}/${item.key}`} />)}
+      <Navbar activeValue={segment}>
+        {navbarItems.map((item) => <NavbarItem key={item.key} active={segment === item.key} value={item.key} title={item.title} icon={item.icon} href={`${basePath}/${item.key}`} />)}
       </Navbar>
       {children}
     </div >
