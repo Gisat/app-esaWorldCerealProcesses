@@ -1,0 +1,164 @@
+@use "sass:math";
+@import "~@gisatcz/ptr-core/lib/styles/_variables";
+
+/* --- General --- */
+$lightAccent0: hsl(40, 100%, 99.41%);
+$lightAccent0rgb: 255, 254, 252;
+$lightAccent05: hsl(197.14, 67.74%, 93.92%);
+$lightAccent10: hsl(199.09, 75.86%, 88.63%);
+$lightAccent15: hsl(200.6, 78.82%, 83.33%);
+$lightAccent20: hsl(200, 78.95%, 77.65%);
+$lightAccent25: hsl(200.18, 80.14%, 72.35%);
+$lightAccent30: hsl(200.15, 81.07%, 66.86%);
+$lightAccent35: hsl(200.25, 81.63%, 61.57%);
+$lightAccent40: hsl(200.54, 82.14%, 56.08%);
+$lightAccent45: hsl(200.58, 82.47%, 50.78%);
+$lightAccent50: hsl(200.35, 100%, 45.1%);
+$lightAccent50rgb: 0, 152, 230;
+$lightAccent55: hsl(200.29, 100%, 40.59%);
+$lightAccent60: hsl(200.33, 98.92%, 36.27%);
+$lightAccent65: hsl(200.25, 98.77%, 31.76%);
+$lightAccent70: hsl(200.29, 97.14%, 27.45%);
+$lightAccent75: hsl(199.65, 96.58%, 22.94%);
+$lightAccent80: hsl(199.33, 95.74%, 18.43%);
+$lightAccent85: hsl(199.09, 91.67%, 14.12%);
+$lightAccent90: hsl(198.14, 87.76%, 9.61%);
+$lightAccent95: hsl(195.79, 70.37%, 5.29%);
+$lightAccent100: hsl(45, 100%, 0.78%);
+$lightAccent100rgb: 4, 3, 0;
+
+$darkAccent0: hsl(45, 100%, 0.78%);
+$darkAccent0rgb: 4, 3, 0;
+$darkAccent05: hsl(195.79, 70.37%, 5.29%);
+$darkAccent10: hsl(198.14, 87.76%, 9.61%);
+$darkAccent15: hsl(199.09, 91.67%, 14.12%);
+$darkAccent20: hsl(199.33, 95.74%, 18.43%);
+$darkAccent25: hsl(199.65, 96.58%, 22.94%);
+$darkAccent30: hsl(200.29, 97.14%, 27.45%);
+$darkAccent35: hsl(200.25, 98.77%, 31.76%);
+$darkAccent40: hsl(200.33, 98.92%, 36.27%);
+$darkAccent45: hsl(200.29, 100%, 40.59%);
+$darkAccent50: hsl(200.35, 100%, 45.1%);
+$darkAccent50rgb: 0, 152, 230;
+$darkAccent55: hsl(200.58, 82.47%, 50.78%);
+$darkAccent60: hsl(200.54, 82.14%, 56.08%);
+$darkAccent65: hsl(200.25, 81.63%, 61.57%);
+$darkAccent70: hsl(200.15, 81.07%, 66.86%);
+$darkAccent75: hsl(200.18, 80.14%, 72.35%);
+$darkAccent80: hsl(200, 78.95%, 77.65%);
+$darkAccent85: hsl(200.6, 78.82%, 83.33%);
+$darkAccent90: hsl(199.09, 75.86%, 88.63%);
+$darkAccent95: hsl(197.14, 67.74%, 93.92%);
+$darkAccent100: hsl(40, 100%, 99.41%);
+$darkAccent100rgb: 255, 254, 252;
+
+// Text sizes (1.25 ratio)
+$ratio: 1.167;
+$baseSize: 0.875;
+
+$a1_size: ($baseSize);
+$b1_size: math.div($a1_size, $ratio);
+$b2_size: ($a1_size * $ratio);
+$a0_size: math.div($b1_size, $ratio);
+$a2_size: ($b2_size * $ratio);
+$b0_size: math.div($a0_size, $ratio);
+$b3_size: ($a2_size * $ratio);
+
+$b0: #{$b0_size}rem;
+$a0: #{$a0_size}rem;
+$b1: #{$b1_size}rem;
+$a1: #{$a1_size}rem;
+$b2: #{$b2_size}rem;
+$a2: #{$a2_size}rem;
+$b3: #{$b3_size}rem;
+
+// Components
+$headerHeight: 2.75rem;
+$headerHeight_condensed: 2.25rem;
+
+$dataPanelPadding: 1rem;
+$dataPanelPadding_condensed: 0.6rem;
+$dataPanelWidth: 35rem;
+$dataPanelWidthClosed: 0rem;
+$dataPanelWidthExtended: 50rem;
+$dataPanelHeight: 21.5rem;
+$dataPanelHeightClosed: 0rem;
+$dataPanelHeightExtended: 30rem;
+
+$mapPadding: 0.5rem;
+
+// Colors
+$textColorPrimary: var(--base90);
+$textColorSecondary: var(--base55);
+$textColorTertiary: var(--base40);
+$textColorInverted: var(--base10);
+$textColorAccented: var(--accent50);
+$disabledColor: var(--base30);
+
+$borderColorPrimary: var(--base25);
+$borderColorSecondary: var(--base15);
+
+$iconColorPrimary: var(--base80);
+$iconColorSecondary: var(--base50);
+
+$lightBackground: var(--base10);
+$lightBackground_dark: var(--base20);
+
+// Shadows
+$boxShadow: 0 5px 10px 0 rgba(0, 0, 0, 0.25);
+$floatingButtonShadow_withoutPosition: 3px 1px rgba(0, 0, 0, 0.05);
+
+// Transparent background
+$lightTransparentBackground: hsla(40, 100%, 99.41%, 0.75);
+$darkTransparentBackground: hsla(198.14, 87.76%, 9.61%, 0.75);
+
+:export {
+  lightAccent0: $lightAccent0;
+  lightAccent10: $lightAccent10;
+  lightAccent20: $lightAccent20;
+  lightAccent30: $lightAccent30;
+  lightAccent40: $lightAccent40;
+  lightAccent50: $lightAccent50;
+  lightAccent60: $lightAccent60;
+  lightAccent70: $lightAccent70;
+  lightAccent80: $lightAccent80;
+  lightAccent90: $lightAccent90;
+
+  lightBase0: $lightBase0;
+  lightBase10: $lightBase10;
+  lightBase20: $lightBase20;
+  lightBase30: $lightBase30;
+  lightBase40: $lightBase40;
+  lightBase50: $lightBase50;
+  lightBase60: $lightBase60;
+  lightBase70: $lightBase70;
+  lightBase80: $lightBase80;
+  lightBase90: $lightBase90;
+
+  darkBase0: $darkBase0;
+  darkBase10: $darkBase10;
+  darkBase20: $darkBase20;
+  darkBase30: $darkBase30;
+  darkBase40: $darkBase40;
+  darkBase50: $darkBase50;
+  darkBase60: $darkBase60;
+  darkBase70: $darkBase70;
+  darkBase80: $darkBase80;
+  darkBase90: $darkBase90;
+
+  iconColorPrimary: $iconColorPrimary;
+
+  boxShadow: $boxShadow;
+
+  a0: $a0;
+  b1: $b1;
+  a1: $a1;
+  b2: $b2;
+  a2: $a2;
+}
+
+@mixin map-components-background {
+  backdrop-filter: blur(6px) saturate(180%);
+  -webkit-backdrop-filter: blur(6px) saturate(180%);
+  background: var(--baseTransparentBg);
+}
