@@ -43,6 +43,7 @@ jobs:
 
       - name: Update version in package.json
         run: |
+          chmod -R ugo+rwX .
           git config --local user.email "panterobot@gisat.cz"
           git config --local user.name "github-actions[bot]"
           npm version ${{ steps.next-version.outputs.new_tag }} -m "Set package.json version to ${{ steps.next-version.outputs.new_tag }} #skip_next_version"
