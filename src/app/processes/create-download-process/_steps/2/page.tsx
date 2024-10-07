@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { DateInput } from '@mantine/dates';
 // import { products } from '@/constants/app';
 import { SegmentedControl } from '@mantine/core';
+import MapExtentSelect from './components/MapExtentSelect/index';
 
 
 
@@ -66,5 +67,6 @@ export default function Page({ searchParams }: {
 			clearable={true}
 		/>
 		<SegmentedControl color="blue" defaultValue="netcdf" data={[{ label: 'netCDF', value: 'netcdf' }, { label: 'GeoTIFF', value: 'geotiff', disabled: true, }]} />
+		<MapExtentSelect />
 	</>
 }
