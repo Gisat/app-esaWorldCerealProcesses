@@ -1,0 +1,35 @@
+@use "sass:math";
+@import "../../../../styles/variables";
+
+.worldCereal-Title {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.worldCereal-Title > div {
+  display: flex;
+  align-items: center;
+}
+
+.worldCereal-Title img {
+  height: 1.75rem;
+}
+
+.worldCereal-Title h1 {
+  margin: 0.2rem 0 0;
+  color: var(--accent30);
+  font-size: 1.0725rem;
+  font-family: "Sen", "Roboto", sans-serif;
+  letter-spacing: 0;
+}
+
+.worldCereal-Title h1 span {
+  padding: 0 0.5rem;
+  font-weight: 800;
+}
+
+.worldCereal-Title h1 span:first-child {
+  border-right: 2px solid var(--base40);
+  color: var(--base10);
+}
