@@ -1,4 +1,5 @@
 "use client"
+import { Suspense } from 'react'
 import { usePathname, useSelectedLayoutSegment } from 'next/navigation'
 import Navbar from "@/components/ui/layout/Navbar";
 import NavbarItem from "@/components/ui/layout/Navbar/Item";
@@ -25,12 +26,14 @@ export default function ProcessesLayout({
 
   const basePath = currentPath.split(`/${segment}`)[0]
   return (
+    <Suspense>
 
-    <div className={`ptr-processes`}>
-      <Navbar activeValue={segment}>
-        {navbarItems.map((item) => <NavbarItem key={item.key} active={segment === item.key} value={item.key} title={item.title} icon={item.icon} href={`${basePath}/${item.key}`} />)}
-      </Navbar>
-      {children}
-    </div >
+      <div className={`ptr-processes`}>
+        <Navbar activeValue={segment}>
+          {navbarItems.map((item) => <NavbarItem key={item.key} active={segment === item.key} value={item.key} title={item.title} icon={item.icon} href={`${basePath}/${item.key}`} />)}
+        </Navbar>
+        {children}
+      </div >
+    </Suspense>
   );
 }
