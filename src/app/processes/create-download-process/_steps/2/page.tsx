@@ -3,7 +3,9 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { DateInput } from '@mantine/dates';
-import { products } from '@/constants/app';
+// import { products } from '@/constants/app';
+import { SegmentedControl } from '@mantine/core';
+
 
 
 const minDate = new Date("2024-01-01");
@@ -14,6 +16,7 @@ export default function Page({ searchParams }: {
 		query?: string;
 		step?: string;
 		startDate?: string;
+		endDate?: string;
 	}
 }) {
 	const router = useRouter()
@@ -62,5 +65,6 @@ export default function Page({ searchParams }: {
 			maxDate={maxDate}
 			clearable={true}
 		/>
+		<SegmentedControl color="blue" defaultValue="netcdf" data={[{ label: 'netCDF', value: 'netcdf' }, { label: 'GeoTIFF', value: 'geotiff', disabled: true, }]} />
 	</>
 }
