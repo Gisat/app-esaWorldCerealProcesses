@@ -1,5 +1,5 @@
 "use client"
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, Suspense } from 'react';
 import { Stepper, Button, Group } from '@mantine/core';
 import { useRouter, useSearchParams } from 'next/navigation';
 // import { useRouter, } from 'next/router';
@@ -34,7 +34,7 @@ export default function DownloadLayout({ children }: { children: React.ReactNode
 	const backVisible = activeStep > 1
 	const nextVisible = activeStep < 3
 	return (
-		<>
+		<Suspense>
 			<Stepper active={activeStep} >
 				<Stepper.Step label="Step 1" description="Select product" allowStepClick={false} allowStepSelect={false}>
 					{children}
@@ -54,6 +54,6 @@ export default function DownloadLayout({ children }: { children: React.ReactNode
 				{backVisible ? <Button variant="default" onClick={prevStep}>Back</Button> : null}
 				{nextVisible ? <Button onClick={nextStep}>Next step</Button> : null}
 			</Group>
-		</>
+		</Suspense>
 	);
 }
