@@ -2,6 +2,7 @@
 import { usePathname, useSelectedLayoutSegment } from 'next/navigation'
 import Navbar from "@/components/ui/layout/Navbar";
 import NavbarItem from "@/components/ui/layout/Navbar/Item";
+import Content from "@/components/ui/layout/Content";
 
 const navbarItems = [
   {
@@ -30,7 +31,7 @@ export default function ProcessesLayout({
       <Navbar activeValue={segment}>
         {navbarItems.map((item) => <NavbarItem key={item.key} active={segment === item.key} value={item.key} title={item.title} icon={item.icon} href={`${basePath}/${item.key}`} />)}
       </Navbar>
-      {children}
+      <Content>{children}</Content>
     </div >
   );
 }
