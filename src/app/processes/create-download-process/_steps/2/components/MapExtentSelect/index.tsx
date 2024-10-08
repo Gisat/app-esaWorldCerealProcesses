@@ -5,10 +5,10 @@ import { useRef, useState } from 'react';
 import ExtentLayer from '@/components/map/layers/ExtentLayer';
 
 const ExtentLayerID = "ExtentLayer";
-const mapSize = [500, 500]
-const extentSizeInMeters = [500, 500];
+const mapSize = [500, 500] //in pixels
+const extentSizeInMeters = [500, 500]; //in meters
 export default function ({ onExtentChange }: { onExtentChange: (extent?: Array<number>) => void }) {
-	const mapRef = useRef(null);
+	const mapRef = useRef<any>(null);
 	const layer = new ExtentLayer({ id: ExtentLayerID, extentSize: extentSizeInMeters });
 
 	const tileLayer = new TileLayer({
@@ -21,7 +21,7 @@ export default function ({ onExtentChange }: { onExtentChange: (extent?: Array<n
 			const { boundingBox } = props.tile;
 
 			return new BitmapLayer(props, {
-				data: null,
+				data: undefined,
 				image: props.data,
 				bounds: [boundingBox[0][0], boundingBox[0][1], boundingBox[1][0], boundingBox[1][1]]
 			});
@@ -42,12 +42,12 @@ export default function ({ onExtentChange }: { onExtentChange: (extent?: Array<n
 		const view = mapRef?.current?.deck.viewManager.views?.[0]
 		const viewport = view.makeViewport({ width: deckWidth, height: deckHeight, viewState });
 
-		const layers = mapRef?.current?.deck?.layerManager.layers
-		const topLeft = viewport.addMetersToLngLat([viewState.longitude, viewState.latitude], [-extentSizeInMeters[0] / 2, extentSizeInMeters[1] / 2])
+		// const layers = mapRef?.current?.deck?.layerManager.layers
+		// const topLeft = viewport.addMetersToLngLat([viewState.longitude, viewState.latitude], [-extentSizeInMeters[0] / 2, extentSizeInMeters[1] / 2])
 		const topRight = viewport.addMetersToLngLat([viewState.longitude, viewState.latitude], [extentSizeInMeters[0] / 2, extentSizeInMeters[1] / 2])
-		const bottomRight = viewport.addMetersToLngLat([viewState.longitude, viewState.latitude], [extentSizeInMeters[0] / 2, -extentSizeInMeters[1] / 2])
+		// const bottomRight = viewport.addMetersToLngLat([viewState.longitude, viewState.latitude], [extentSizeInMeters[0] / 2, -extentSizeInMeters[1] / 2])
 		const bottomLeft = viewport.addMetersToLngLat([viewState.longitude, viewState.latitude], [-extentSizeInMeters[0] / 2, -extentSizeInMeters[1] / 2])
-		onExtentChange([topLeft, topRight, bottomRight, bottomLeft])
+		onExtentChange([...bottomLeft, ...topRight])
 
 	}
 

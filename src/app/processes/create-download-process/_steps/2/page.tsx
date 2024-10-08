@@ -33,7 +33,8 @@ export default function Page({ searchParams }: {
 	const setValue = (value: string | null | undefined, key: string, val?: any) => {
 		const url = new URL(window.location.href);
 		url.searchParams.set(key, value || "");
-		router.push(url.toString())
+		// @ts-expect-error 'shallow' does not exist in type 'NavigateOptions'
+		router.push(url.toString(), { shallow: true, scroll: false })
 	}
 
 	const transformDate = (value: Date | null) => {
@@ -47,6 +48,7 @@ export default function Page({ searchParams }: {
 
 	const onExtentChange = (extent: Array<number>) => {
 		setExtent(extent)
+		setValue(extent.join(","), 'extent');
 	}
 
 	return <>
@@ -73,6 +75,6 @@ export default function Page({ searchParams }: {
 		/>
 		<SegmentedControl color="blue" defaultValue="netcdf" data={[{ label: 'netCDF', value: 'netcdf' }, { label: 'GeoTIFF', value: 'geotiff', disabled: true, }]} />
 		<MapExtentSelect onExtentChange={onExtentChange} />
-		<div>Extent: {extent}</div>
+		<div>Extent: {extent.join(", ")}</div>
 	</>
 }
