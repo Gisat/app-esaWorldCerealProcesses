@@ -1,6 +1,6 @@
 "use client";
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { DateInput } from '@mantine/dates';
 // import { products } from '@/constants/app';
@@ -27,6 +27,7 @@ export default function Page({ searchParams }: {
 	const endDate = searchParams?.endDate || undefined;
 	const endDateDate = endDate ? new Date(endDate) : undefined;
 
+	const [extent, setExtent] = useState([] as Array<never | number>);
 
 
 	const setValue = (value: string | null | undefined, key: string, val?: any) => {
@@ -42,6 +43,10 @@ export default function Page({ searchParams }: {
 		} else {
 			return null
 		}
+	}
+
+	const onExtentChange = (extent: Array<number>) => {
+		setExtent(extent)
 	}
 
 	return <>
@@ -67,6 +72,7 @@ export default function Page({ searchParams }: {
 			clearable={true}
 		/>
 		<SegmentedControl color="blue" defaultValue="netcdf" data={[{ label: 'netCDF', value: 'netcdf' }, { label: 'GeoTIFF', value: 'geotiff', disabled: true, }]} />
-		<MapExtentSelect />
+		<MapExtentSelect onExtentChange={onExtentChange} />
+		<div>Extent: {extent}</div>
 	</>
 }

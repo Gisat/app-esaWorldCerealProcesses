@@ -1,29 +1,15 @@
 import DeckGL from '@deck.gl/react';
 import { GeoJsonLayer, BitmapLayer } from '@deck.gl/layers';
 import { TileLayer } from '@deck.gl/geo-layers';
+import { useRef, useState } from 'react';
+import ExtentLayer from '@/components/map/layers/ExtentLayer';
 
-
-export default function () {
-	const layer = new GeoJsonLayer({
-		id: 'GeoJsonLayer',
-		data: 'https://raw.githubusercontent.com/visgl/deck.gl-data/master/website/bart.geo.json',
-
-		stroked: false,
-		filled: true,
-		pointType: 'circle+text',
-		pickable: true,
-
-		getFillColor: [160, 160, 180, 200],
-		getLineColor: (f: any) => {
-			const hex = f.properties.color;
-			// convert to RGB
-			return hex ? hex.match(/[0-9a-f]{2}/g).map((x: any) => parseInt(x, 16)) : [0, 0, 0];
-		},
-		getLineWidth: 20,
-		getPointRadius: 4,
-		getText: (f: any) => f.properties.name,
-		getTextSize: 12
-	});
+const ExtentLayerID = "ExtentLayer";
+const mapSize = [500, 500]
+const extentSizeInMeters = [500, 500];
+export default function ({ onExtentChange }: { onExtentChange: (extent?: Array<number>) => void }) {
+	const mapRef = useRef(null);
+	const layer = new ExtentLayer({ id: ExtentLayerID, extentSize: extentSizeInMeters });
 
 	const tileLayer = new TileLayer({
 		id: 'TileLayer',
@@ -35,7 +21,7 @@ export default function () {
 			const { boundingBox } = props.tile;
 
 			return new BitmapLayer(props, {
-				// data: null,
+				data: null,
 				image: props.data,
 				bounds: [boundingBox[0][0], boundingBox[0][1], boundingBox[1][0], boundingBox[1][1]]
 			});
@@ -43,15 +29,36 @@ export default function () {
 		pickable: true
 	});
 
-	const onViewStateChange = (viewState: any) => {
-		console.log('onViewStateChange', viewState)
+	const [mapView, setMapView] = useState({
+		longitude: 15, latitude: 50, zoom: 10
+	})
+
+	const onViewStateChange = ({ viewState }: { viewState: any }) => {
+		setMapView({ latitude: viewState.latitude, longitude: viewState.longitude, zoom: viewState.zoom })
+
+		// set extent layer
+		const deckHeight = mapRef?.current?.deck?.height
+		const deckWidth = mapRef?.current?.deck?.width
+		const view = mapRef?.current?.deck.viewManager.views?.[0]
+		const viewport = view.makeViewport({ width: deckWidth, height: deckHeight, viewState });
+
+		const layers = mapRef?.current?.deck?.layerManager.layers
+		const topLeft = viewport.addMetersToLngLat([viewState.longitude, viewState.latitude], [-extentSizeInMeters[0] / 2, extentSizeInMeters[1] / 2])
+		const topRight = viewport.addMetersToLngLat([viewState.longitude, viewState.latitude], [extentSizeInMeters[0] / 2, extentSizeInMeters[1] / 2])
+		const bottomRight = viewport.addMetersToLngLat([viewState.longitude, viewState.latitude], [extentSizeInMeters[0] / 2, -extentSizeInMeters[1] / 2])
+		const bottomLeft = viewport.addMetersToLngLat([viewState.longitude, viewState.latitude], [-extentSizeInMeters[0] / 2, -extentSizeInMeters[1] / 2])
+		onExtentChange([topLeft, topRight, bottomRight, bottomLeft])
+
 	}
 
-	return <div style={{ width: '500px', height: '500px', position: 'relative' }}>
+	return <div style={{ width: `${mapSize[0]}px`, height: `${mapSize[1]}px`, position: 'relative' }}>
 		<DeckGL
-			viewState={{ longitude: 15, latitude: 50, zoom: 10 }}
+			ref={mapRef}
+			onClick={() => console.log('click')}
+			initialViewState={mapView}
 			layers={[tileLayer, layer]}
 			onViewStateChange={onViewStateChange}
+			controller={true}
 		/>
 
 	</div>
