@@ -73,43 +73,22 @@ $b3: #{$b3_size}rem;
 
 // Components
 $headerHeight: 2.75rem;
-$headerHeight_condensed: 2.25rem;
-
-$dataPanelPadding: 1rem;
-$dataPanelPadding_condensed: 0.6rem;
-$dataPanelWidth: 35rem;
-$dataPanelWidthClosed: 0rem;
-$dataPanelWidthExtended: 50rem;
-$dataPanelHeight: 21.5rem;
-$dataPanelHeightClosed: 0rem;
-$dataPanelHeightExtended: 30rem;
-
-$mapPadding: 0.5rem;
 
 // Colors
 $textColorPrimary: var(--base90);
 $textColorSecondary: var(--base55);
 $textColorTertiary: var(--base40);
 $textColorInverted: var(--base10);
-$textColorAccented: var(--accent50);
+$textColorAccented: var(--accent55);
 $disabledColor: var(--base30);
 
-$borderColorPrimary: var(--base25);
-$borderColorSecondary: var(--base15);
+$borderColorPrimary: var(--base50);
+$borderColorSecondary: var(--base20);
 
 $iconColorPrimary: var(--base80);
 $iconColorSecondary: var(--base50);
 
 $lightBackground: var(--base10);
-$lightBackground_dark: var(--base20);
-
-// Shadows
-$boxShadow: 0 5px 10px 0 rgba(0, 0, 0, 0.25);
-$floatingButtonShadow_withoutPosition: 3px 1px rgba(0, 0, 0, 0.05);
-
-// Transparent background
-$lightTransparentBackground: hsla(40, 100%, 99.41%, 0.75);
-$darkTransparentBackground: hsla(198.14, 87.76%, 9.61%, 0.75);
 
 :export {
   lightAccent0: $lightAccent0;
@@ -147,17 +126,9 @@ $darkTransparentBackground: hsla(198.14, 87.76%, 9.61%, 0.75);
 
   iconColorPrimary: $iconColorPrimary;
 
-  boxShadow: $boxShadow;
-
   a0: $a0;
   b1: $b1;
   a1: $a1;
   b2: $b2;
   a2: $a2;
-}
-
-@mixin map-components-background {
-  backdrop-filter: blur(6px) saturate(180%);
-  -webkit-backdrop-filter: blur(6px) saturate(180%);
-  background: var(--baseTransparentBg);
 }

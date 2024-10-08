@@ -7,9 +7,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 0 0.5rem;
-  background: var(--base100);
-  box-shadow: 0 0 5px rgba(var(--base100rgb), 0.25);
-  border-bottom: 1px solid var(--base70);
+  border-bottom: 1px solid $borderColorSecondary;
   min-height: 3rem;
 }
 
@@ -24,20 +22,5 @@
 .worldCereal-Header-tools {
   display: flex;
   grid-gap: 1rem;
-  color: var(--base10);
   align-items: center;
-}
-
-.worldCereal-MapsModeOption-compare.ptr-button.small .ptr-icon {
-  transform: rotate(45deg);
-  margin-right: 0.25rem;
-}
-
-.worldCereal-Header-tourIcon {
-  color: var(--base10);
-}
-
-.worldCereal-Header-tourIcon:hover {
-  color: var(--base10);
-  background-color: rgba(255, 255, 255, 0.25);
 }

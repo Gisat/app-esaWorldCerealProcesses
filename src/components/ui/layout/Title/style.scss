@@ -18,7 +18,7 @@
 
 .worldCereal-Title h1 {
   margin: 0.2rem 0 0;
-  color: var(--accent30);
+  color: $textColorAccented;
   font-size: 1.0725rem;
   font-family: "Sen", "Roboto", sans-serif;
   letter-spacing: 0;
@@ -30,6 +30,6 @@
 }
 
 .worldCereal-Title h1 span:first-child {
-  border-right: 2px solid var(--base40);
-  color: var(--base10);
+  border-right: 2px solid $borderColorPrimary;
+  color: $textColorPrimary;
 }
