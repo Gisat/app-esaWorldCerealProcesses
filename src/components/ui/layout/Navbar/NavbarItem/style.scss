@@ -1,0 +1,20 @@
+@import "../../../../../styles/variables.module.scss";
+
+a:has(.worldCereal-NavbarItem) {
+    text-decoration: none;
+}
+
+.worldCereal-NavbarItem {
+    font-size: $a1;
+    text-decoration: none;
+    color: $textColorPrimary;
+    font-family: "Sen", "Roboto", sans-serif;
+
+    &:where([data-active]) {
+        border-bottom-width: 3px;
+
+        > span {
+            font-weight: bold;
+        }
+    }
+}
