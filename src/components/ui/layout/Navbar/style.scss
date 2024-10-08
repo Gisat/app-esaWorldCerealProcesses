@@ -1,5 +1,9 @@
-.NavbarItem {
-  &.active {
-    color: red;
-  }
+@import "../../../../styles/variables.module.scss";
+
+.worldCereal-Navbar {
+    margin-top: .5rem;
+}
+
+.worldCereal-Navbar-list:before {
+    border: 1px solid $borderColorPrimary;
 }

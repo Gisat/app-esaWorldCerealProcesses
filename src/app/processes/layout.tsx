@@ -2,17 +2,19 @@
 import { Suspense } from 'react'
 import { usePathname, useSelectedLayoutSegment } from 'next/navigation'
 import Navbar from "@/components/ui/layout/Navbar";
-import NavbarItem from "@/components/ui/layout/Navbar/Item";
+import NavbarItem from "../../components/ui/layout/Navbar/NavbarItem";
+import Content from "@/components/ui/layout/Content";
+import { IconCirclePlus, IconListDetails } from "@tabler/icons-react";
 
 const navbarItems = [
   {
     key: "processes-list",
     title: "List of processes",
-    icon: "list",
+    icon: IconListDetails,
   }, {
     key: "create-download-process",
     title: "Create download process",
-    icon: "add",
+    icon: IconCirclePlus,
   }
 ]
 
@@ -27,13 +29,13 @@ export default function ProcessesLayout({
   const basePath = currentPath.split(`/${segment}`)[0]
   return (
     <Suspense>
-
       <div className={`ptr-processes`}>
         <Navbar activeValue={segment}>
           {navbarItems.map((item) => <NavbarItem key={item.key} active={segment === item.key} value={item.key} title={item.title} icon={item.icon} href={`${basePath}/${item.key}`} />)}
         </Navbar>
-        {children}
+        <Content>{children}</Content>
       </div >
     </Suspense>
+
   );
 }
