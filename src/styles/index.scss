@@ -1,6 +1,32 @@
-@import "./_variables";
+@import "@gisatcz/ptr-core/lib/styles/reset.css";
+@import "./variables.module.scss";
 
 .ptr-light {
+  --base0: #{$lightBase0};
+  --base0rgb: #{$lightBase0rgb};
+  --base05: #{$lightBase05};
+  --base10: #{$lightBase10};
+  --base15: #{$lightBase15};
+  --base20: #{$lightBase20};
+  --base25: #{$lightBase25};
+  --base30: #{$lightBase30};
+  --base35: #{$lightBase35};
+  --base40: #{$lightBase40};
+  --base45: #{$lightBase45};
+  --base50: #{$lightBase50};
+  --base50rgb: #{$lightBase50rgb};
+  --base55: #{$lightBase55};
+  --base60: #{$lightBase60};
+  --base65: #{$lightBase65};
+  --base70: #{$lightBase70};
+  --base75: #{$lightBase75};
+  --base80: #{$lightBase80};
+  --base85: #{$lightBase85};
+  --base90: #{$lightBase90};
+  --base95: #{$lightBase95};
+  --base100: #{$lightBase100};
+  --base100rgb: #{$lightBase100rgb};
+
   --accent0: #{$lightAccent0};
   --accent0rgb: #{hexToRGB($lightAccent0)};
   --accent05: #{$lightAccent05};
@@ -46,6 +72,31 @@
 }
 
 .ptr-dark {
+  --base0: #{$darkBase0};
+  --base0rgb: #{$darkBase0rgb};
+  --base05: #{$darkBase05};
+  --base10: #{$darkBase10};
+  --base15: #{$darkBase15};
+  --base20: #{$darkBase20};
+  --base25: #{$darkBase25};
+  --base30: #{$darkBase30};
+  --base35: #{$darkBase35};
+  --base40: #{$darkBase40};
+  --base45: #{$darkBase45};
+  --base50: #{$darkBase50};
+  --base50rgb: #{$darkBase50rgb};
+  --base55: #{$darkBase55};
+  --base60: #{$darkBase60};
+  --base65: #{$darkBase65};
+  --base70: #{$darkBase70};
+  --base75: #{$darkBase75};
+  --base80: #{$darkBase80};
+  --base85: #{$darkBase85};
+  --base90: #{$darkBase90};
+  --base95: #{$darkBase95};
+  --base100: #{$darkBase100};
+  --base100rgb: #{$darkBase100rgb};
+
   --accent0: #{$darkAccent0};
   --accent0rgb: #{hexToRGB($darkAccent0)};
   --accent05: #{$darkAccent05};

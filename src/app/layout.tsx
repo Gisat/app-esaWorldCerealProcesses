@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 import React from "react";
 
 import '../styles/index.scss';
-import '../styles/_variables.scss';
+import '../styles/variables.module.scss';
 import Header from "@/components/ui/layout/Header";
 import MantineProvider from '@/components/providers/Mantine';
 import '@mantine/core/styles.css';

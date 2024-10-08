@@ -3,54 +3,53 @@
 
 /* --- General --- */
 $lightAccent0: hsl(40, 100%, 99.41%);
-$lightAccent0rgb: 255, 254, 252;
-$lightAccent05: hsl(197.14, 67.74%, 93.92%);
-$lightAccent10: hsl(199.09, 75.86%, 88.63%);
-$lightAccent15: hsl(200.6, 78.82%, 83.33%);
-$lightAccent20: hsl(200, 78.95%, 77.65%);
-$lightAccent25: hsl(200.18, 80.14%, 72.35%);
-$lightAccent30: hsl(200.15, 81.07%, 66.86%);
-$lightAccent35: hsl(200.25, 81.63%, 61.57%);
-$lightAccent40: hsl(200.54, 82.14%, 56.08%);
-$lightAccent45: hsl(200.58, 82.47%, 50.78%);
-$lightAccent50: hsl(200.35, 100%, 45.1%);
-$lightAccent50rgb: 0, 152, 230;
-$lightAccent55: hsl(200.29, 100%, 40.59%);
-$lightAccent60: hsl(200.33, 98.92%, 36.27%);
-$lightAccent65: hsl(200.25, 98.77%, 31.76%);
-$lightAccent70: hsl(200.29, 97.14%, 27.45%);
-$lightAccent75: hsl(199.65, 96.58%, 22.94%);
-$lightAccent80: hsl(199.33, 95.74%, 18.43%);
-$lightAccent85: hsl(199.09, 91.67%, 14.12%);
-$lightAccent90: hsl(198.14, 87.76%, 9.61%);
-$lightAccent95: hsl(195.79, 70.37%, 5.29%);
+$lightAccent05: hsl(42.5, 85.71%, 94.51%);
+$lightAccent10: hsl(44, 84.91%, 89.61%);
+$lightAccent15: hsl(44.31, 82.28%, 84.51%);
+$lightAccent20: hsl(43.95, 82.69%, 79.61%);
+$lightAccent25: hsl(44.3, 82.95%, 74.71%);
+$lightAccent30: hsl(44.06, 83.12%, 69.8%);
+$lightAccent35: hsl(43.89, 83.24%, 64.9%);
+$lightAccent40: hsl(44.12, 83.33%, 60%);
+$lightAccent45: hsl(44.21, 82.61%, 54.9%);
+$lightAccent50: hsl(44.08, 82.75%, 50%);
+$lightAccent55: hsl(44.21, 82.61%, 45.1%);
+$lightAccent60: hsl(44.02, 82.44%, 40.2%);
+$lightAccent65: hsl(44.3, 83.24%, 35.1%);
+$lightAccent70: hsl(44.19, 83.23%, 30.39%);
+$lightAccent75: hsl(43.89, 83.08%, 25.49%);
+$lightAccent80: hsl(44.14, 82.86%, 20.59%);
+$lightAccent85: hsl(43.64, 82.5%, 15.69%);
+$lightAccent90: hsl(44.35, 85.19%, 10.59%);
+$lightAccent95: hsl(43.2, 86.21%, 5.69%);
 $lightAccent100: hsl(45, 100%, 0.78%);
-$lightAccent100rgb: 4, 3, 0;
 
 $darkAccent0: hsl(45, 100%, 0.78%);
-$darkAccent0rgb: 4, 3, 0;
-$darkAccent05: hsl(195.79, 70.37%, 5.29%);
-$darkAccent10: hsl(198.14, 87.76%, 9.61%);
-$darkAccent15: hsl(199.09, 91.67%, 14.12%);
-$darkAccent20: hsl(199.33, 95.74%, 18.43%);
-$darkAccent25: hsl(199.65, 96.58%, 22.94%);
-$darkAccent30: hsl(200.29, 97.14%, 27.45%);
-$darkAccent35: hsl(200.25, 98.77%, 31.76%);
-$darkAccent40: hsl(200.33, 98.92%, 36.27%);
-$darkAccent45: hsl(200.29, 100%, 40.59%);
-$darkAccent50: hsl(200.35, 100%, 45.1%);
-$darkAccent50rgb: 0, 152, 230;
-$darkAccent55: hsl(200.58, 82.47%, 50.78%);
-$darkAccent60: hsl(200.54, 82.14%, 56.08%);
-$darkAccent65: hsl(200.25, 81.63%, 61.57%);
-$darkAccent70: hsl(200.15, 81.07%, 66.86%);
-$darkAccent75: hsl(200.18, 80.14%, 72.35%);
-$darkAccent80: hsl(200, 78.95%, 77.65%);
-$darkAccent85: hsl(200.6, 78.82%, 83.33%);
-$darkAccent90: hsl(199.09, 75.86%, 88.63%);
-$darkAccent95: hsl(197.14, 67.74%, 93.92%);
+$darkAccent05: hsl(43.2, 86.21%, 5.69%);
+$darkAccent10: hsl(44.35, 85.19%, 10.59%);
+$darkAccent15: hsl(43.64, 82.5%, 15.69%);
+$darkAccent20: hsl(44.14, 82.86%, 20.59%);
+$darkAccent25: hsl(43.89, 83.08%, 25.49%);
+$darkAccent30: hsl(44.19, 83.23%, 30.39%);
+$darkAccent35: hsl(44.3, 83.24%, 35.1%);
+$darkAccent40: hsl(44.02, 82.44%, 40.2%);
+$darkAccent45: hsl(44.21, 82.61%, 45.1%);
+$darkAccent50: hsl(44.08, 82.75%, 50%);
+$darkAccent55: hsl(44.21, 82.61%, 54.9%);
+$darkAccent60: hsl(44.12, 83.33%, 60%);
+$darkAccent65: hsl(43.89, 83.24%, 64.9%);
+$darkAccent70: hsl(44.06, 83.12%, 69.8%);
+$darkAccent75: hsl(44.3, 82.95%, 74.71%);
+$darkAccent80: hsl(43.95, 82.69%, 79.61%);
+$darkAccent85: hsl(44.31, 82.28%, 84.51%);
+$darkAccent90: hsl(44, 84.91%, 89.61%);
+$darkAccent95: hsl(42.5, 85.71%, 94.51%);
 $darkAccent100: hsl(40, 100%, 99.41%);
-$darkAccent100rgb: 255, 254, 252;
+
+@function hexToRGB($color) {
+  // @return rgb(red($color), green($color), blue($color))
+  @return red($color), green($color), blue($color);
+}
 
 // Text sizes (1.25 ratio)
 $ratio: 1.167;
