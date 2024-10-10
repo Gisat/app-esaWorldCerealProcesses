@@ -75,20 +75,21 @@ $b3: #{$b3_size}rem;
 $headerHeight: 2.75rem;
 
 // Colors
-$textColorPrimary: var(--base90);
-$textColorSecondary: var(--base60);
+$textColorPrimary: var(--base95);
+$textColorSecondary: var(--base65);
 $textColorTertiary: var(--base40);
 $textColorInverted: var(--base10);
 $textColorAccented: var(--accent55);
 $disabledColor: var(--base30);
 
-$borderColorPrimary: var(--base50);
+$borderColorPrimary: var(--base35);
 $borderColorSecondary: var(--base20);
 
 $iconColorPrimary: var(--base80);
 $iconColorSecondary: var(--base50);
 
 $lightBackground: var(--base10);
+$hoverBackground: var(--base30);
 
 :export {
   lightAccent0: $lightAccent0;
