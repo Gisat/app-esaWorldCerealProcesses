@@ -4,13 +4,17 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { DateInput } from '@mantine/dates';
 // import { products } from '@/constants/app';
+import { Button } from '@mantine/core';
 import { SegmentedControl } from '@mantine/core';
 import MapExtentSelect from './components/MapExtentSelect/index';
+import PageSteps from '@/components/atoms/PageSteps';
 
 
 
 const minDate = new Date("2024-01-01");
 const maxDate = new Date("2025-01-01");
+
+type ExtentType = [] | number[] | undefined;
 
 export default function Page({ searchParams }: {
 	searchParams?: {
@@ -27,7 +31,7 @@ export default function Page({ searchParams }: {
 	const endDate = searchParams?.endDate || undefined;
 	const endDateDate = endDate ? new Date(endDate) : undefined;
 
-	const [extent, setExtent] = useState([] as Array<never | number>);
+	const [extent, setExtent] = useState([] as ExtentType);
 
 
 	const setValue = (value: string | null | undefined, key: string, val?: any) => {
@@ -46,10 +50,20 @@ export default function Page({ searchParams }: {
 		}
 	}
 
-	const onExtentChange = (extent: Array<number>) => {
+	const onExtentChange = (extent?: ExtentType) => {
 		setExtent(extent)
-		setValue(extent.join(","), 'extent');
+		setValue(extent?.join(","), 'extent');
 	}
+
+	const onNextClick = () => {
+		//disable
+
+		// create case and get id
+
+		// go to next step with caseID (keep url params)
+	}
+
+	const NextButton = <Button onClick={onNextClick} disabled={!startDateDate || !endDateDate} >Další</Button>
 
 	return <>
 
@@ -75,6 +89,7 @@ export default function Page({ searchParams }: {
 		/>
 		<SegmentedControl color="blue" defaultValue="netcdf" data={[{ label: 'netCDF', value: 'netcdf' }, { label: 'GeoTIFF', value: 'geotiff', disabled: true, }]} />
 		<MapExtentSelect onExtentChange={onExtentChange} />
-		<div>Extent: {extent.join(", ")}</div>
+		<div>Extent: {extent?.join(", ")}</div>
+		<PageSteps nextButton={NextButton} />
 	</>
 }

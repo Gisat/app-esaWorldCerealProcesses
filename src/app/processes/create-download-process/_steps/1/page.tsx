@@ -4,6 +4,7 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import { Select } from '@mantine/core';
 import { products } from '@/constants/app';
+import PageSteps from '@/components/atoms/PageSteps';
 
 export default function Page({ searchParams }: {
 	searchParams?: {
@@ -34,5 +35,6 @@ export default function Page({ searchParams }: {
 			value={productIsValid && product}
 			onChange={setValue}
 		/>
+		<PageSteps />
 	</>
 }

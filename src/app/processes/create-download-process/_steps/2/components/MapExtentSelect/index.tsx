@@ -7,7 +7,10 @@ import ExtentLayer from '@/components/map/layers/ExtentLayer';
 const ExtentLayerID = "ExtentLayer";
 const mapSize = [500, 500] //in pixels
 const extentSizeInMeters = [500, 500]; //in meters
-export default function ({ onExtentChange }: { onExtentChange: (extent?: Array<number>) => void }) {
+
+type ExtentType = [] | number[] | undefined;
+
+export default function ({ onExtentChange }: { onExtentChange: (extent?: ExtentType) => void }) {
 	const mapRef = useRef<any>(null);
 	const layer = new ExtentLayer({ id: ExtentLayerID, extentSize: extentSizeInMeters });
 
