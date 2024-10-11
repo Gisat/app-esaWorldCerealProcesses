@@ -11,7 +11,7 @@ type Props = {
 	created: string;
 	status: string;
 	result: string;
-	details: {
+	details?: {
 		product: string;
 		startDate: string,
 		endDate: string,
@@ -47,8 +47,8 @@ const ProcessesTable = ({
 			</Table.Tr>
 			{isExpanded && (
 				<Table.Tr className={className}>
-					<Table.Td colspan={6}>
-						<Details {...details} />
+					<Table.Td colSpan={6}>
+						{details ? <Details {...details} /> : null}
 					</Table.Td>
 				</Table.Tr>
 			)}
