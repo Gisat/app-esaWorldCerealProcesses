@@ -1,0 +1,18 @@
+@import "../../../../../styles/variables.module.scss";
+
+.worldCereal-ProcessesTable-Details {
+    padding: .5rem;
+}
+
+.worldCereal-ProcessesTable-Details-column {
+    display: flex;
+    flex-direction: column;
+    grid-gap: .5rem;
+}
+
+.worldCereal-ProcessesTable-DetailItem {
+    span {
+        color: $textColorSecondary;
+        font-size: $b1;
+    }
+}

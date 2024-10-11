@@ -4,22 +4,7 @@
 
 }
 
-.worldCereal-ProcessesTable .worldCereal-ProcessesTable-row {
-    border-bottom: 1px solid $borderColorPrimary;
-}
-
-.worldCereal-ProcessesTable tbody .worldCereal-ProcessesTable-row {
-    &:hover {
-        background-color: $hoverBackground;
-    }
-}
-
 .worldCereal-ProcessesTable .mantine-Table-th {
     font-size: $b1;
     color: $textColorSecondary;
-}
-
-.worldCereal-ProcessesTable .mantine-Table-td {
-    font-size: $a1;
-    color: $textColorPrimary;
 }

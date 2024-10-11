@@ -1,31 +1,39 @@
 import "./style.scss";
 import { Table } from "@mantine/core";
+import Record from "./Record";
 
-const ProcessesTable = ({ data }: {
-    data: Array<{
-        name: string;
-        position: number;
-        symbol: string;
-        mass: number;
-    }>
-}) => {
-    const rows = data.map((item) => (
-        <Table.Tr key={item.name} className="worldCereal-ProcessesTable-row">
-            <Table.Td>{item.position}</Table.Td>
-            <Table.Td>{item.name}</Table.Td>
-            <Table.Td>{item.symbol}</Table.Td>
-            <Table.Td>{item.mass}</Table.Td>
-        </Table.Tr>
+type Props = {
+    data: {
+        id: number;
+        type: string;
+        created: string;
+        status: string;
+        result: string;
+        details?: {
+            product: string;
+            startDate: string,
+            endDate: string,
+            outputFileFormat: string,
+            extent: number[],
+        };
+    }[];
+}
+
+const ProcessesTable = ({ data }: Props) => {
+    const rows = data.map(({ id, type, created, status, result, details }) => (
+        <Record id={id} type={type} created={created} status={status} result={result} details={details} />
     ));
 
     return (
-        <Table highlightOnHover className="worldCereal-ProcessesTable">
+        <Table horizontalSpacing="md" className="worldCereal-ProcessesTable">
             <Table.Thead>
                 <Table.Tr className="worldCereal-ProcessesTable-row">
-                    <Table.Th>Element position</Table.Th>
-                    <Table.Th>Element name</Table.Th>
-                    <Table.Th>Symbol</Table.Th>
-                    <Table.Th>Atomic mass</Table.Th>
+                    <Table.Th>ID</Table.Th>
+                    <Table.Th>Type</Table.Th>
+                    <Table.Th>Created</Table.Th>
+                    <Table.Th>Status</Table.Th>
+                    <Table.Th>Result</Table.Th>
+                    <Table.Th></Table.Th>
                 </Table.Tr>
             </Table.Thead>
             <Table.Tbody>{rows}</Table.Tbody>
