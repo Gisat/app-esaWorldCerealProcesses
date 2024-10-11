@@ -8,7 +8,6 @@ const data = [
         type: 'Download',
         created: '2022-01-01 15:30:00',
         status: 'pending',
-        result: 'https://example.com',
         details: {
             product: 'Active cropland',
             startDate: '2021-01-01',
@@ -22,7 +21,6 @@ const data = [
         type: 'Download',
         created: '2022-01-02 17:34:34',
         status: 'failed',
-        result: 'https://example.com',
         details: {
             product: 'Active cropland',
             startDate: '2021-01-01',

@@ -8,7 +8,7 @@ type Props = {
         type: string;
         created: string;
         status: string;
-        result: string;
+        result?: string;
         details?: {
             product: string;
             startDate: string,
