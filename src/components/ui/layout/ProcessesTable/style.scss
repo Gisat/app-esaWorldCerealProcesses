@@ -22,4 +22,8 @@
 .worldCereal-ProcessesTable .mantine-Table-td {
     font-size: $a1;
     color: $textColorPrimary;
+
+    &.highlightedCell {
+       font-weight: bold;
+    }
 }

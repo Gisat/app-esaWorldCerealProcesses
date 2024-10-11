@@ -1,17 +1,53 @@
 "use client"
 
-import { Table } from '@mantine/core';
 import ProcessesTable from "@/components/ui/layout/ProcessesTable";
 
-const elements = [
-	{ position: 6, mass: 12.011, symbol: 'C', name: 'Carbon' },
-	{ position: 7, mass: 14.007, symbol: 'N', name: 'Nitrogen' },
-	{ position: 39, mass: 88.906, symbol: 'Y', name: 'Yttrium' },
-	{ position: 56, mass: 137.33, symbol: 'Ba', name: 'Barium' },
-	{ position: 58, mass: 140.12, symbol: 'Ce', name: 'Cerium' },
+const data = [
+    {
+        id: 674356,
+        type: 'Download',
+        created: '2022-01-01 15:30:00',
+        status: 'pending',
+        result: 'https://example.com',
+        details: {
+            product: 'Active cropland',
+            startDate: '2021-01-01',
+            endDate: '2021-12-31',
+            outputFileFormat: 'netCDF',
+            extent: [50, 15, 60, 17],
+        }
+    },
+    {
+        id: 342256,
+        type: 'Download',
+        created: '2022-01-02 17:34:34',
+        status: 'failed',
+        result: 'https://example.com',
+        details: {
+            product: 'Active cropland',
+            startDate: '2021-01-01',
+            endDate: '2021-12-31',
+            outputFileFormat: 'netCDF',
+            extent: [50, 15, 60, 17],
+        }
+    },
+    {
+        id: 768493,
+        type: 'Download',
+        created: '2022-01-02 19:34:34',
+        status: 'done',
+        result: 'https://example.com',
+        details: {
+            product: 'Active cropland',
+            startDate: '2021-01-01',
+            endDate: '2021-12-31',
+            outputFileFormat: 'netCDF',
+            extent: [50, 15, 60, 17],
+        }
+    },
 ];
 
 
 export default function Page() {
-	return <ProcessesTable data={elements}/>
+    return <ProcessesTable data={data}/>
 }
