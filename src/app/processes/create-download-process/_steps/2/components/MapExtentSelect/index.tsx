@@ -10,7 +10,7 @@ const extentSizeInMeters = [500, 500]; //in meters
 
 type ExtentType = [] | number[] | undefined;
 
-export default function ({ onExtentChange }: { onExtentChange: (extent?: ExtentType) => void }) {
+export default function ({ onBboxChange }: { onBboxChange: (extent?: ExtentType) => void }) {
 	const mapRef = useRef<any>(null);
 	const layer = new ExtentLayer({ id: ExtentLayerID, extentSize: extentSizeInMeters });
 
@@ -50,14 +50,13 @@ export default function ({ onExtentChange }: { onExtentChange: (extent?: ExtentT
 		const topRight = viewport.addMetersToLngLat([viewState.longitude, viewState.latitude], [extentSizeInMeters[0] / 2, extentSizeInMeters[1] / 2])
 		// const bottomRight = viewport.addMetersToLngLat([viewState.longitude, viewState.latitude], [extentSizeInMeters[0] / 2, -extentSizeInMeters[1] / 2])
 		const bottomLeft = viewport.addMetersToLngLat([viewState.longitude, viewState.latitude], [-extentSizeInMeters[0] / 2, -extentSizeInMeters[1] / 2])
-		onExtentChange([...bottomLeft, ...topRight])
+		onBboxChange([...bottomLeft, ...topRight])
 
 	}
 
 	return <div style={{ width: `${mapSize[0]}px`, height: `${mapSize[1]}px`, position: 'relative' }}>
 		<DeckGL
 			ref={mapRef}
-			onClick={() => console.log('click')}
 			initialViewState={mapView}
 			layers={[tileLayer, layer]}
 			onViewStateChange={onViewStateChange}

@@ -47,5 +47,5 @@ const data = [
 
 
 export default function Page() {
-    return <ProcessesTable data={data}/>
+    return <ProcessesTable data={data} />
 }

@@ -1,5 +1,5 @@
 import "./style.scss";
-import {Table} from "@mantine/core";
+import { Table } from "@mantine/core";
 import Record from "./Record";
 
 type Props = {
@@ -19,9 +19,9 @@ type Props = {
     }[];
 }
 
-const ProcessesTable = ({data}: Props) => {
-    const rows = data.map(({id, type, created, status, result, details}) => (
-        <Record id={id} type={type} created={created} status={status} result={result} details={details}/>
+const ProcessesTable = ({ data }: Props) => {
+    const rows = data.map(({ id, type, created, status, result, details }) => (
+        <Record id={id} type={type} created={created} status={status} result={result} details={details} />
     ));
 
     return (
