@@ -89,7 +89,8 @@ $iconColorPrimary: var(--base80);
 $iconColorSecondary: var(--base50);
 
 $lightBackground: var(--base10);
-$hoverBackground: var(--base30);
+$highlightBackground: var(--base20);
+$hoverBackground: var(--base35);
 
 :export {
   lightAccent0: $lightAccent0;

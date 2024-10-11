@@ -1,6 +1,6 @@
 import "./style.scss";
 import {Table} from "@mantine/core";
-import ProcessStatus from "../../../atoms/ProcessStatus";
+import Record from "./Record";
 
 type Props = {
     data: {
@@ -20,18 +20,12 @@ type Props = {
 }
 
 const ProcessesTable = ({data}: Props) => {
-    const rows = data.map((item) => (
-        <Table.Tr key={item.id} className="worldCereal-ProcessesTable-row">
-            <Table.Td>{item.id}</Table.Td>
-            <Table.Td className="highlightedCell">{item.type}</Table.Td>
-            <Table.Td>{item.created}</Table.Td>
-            <Table.Td><ProcessStatus status={item.status} /></Table.Td>
-            <Table.Td>{item.result}</Table.Td>
-        </Table.Tr>
+    const rows = data.map(({id, type, created, status, result, details}) => (
+        <Record id={id} type={type} created={created} status={status} result={result} details={details}/>
     ));
 
     return (
-        <Table highlightOnHover className="worldCereal-ProcessesTable">
+        <Table horizontalSpacing="md" className="worldCereal-ProcessesTable">
             <Table.Thead>
                 <Table.Tr className="worldCereal-ProcessesTable-row">
                     <Table.Th>ID</Table.Th>
@@ -39,6 +33,7 @@ const ProcessesTable = ({data}: Props) => {
                     <Table.Th>Created</Table.Th>
                     <Table.Th>Status</Table.Th>
                     <Table.Th>Result</Table.Th>
+                    <Table.Th></Table.Th>
                 </Table.Tr>
             </Table.Thead>
             <Table.Tbody>{rows}</Table.Tbody>
