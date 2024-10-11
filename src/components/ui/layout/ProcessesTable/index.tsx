@@ -1,12 +1,14 @@
 import "./style.scss";
-import {Table} from "@mantine/core";
+import { Table } from "@mantine/core";
 
-const ProcessesTable = ({data}: Readonly<{
-    id: string;
-    type: string;
-    created: string;
-    status: string;
-}[]>) => {
+const ProcessesTable = ({ data }: {
+    data: Array<{
+        name: string;
+        position: number;
+        symbol: string;
+        mass: number;
+    }>
+}) => {
     const rows = data.map((item) => (
         <Table.Tr key={item.name} className="worldCereal-ProcessesTable-row">
             <Table.Td>{item.position}</Table.Td>

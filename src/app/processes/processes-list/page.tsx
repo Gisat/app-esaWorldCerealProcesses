@@ -1,6 +1,5 @@
 "use client"
 
-import { Table } from '@mantine/core';
 import ProcessesTable from "@/components/ui/layout/ProcessesTable";
 
 const elements = [
@@ -13,5 +12,5 @@ const elements = [
 
 
 export default function Page() {
-	return <ProcessesTable data={elements}/>
+	return <ProcessesTable data={elements} />
 }
