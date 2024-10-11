@@ -167,6 +167,8 @@ input {
   background: var(--base50);
 }
 
+
+// Page
 .esaWorldCerealProcesses {
   background: var(--base0);
 }
@@ -174,4 +176,16 @@ input {
 .worldCereal-appContent {
   max-width: 70rem;
   margin: 0 auto;
+}
+
+// Overrides
+.worldCereal-appContent .worldCereal-PrimaryButton {
+  height: 2rem;
+
+  span {
+    color: $textColorInverted;
+    font-family: "Sen", "Roboto", sans-serif;
+    font-weight: bold;
+    font-size: $a1;
+  }
 }

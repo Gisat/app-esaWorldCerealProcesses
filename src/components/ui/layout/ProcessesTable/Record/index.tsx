@@ -1,6 +1,6 @@
 import "./style.scss";
-import {ActionIcon, Table} from "@mantine/core";
-import { IconDotsVertical } from '@tabler/icons-react';
+import {ActionIcon, Button, Table} from "@mantine/core";
+import { IconDotsVertical, IconDownload } from '@tabler/icons-react';
 import ProcessStatus from "../../../../atoms/ProcessStatus";
 import {useState} from "react";
 import Details from "@/components/ui/layout/ProcessesTable/Details";
@@ -38,7 +38,18 @@ const ProcessesTable = ({
 				<Table.Td className="highlightedCell">{type}</Table.Td>
 				<Table.Td>{created}</Table.Td>
 				<Table.Td><ProcessStatus status={status}/></Table.Td>
-				<Table.Td>{result}</Table.Td>
+				<Table.Td className="shrinkedCell">{result &&
+					<Button
+                        leftSection={<IconDownload size={14} />}
+						className="worldCereal-PrimaryButton"
+						size="sm"
+						component="a"
+						target="_blank"
+						href={result}
+					>
+                    	Download
+                	</Button>
+				}</Table.Td>
 				<Table.Td className="alignRight">
 					<ActionIcon variant="subtle" aria-label="Settings" onClick={() => setIsExpanded(!isExpanded)}>
 						<IconDotsVertical style={{ width: '70%', height: '70%' }} stroke={1.5} />
@@ -47,7 +58,7 @@ const ProcessesTable = ({
 			</Table.Tr>
 			{isExpanded && (
 				<Table.Tr className={className}>
-					<Table.Td colspan={6}>
+					<Table.Td colSpan={6}>
 						<Details {...details}/>
 					</Table.Td>
 				</Table.Tr>
