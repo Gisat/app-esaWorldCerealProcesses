@@ -41,7 +41,7 @@ const ProcessesTable = ({
 				<Table.Td className="shrinkedCell">{result &&
 					<Button
 						leftSection={<IconDownload size={14} />}
-						className="worldCereal-PrimaryButton"
+						className="worldCereal-Button"
 						size="sm"
 						component="a"
 						target="_blank"

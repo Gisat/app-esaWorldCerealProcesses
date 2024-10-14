@@ -41,7 +41,7 @@ const CreateJobButton = ({ setValues, params }: { setValues: (pairs: Array<[valu
 		setShouldFetch(true);
 	}
 	return (
-		<Button onClick={handleClick} >{isLoading ? 'Loading...' : 'Create'}</Button>
+		<Button className="worldCereal-Button" onClick={handleClick} >{isLoading ? 'Loading...' : 'Create'}</Button>
 	);
 }
 
@@ -128,7 +128,7 @@ export default function Page({ searchParams }: {
 			maxDate={maxDate}
 			clearable={true}
 		/>
-		<SegmentedControl color="blue" defaultValue="NETCDF" data={[{ label: 'netCDF', value: 'NETCDF' }, { label: 'GeoTIFF', value: 'geotiff', disabled: true, }]} />
+		<SegmentedControl defaultValue="NETCDF" data={[{ label: 'netCDF', value: 'NETCDF' }, { label: 'GeoTIFF', value: 'geotiff', disabled: true, }]} />
 		<MapExtentSelect onBboxChange={onBboxChange} />
 		<div>Extent: {bbox?.join(", ")}</div>
 		<PageSteps NextButton={React.createElement(CreateJobButton, { setValues, params })} />
