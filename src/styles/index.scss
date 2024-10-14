@@ -176,22 +176,84 @@ input {
 .worldCereal-appContent {
   max-width: 70rem;
   margin: 0 auto;
+  padding: 0 .5rem 1rem;
 }
 
 // Overrides
+@mixin label {
+  font-family: "Sen", "Roboto", sans-serif;
+  font-weight: bold;
+}
+
+@mixin formLabel {
+  @include label;
+  font-size: $a1;
+}
+
+@mixin formItem {
+  width: 100%;
+  max-width: 20rem;
+}
+
+// Form label
+.worldCereal-formLabel {
+  @include formLabel;
+}
+
+
+// Button
 .worldCereal-appContent .worldCereal-Button {
   height: 2rem;
 
   span {
     color: $textColorInverted;
-    font-family: "Sen", "Roboto", sans-serif;
-    font-weight: bold;
-    font-size: $a1;
+    @include formLabel;
   }
 }
 
 .worldCereal-appContent .worldCereal-SecondaryButton {
   span {
     color: $textColorPrimary;
+  }
+}
+
+// Select
+.worldCereal-appContent .worldCereal-Select {
+  @include formItem;
+
+  .mantine-Select-label {
+    @include formLabel;
+  }
+}
+
+// Stepper
+.worldCereal-appContent .worldCereal-Stepper {
+  .mantine-Stepper-stepLabel {
+    @include label;
+    font-size: $b2;
+  }
+
+  .mantine-Stepper-content {
+    padding-top: 1.5rem;
+  }
+}
+
+// Date input
+.worldCereal-appContent .worldCereal-DateInput {
+  @include formItem;
+
+  .mantine-DateInput-label {
+    @include formLabel;
+  }
+}
+
+// Segmented control
+.worldCereal-appContent .worldCereal-SegmentedControl {
+  .mantine-SegmentedControl-label {
+    @include formLabel;
+  }
+
+  .mantine-SegmentedControl-label:where([data-active]) .mantine-SegmentedControl-innerLabel {
+    font-weight: bold;
   }
 }

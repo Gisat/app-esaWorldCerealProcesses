@@ -4,10 +4,11 @@ import React, { useState } from 'react';
 import useSWR from "swr";
 import { useRouter } from 'next/navigation';
 import { DateInput } from '@mantine/dates';
-import { Button } from '@mantine/core';
+import { Button, Stack } from '@mantine/core';
 import { SegmentedControl } from '@mantine/core';
 import MapExtentSelect from './components/MapExtentSelect/index';
 import PageSteps from '@/components/atoms/PageSteps';
+import TwoColumns, {Column} from "@/components/ui/layout/TwoColumns";
 
 
 
@@ -54,11 +55,15 @@ export default function Page({ searchParams }: {
 		bbox?: string;
 	}
 }) {
-	const router = useRouter()
-	const startDate = searchParams?.startDate || undefined;
+	const router = useRouter();
+
+	// TODO fixed date for now
+	// const startDate = searchParams?.startDate || undefined;
+	const startDate = '2021-01-01';
 	const startDateDate = startDate ? new Date(startDate) : undefined;
 
-	const endDate = searchParams?.endDate || undefined;
+	// const endDate = searchParams?.endDate || undefined;
+	const endDate = '2021-12-31';
 	const endDateDate = endDate ? new Date(endDate) : undefined;
 
 	const collection = searchParams?.collection || undefined;
@@ -106,31 +111,45 @@ export default function Page({ searchParams }: {
 		setValue(extent?.join(","), 'bbox');
 	}
 
-	return <>
-
-		<DateInput
-			value={startDateDate}
-			onChange={(value) => setValue(transformDate(value), 'startDate', value)}
-			label="Start date"
-			placeholder="Select start date"
-			valueFormat="YYYY-MM-DD"
-			minDate={minDate}
-			maxDate={endDateDate || maxDate}
-			clearable={true}
-		/>
-		<DateInput
-			value={endDateDate}
-			onChange={(value) => setValue(transformDate(value), 'endDate')}
-			label="End date"
-			placeholder="Select end date"
-			valueFormat="YYYY-MM-DD"
-			minDate={startDateDate || minDate}
-			maxDate={maxDate}
-			clearable={true}
-		/>
-		<SegmentedControl defaultValue="NETCDF" data={[{ label: 'netCDF', value: 'NETCDF' }, { label: 'GeoTIFF', value: 'geotiff', disabled: true, }]} />
-		<MapExtentSelect onBboxChange={onBboxChange} />
-		<div>Extent: {bbox?.join(", ")}</div>
-		<PageSteps NextButton={React.createElement(CreateJobButton, { setValues, params })} />
-	</>
+	return <TwoColumns>
+		<Column>
+			<MapExtentSelect onBboxChange={onBboxChange} />
+			<div>Extent: {bbox?.join(", ")}</div>
+			<PageSteps NextButton={React.createElement(CreateJobButton, { setValues, params })} />
+		</Column>
+		<Column>
+			<Stack gap="lg" w="100%" align="flex-start">
+				<DateInput
+					size="md"
+					className="worldCereal-DateInput"
+					value={startDateDate}
+					onChange={(value) => setValue(transformDate(value), 'startDate', value)}
+					label="Start date"
+					placeholder="Select start date"
+					valueFormat="YYYY-MM-DD"
+					minDate={minDate}
+					maxDate={endDateDate || maxDate}
+					clearable={false}
+					disabled
+				/>
+				<DateInput
+					size="md"
+					className="worldCereal-DateInput"
+					value={endDateDate}
+					onChange={(value) => setValue(transformDate(value), 'endDate')}
+					label="End date"
+					placeholder="Select end date"
+					valueFormat="YYYY-MM-DD"
+					minDate={startDateDate || minDate}
+					maxDate={maxDate}
+					clearable={false}
+					disabled
+				/>
+				<div>
+					<div className="worldCereal-formLabel">Output file format</div>
+					<SegmentedControl className="worldCereal-SegmentedControl" size="md" readOnly defaultValue="NETCDF" data={[{ label: 'netCDF', value: 'NETCDF' }, { label: 'GeoTIFF', value: 'geotiff', disabled: true, }]} />
+				</div>
+			</Stack>
+		</Column>
+	</TwoColumns>
 }
