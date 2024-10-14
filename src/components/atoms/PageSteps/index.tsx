@@ -21,12 +21,10 @@ export default function PageSteps({ children, NextButton }: { children?: React.R
 	const prevStep = () => setActive(activeStep - 1);
 
 	const backVisible = activeStep > 1
-	// const nextVisible = activeStep < 3
 	return (
 		<Group justify="center" mt="xl">
-			{backVisible ? <Button variant="default" onClick={prevStep}>Back</Button> : null}
-			{/* {nextVisible ? (NextButton && React.createElement(NextButton) || <Button onClick={nextStep}>Next step</Button>) : null} */}
-			{NextButton || <Button onClick={nextStep}>Next step</Button>}
+			{backVisible ? <Button className="worldCereal-Button worldCereal-SecondaryButton" variant="default" onClick={prevStep}>Back</Button> : null}
+			{NextButton || <Button className="worldCereal-Button" onClick={nextStep}>Next step</Button>}
 		</Group>
 	);
 }

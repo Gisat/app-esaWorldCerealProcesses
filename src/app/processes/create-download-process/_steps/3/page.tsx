@@ -35,7 +35,7 @@ const StartJobButton = ({ jobId }: { jobId?: string }) => {
 	}
 
 	return (
-		<Button onClick={handleClick} >{isLoading ? 'Loading...' : 'Start and go to list'}</Button>
+		<Button className="worldCereal-Button" onClick={handleClick} >{isLoading ? 'Loading...' : 'Start and go to list'}</Button>
 	);
 }
 

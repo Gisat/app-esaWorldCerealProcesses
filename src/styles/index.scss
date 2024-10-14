@@ -179,7 +179,7 @@ input {
 }
 
 // Overrides
-.worldCereal-appContent .worldCereal-PrimaryButton {
+.worldCereal-appContent .worldCereal-Button {
   height: 2rem;
 
   span {
@@ -187,5 +187,11 @@ input {
     font-family: "Sen", "Roboto", sans-serif;
     font-weight: bold;
     font-size: $a1;
+  }
+}
+
+.worldCereal-appContent .worldCereal-SecondaryButton {
+  span {
+    color: $textColorPrimary;
   }
 }
