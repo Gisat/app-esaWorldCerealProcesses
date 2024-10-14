@@ -44,7 +44,7 @@ export async function GET(
     if (response.ok) {
       return NextResponse.json(await response.json());
     } else {
-      return NextResponse.json({ error: ["Error creating entity"] });
+      return NextResponse.json({ error: ["Error getting job"] });
     }
   } catch (error: any) {
     return NextResponse.json({ error: error["message"] });
