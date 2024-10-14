@@ -1,7 +1,6 @@
 "use client"
 
 import ProcessesTable from "@/components/ui/layout/ProcessesTable";
-import { useEffect, useRef, useState } from "react";
 import useSWR from "swr";
 
 // const data = [
@@ -48,29 +47,13 @@ import useSWR from "swr";
 // ];
 
 
-const fetcher = (url: string,) => {
-    return fetch(url).then(r => r.json());
+const fetcher = (url: string) => {
+    return fetch(`${url}`).then(r => r.json());
 }
 
-
-const getUserJobsList = async () => {
-
-    const url = `/ api / jobs / get / list`
-    const { data, isLoading } = await useSWR(url, fetcher);
-    return data
-
-}
 
 export default function Page() {
-    // const userJobsList = useRef<any>(null)
     const url = `/api/jobs/get/list`
     const { data, isLoading } = useSWR(url, fetcher);
-    // userJobsList.current = data
-    // useEffect(() => {
-
-    // }, [])
-
-    console.log("xxx_data", data);
-
     return <ProcessesTable data={data || []} />
 }

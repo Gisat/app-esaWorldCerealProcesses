@@ -6,7 +6,7 @@ import { useState } from "react";
 import Details from "@/components/ui/layout/ProcessesTable/Details";
 
 type Props = {
-	id: number;
+	id: string;
 	type: string;
 	created: string;
 	status: string;

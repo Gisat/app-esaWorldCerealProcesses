@@ -27,11 +27,8 @@ export async function GET() {
       `https://worldcerealprocesses-dev.gisat.cz/be-interface-openeo/openeo/jobs/list-all`,
       {
         method: "GET",
-        headers: { "Content-Type": "application/json" },
       }
     );
-    console.log("xxx", response);
-
     if (response.ok) {
       return NextResponse.json(await response.json());
     } else {
