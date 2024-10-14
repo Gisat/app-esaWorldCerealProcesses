@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import useSWR from "swr";
 import { useRouter } from 'next/navigation';
 import { DateInput } from '@mantine/dates';
@@ -11,8 +11,8 @@ import PageSteps from '@/components/atoms/PageSteps';
 
 
 
-const minDate = new Date("2024-01-01");
-const maxDate = new Date("2025-01-01");
+const minDate = new Date("2021-01-01");
+const maxDate = new Date("2022-01-01");
 
 type BboxType = [] | number[] | undefined;
 
@@ -56,10 +56,10 @@ export default function Page({ searchParams }: {
 }) {
 	const router = useRouter()
 	const startDate = searchParams?.startDate || undefined;
-	const startDateDate = startDate ? new Date(startDate) : undefined;
+	const startDateDate = startDate ? new Date(startDate) : new Date("2021-01-01");
 
 	const endDate = searchParams?.endDate || undefined;
-	const endDateDate = endDate ? new Date(endDate) : undefined;
+	const endDateDate = endDate ? new Date(endDate) : new Date("2021-12-30");
 
 	const collection = searchParams?.collection || undefined;
 
@@ -106,10 +106,16 @@ export default function Page({ searchParams }: {
 		setValue(extent?.join(","), 'bbox');
 	}
 
+	useEffect(() => {
+		setValue(transformDate(endDateDate), 'endDate')
+		setValue(transformDate(startDateDate), 'startDate')
+	}, [])
+
 	return <>
 
 		<DateInput
 			value={startDateDate}
+			disabled={true}
 			onChange={(value) => setValue(transformDate(value), 'startDate', value)}
 			label="Start date"
 			placeholder="Select start date"
@@ -120,6 +126,7 @@ export default function Page({ searchParams }: {
 		/>
 		<DateInput
 			value={endDateDate}
+			disabled={true}
 			onChange={(value) => setValue(transformDate(value), 'endDate')}
 			label="End date"
 			placeholder="Select end date"
