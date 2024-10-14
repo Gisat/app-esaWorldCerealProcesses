@@ -46,6 +46,21 @@ $darkAccent90: hsl(44, 84.91%, 89.61%);
 $darkAccent95: hsl(42.5, 85.71%, 94.51%);
 $darkAccent100: hsl(40, 100%, 99.41%);
 
+@mixin labelFont {
+  font-family: "Sen", "Roboto", sans-serif;
+  font-weight: bold;
+}
+
+@mixin label {
+  @include labelFont;
+  font-size: $a1;
+}
+
+@mixin formItem {
+  width: 100%;
+  max-width: 20rem;
+}
+
 @function hexToRGB($color) {
   // @return rgb(red($color), green($color), blue($color))
   @return red($color), green($color), blue($color);

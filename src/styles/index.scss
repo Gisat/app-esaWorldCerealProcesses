@@ -180,34 +180,13 @@ input {
 }
 
 // Overrides
-@mixin label {
-  font-family: "Sen", "Roboto", sans-serif;
-  font-weight: bold;
-}
-
-@mixin formLabel {
-  @include label;
-  font-size: $a1;
-}
-
-@mixin formItem {
-  width: 100%;
-  max-width: 20rem;
-}
-
-// Form label
-.worldCereal-formLabel {
-  @include formLabel;
-}
-
-
 // Button
 .worldCereal-appContent .worldCereal-Button {
   height: 2rem;
 
   span {
     color: $textColorInverted;
-    @include formLabel;
+    @include label;
   }
 }
 
@@ -222,14 +201,14 @@ input {
   @include formItem;
 
   .mantine-Select-label {
-    @include formLabel;
+    @include label;
   }
 }
 
 // Stepper
 .worldCereal-appContent .worldCereal-Stepper {
   .mantine-Stepper-stepLabel {
-    @include label;
+    @include labelFont;
     font-size: $b2;
   }
 
@@ -243,17 +222,19 @@ input {
   @include formItem;
 
   .mantine-DateInput-label {
-    @include formLabel;
+    @include label;
   }
 }
 
 // Segmented control
 .worldCereal-appContent .worldCereal-SegmentedControl {
   .mantine-SegmentedControl-label {
-    @include formLabel;
+    @include label;
+    color: $textColorTertiary;
   }
 
   .mantine-SegmentedControl-label:where([data-active]) .mantine-SegmentedControl-innerLabel {
     font-weight: bold;
+    color: $textColorPrimary;
   }
 }

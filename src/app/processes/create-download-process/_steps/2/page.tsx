@@ -9,6 +9,8 @@ import { SegmentedControl } from '@mantine/core';
 import MapExtentSelect from './components/MapExtentSelect/index';
 import PageSteps from '@/components/atoms/PageSteps';
 import TwoColumns, { Column } from "@/components/ui/layout/TwoColumns";
+import FormLabel from "@/components/ui/layout/FormLabel";
+import {products} from "@/constants/app";
 
 
 
@@ -56,11 +58,11 @@ export default function Page({ searchParams }: {
 	}
 }) {
 	const router = useRouter()
-	const startDate = searchParams?.startDate || undefined;
-	const startDateDate = startDate ? new Date(startDate) : new Date("2021-01-01");
+	const startDate = searchParams?.startDate || "2021-01-01";
+	const startDateDate = new Date(startDate);
 
-	const endDate = searchParams?.endDate || undefined;
-	const endDateDate = endDate ? new Date(endDate) : new Date("2021-12-30");
+	const endDate = searchParams?.endDate || "2021-12-30";
+	const endDateDate = new Date(endDate);
 
 	const collection = searchParams?.collection || undefined;
 
@@ -110,16 +112,23 @@ export default function Page({ searchParams }: {
 	useEffect(() => {
 		setValue(transformDate(endDateDate), 'endDate')
 		setValue(transformDate(startDateDate), 'startDate')
-	}, [])
+	}, []);
+
+	const collectionName = collection && products.find(p => p.value === collection)?.label;
 
 	return <TwoColumns>
 		<Column>
+			<FormLabel>Zoom map to select extent</FormLabel>
 			<MapExtentSelect onBboxChange={onBboxChange} />
-			<div>Extent: {bbox?.join(", ")}</div>
+			<div>Current map extent: {bbox?.join(", ")}</div>
 			<PageSteps NextButton={React.createElement(CreateJobButton, { setValues, params })} />
 		</Column>
 		<Column>
 			<Stack gap="lg" w="100%" align="flex-start">
+				<div>
+					<FormLabel>Product/collection</FormLabel>
+					<div>{collectionName}</div>
+				</div>
 				<DateInput
 					size="md"
 					className="worldCereal-DateInput"
@@ -147,7 +156,7 @@ export default function Page({ searchParams }: {
 					disabled
 				/>
 				<div>
-					<div className="worldCereal-formLabel">Output file format</div>
+					<FormLabel>Output file format</FormLabel>
 					<SegmentedControl className="worldCereal-SegmentedControl" size="md" readOnly defaultValue="NETCDF" data={[{ label: 'netCDF', value: 'NETCDF' }, { label: 'GeoTIFF', value: 'geotiff', disabled: true, }]} />
 				</div>
 			</Stack>
