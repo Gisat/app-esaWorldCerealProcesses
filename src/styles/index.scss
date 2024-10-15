@@ -144,6 +144,10 @@
   --mantine-color-body: #{$darkBase0};
 }
 
+body {
+  font-family: "Roboto", sans-serif;
+}
+
 input {
   accent-color: var(--accent60);
 }
