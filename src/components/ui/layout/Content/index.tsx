@@ -1,12 +1,13 @@
 import "./style.scss";
+import { Container } from '@mantine/core';
 
-const Content = ({children}: Readonly<{
-    children: React.ReactNode;
+const Content = ({ children }: Readonly<{
+  children: React.ReactNode;
 }>) => {
   return (
-    <div className="worldCereal-Content">
-        {children}
-    </div>
+    <Container fluid={true} className="worldCereal-Content">
+      {children}
+    </Container>
   );
 };
 

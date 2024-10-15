@@ -1,17 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(
-  req: NextRequest,
-  { params: { jobid } }: { params: { jobid: string } }
-) {
+export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
+export async function GET() {
   try {
-    // validate inputs for safe aggragation
-    if (!jobid) {
-      return NextResponse.json("Missing jobid value", {
-        status: 400,
-      });
-    }
-
     // try to get value from cache
     // const cacheKey = ggAggregationCacheKey({
     //   timeInterval: timeInterval as TimeIntervals,
@@ -33,24 +25,16 @@ export async function GET(
 
     // return result
     // return NextResponse.json(fakeDatabaseResult);
-
-    const data = {
-      key: jobid,
-    };
-
     const response = await fetch(
-      `https://worldcerealprocesses-dev.gisat.cz/be-interface-openeo/openeo/jobs/start`,
+      `https://worldcerealprocesses-dev.gisat.cz/be-interface-openeo/openeo/jobs/list-all`,
       {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        method: "GET",
       }
     );
-
     if (response.ok) {
       return NextResponse.json(await response.json());
     } else {
-      return NextResponse.json({ error: ["Error starting job"] });
+      return NextResponse.json({ error: ["Error getting list of jobs"] });
     }
   } catch (error: any) {
     return NextResponse.json({ error: error["message"] });

@@ -139,6 +139,13 @@
   --accent95rgb: #{hexToRGB($darkAccent95)};
   --accent100: #{$darkAccent100};
   --accent100rgb: #{hexToRGB($darkAccent100)};
+
+  // Mantine
+  --mantine-color-body: #{$darkBase0};
+}
+
+body {
+  font-family: "Roboto", sans-serif;
 }
 
 input {
@@ -167,7 +174,6 @@ input {
   background: var(--base50);
 }
 
-
 // Page
 .esaWorldCerealProcesses {
   background: var(--base0);
@@ -176,16 +182,66 @@ input {
 .worldCereal-appContent {
   max-width: 70rem;
   margin: 0 auto;
+  padding: 0 0.5rem 1rem;
 }
 
 // Overrides
-.worldCereal-appContent .worldCereal-PrimaryButton {
+// Button
+.worldCereal-appContent .worldCereal-Button {
   height: 2rem;
 
   span {
     color: $textColorInverted;
-    font-family: "Sen", "Roboto", sans-serif;
+    @include label;
+  }
+}
+
+.worldCereal-appContent .worldCereal-SecondaryButton {
+  span {
+    color: $textColorPrimary;
+  }
+}
+
+// Select
+.worldCereal-appContent .worldCereal-Select {
+  @include formItem;
+
+  .mantine-Select-label {
+    @include label;
+  }
+}
+
+// Stepper
+.worldCereal-appContent .worldCereal-Stepper {
+  .mantine-Stepper-stepLabel {
+    @include labelFont;
+    font-size: $b2;
+  }
+
+  .mantine-Stepper-content {
+    padding-top: 1.5rem;
+  }
+}
+
+// Date input
+.worldCereal-appContent .worldCereal-DateInput {
+  @include formItem;
+
+  .mantine-DateInput-label {
+    @include label;
+  }
+}
+
+// Segmented control
+.worldCereal-appContent .worldCereal-SegmentedControl {
+  .mantine-SegmentedControl-label {
+    @include label;
+    color: $textColorTertiary;
+  }
+
+  .mantine-SegmentedControl-label:where([data-active])
+    .mantine-SegmentedControl-innerLabel {
     font-weight: bold;
-    font-size: $a1;
+    color: $textColorPrimary;
   }
 }

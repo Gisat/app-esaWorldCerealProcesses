@@ -4,7 +4,7 @@ import colors from "../../utils/colors.js";
 
 const theme = createTheme({
   fontFamily: "Roboto, sans-serif",
-  primaryColor: 'accented',
+  primaryColor: "accented",
   primaryShade: 5,
   scale: 1,
   white: colors.hslToHex(variables.lightBase0),

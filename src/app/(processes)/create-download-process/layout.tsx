@@ -24,7 +24,7 @@ export default function DownloadLayout({ children }: { children: React.ReactNode
 
 	return (
 		<Suspense>
-			<Stepper active={activeStep} >
+			<Stepper className="worldCereal-Stepper" active={activeStep - 1} >
 				<Stepper.Step label="Step 1" description="Select product" allowStepClick={false} allowStepSelect={false}>
 					{children}
 				</Stepper.Step>

@@ -6,27 +6,31 @@ import { useState } from "react";
 import Details from "@/components/ui/layout/ProcessesTable/Details";
 
 type Props = {
-	id: number;
-	type: string;
-	created: string;
-	status: string;
-	result?: string;
-	details?: {
-		product: string;
-		startDate: string,
-		endDate: string,
-		outputFileFormat: string,
-		extent: number[],
-	};
+	"bbox"?: Array<number>,
+	"costs"?: number,
+	"createdIso"?: Date,
+	"duration"?: number,
+	"id"?: string,
+	"name"?: string,
+	"oeoCollection"?: string,
+	"resultFileFormat"?: string,
+	"results"?: Array<{ source_link: string }>,
+	"status"?: string,
+	"timeRange"?: Array<Date>,
+	"updatedIso"?: Date
 }
 
 const ProcessesTable = ({
 	id,
-	type,
-	created,
+	// type,
+	createdIso,
 	status,
-	result,
-	details
+	results,
+	bbox,
+	timeRange,
+	resultFileFormat,
+	oeoCollection
+	// details
 }: Props) => {
 	const [isExpanded, setIsExpanded] = useState(false);
 	const className = `worldCereal-ProcessesTable-row${isExpanded ? ' is-expanded' : ''}`;
@@ -35,17 +39,17 @@ const ProcessesTable = ({
 		<>
 			<Table.Tr key={id} className={className}>
 				<Table.Td>{id}</Table.Td>
-				<Table.Td className="highlightedCell">{type}</Table.Td>
-				<Table.Td>{created}</Table.Td>
-				<Table.Td><ProcessStatus status={status} /></Table.Td>
-				<Table.Td className="shrinkedCell">{result &&
+				<Table.Td className="highlightedCell">Download</Table.Td>
+				<Table.Td>{createdIso && new Date(createdIso).toDateString()}</Table.Td>
+				<Table.Td>{status ? <ProcessStatus status={status} /> : null}</Table.Td>
+				<Table.Td className="shrinkedCell">{results?.[0] &&
 					<Button
 						leftSection={<IconDownload size={14} />}
-						className="worldCereal-PrimaryButton"
+						className="worldCereal-Button"
 						size="sm"
 						component="a"
 						target="_blank"
-						href={result}
+						href={results[0]?.source_link}
 					>
 						Download
 					</Button>
@@ -59,7 +63,7 @@ const ProcessesTable = ({
 			{isExpanded && (
 				<Table.Tr className={className}>
 					<Table.Td colSpan={6}>
-						{details ? <Details {...details} /> : null}
+						<Details bbox={bbox} startDate={timeRange?.[0]} endDate={timeRange?.[1]} resultFileFormat={resultFileFormat} oeoCollection={oeoCollection} />
 					</Table.Td>
 				</Table.Tr>
 			)}
