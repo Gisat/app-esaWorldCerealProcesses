@@ -120,7 +120,7 @@ export default function Page({ searchParams }: {
 		<Column>
 			<FormLabel>Zoom map to select extent</FormLabel>
 			<MapExtentSelect onBboxChange={onBboxChange} />
-			<div>Current map extent: {bbox?.join(", ")}</div>
+			{/* <div>Current map extent: {bbox?.join(", ")}</div> */}
 			<PageSteps NextButton={React.createElement(CreateJobButton, { setValues, params })} />
 		</Column>
 		<Column>

@@ -25,9 +25,8 @@ const StartJobButton = ({ jobId }: { jobId?: string }) => {
 		setShouldFetch(false)
 	}
 
-	if (data?.jobId) {
+	if (data?.result?.jobId) {
 		setTimeout(() => {
-			//FIXME go to list
 			router.push("/processes-list")
 		}, 50)
 
@@ -38,7 +37,7 @@ const StartJobButton = ({ jobId }: { jobId?: string }) => {
 	}
 
 	return (
-		<Button className="worldCereal-Button" onClick={handleClick} >{isLoading ? 'Loading...' : 'Start process and go to the list'}</Button>
+		<Button className="worldCereal-Button" disabled={isLoading} onClick={handleClick} >{isLoading ? 'Starting...' : 'Start process and go to the list'}</Button>
 	);
 }
 
