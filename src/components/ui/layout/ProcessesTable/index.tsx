@@ -18,36 +18,24 @@ import Record from "./Record";
 type Props = {
     loading: boolean,
     data: {
-
-        bbox: string,
-        createdIso: string,
-        name: string,
-        oeoCollection: string,
-        resultFileFormat: string,
-        results: string,
-        status: string,
-        timeRange: string,
-        updatedIso: string,
-
-        // Original format
-        // id: number;
-        // type: string;
-        // created: string;
-        // status: string;
-        // result?: string;
-        // details?: {
-        //     product: string;
-        //     startDate: string,
-        //     endDate: string,
-        //     outputFileFormat: string,
-        //     extent: number[],
-        // };
+        "bbox": Array<number>,
+        "costs": number,
+        "createdIso": Date,
+        "duration": number,
+        "key": string,
+        "name": string,
+        "oeoCollection": string,
+        "resultFileFormat": string,
+        "results": Array<{ "source_link": string }>,
+        "status": string,
+        "timeRange": Array<Date>,
+        "updatedIso": Date
     }[];
 }
 
 const ProcessesTable = ({ data, loading }: Props) => {
-    const rows = data.map(({ resultFileFormat, createdIso, status, results }) => (
-        <Record id={createdIso} type={resultFileFormat} created={createdIso} status={status} result={results[0]} />
+    const rows = data.map(({ resultFileFormat, createdIso, status, results, key, bbox }) => (
+        <Record key={key} id={key} createdIso={createdIso} status={status} results={results} bbox={bbox} />
     ));
 
     return (
