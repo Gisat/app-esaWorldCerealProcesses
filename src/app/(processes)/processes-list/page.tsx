@@ -1,6 +1,9 @@
 "use client"
 
+import { useUserInfoCookie } from "@/app/(auth)/_hooks/useUserInfoFromCookie";
+import { useRedirectIf } from "@/app/(shared)/_hooks/useRedirectIfNot";
 import ProcessesTable from "@/components/ui/layout/ProcessesTable";
+import router from "next/router";
 import useSWR from "swr";
 
 // const data = [
@@ -53,6 +56,10 @@ const fetcher = (url: string) => {
 
 
 export default function Page() {
+
+    const [cookieValue, _] = useUserInfoCookie()
+	useRedirectIf(() => cookieValue === undefined, "/")
+
     const url = `/api/jobs/get/list`
     const { data, isLoading } = useSWR(url, fetcher);
     return <ProcessesTable data={data || []} loading={isLoading} />
