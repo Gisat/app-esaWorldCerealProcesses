@@ -1,5 +1,3 @@
-"use client"
-
 import PropTypes from "prop-types";
 import { AppShellHeader } from '@mantine/core'
 import Title from "../Title";
@@ -11,7 +9,6 @@ import EmailLogoutInfo from "@/app/(auth)/_components/EmailLogoutInfo";
 const Header = () => {
   
   const [cookieValue, deleteCookieFe] = useUserInfoCookie()
-
   return (
     <AppShellHeader >
       <div className="worldCereal-Header">
