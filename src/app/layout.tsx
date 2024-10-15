@@ -2,6 +2,7 @@
 
 import type { Metadata } from "next";
 import React from "react";
+import { AppShell, AppShellMain, rem } from '@mantine/core';
 
 import '../styles/index.scss';
 import '../styles/variables.module.scss';
@@ -26,10 +27,17 @@ export default function RootLayout({
       </head>
       <body className={`ptr-dark esaWorldCerealProcesses`}>
         <MantineProvider>
-          <div className="worldCereal-appContent">
+          <AppShell
+            withBorder={false}
+            header={{ height: 50 }}
+            padding="md"
+            className={"worldCereal-appContent"}
+          >
             <Header />
-            {children}
-          </div>
+            <AppShellMain pt={`calc(${rem(50)} + var(--mantine-spacing-md))`}>
+              {children}
+            </AppShellMain>
+          </AppShell>
         </MantineProvider>
       </body>
     </html>

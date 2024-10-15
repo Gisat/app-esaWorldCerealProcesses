@@ -55,5 +55,5 @@ const fetcher = (url: string) => {
 export default function Page() {
     const url = `/api/jobs/get/list`
     const { data, isLoading } = useSWR(url, fetcher);
-    return <ProcessesTable data={data || []} />
+    return <ProcessesTable data={data || []} loading={isLoading} />
 }

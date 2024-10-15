@@ -139,6 +139,9 @@
   --accent95rgb: #{hexToRGB($darkAccent95)};
   --accent100: #{$darkAccent100};
   --accent100rgb: #{hexToRGB($darkAccent100)};
+
+  // Mantine
+  --mantine-color-body: #{$darkBase0};
 }
 
 input {
@@ -167,7 +170,6 @@ input {
   background: var(--base50);
 }
 
-
 // Page
 .esaWorldCerealProcesses {
   background: var(--base0);
@@ -176,7 +178,7 @@ input {
 .worldCereal-appContent {
   max-width: 70rem;
   margin: 0 auto;
-  padding: 0 .5rem 1rem;
+  padding: 0 0.5rem 1rem;
 }
 
 // Overrides
@@ -233,7 +235,8 @@ input {
     color: $textColorTertiary;
   }
 
-  .mantine-SegmentedControl-label:where([data-active]) .mantine-SegmentedControl-innerLabel {
+  .mantine-SegmentedControl-label:where([data-active])
+    .mantine-SegmentedControl-innerLabel {
     font-weight: bold;
     color: $textColorPrimary;
   }

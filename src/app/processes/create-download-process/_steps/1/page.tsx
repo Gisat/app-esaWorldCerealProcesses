@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Select } from '@mantine/core';
 import { products } from '@/constants/app';
 import PageSteps from '@/components/atoms/PageSteps';
-import TwoColumns, {Column} from "@/components/ui/layout/TwoColumns";
+import TwoColumns, { Column } from "@/components/ui/layout/TwoColumns";
 
 export default function Page({ searchParams }: {
 	searchParams?: {
@@ -35,7 +35,7 @@ export default function Page({ searchParams }: {
 				label="Product/Collection"
 				placeholder="Pick one"
 				data={products}
-				value={productIsValid && collection}
+				value={productIsValid && collection || null}
 				onChange={setValue}
 			/>
 			<PageSteps />

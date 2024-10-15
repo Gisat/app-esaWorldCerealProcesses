@@ -29,12 +29,10 @@ export default function ProcessesLayout({
   const basePath = currentPath.split(`/${segment}`)[0]
   return (
     <Suspense>
-      <div className={`ptr-processes`}>
-        <Navbar activeValue={segment}>
-          {navbarItems.map((item) => <NavbarItem key={item.key} active={segment === item.key} value={item.key} title={item.title} icon={item.icon} href={`${basePath}/${item.key}`} />)}
-        </Navbar>
-        <Content>{children}</Content>
-      </div >
+      <Navbar activeValue={segment}>
+        {navbarItems.map((item) => <NavbarItem key={item.key} active={segment === item.key} value={item.key} title={item.title} icon={item.icon} href={`${basePath}/${item.key}`} />)}
+      </Navbar>
+      <Content>{children}</Content>
     </Suspense>
 
   );

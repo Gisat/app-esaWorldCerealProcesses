@@ -6,7 +6,7 @@ import './style.scss'
 const Navbar = ({ children, activeValue }: { children: React.ReactNode, activeValue: string }) => {
 	return (
 		<Tabs value={activeValue} className="worldCereal-Navbar">
-			<Tabs.List  className="worldCereal-Navbar-list">
+			<Tabs.List className="worldCereal-Navbar-list">
 				{children}
 			</Tabs.List>
 		</Tabs>

@@ -1,5 +1,6 @@
 import "./style.scss";
-import { Table } from "@mantine/core";
+import { Table, Loader, Center } from "@mantine/core";
+
 import Record from "./Record";
 
 
@@ -15,6 +16,7 @@ import Record from "./Record";
 // updatedIso
 
 type Props = {
+    loading: boolean,
     data: {
 
         bbox: string,
@@ -43,13 +45,13 @@ type Props = {
     }[];
 }
 
-const ProcessesTable = ({ data }: Props) => {
+const ProcessesTable = ({ data, loading }: Props) => {
     const rows = data.map(({ resultFileFormat, createdIso, status, results }) => (
         <Record id={createdIso} type={resultFileFormat} created={createdIso} status={status} result={results[0]} />
     ));
 
     return (
-        <Table horizontalSpacing="md" className="worldCereal-ProcessesTable">
+        <>{loading ? (<Center><Loader /></Center>) : (<Table horizontalSpacing="md" className="worldCereal-ProcessesTable">
             <Table.Thead>
                 <Table.Tr className="worldCereal-ProcessesTable-row">
                     <Table.Th>ID</Table.Th>
@@ -61,7 +63,8 @@ const ProcessesTable = ({ data }: Props) => {
                 </Table.Tr>
             </Table.Thead>
             <Table.Tbody>{rows}</Table.Tbody>
-        </Table>
+        </Table>)
+        }</>
     );
 };
 
