@@ -1,3 +1,5 @@
+"use client"
+
 import { Unsure } from '@/app/(shared)/_logic/types.universal';
 import Cookies from 'js-cookie';
 import { useEffect, useState } from 'react';
