@@ -1,37 +1,59 @@
 "use client"
 
-import { Table } from '@mantine/core';
+import ProcessesTable from "@/components/ui/layout/ProcessesTable";
+import useSWR from "swr";
 
-const elements = [
-	{ position: 6, mass: 12.011, symbol: 'C', name: 'Carbon' },
-	{ position: 7, mass: 14.007, symbol: 'N', name: 'Nitrogen' },
-	{ position: 39, mass: 88.906, symbol: 'Y', name: 'Yttrium' },
-	{ position: 56, mass: 137.33, symbol: 'Ba', name: 'Barium' },
-	{ position: 58, mass: 140.12, symbol: 'Ce', name: 'Cerium' },
-];
+// const data = [
+//     {
+//         id: 674356,
+//         type: 'Download',
+//         created: '2022-01-01 15:30:00',
+//         status: 'pending',
+//         details: {
+//             product: 'Active cropland',
+//             startDate: '2021-01-01',
+//             endDate: '2021-12-31',
+//             outputFileFormat: 'netCDF',
+//             extent: [50, 15, 60, 17],
+//         }
+//     },
+//     {
+//         id: 342256,
+//         type: 'Download',
+//         created: '2022-01-02 17:34:34',
+//         status: 'failed',
+//         details: {
+//             product: 'Active cropland',
+//             startDate: '2021-01-01',
+//             endDate: '2021-12-31',
+//             outputFileFormat: 'netCDF',
+//             extent: [50, 15, 60, 17],
+//         }
+//     },
+//     {
+//         id: 768493,
+//         type: 'Download',
+//         created: '2022-01-02 19:34:34',
+//         status: 'done',
+//         result: 'https://example.com',
+//         details: {
+//             product: 'Active cropland',
+//             startDate: '2021-01-01',
+//             endDate: '2021-12-31',
+//             outputFileFormat: 'netCDF',
+//             extent: [50, 15, 60, 17],
+//         }
+//     },
+// ];
+
+
+const fetcher = (url: string) => {
+    return fetch(`${url}`).then(r => r.json());
+}
 
 
 export default function Page() {
-	const rows = elements.map((element) => (
-		<Table.Tr key={element.name}>
-			<Table.Td>{element.position}</Table.Td>
-			<Table.Td>{element.name}</Table.Td>
-			<Table.Td>{element.symbol}</Table.Td>
-			<Table.Td>{element.mass}</Table.Td>
-		</Table.Tr>
-	));
-
-	return (
-		<Table>
-			<Table.Thead>
-				<Table.Tr>
-					<Table.Th>Element position</Table.Th>
-					<Table.Th>Element name</Table.Th>
-					<Table.Th>Symbol</Table.Th>
-					<Table.Th>Atomic mass</Table.Th>
-				</Table.Tr>
-			</Table.Thead>
-			<Table.Tbody>{rows}</Table.Tbody>
-		</Table>
-	);
+    const url = `/api/jobs/get/list`
+    const { data, isLoading } = useSWR(url, fetcher);
+    return <ProcessesTable data={data || []} loading={isLoading} />
 }

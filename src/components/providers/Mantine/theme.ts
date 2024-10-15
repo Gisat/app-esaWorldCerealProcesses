@@ -4,7 +4,8 @@ import colors from "../../utils/colors.js";
 
 const theme = createTheme({
   fontFamily: "Roboto, sans-serif",
-  // primaryColor: 'accented',
+  primaryColor: "accented",
+  primaryShade: 5,
   scale: 1,
   white: colors.hslToHex(variables.lightBase0),
   black: colors.hslToHex(variables.darkBase0),
@@ -34,6 +35,7 @@ const theme = createTheme({
       colors.hslToHex(variables.lightBase90),
     ],
     dark: [
+      colors.hslToHex(variables.darkBase100),
       colors.hslToHex(variables.darkBase90),
       colors.hslToHex(variables.darkBase80),
       colors.hslToHex(variables.darkBase70),
@@ -43,7 +45,6 @@ const theme = createTheme({
       colors.hslToHex(variables.darkBase30),
       colors.hslToHex(variables.darkBase20),
       colors.hslToHex(variables.darkBase10),
-      colors.hslToHex(variables.darkBase0),
     ],
   },
   fontSizes: {

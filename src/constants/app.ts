@@ -1,4 +1,4 @@
-export const products: any = [
+export const products: Array<{ value: string; label: string }> = [
   {
     value: "ESA_WORLDCEREAL_ACTIVECROPLAND",
     label: "Active cropland",

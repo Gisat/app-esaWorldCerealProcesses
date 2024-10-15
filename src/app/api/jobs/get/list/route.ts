@@ -1,0 +1,42 @@
+import { NextRequest, NextResponse } from "next/server";
+
+export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
+export async function GET() {
+  try {
+    // try to get value from cache
+    // const cacheKey = ggAggregationCacheKey({
+    //   timeInterval: timeInterval as TimeIntervals,
+    //   statisticsMethod: statisticsMethod as StatisticsMethods,
+    // });
+    // const cacheResult = cacheGet(cacheKey);
+
+    // if we have something in the cache, use it and return
+    // if (cacheResult) return NextResponse.json(cacheResult);
+
+    // if not, let's calculate aggregation
+    // const fakeDatabaseResult = fakedbAggregationValues(
+    //   statisticsMethod as StatisticsMethods,
+    //   timeInterval as TimeIntervals
+    // );
+
+    // //...and save it into the cache for next time
+    // cacheSet(cacheKey, fakeDatabaseResult, 1000);
+
+    // return result
+    // return NextResponse.json(fakeDatabaseResult);
+    const response = await fetch(
+      `https://worldcerealprocesses-dev.gisat.cz/be-interface-openeo/openeo/jobs/list-all`,
+      {
+        method: "GET",
+      }
+    );
+    if (response.ok) {
+      return NextResponse.json(await response.json());
+    } else {
+      return NextResponse.json({ error: ["Error getting list of jobs"] });
+    }
+  } catch (error: any) {
+    return NextResponse.json({ error: error["message"] });
+  }
+}

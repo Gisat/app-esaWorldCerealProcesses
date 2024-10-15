@@ -4,35 +4,41 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import { Select } from '@mantine/core';
 import { products } from '@/constants/app';
+import PageSteps from '@/components/atoms/PageSteps';
+import TwoColumns, { Column } from "@/components/ui/layout/TwoColumns";
 
 export default function Page({ searchParams }: {
 	searchParams?: {
 		query?: string;
 		step?: string;
-		product?: string;
+		collection?: string;
 	}
 }) {
 	const router = useRouter()
-	const product = searchParams?.product || null;
-	const productIsValid = products.some((p: { value: String }) => p.value === product);
-	console.log("xxx", searchParams, product);
+	const collection = searchParams?.collection || null;
+	const productIsValid = products.some((p: { value: String }) => p.value === collection);
 
 
-	const setValue = (product: string | null) => {
+	const setValue = (collection: string | null) => {
 
 		const url = new URL(window.location.href);
-		url.searchParams.set('product', product || "");
+		url.searchParams.set('collection', collection || "");
 		router.push(url.toString())
 	}
 
-	return <>
-		<Select
-			allowDeselect={false}
-			label="Product/Collection"
-			placeholder="Pick one"
-			data={products}
-			value={productIsValid && product}
-			onChange={setValue}
-		/>
-	</>
+	return <TwoColumns>
+		<Column>
+			<Select
+				className="worldCereal-Select"
+				size="md"
+				allowDeselect={false}
+				label="Product/Collection"
+				placeholder="Pick one"
+				data={products}
+				value={productIsValid && collection || null}
+				onChange={setValue}
+			/>
+			<PageSteps />
+		</Column>
+	</TwoColumns>
 }

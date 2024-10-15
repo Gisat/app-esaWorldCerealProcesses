@@ -1,5 +1,5 @@
 @use "sass:math";
-@import "../../../styles/variables";
+@import "../../../styles/variables.module.scss";
 
 .worldCereal-esaLogo {
   display: flex;
@@ -8,9 +8,9 @@
 }
 
 .worldCereal-esaLogo svg > path {
-  fill: var(--base10);
+  fill: var(--base90);
 }
 
 .worldCereal-esaLogo:hover svg > path {
-  fill: var(--accent30);
+  fill: var(--accent50);
 }

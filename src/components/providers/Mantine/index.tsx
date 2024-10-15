@@ -4,7 +4,7 @@ import theme from "./theme";
 
 const Mantine = ({ children }: { children: any }) => {
   return (
-    <MantineProvider forceColorScheme={"light"} theme={theme}>
+    <MantineProvider forceColorScheme={"dark"} theme={theme}>
       {children}
     </MantineProvider>
   );
