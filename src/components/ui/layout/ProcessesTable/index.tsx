@@ -34,8 +34,11 @@ type Props = {
 }
 
 const ProcessesTable = ({ data, loading }: Props) => {
-    const rows = data.map(({ resultFileFormat, createdIso, status, results, key, bbox }) => (
-        <Record key={key} id={key} createdIso={createdIso} status={status} results={results} bbox={bbox} />
+    const rows = data.map(({ resultFileFormat, createdIso, status, results, key, bbox, timeRange, oeoCollection }) => (
+        <Record key={key} id={key} createdIso={createdIso} status={status} results={results} bbox={bbox}
+            timeRange={timeRange}
+            resultFileFormat={resultFileFormat}
+            oeoCollection={oeoCollection} />
     ));
 
     return (
