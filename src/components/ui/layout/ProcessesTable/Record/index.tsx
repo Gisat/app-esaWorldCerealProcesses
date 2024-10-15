@@ -3,7 +3,7 @@ import { ActionIcon, Button, Table } from "@mantine/core";
 import { IconDotsVertical, IconDownload } from '@tabler/icons-react';
 import ProcessStatus from "../../../../atoms/ProcessStatus";
 import { useState } from "react";
-// import Details from "@/components/ui/layout/ProcessesTable/Details";
+import Details from "@/components/ui/layout/ProcessesTable/Details";
 
 type Props = {
 	"bbox"?: Array<number>,
@@ -26,6 +26,10 @@ const ProcessesTable = ({
 	createdIso,
 	status,
 	results,
+	bbox,
+	timeRange,
+	resultFileFormat,
+	oeoCollection
 	// details
 }: Props) => {
 	const [isExpanded, setIsExpanded] = useState(false);
@@ -50,16 +54,16 @@ const ProcessesTable = ({
 						Download
 					</Button>
 				}</Table.Td>
-				{/* <Table.Td className="alignRight">
+				<Table.Td className="alignRight">
 					<ActionIcon variant="subtle" aria-label="Settings" onClick={() => setIsExpanded(!isExpanded)}>
 						<IconDotsVertical style={{ width: '70%', height: '70%' }} stroke={1.5} />
 					</ActionIcon>
-				</Table.Td> */}
+				</Table.Td>
 			</Table.Tr>
 			{isExpanded && (
 				<Table.Tr className={className}>
 					<Table.Td colSpan={6}>
-						{/* {details ? <Details {...details} /> : null} */}
+						<Details bbox={bbox} startDate={timeRange?.[0]} endDate={timeRange?.[1]} resultFileFormat={resultFileFormat} oeoCollection={oeoCollection} />
 					</Table.Td>
 				</Table.Tr>
 			)}

@@ -2,10 +2,11 @@
 
 import React, { useState } from 'react';
 import useSWR from "swr";
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
 import { Button } from '@mantine/core';
 
 import PageSteps from '@/components/atoms/PageSteps';
+import Details from '@/components/ui/layout/ProcessesTable/Details';
 
 const fetcher = (url: string) => {
 	return fetch(`${url}`).then(r => r.json());
@@ -13,6 +14,7 @@ const fetcher = (url: string) => {
 
 
 const StartJobButton = ({ jobId }: { jobId?: string }) => {
+	const router = useRouter();
 	const [shouldFetch, setShouldFetch] = useState(false);
 	const url = `/api/jobs/start/${jobId}`
 
@@ -26,6 +28,7 @@ const StartJobButton = ({ jobId }: { jobId?: string }) => {
 	if (data?.jobId) {
 		setTimeout(() => {
 			//FIXME go to list
+			router.push("/processes-list")
 		}, 50)
 
 	}
@@ -35,7 +38,7 @@ const StartJobButton = ({ jobId }: { jobId?: string }) => {
 	}
 
 	return (
-		<Button className="worldCereal-Button" onClick={handleClick} >{isLoading ? 'Loading...' : 'Start and go to list'}</Button>
+		<Button className="worldCereal-Button" onClick={handleClick} >{isLoading ? 'Loading...' : 'Start process and go to the list'}</Button>
 	);
 }
 
@@ -51,14 +54,9 @@ export default function Page({ searchParams }: {
 	const jobId = searchParams?.jobid;
 
 	const { data } = useSWR(`/api/jobs/get/${jobId}`, fetcher)
-	const dataAsArray = Object.entries(data || {})
-
 
 	return <>
-
-		{dataAsArray.map(([key, value]: [string, any]) => {
-			return <p key={key}>{key}:{value.toString()}</p>
-		})}
+		{data ? <Details bbox={data?.bbox} startDate={data?.timeRange?.[0]} endDate={data?.timeRange?.[1]} resultFileFormat={data?.resultFileFormat} oeoCollection={data?.oeoCollection} /> : null}
 		<PageSteps NextButton={React.createElement(StartJobButton, { jobId })} />
 	</>
 }

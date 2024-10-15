@@ -1,11 +1,32 @@
 "use client";
 
 import React from 'react';
-import { useRouter } from 'next/navigation';
+import { Button } from '@mantine/core';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Select } from '@mantine/core';
 import { products } from '@/constants/app';
 import PageSteps from '@/components/atoms/PageSteps';
 import TwoColumns, { Column } from "@/components/ui/layout/TwoColumns";
+
+
+
+const NextButton = ({ collection }: { collection: string | null }) => {
+
+	const router = useRouter()
+	const params = useSearchParams()
+	const activeStep = Number.parseInt(params.get('step') || "");
+	const disabled = !collection;
+	const setActive = (step: any) => {
+		const url = new URL(window.location.href);
+		url.searchParams.set('step', step);
+		router.push(url.toString())
+	}
+
+	const nextStep = () => setActive(activeStep + 1);
+	return (
+		<Button disabled={disabled} className="worldCereal-Button" onClick={nextStep} >Continue to set parameters</Button>
+	);
+}
 
 export default function Page({ searchParams }: {
 	searchParams?: {
@@ -38,7 +59,7 @@ export default function Page({ searchParams }: {
 				value={productIsValid && collection || null}
 				onChange={setValue}
 			/>
-			<PageSteps />
+			<PageSteps NextButton={React.createElement(NextButton, { collection })} />
 		</Column>
 	</TwoColumns>
 }
