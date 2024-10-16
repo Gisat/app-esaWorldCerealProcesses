@@ -1,7 +1,7 @@
 "use client"
 
 import PropTypes from "prop-types";
-import { AppShellHeader } from '@mantine/core'
+import { AppShellHeader, Button } from '@mantine/core'
 import Title from "../Title";
 import EsaLogo from "../../../atoms/EsaLogo";
 import "./style.scss";
@@ -38,11 +38,15 @@ const Header = () => {
           {
             !cookieValue ?
               <>
-                <Link href="/account/login">Login</Link>
+                <Link href="/account/login">
+                  <Button variant="subtle" className="worldCereal-Button worldCereal-SecondaryButton">Log in</Button>
+                </Link>
               </> :
               <>
                 <span>{cookieValue}</span>
-                <Link href="/api/auth/logout" onClick={deleteCookieFe}>Logout</Link>
+                <Link href="/api/auth/logout" onClick={deleteCookieFe}>
+                  <Button variant="subtle" className="worldCereal-Button worldCereal-SecondaryButton">Log out</Button>
+                </Link>
               </>
           }
           <EsaLogo className="worldCereal-Header-esaLogo" />
