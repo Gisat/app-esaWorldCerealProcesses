@@ -55,9 +55,10 @@ const fetcher = (url: string) => {
 export default function Page() {
 
     // const [cookieValue, _] = useUserInfoCookie()
-	// useRedirectIf(() => cookieValue === undefined, "/")
+    // useRedirectIf(() => cookieValue === undefined, "/")
 
     const url = `/api/jobs/get/list`
-    const { data, isLoading } = useSWR(url, fetcher);
+
+    let { data, isLoading } = useSWR(url, fetcher, { refreshInterval: 1000, });
     return <ProcessesTable data={data || []} loading={isLoading} />
 }
