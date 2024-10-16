@@ -4,19 +4,7 @@ import { usePathname, useSelectedLayoutSegment } from 'next/navigation'
 import Navbar from "@/components/ui/layout/Navbar";
 import NavbarItem from "../../components/ui/layout/Navbar/NavbarItem";
 import Content from "@/components/ui/layout/Content";
-import { IconCirclePlus, IconListDetails } from "@tabler/icons-react";
-
-const navbarItems = [
-  {
-    key: "processes-list",
-    title: "List of processes",
-    icon: IconListDetails,
-  }, {
-    key: "create-download-process",
-    title: "Create download process",
-    icon: IconCirclePlus,
-  }
-]
+import { navbarItems } from "@/constants/app";
 
 export default function ProcessesLayout({
   children,

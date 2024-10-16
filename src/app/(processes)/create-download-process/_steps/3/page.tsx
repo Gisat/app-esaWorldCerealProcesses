@@ -8,6 +8,8 @@ import { Button } from '@mantine/core';
 import PageSteps from '@/components/atoms/PageSteps';
 import Details from '@/components/ui/layout/ProcessesTable/Details';
 
+import { pages } from '@/constants/app';
+
 const fetcher = (url: string) => {
 	return fetch(`${url}`).then(r => r.json());
 }
@@ -27,7 +29,7 @@ const StartJobButton = ({ jobId }: { jobId?: string }) => {
 
 	if (data?.result?.jobId) {
 		setTimeout(() => {
-			router.push("/processes-list")
+			router.push(`/${pages.processesList.url}`)
 		}, 50)
 
 	}
