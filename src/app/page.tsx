@@ -6,7 +6,9 @@ import { useState } from "react";
 import { Unsure } from "@/app/(shared)/_logic/types.universal";
 import { useRouter } from "next/navigation";
 import { pages } from "@/constants/app";
-import { Button } from '@mantine/core';
+import { Button, Container, Space, Alert, Center } from '@mantine/core';
+import { IconUser } from '@tabler/icons-react';
+
 
 export default function Home() {
 
@@ -21,11 +23,22 @@ export default function Home() {
 
   return (
     <div >
+      <Space h="xl" />
       {!cookieValue ?
-        <>
-          A login is required for this part of the application. After clicking the button you will be redirected to the login section.
-          <Link href="/account/login" ><Button>Login</Button></Link>
-        </> : null}
+        <Container fluid h={50}>
+          <Center >
+
+            <Alert variant="transparent">
+              <p>
+                A login is required for this part of the application. After clicking the button you will be redirected to the login section.
+              </p>
+              <Space h="sm" />
+              {/* <Link href="/account/login" ><Button>Login</Button></Link> */}
+              <Link href="/api/auth/iam" ><Button autoContrast leftSection={<IconUser size={14} />}>Login</Button></Link>
+
+            </Alert>
+          </Center>
+        </Container> : null}
     </div>
   );
 }
