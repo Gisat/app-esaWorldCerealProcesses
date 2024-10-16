@@ -34,7 +34,7 @@ export default function RootLayout({
             className={"worldCereal-appContent"}
           >
             <Header />
-            <AppShellMain pt={`calc(${rem(50)} + var(--mantine-spacing-md))`}>
+            <AppShellMain pt={`calc(${rem(50)}`}>
               {children}
             </AppShellMain>
           </AppShell>

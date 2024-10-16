@@ -7,10 +7,15 @@ import { Select } from '@mantine/core';
 import { products } from '@/constants/app';
 import PageSteps from '@/components/atoms/PageSteps';
 import TwoColumns, { Column } from "@/components/ui/layout/TwoColumns";
+import { useUserInfoCookie } from '@/app/(auth)/_hooks/useUserInfoFromCookie';
+import { useRedirectIf } from '@/app/(shared)/_hooks/useRedirectIfNot';
 
 
 
 const NextButton = ({ collection }: { collection: string | null }) => {
+
+	const [cookieValue, _] = useUserInfoCookie()
+	useRedirectIf(() => cookieValue === undefined, "/")
 
 	const router = useRouter()
 	const params = useSearchParams()
@@ -24,7 +29,7 @@ const NextButton = ({ collection }: { collection: string | null }) => {
 
 	const nextStep = () => setActive(activeStep + 1);
 	return (
-		<Button disabled={disabled} className="worldCereal-Button" onClick={nextStep} >Continue to set parameters</Button>
+		<Button disabled={disabled} className={`worldCereal-Button${disabled ? ' is-disabled' : ''}`} onClick={nextStep} >Continue to set parameters</Button>
 	);
 }
 
