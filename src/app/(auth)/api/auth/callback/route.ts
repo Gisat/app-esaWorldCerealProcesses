@@ -34,9 +34,11 @@ export async function GET(req: NextRequest) {
     const parsedUrl = new URL(process.env.OID_SELF_REDIRECT_URL as string);
     const url = `${parsedUrl.protocol}//${parsedUrl.host}/${pages.processesList.url}`;
     const feRedirect = NextResponse.redirect(url);
-    feRedirect.cookies.set(IAM_CONSTANTS.Cookie_Email, emailValue, {
+    feRedirect.cookies.set({
+      name: IAM_CONSTANTS.Cookie_Email,
+      value: emailValue,
       httpOnly: false, //TODO: Change for token values or sessions
-      secure: false,
+      secure: true,
       expires: expires,
       path: "/",
       sameSite: "lax"
