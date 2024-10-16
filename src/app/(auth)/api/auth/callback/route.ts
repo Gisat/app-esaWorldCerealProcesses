@@ -38,7 +38,6 @@ export async function GET(req: NextRequest) {
       httpOnly: false, //TODO: Change for token values or sessions
       secure: false,
       expires: expires,
-      sameSite: "none",
       path: "/"
     });
 
