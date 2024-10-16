@@ -10,6 +10,8 @@ import Details from '@/components/ui/layout/ProcessesTable/Details';
 import { useUserInfoCookie } from '@/app/(auth)/_hooks/useUserInfoFromCookie';
 import { useRedirectIf } from '@/app/(shared)/_hooks/useRedirectIfNot';
 
+import { pages } from '@/constants/app';
+
 const fetcher = (url: string) => {
 	return fetch(`${url}`).then(r => r.json());
 }
@@ -29,7 +31,7 @@ const StartJobButton = ({ jobId }: { jobId?: string }) => {
 
 	if (data?.result?.jobId) {
 		setTimeout(() => {
-			router.push("/processes-list")
+			router.push(`/${pages.processesList.url}`)
 		}, 50)
 
 	}

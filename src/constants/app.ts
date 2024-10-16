@@ -1,3 +1,5 @@
+import { IconCirclePlus, IconListDetails } from "@tabler/icons-react";
+
 export const products: Array<{ value: string; label: string }> = [
   {
     value: "ESA_WORLDCEREAL_ACTIVECROPLAND",
@@ -22,5 +24,23 @@ export const products: Array<{ value: string; label: string }> = [
   {
     value: "ESA_WORLDCEREAL_SPRINGCEREALS",
     label: "Spring cereals",
+  },
+];
+
+export const pages = {
+  processesList: { url: "processes-list" },
+  createDownloadProcess: { url: "create-download-process" },
+};
+
+export const navbarItems = [
+  {
+    key: pages.processesList.url,
+    title: "List of processes",
+    icon: IconListDetails,
+  },
+  {
+    key: pages.createDownloadProcess.url,
+    title: "Create download process",
+    icon: IconCirclePlus,
   },
 ];
