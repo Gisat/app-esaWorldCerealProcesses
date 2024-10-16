@@ -3,8 +3,6 @@ import React from 'react';
 import Step1 from './_steps/1/page';
 import Step2 from './_steps/2/page';
 import Step3 from './_steps/3/page';
-import { useUserInfoCookie } from '@/app/(auth)/_hooks/useUserInfoFromCookie';
-import { useRedirectIf } from '@/app/(shared)/_hooks/useRedirectIfNot';
 
 
 const getStepComponent = (step: number, searchParams: any) => {
