@@ -1,9 +1,6 @@
 "use client"
 
-import { useUserInfoCookie } from "@/app/(auth)/_hooks/useUserInfoFromCookie";
-import { useRedirectIf } from "@/app/(shared)/_hooks/useRedirectIfNot";
 import ProcessesTable from "@/components/ui/layout/ProcessesTable";
-import router from "next/router";
 import useSWR from "swr";
 
 // const data = [
