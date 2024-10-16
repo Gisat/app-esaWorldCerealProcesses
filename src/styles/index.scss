@@ -180,9 +180,9 @@ input {
 }
 
 .worldCereal-appContent {
-  max-width: 70rem;
+  max-width: $pageWidth;
   margin: 0 auto;
-  padding: 0 0.5rem 1rem;
+  padding: 0 0 1rem;
 }
 
 // Overrides
@@ -193,6 +193,12 @@ input {
   span {
     color: $textColorInverted;
     @include label;
+  }
+
+  &.is-disabled {
+    span {
+      color: $disabledColor;
+    }
   }
 }
 

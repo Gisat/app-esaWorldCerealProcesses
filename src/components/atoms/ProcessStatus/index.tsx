@@ -1,5 +1,5 @@
 import { Chip, rem } from '@mantine/core';
-import { IconX, IconCheck, IconDots } from '@tabler/icons-react';
+import { IconX, IconCheck, IconDots, IconChecks } from '@tabler/icons-react';
 import './style.scss';
 
 type Props = {
@@ -20,7 +20,7 @@ const ProcessStatus = ({ status }: Props) => {
             break;
         case 'finished':
             color = "#327c4f";
-            icon = <IconCheck style={{ width: rem(16), height: rem(16) }} />
+            icon = <IconChecks style={{ width: rem(16), height: rem(16) }} />
             break;
         case 'created':
             color = "#a97818";

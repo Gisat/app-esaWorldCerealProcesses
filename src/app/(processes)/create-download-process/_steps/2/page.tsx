@@ -11,6 +11,8 @@ import PageSteps from '@/components/atoms/PageSteps';
 import TwoColumns, { Column } from "@/components/ui/layout/TwoColumns";
 import FormLabel from "@/components/ui/layout/FormLabel";
 import { products } from "@/constants/app";
+import { useUserInfoCookie } from '@/app/(auth)/_hooks/useUserInfoFromCookie';
+import { useRedirectIf } from '@/app/(shared)/_hooks/useRedirectIfNot';
 
 
 
@@ -57,6 +59,10 @@ export default function Page({ searchParams }: {
 		bbox?: string;
 	}
 }) {
+
+	const [cookieValue, _] = useUserInfoCookie()
+	useRedirectIf(() => cookieValue === undefined, "/")
+
 	const router = useRouter()
 	const startDate = searchParams?.startDate || "2021-01-01";
 	const startDateDate = new Date(startDate);

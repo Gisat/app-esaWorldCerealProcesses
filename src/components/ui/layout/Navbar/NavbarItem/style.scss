@@ -8,7 +8,7 @@ a:has(.worldCereal-NavbarItem) {
   font-size: $a1;
   text-decoration: none;
   color: $textColorPrimary;
-  font-family: "Roboto", sans-serif;
+  font-family: "Sen","Roboto", sans-serif;
 
   &:where([data-active]) {
     border-bottom-width: 3px;
