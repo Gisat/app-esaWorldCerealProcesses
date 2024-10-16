@@ -8,7 +8,6 @@ export default function DownloadLayout({ children }: { children: React.ReactNode
 	const params = useSearchParams()
 	const activeStep = Number.parseInt(params.get('step') || "");
 
-
 	const setActive = (step: any) => {
 		const url = new URL(window.location.href);
 		url.searchParams.set('step', step);

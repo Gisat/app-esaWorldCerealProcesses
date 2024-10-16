@@ -7,6 +7,8 @@ import { Button } from '@mantine/core';
 
 import PageSteps from '@/components/atoms/PageSteps';
 import Details from '@/components/ui/layout/ProcessesTable/Details';
+import { useUserInfoCookie } from '@/app/(auth)/_hooks/useUserInfoFromCookie';
+import { useRedirectIf } from '@/app/(shared)/_hooks/useRedirectIfNot';
 
 const fetcher = (url: string) => {
 	return fetch(`${url}`).then(r => r.json());
@@ -50,6 +52,10 @@ export default function Page({ searchParams }: {
 		jobid?: string;
 	}
 }) {
+
+	const [cookieValue, _] = useUserInfoCookie()
+	useRedirectIf(() => cookieValue === undefined, "/")
+
 	const jobId = searchParams?.jobid;
 
 	const { data } = useSWR(`/api/jobs/get/${jobId}`, fetcher)
