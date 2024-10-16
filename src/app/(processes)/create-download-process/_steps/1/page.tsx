@@ -24,7 +24,7 @@ const NextButton = ({ collection }: { collection: string | null }) => {
 
 	const nextStep = () => setActive(activeStep + 1);
 	return (
-		<Button disabled={disabled} className="worldCereal-Button" onClick={nextStep} >Continue to set parameters</Button>
+		<Button disabled={disabled} className={`worldCereal-Button${disabled ? ' is-disabled' : ''}`} onClick={nextStep} >Continue to set parameters</Button>
 	);
 }
 

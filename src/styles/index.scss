@@ -194,6 +194,12 @@ input {
     color: $textColorInverted;
     @include label;
   }
+
+  &.is-disabled {
+    span {
+      color: $disabledColor;
+    }
+  }
 }
 
 .worldCereal-appContent .worldCereal-SecondaryButton {
