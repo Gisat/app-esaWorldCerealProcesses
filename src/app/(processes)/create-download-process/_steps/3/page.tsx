@@ -55,8 +55,8 @@ export default function Page({ searchParams }: {
 	}
 }) {
 
-	const [cookieValue, _] = useUserInfoCookie()
-	useRedirectIf(() => cookieValue === undefined, "/")
+	// const [cookieValue, _] = useUserInfoCookie()
+	// useRedirectIf(() => cookieValue === undefined, "/")
 
 	const jobId = searchParams?.jobid;
 
