@@ -24,6 +24,11 @@ export async function GET(req: NextRequest) {
     const decoded = JWT.decode(tokenSet.access_token as string);
     const emailValue = (decoded as any)["email"];
 
+    // Calculate the expiration date
+    const date = new Date();
+    date.setTime(date.getTime() + (1 * 24 * 60 * 60 * 1000)); // days to milliseconds
+    const expires = date;
+
     // build redirect back to frontend
     // add auth result as cookie
     const parsedUrl = new URL(process.env.OID_SELF_REDIRECT_URL as string);
@@ -32,6 +37,9 @@ export async function GET(req: NextRequest) {
     feRedirect.cookies.set(IAM_CONSTANTS.Cookie_Email, emailValue, {
       httpOnly: false, //TODO: Change for token values or sessions
       secure: false,
+      expires: expires,
+      sameSite: "none",
+      path: "/"
     });
 
     return feRedirect;
