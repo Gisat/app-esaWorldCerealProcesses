@@ -60,8 +60,8 @@ export default function Page({ searchParams }: {
 	}
 }) {
 
-	const [cookieValue, _] = useUserInfoCookie()
-	useRedirectIf(() => cookieValue === undefined, "/")
+	// const [cookieValue, _] = useUserInfoCookie()
+	// useRedirectIf(() => cookieValue === undefined, "/")
 
 	const router = useRouter()
 	const startDate = searchParams?.startDate || "2021-01-01";

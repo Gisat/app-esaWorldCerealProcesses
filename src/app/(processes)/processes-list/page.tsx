@@ -57,8 +57,8 @@ const fetcher = (url: string) => {
 
 export default function Page() {
 
-    const [cookieValue, _] = useUserInfoCookie()
-	useRedirectIf(() => cookieValue === undefined, "/")
+    // const [cookieValue, _] = useUserInfoCookie()
+	// useRedirectIf(() => cookieValue === undefined, "/")
 
     const url = `/api/jobs/get/list`
     const { data, isLoading } = useSWR(url, fetcher);

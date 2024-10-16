@@ -14,8 +14,8 @@ import { useRedirectIf } from '@/app/(shared)/_hooks/useRedirectIfNot';
 
 const NextButton = ({ collection }: { collection: string | null }) => {
 
-	const [cookieValue, _] = useUserInfoCookie()
-	useRedirectIf(() => cookieValue === undefined, "/")
+	// const [cookieValue, _] = useUserInfoCookie()
+	// useRedirectIf(() => cookieValue === undefined, "/")
 
 	const router = useRouter()
 	const params = useSearchParams()
