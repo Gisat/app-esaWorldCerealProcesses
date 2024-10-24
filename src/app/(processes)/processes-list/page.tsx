@@ -1,6 +1,7 @@
 "use client"
 
 import ProcessesTable from "@/components/ui/layout/ProcessesTable";
+import { useAuthCookieRedirect } from "@/hooks/useAuthCookieRedirect";
 import useSWR from "swr";
 
 // const data = [
@@ -53,6 +54,8 @@ const fetcher = (url: string) => {
 
 
 export default function Page() {
+
+    useAuthCookieRedirect()
 
     // const [cookieValue, _] = useUserInfoCookie()
     // useRedirectIf(() => cookieValue === undefined, "/")
