@@ -22,20 +22,12 @@ const Header = () => {
         setCookieValue(value);
     }, []);
 
-    /**
-     * Delete FE controlled cookie
-     * HttpOnly must be done by redirest to auth API route
-     */
-    const deleteUserInfoCookie = () => {
-        Cookies.remove(IAM_CONSTANTS.Cookie_Email)
-        setCookieValue(undefined)
-    }
   return (
     <AppShellHeader >
       <div className="worldCereal-Header">
         <Title />
         <div className="worldCereal-Header-tools">
-          <EmailLogoutInfo cookieValue={cookieValue} deleteCookieFunc={deleteUserInfoCookie} />
+          <EmailLogoutInfo cookieValue={cookieValue} />
           <EsaLogo className="worldCereal-Header-esaLogo" />
         </div>
       </div>
