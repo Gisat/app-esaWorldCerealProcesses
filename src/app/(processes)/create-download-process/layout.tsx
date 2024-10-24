@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuthCookieRedirect } from '@/hooks/useAuthCookieRedirect';
 
 export default function DownloadLayout({ children }: { children: React.ReactNode }) {
+	
 	useAuthCookieRedirect()
 	
 	const router = useRouter()

@@ -55,8 +55,6 @@ const fetcher = (url: string) => {
 
 export default function Page() {
 
-    useAuthCookieRedirect()
-
     // const [cookieValue, _] = useUserInfoCookie()
     // useRedirectIf(() => cookieValue === undefined, "/")
 
