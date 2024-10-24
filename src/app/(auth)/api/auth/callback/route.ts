@@ -25,9 +25,9 @@ export async function GET(req: NextRequest) {
     const emailValue = (decoded as any)["email"];
 
     // Calculate the expiration date
-    const date = new Date();
-    date.setTime(date.getTime() + (1 * 24 * 60 * 60 * 1000)); // days to milliseconds
-    const expires = date;
+    // const date = new Date();
+    // date.setTime(date.getTime() + (1 * 24 * 60 * 60 * 1000)); // days to milliseconds
+    // const expires = date;
 
     // build redirect back to frontend
     // add auth result as cookie
@@ -39,7 +39,8 @@ export async function GET(req: NextRequest) {
       value: emailValue,
       httpOnly: false, //TODO: Change for token values or sessions
       secure: true,
-      expires: expires,
+      domain: parsedUrl.host,
+      maxAge: 60 * 60 * 24 * 7, // 7 days in seconds
       path: "/",
       sameSite: "lax"
     });
