@@ -42,7 +42,7 @@ const getGeoJsonFromBbox = (bbox: ExtentType): any => {
 	}
 }
 
-export default function ({ longitude, latitude, onBboxChange, bbox, disabled, mapSize = defaultMapSize, extentSizeInMeters = defaultExtentSizeInMeters }: { extentSizeInMeters?: Array<number>, mapSize?: Array<number>, disabled?: boolean, bbox?: ExtentType, onBboxChange?: (extent?: ExtentType) => void, longitude: number, latitude: number }) {
+export default function ({ longitude, latitude, onBboxChange, bbox, disabled, mapSize = defaultMapSize, extentSizeInMeters = defaultExtentSizeInMeters }: { extentSizeInMeters?: Array<number>, mapSize?: Array<number>, disabled?: boolean, bbox?: ExtentType, onBboxChange?: (extent?: ExtentType) => void, longitude?: number, latitude?: number }) {
 	const mapRef = useRef<any>(null);
 	const layer = bbox ? new GeoJsonLayer({
 		id: ExtentLayerID, data: getGeoJsonFromBbox(bbox), getLineColor: [0, 0, 0],
