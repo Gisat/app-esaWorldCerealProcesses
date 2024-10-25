@@ -1,9 +1,16 @@
 import "./style.scss";
 import { ActionIcon, Button, Table } from "@mantine/core";
-import { IconDotsVertical, IconDownload } from '@tabler/icons-react';
+import { IconDotsVertical, IconDownload, IconTrash, IconPlayerPlay } from '@tabler/icons-react';
 import ProcessStatus from "../../../../atoms/ProcessStatus";
 import { useState } from "react";
 import Details from "@/components/ui/layout/ProcessesTable/Details";
+
+import useSWR from "swr";
+
+
+const fetcher = (url: string) => {
+	return fetch(`${url}`).then(r => r.json());
+}
 
 type Props = {
 	"bbox"?: Array<number>,
@@ -18,9 +25,84 @@ type Props = {
 	"status"?: string,
 	"timeRange"?: Array<Date>,
 	"updatedIso"?: Date
+	forceReloadList?: () => void
 }
 
-const ProcessesTable = ({
+
+const StartJobButton = ({ jobId, forceReloadList }: { jobId?: string, forceReloadList?: () => void }) => {
+	const [shouldFetch, setShouldFetch] = useState(false);
+	const url = `/api/jobs/start/${jobId}`
+
+	const { data, isLoading } = useSWR(shouldFetch ? [url,] : null, () => fetcher(url));
+
+
+	if (shouldFetch && data) {
+		setShouldFetch(false)
+	}
+
+	if (data?.result?.jobId && forceReloadList) {
+		setTimeout(() => {
+			forceReloadList()
+		}, 50)
+
+	}
+
+	function handleClick() {
+		setShouldFetch(true);
+	}
+
+	return (
+		data?.result?.jobId ? null : <Button
+			className="worldCereal-Button circle"
+			size="sm"
+			component="a"
+			target="_blank"
+			variant="outline"
+			onClick={handleClick}
+			loading={isLoading}
+		>
+			<IconPlayerPlay size={14} color="green" />
+		</Button>
+	);
+}
+const RemoveJobButton = ({ jobId, forceReloadList }: { jobId?: string, forceReloadList?: () => void }) => {
+	const [shouldFetch, setShouldFetch] = useState(false);
+	const url = `/api/jobs/delete/${jobId}`
+
+	const { data, isLoading } = useSWR(shouldFetch ? [url,] : null, () => fetcher(url));
+
+	console.log("xxx_data_remove", data);
+	if (shouldFetch && data) {
+		setShouldFetch(false)
+	}
+
+	if (data?.numberOfDeletedJobs && forceReloadList) {
+		setTimeout(() => {
+			forceReloadList()
+		}, 50)
+
+	}
+
+	function handleClick() {
+		setShouldFetch(true);
+	}
+
+	return (
+		<Button
+			className="worldCereal-Button circle"
+			size="sm"
+			component="a"
+			target="_blank"
+			variant="outline"
+			onClick={handleClick}
+			loading={isLoading}
+		>
+			<IconTrash size={14} color="red" />
+		</Button>
+	);
+}
+
+const Record = ({
 	id,
 	// type,
 	createdIso,
@@ -29,7 +111,8 @@ const ProcessesTable = ({
 	bbox,
 	timeRange,
 	resultFileFormat,
-	oeoCollection
+	oeoCollection,
+	forceReloadList,
 	// details
 }: Props) => {
 	const [isExpanded, setIsExpanded] = useState(false);
@@ -54,7 +137,15 @@ const ProcessesTable = ({
 						Download
 					</Button>
 				}</Table.Td>
-				<Table.Td className="alignRight">
+				<Table.Td className="shrinkedCell">
+					{status === 'created' ?
+						<StartJobButton jobId={id} forceReloadList={forceReloadList} />
+						: null}
+				</Table.Td>
+				<Table.Td className="shrinkedCell">{
+					<RemoveJobButton jobId={id} forceReloadList={forceReloadList} />
+				}</Table.Td>
+				< Table.Td className="alignRight">
 					<ActionIcon variant="subtle" aria-label="Settings" onClick={() => setIsExpanded(!isExpanded)}>
 						<IconDotsVertical style={{ width: '70%', height: '70%' }} stroke={1.5} />
 					</ActionIcon>
@@ -66,9 +157,10 @@ const ProcessesTable = ({
 						<Details bbox={bbox} startDate={timeRange?.[0]} endDate={timeRange?.[1]} resultFileFormat={resultFileFormat} oeoCollection={oeoCollection} />
 					</Table.Td>
 				</Table.Tr>
-			)}
+			)
+			}
 		</>
 	);
 };
 
-export default ProcessesTable;
+export default Record;
