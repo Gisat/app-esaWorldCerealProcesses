@@ -2,7 +2,7 @@ import { Unsure } from "@/app/(shared)/_logic/types.universal";
 import { Button } from "@mantine/core";
 import Link from "next/link";
 
-export default ({ cookieValue, deleteCookieFunc }: { cookieValue: Unsure<string>, deleteCookieFunc: () => void }) => {
+export default ({ cookieValue }: { cookieValue: Unsure<string> }) => {
   return (
     !cookieValue ?
       // <>
@@ -13,7 +13,7 @@ export default ({ cookieValue, deleteCookieFunc }: { cookieValue: Unsure<string>
       null :
       <>
         <span>{cookieValue}</span>
-        <Link href="/api/auth/logout" onClick={() => deleteCookieFunc()}>
+        <Link href="/api/auth/logout">
           <Button variant="subtle" className="worldCereal-Button worldCereal-SecondaryButton">Log out</Button>
         </Link>
       </>
