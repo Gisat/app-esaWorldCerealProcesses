@@ -3,20 +3,9 @@ import { Table, Loader, Center } from "@mantine/core";
 
 import Record from "./Record";
 
-
-
-// bbox
-// createdIso
-// name
-// oeoCollection
-// resultFileFormat
-// results
-// status
-// timeRange
-// updatedIso
-
 type Props = {
-    loading: boolean,
+    loading?: boolean,
+    forceReloadList?: () => void,
     data: {
         "bbox": Array<number>,
         "costs": number,
@@ -33,12 +22,12 @@ type Props = {
     }[];
 }
 
-const ProcessesTable = ({ data, loading }: Props) => {
+const ProcessesTable = ({ data, loading, forceReloadList }: Props) => {
     const rows = data.map(({ resultFileFormat, createdIso, status, results, key, bbox, timeRange, oeoCollection }) => (
         <Record key={key} id={key} createdIso={createdIso} status={status} results={results} bbox={bbox}
             timeRange={timeRange}
             resultFileFormat={resultFileFormat}
-            oeoCollection={oeoCollection} />
+            oeoCollection={oeoCollection} forceReloadList={forceReloadList} />
     ));
 
     return (

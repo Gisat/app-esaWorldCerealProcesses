@@ -1,18 +1,31 @@
 @import "../../../../../styles/variables.module.scss";
 
 .worldCereal-ProcessesTable-Details {
-    padding: .5rem;
+  padding: 0.5rem;
+  display: flex;
+  width: 100%;
+  justify-content: start;
 }
 
 .worldCereal-ProcessesTable-Details-column {
-    display: flex;
-    flex-direction: column;
-    grid-gap: .5rem;
+  display: flex;
+  flex-direction: column;
+  grid-gap: 0.5rem;
+
+  &:not(:first-child) {
+    min-width: 20rem;
+    margin-left: 2rem;
+  }
 }
 
 .worldCereal-ProcessesTable-DetailItem {
-    span {
-        color: $textColorSecondary;
-        font-size: $b1;
-    }
+  span {
+    color: $textColorSecondary;
+    font-size: $b1;
+  }
+}
+
+.worldCereal-MapDetails-coordinates {
+  color: var(--base65);
+  font-size: 0.7497857755rem;
 }

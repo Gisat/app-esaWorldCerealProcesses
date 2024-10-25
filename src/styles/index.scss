@@ -200,6 +200,14 @@ input {
       color: $disabledColor;
     }
   }
+
+  &.circle {
+    border-radius: 50%;
+    height: 2rem;
+    width: 2rem;
+    padding: 0px;
+    border-color: transparent;
+  }
 }
 
 .worldCereal-appContent .worldCereal-SecondaryButton {
