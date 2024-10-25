@@ -71,7 +71,6 @@ const RemoveJobButton = ({ jobId, forceReloadList }: { jobId?: string, forceRelo
 
 	const { data, isLoading } = useSWR(shouldFetch ? [url,] : null, () => fetcher(url));
 
-	console.log("xxx_data_remove", data);
 	if (shouldFetch && data) {
 		setShouldFetch(false)
 	}
