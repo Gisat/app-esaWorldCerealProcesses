@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import useSWR from "swr";
 import { useRouter } from 'next/navigation';
 import { DateInput } from '@mantine/dates';
-import { Button, Stack } from '@mantine/core';
+import { Button, Stack, Input } from '@mantine/core';
 import { SegmentedControl } from '@mantine/core';
 import MapExtentSelect from '@/components/map/MapExtentSelect';
 import PageSteps from '@/components/atoms/PageSteps';
@@ -17,13 +17,30 @@ import { products } from "@/constants/app";
 const minDate = new Date("2021-01-01");
 const maxDate = new Date("2022-01-01");
 
+const defaultWidth = "10000";
+const defaultHeight = "10000";
+
+const minSize = 10000;
+const maxSize = 500000;
+
+
 type BboxType = [] | number[] | undefined;
+
+type searchParamsType = {
+	step?: string;
+	startDate?: string;
+	endDate?: string;
+	collection?: string;
+	bbox?: string;
+	width?: string;
+	height?: string;
+}
 
 const fetcher = (url: string, queryParams: string) => {
 	return fetch(`${url}?${queryParams}`).then(r => r.json());
 }
 
-const CreateJobButton = ({ setValues, params }: { setValues: (pairs: Array<[value: string, key: string]>) => void, params: { startDate?: string, endDate?: string, bbox?: string, outputFileFormat?: string, collection?: string } }) => {
+const CreateJobButton = ({ setValues, params, searchParams }: { searchParams?: searchParamsType, setValues: (pairs: Array<[value: string, key: string]>) => void, params: { startDate?: string, endDate?: string, bbox?: string, outputFileFormat?: string, collection?: string } }) => {
 	const [shouldFetch, setShouldFetch] = useState(false);
 	const url = `/api/jobs/create`
 	const urlParams = new URLSearchParams(params)
@@ -43,8 +60,14 @@ const CreateJobButton = ({ setValues, params }: { setValues: (pairs: Array<[valu
 	function handleClick() {
 		setShouldFetch(true);
 	}
+
+	const width = searchParams?.width || defaultWidth;
+	const height = searchParams?.height || defaultHeight;
+	const widthInvalid = width && (Number(width) < minSize || Number(width) > maxSize)
+	const heightInvalid = height && (Number(height) < minSize || Number(height) > maxSize)
+
 	return (
-		<Button disabled={isLoading} className="worldCereal-Button" onClick={handleClick} >{isLoading ? 'Creating...' : 'Create process'}</Button>
+		<Button disabled={isLoading || !!widthInvalid || !!heightInvalid} className="worldCereal-Button" onClick={handleClick} >{isLoading ? 'Creating...' : 'Create process'}</Button>
 	);
 }
 
@@ -55,6 +78,8 @@ export default function Page({ searchParams }: {
 		endDate?: string;
 		collection?: string;
 		bbox?: string;
+		width?: string;
+		height?: string;
 	}
 }) {
 
@@ -70,7 +95,8 @@ export default function Page({ searchParams }: {
 
 	const collection = searchParams?.collection || undefined;
 
-	const [bbox, setBbox] = useState([] as BboxType);
+	const width = searchParams?.width || defaultWidth;
+	const height = searchParams?.height || defaultHeight;
 
 	const params = {
 		bbox: searchParams?.bbox || undefined,
@@ -109,7 +135,6 @@ export default function Page({ searchParams }: {
 	}
 
 	const onBboxChange = (extent?: BboxType) => {
-		setBbox(extent)
 		setValue(extent?.join(","), 'bbox');
 	}
 
@@ -120,12 +145,16 @@ export default function Page({ searchParams }: {
 
 	const collectionName = collection && products.find(p => p.value === collection)?.label;
 
+	const bbox = searchParams?.bbox?.split(",");
+	const longitude = bbox ? (Number(bbox[0]) + Number(bbox[2])) / 2 : 15
+	const latitude = bbox ? (Number(bbox[1]) + Number(bbox[3])) / 2 : 50
+
 	return <TwoColumns>
 		<Column>
 			<FormLabel>Zoom map to select extent</FormLabel>
-			<MapExtentSelect onBboxChange={onBboxChange} />
+			<MapExtentSelect onBboxChange={onBboxChange} extentSizeInMeters={[Number.parseInt(width), Number.parseInt(height)]} longitude={longitude} latitude={latitude} />
 			{/* <div>Current map extent: {bbox?.join(", ")}</div> */}
-			<PageSteps NextButton={React.createElement(CreateJobButton, { setValues, params })} />
+			<PageSteps NextButton={React.createElement(CreateJobButton, { setValues, params, searchParams })} />
 		</Column>
 		<Column>
 			<Stack gap="lg" w="100%" align="flex-start">
@@ -159,6 +188,38 @@ export default function Page({ searchParams }: {
 					clearable={false}
 					disabled
 				/>
+				<Input.Wrapper label="Map extent size" description={`Width and height in meters. Minimum size is ${minSize}m and maximum is ${maxSize}m.`} className='worldCereal-InputWrapper'>
+					<div className='worldCereal-ExtentInputs'>
+						<Input
+							leftSection={"Width: "}
+							leftSectionWidth={"5rem"}
+							size="md"
+							value={width}
+							error={width && (Number(width) < minSize || Number(width) > maxSize)}
+							onChange={(value) => setValue(value.target.value ? value.target.value.toString() : '', 'width')}
+							min={minSize}
+							max={maxSize}
+							placeholder="width"
+							type='number'
+							width={"9rem"}
+						/>
+						<Input
+							leftSection={"Height: "}
+							leftSectionWidth={"5rem"}
+							size="md"
+							value={height}
+							onChange={(value) => setValue(value.target.value ? value.target.value.toString() : '', 'height')}
+							error={height && (Number(height) < minSize || Number(height) > maxSize)}
+							min={minSize}
+							max={maxSize}
+							placeholder="height"
+							type='number'
+							width={"9rem"}
+						/>
+					</div>
+				</Input.Wrapper >
+
+
 				<div>
 					<FormLabel>Output file format</FormLabel>
 					<SegmentedControl className="worldCereal-SegmentedControl" size="md" readOnly defaultValue="NETCDF" data={[{ label: 'netCDF', value: 'NETCDF' }, { label: 'GeoTIFF', value: 'geotiff', disabled: true, }]} />
