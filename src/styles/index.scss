@@ -238,6 +238,20 @@ input {
   }
 }
 
+.worldCereal-appContent .worldCereal-InputWrapper {
+  @include formItem;
+}
+
+.worldCereal-ExtentInputs {
+  display: flex;
+  flex-flow: row;
+  justify-content: space-between;
+
+  .mantine-Input-wrapper {
+    min-width: 9rem;
+  }
+}
+
 // Segmented control
 .worldCereal-appContent .worldCereal-SegmentedControl {
   .mantine-SegmentedControl-label {
