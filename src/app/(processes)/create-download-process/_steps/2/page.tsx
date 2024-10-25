@@ -20,7 +20,7 @@ const maxDate = new Date("2022-01-01");
 const defaultWidth = "10000";
 const defaultHeight = "10000";
 
-const minSize = 10000;
+const minSize = 100;
 const maxSize = 500000;
 
 
@@ -153,7 +153,6 @@ export default function Page({ searchParams }: {
 		<Column>
 			<FormLabel>Zoom map to select extent</FormLabel>
 			<MapExtentSelect onBboxChange={onBboxChange} extentSizeInMeters={[Number.parseInt(width), Number.parseInt(height)]} longitude={longitude} latitude={latitude} />
-			{/* <div>Current map extent: {bbox?.join(", ")}</div> */}
 			<PageSteps NextButton={React.createElement(CreateJobButton, { setValues, params, searchParams })} />
 		</Column>
 		<Column>

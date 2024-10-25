@@ -42,6 +42,23 @@ const getGeoJsonFromBbox = (bbox: ExtentType): any => {
 	}
 }
 
+const tileLayer = new TileLayer({
+	id: 'TileLayer',
+	data: 'https://c.tile.openstreetmap.org/{z}/{x}/{y}.png',
+	maxZoom: 19,
+	minZoom: 0,
+
+	renderSubLayers: (props: any) => {
+		const { boundingBox } = props.tile;
+
+		return new BitmapLayer(props, {
+			data: undefined,
+			image: props.data,
+			bounds: [boundingBox[0][0], boundingBox[0][1], boundingBox[1][0], boundingBox[1][1]]
+		});
+	},
+});
+
 export default function ({ longitude, latitude, onBboxChange, bbox, disabled, mapSize = defaultMapSize, extentSizeInMeters = defaultExtentSizeInMeters }: { extentSizeInMeters?: Array<number>, mapSize?: Array<number>, disabled?: boolean, bbox?: ExtentType, onBboxChange?: (extent?: ExtentType) => void, longitude?: number, latitude?: number }) {
 	const mapRef = useRef<any>(null);
 	const layer = bbox ? new GeoJsonLayer({
@@ -50,24 +67,6 @@ export default function ({ longitude, latitude, onBboxChange, bbox, disabled, ma
 		lineWidthUnits: "pixels",
 		filled: false,
 	}) : new ExtentLayer({ id: ExtentLayerID, extentSize: extentSizeInMeters });
-
-	const tileLayer = new TileLayer({
-		id: 'TileLayer',
-		data: 'https://c.tile.openstreetmap.org/{z}/{x}/{y}.png',
-		maxZoom: 19,
-		minZoom: 0,
-
-		renderSubLayers: (props: any) => {
-			const { boundingBox } = props.tile;
-
-			return new BitmapLayer(props, {
-				data: undefined,
-				image: props.data,
-				bounds: [boundingBox[0][0], boundingBox[0][1], boundingBox[1][0], boundingBox[1][1]]
-			});
-		},
-		pickable: true
-	});
 
 
 	let fitView;
@@ -115,7 +114,6 @@ export default function ({ longitude, latitude, onBboxChange, bbox, disabled, ma
 			onViewStateChange={onViewStateChange}
 			controller={disabled ? false : true}
 		/>
-
 	</div>
 
 }
