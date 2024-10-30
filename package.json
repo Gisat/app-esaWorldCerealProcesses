@@ -17,6 +17,7 @@
     "@gisatcz/ptr-core": "^1.8.0",
     "@mantine/core": "^7.13.2",
     "@mantine/dates": "^7.13.2",
+    "@mantine/hooks": "^7.13.4",
     "@tabler/icons-react": "^3.11.0",
     "@turf/distance": "^7.1.0",
     "@turf/helpers": "^7.1.0",
