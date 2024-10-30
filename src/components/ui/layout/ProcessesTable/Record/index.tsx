@@ -1,5 +1,6 @@
 import "./style.scss";
-import { ActionIcon, Button, Table } from "@mantine/core";
+import { ActionIcon, Button, Table, Modal, Title, Flex } from "@mantine/core";
+import { useDisclosure } from '@mantine/hooks';
 import { IconDotsVertical, IconDownload, IconTrash, IconPlayerPlay } from '@tabler/icons-react';
 import ProcessStatus from "../../../../atoms/ProcessStatus";
 import { useState } from "react";
@@ -65,13 +66,32 @@ const StartJobButton = ({ jobId, forceReloadList }: { jobId?: string, forceReloa
 		</Button>
 	);
 }
-const RemoveJobButton = ({ jobId, forceReloadList }: { jobId?: string, forceReloadList?: () => void }) => {
+
+type RemoveJobButtonProps = {
+	"oeoCollection"?: string,
+	"resultFileFormat"?: string,
+	"timeRange"?: Array<Date>,
+	"bbox"?: Array<number>,
+	jobId?: string,
+	forceReloadList?: () => void
+}
+
+const RemoveJobButton = ({
+	jobId,
+	forceReloadList,
+	bbox,
+	timeRange,
+	resultFileFormat,
+	oeoCollection
+}: RemoveJobButtonProps) => {
 	const [shouldFetch, setShouldFetch] = useState(false);
+	const [opened, { open, close }] = useDisclosure(false);
 	const url = `/api/jobs/delete/${jobId}`
 
 	const { data, isLoading } = useSWR(shouldFetch ? [url,] : null, () => fetcher(url));
 
 	if (shouldFetch && data) {
+		close()
 		setShouldFetch(false)
 	}
 
@@ -87,17 +107,65 @@ const RemoveJobButton = ({ jobId, forceReloadList }: { jobId?: string, forceRelo
 	}
 
 	return (
-		<Button
-			className="worldCereal-Button circle"
-			size="sm"
-			component="a"
-			target="_blank"
-			variant="outline"
-			onClick={handleClick}
-			loading={isLoading}
-		>
-			<IconTrash size={14} color="red" />
-		</Button>
+		<>
+			<Modal
+				opened={opened}
+				onClose={close}
+
+				overlayProps={{
+					color: '#ffffff61',
+				}}
+				radius={0}
+				closeOnClickOutside={false}
+				withCloseButton={false}
+				size={"xl"}
+				transitionProps={{ transition: 'fade', duration: 200 }}
+			>
+				<Title order={3}>Confirm delete job results.</Title>
+				<Details bbox={bbox} startDate={timeRange?.[0]} endDate={timeRange?.[1]} resultFileFormat={resultFileFormat} oeoCollection={oeoCollection} />
+				<Flex
+					mih={50}
+					bg="rgba(0, 0, 0, .3)"
+					gap="lg"
+					justify="flex-end"
+					align="flex-start"
+					direction="row"
+					wrap="wrap"
+				>
+					<Button
+						size="sm"
+						component="a"
+						target="_blank"
+						variant="outline"
+						onClick={close}
+						disabled={isLoading}
+					>
+						Decide
+					</Button>
+					<Button
+						className="worldCereal-Button circle"
+						size="sm"
+						component="a"
+						target="_blank"
+						onClick={handleClick}
+						loading={isLoading}
+					>
+						Confirm delete
+					</Button>
+				</Flex>
+			</Modal >
+
+			<Button
+				className="worldCereal-Button circle"
+				size="sm"
+				component="a"
+				target="_blank"
+				variant="outline"
+				onClick={open}
+			>
+				<IconTrash size={14} color="red" />
+			</Button>
+		</>
 	);
 }
 
@@ -142,7 +210,7 @@ const Record = ({
 						: null}
 				</Table.Td>
 				<Table.Td className="shrinkedCell">{
-					<RemoveJobButton jobId={id} forceReloadList={forceReloadList} />
+					<RemoveJobButton jobId={id} forceReloadList={forceReloadList} bbox={bbox} timeRange={timeRange} resultFileFormat={resultFileFormat} oeoCollection={oeoCollection} />
 				}</Table.Td>
 				< Table.Td className="alignRight">
 					<ActionIcon variant="subtle" aria-label="Settings" onClick={() => setIsExpanded(!isExpanded)}>
