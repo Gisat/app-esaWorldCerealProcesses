@@ -2,12 +2,9 @@
 import React, { useEffect, Suspense } from 'react';
 import { Stepper } from '@mantine/core';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useAuthCookieRedirect } from '@/hooks/useAuthCookieRedirect';
 
 export default function DownloadLayout({ children }: { children: React.ReactNode }) {
-	
-	useAuthCookieRedirect()
-	
+		
 	const router = useRouter()
 	const params = useSearchParams()
 	const activeStep = Number.parseInt(params.get('step') || "");
