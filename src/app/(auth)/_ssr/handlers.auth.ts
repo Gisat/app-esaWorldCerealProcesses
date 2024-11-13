@@ -11,7 +11,7 @@ export function authContext(clientId: Unsure<string>, issuerUrl: Unsure<string>,
      * Read server side environment values and validate them
      * @returns 
      */
-    const oidAuthEvironments = () => {
+    const checkContextEnvironmens = () => {
 
         if (!issuerUrl)
             throw new Error("Missing OID issuer URL");
@@ -36,9 +36,11 @@ export function authContext(clientId: Unsure<string>, issuerUrl: Unsure<string>,
      * @returns OpenID set up client ready to be used
      */
     async function oidSetupClient() {
-        const oidEnvironments = oidAuthEvironments()
-        const oidIssuer = await Issuer.discover(oidEnvironments.issuerUrl)
+        // check environments
+        const oidEnvironments = checkContextEnvironmens()
 
+        // prepare Open ID Issuer client
+        const oidIssuer = await Issuer.discover(oidEnvironments.issuerUrl)
         const oidClient = new oidIssuer.Client({
             client_id: oidEnvironments.clientId,
             redirect_uris: [oidEnvironments.redirectUrl],
@@ -46,6 +48,7 @@ export function authContext(clientId: Unsure<string>, issuerUrl: Unsure<string>,
             token_endpoint_auth_method: "none"
         })
 
+        // return client
         return oidClient
     }
 
@@ -55,9 +58,15 @@ export function authContext(clientId: Unsure<string>, issuerUrl: Unsure<string>,
     async function handleInternalKeycloak() {
         const oidClient = await oidSetupClient()
         const url = oidClient.authorizationUrl({
-            scope: "email",
+            scope: "openid email profile",
         })
         return url
+    }
+    async function handleLogout(tokenExchangeUrl: Unsure<string>) {
+        if (!tokenExchangeUrl)
+            throw new Error("Missing URL for excgange");
+
+        return { tokenExchangeUrl }
     }
 
     /**
@@ -66,18 +75,49 @@ export function authContext(clientId: Unsure<string>, issuerUrl: Unsure<string>,
      * @param urlOrigin Origin of the URL from callback route
      * @returns Tokens from the IAM
      */
-    async function handleAuthCallback(params: any) {
+    async function handleAuthCallback(params: any, tokenExchangeUrl: Unsure<string>) {
+
+        // initialize Open ID client
         const oidClient = await oidSetupClient()
 
+        // prepare OID callback params for provider
         const callbackParams = oidClient.callbackParams(params)
 
-        const tokens = await oidClient.oauthCallback(oidAuthEvironments().redirectUrl, callbackParams)
+        // OID Provider response with tokens
+        const tokens = await oidClient.callback(checkContextEnvironmens().redirectUrl, callbackParams)
 
-        return tokens
+        // do we have tokens and all values?
+        if (!tokens.access_token)
+            throw new Error("Missing OID information");
+        if (!tokens.refresh_token)
+            throw new Error("Missing OID information");
+        if (!tokens.id_token)
+            throw new Error("Missing OID information");
+        if (!tokens.refresh_token)
+            throw new Error("Missing OID information");
+        if (!clientId)
+            throw new Error("Missing client ID");
+        if (!tokenExchangeUrl)
+            throw new Error("Missing URL for excgange");
+        if (!issuerUrl)
+            throw new Error("Missing issuer URL");
+
+        // prepare output for route
+        return {
+            tokens: {
+                access_token: tokens.access_token,
+                refresh_token: tokens.refresh_token,
+                id_token: tokens.id_token,
+            },
+            clientId,
+            issuerUrl,
+            tokenExchangeUrl
+        }
     }
 
     return {
         handleInternalKeycloak,
-        handleAuthCallback
+        handleAuthCallback,
+        handleLogout
     }
 }

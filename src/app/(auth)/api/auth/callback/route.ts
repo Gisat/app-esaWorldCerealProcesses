@@ -1,52 +1,59 @@
 import { NextRequest, NextResponse } from "next/server";
 import { authContext } from "../../../_ssr/handlers.auth";
-import JWT from "jsonwebtoken";
-import { IAM_CONSTANTS } from "../../../_logic/models.auth";
-import { pages } from "@/constants/app";
+import { ResponseCookie } from "next/dist/compiled/@edge-runtime/cookies";
 
-export const dynamic = "force-dynamic";
+export const dynamic = 'force-dynamic'
+
+/**
+ * OpenID Code Flow callback endpoint to obtain tokens and exchange them for session cookie
+ * @param req 
+ * @returns 
+ */
 export async function GET(req: NextRequest) {
-  try {
-    // environment parameters
-    const issuerUrl = process.env.OID_IAM_ISSUER_URL;
-    const redirectUrl = process.env.OID_SELF_REDIRECT_URL;
-    const clientId = process.env.CLIENT_ID;
+    try {
 
-    // get auth context and handle tokens from IAM
-    const auth = authContext(clientId, issuerUrl, redirectUrl);
-    const tokenSet = await auth.handleAuthCallback(req);
+        // environment parameters
+        const issuerUrlRaw = process.env.OID_IAM_ISSUER_URL
+        const redirectUrl = process.env.OID_SELF_REDIRECT_URL
+        const clientIdRaw = process.env.CLIENT_ID
+        const exchangeUrl = process.env.PID_SESSION_EXCHANGE
 
-    // TODO: save tokens to bakcend and return session ID to return to FE in cookie
-    //....
-    //
+        // get auth context and handle tokens from IAM
+        const auth = authContext(clientIdRaw, issuerUrlRaw, redirectUrl)
+        const {tokens: tokenSet, tokenExchangeUrl, clientId, issuerUrl } = await auth.handleAuthCallback(req, exchangeUrl)            
 
-    // TODO: This code just for demo
-    const decoded = JWT.decode(tokenSet.access_token as string);
-    const emailValue = (decoded as any)["email"];
+        // build URL to return back to FE app
+        const parsedRedirectUrl = new URL(process.env.OID_SELF_REDIRECT_URL as string)
+        const urlToReturnWithSession = `${parsedRedirectUrl.protocol}//${parsedRedirectUrl.host}`
 
-    // Calculate the expiration date
-    // const date = new Date();
-    // date.setTime(date.getTime() + (1 * 24 * 60 * 60 * 1000)); // days to milliseconds
-    // const expires = date;
+        // build cookie domain of the backend app
+        const feRedirect = NextResponse.redirect(tokenExchangeUrl as string)
+        const backendDomain = new URL(process.env.OID_SELF_REDIRECT_URL as string).hostname
 
-    // build redirect back to frontend
-    // add auth result as cookie
-    const parsedUrl = new URL(process.env.OID_SELF_REDIRECT_URL as string);
-    const url = `${parsedUrl.protocol}//${parsedUrl.host}/${pages.processesList.url}`;
-    const feRedirect = NextResponse.redirect(url);
-    feRedirect.cookies.set({
-      name: IAM_CONSTANTS.Cookie_Email,
-      value: emailValue,
-      httpOnly: false, //TODO: Change for token values or sessions
-      secure: true,
-      domain: parsedUrl.host,
-      maxAge: 60 * 60 * 24 * 7, // 7 days in seconds
-      path: "/",
-      sameSite: "lax"
-    });
+        // check production
+        const isProd = process.env.NODE_ENV === "production"
 
-    return feRedirect;
-  } catch (error: any) {
-    return NextResponse.json({ error: error["message"] });
-  }
+        // define cookie options (same for all)
+        const cookieOptions: Partial<ResponseCookie> = {
+            httpOnly: true,
+            secure: isProd, // true for production
+            path: '/',
+            sameSite: 'lax', // TODO: check with strinc on subdomains
+            maxAge: isProd ? 8 : 120, // 8 seconds for prod | 120 for dev
+            domain: backendDomain
+        };
+
+        // Set temporary cookie for each token exchange parameter
+        feRedirect.cookies.set('access_token', tokenSet.access_token, cookieOptions); // TODO check types
+        feRedirect.cookies.set('refresh_token', tokenSet.refresh_token, cookieOptions);
+        feRedirect.cookies.set('id_token', tokenSet.id_token, cookieOptions);
+        feRedirect.cookies.set('client_id', clientId, cookieOptions);
+        feRedirect.cookies.set('client_redirect', urlToReturnWithSession, cookieOptions);
+        feRedirect.cookies.set('issuer_url', issuerUrl, cookieOptions);
+
+        // make redirect to backend with tokens for session cookie (tey will be exchanged)
+        return feRedirect
+    } catch (error: any) {
+        return NextResponse.json({ "error": error["message"] })
+    }
 }
