@@ -6,7 +6,6 @@ import { AppShellHeader } from '@mantine/core'
 import Title from "../Title";
 import EsaLogo from "../../../atoms/EsaLogo";
 import "./style.scss";
-import EmailLogoutInfo from "@/app/(auth)/_components/EmailLogoutInfo";
 import { IAM_CONSTANTS } from "@/app/(auth)/_logic/models.auth";
 import { Unsure } from "@/app/(shared)/_logic/types.universal";
 import { useState, useEffect } from "react";
@@ -27,7 +26,6 @@ const Header = () => {
       <div className="worldCereal-Header">
         <Title />
         <div className="worldCereal-Header-tools">
-          <EmailLogoutInfo cookieValue={cookieValue} />
           <EsaLogo className="worldCereal-Header-esaLogo" />
         </div>
       </div>
