@@ -1,0 +1,9 @@
+CLIENT_ID="worldcereal-vdm"
+
+OID_IAM_ISSUER_URL="https://sso.terrascope.be/auth/realms/terrascope"
+OID_IAM_AUTHORIZE_URL="https://sso.terrascope.be/auth/realms/terrascope/protocol/openid-connect/auth"
+OID_IAM_TOKEN_URL="https://sso.terrascope.be/auth/realms/terrascope/protocol/openid-connect/token"
+OID_SELF_REDIRECT_URL="https://worldcerealprocesses-dev.gisat.cz/api/auth/callback"
+
+PID_SESSION_EXCHANGE="http://localhost:6100/sessions/exchange/tokens"
+PID_LOGOUT="http://localhost:6100/oid/logout"
