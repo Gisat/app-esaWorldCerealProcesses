@@ -1,3 +1,4 @@
+import { fetchWithSessions } from "@/app/(shared)/_ssr/handlers.sessionFetch";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
@@ -38,14 +39,21 @@ export async function GET(
       key: jobid,
     };
 
-    const response = await fetch(
-      `https://worldcerealprocesses-dev.gisat.cz/be-interface-openeo/openeo/jobs/start`,
+    const isProd = process.env.NODE_ENV === "production"
+    const url = isProd ?
+      "https://worldcerealprocesses-dev.gisat.cz/be-interface-openeo/openeo/jobs/start" :
+      "http://localhost:6101/openeo/jobs/start"
+
+    const response = await fetchWithSessions(
       {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      }
-    );
+        url,
+        browserCookies: req.cookies,
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+      })
 
     if (response.ok) {
       return NextResponse.json(await response.json());
