@@ -29,9 +29,16 @@ export async function GET(req: NextRequest) {
         };
 
         feRedirect.cookies.set('client_redirect', selfUrl, cookieOptions);
+        return feRedirect
+
+    } catch (error: any) {
+        const backendDomain = new URL(process.env.OID_SELF_REDIRECT_URL as string).hostname
+        const feRedirect = NextResponse.redirect(backendDomain as string)
+
+        // delete cookies from logout
+        feRedirect.cookies.delete("client_redirect")
+        feRedirect.cookies.delete("sid")
 
         return feRedirect
-    } catch (error: any) {
-        return NextResponse.json({ "error": error["message"] })
     }
 }
