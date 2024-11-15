@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { authContext } from "../../../_ssr/handlers.auth";
 import { ResponseCookie } from "next/dist/compiled/@edge-runtime/cookies";
+import { pages } from "@/constants/app";
 
 export const dynamic = 'force-dynamic'
 
@@ -24,7 +25,7 @@ export async function GET(req: NextRequest) {
 
         // build URL to return back to FE app
         const parsedRedirectUrl = new URL(process.env.OID_SELF_REDIRECT_URL as string)
-        const urlToReturnWithSession = `${parsedRedirectUrl.protocol}//${parsedRedirectUrl.host}`
+        const urlToReturnWithSession = `${parsedRedirectUrl.protocol}//${parsedRedirectUrl.host}/${pages.processesList.url}`
 
         // build cookie domain of the backend app
         const feRedirect = NextResponse.redirect(tokenExchangeUrl as string)
