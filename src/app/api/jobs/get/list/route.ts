@@ -1,8 +1,9 @@
+import { fetchWithSessions } from "@/app/(shared)/_ssr/handlers.sessionFetch";
 import { NextRequest, NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
     // try to get value from cache
     // const cacheKey = ggAggregationCacheKey({
@@ -25,12 +26,22 @@ export async function GET() {
 
     // return result
     // return NextResponse.json(fakeDatabaseResult);
-    const response = await fetch(
-      `https://worldcerealprocesses-dev.gisat.cz/be-interface-openeo/openeo/jobs/list-all`,
+
+    const isProd = process.env.NODE_ENV === "production"
+    const url = isProd ?
+      `https://worldcerealprocesses-dev.gisat.cz/be-interface-openeo/openeo/jobs/list-all` :
+      `http://localhost:6101/openeo/jobs/list-all`
+
+    const response = await fetchWithSessions(
       {
         method: "GET",
-      }
-    );
+        url,
+        browserCookies: req.cookies,
+        headers: {
+          "Content-Type": "application/json"
+        },
+      })
+
     if (response.ok) {
       return NextResponse.json(await response.json());
     } else {
