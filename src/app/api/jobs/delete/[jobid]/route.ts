@@ -43,7 +43,7 @@ export async function GET(
     const isProd = process.env.NODE_ENV === "production"
     const url = isProd ?
       "https://worldcerealprocesses-dev.gisat.cz/be-interface-openeo/openeo/jobs/delete" :
-      "http://localhost:6101/openeo/jobs/delete"
+      "http://localhost:6100/openeo/jobs/delete"
 
     const response = await fetchWithSessions(
       {

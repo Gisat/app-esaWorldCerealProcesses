@@ -76,7 +76,7 @@ export async function GET(req: NextRequest) {
     const isProd = process.env.NODE_ENV === "production"
     const url = isProd ?
       "https://worldcerealprocesses-dev.gisat.cz/be-interface-openeo/openeo/jobs/create" :
-      "http://localhost:6101/openeo/jobs/create"
+      "http://localhost:6100/openeo/jobs/create"
 
     const response = await fetchWithSessions(
       {

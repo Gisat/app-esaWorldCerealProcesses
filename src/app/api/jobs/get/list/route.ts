@@ -30,7 +30,7 @@ export async function GET(req: NextRequest) {
     const isProd = process.env.NODE_ENV === "production"
     const url = isProd ?
       `https://worldcerealprocesses-dev.gisat.cz/be-interface-openeo/openeo/jobs/list-all` :
-      `http://localhost:6101/openeo/jobs/list-all`
+      `http://localhost:6100/openeo/jobs/list-all`
 
     const response = await fetchWithSessions(
       {
@@ -43,6 +43,7 @@ export async function GET(req: NextRequest) {
       })
 
     if (response.ok) {
+      console.log(await response.json())
       return NextResponse.json(await response.json());
     } else {
       return NextResponse.json({ error: ["Error getting list of jobs"] });

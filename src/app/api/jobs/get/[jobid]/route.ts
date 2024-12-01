@@ -42,7 +42,7 @@ export async function GET(
     const isProd = process.env.NODE_ENV === "production"
     const url = isProd ?
       `https://worldcerealprocesses-dev.gisat.cz/be-interface-openeo/openeo/jobs/${jobid}` :
-      `http://localhost:6101/openeo/jobs/${jobid}`
+      `http://localhost:6100/openeo/jobs/${jobid}`
 
     const response = await fetchWithSessions(
       {
