@@ -43,8 +43,9 @@ export async function GET(req: NextRequest) {
       })
 
     if (response.ok) {
-      console.log(await response.json())
-      return NextResponse.json(await response.json());
+      const backendContent = await response.json()
+      console.log(backendContent)
+      return NextResponse.json(backendContent);
     } else {
       return NextResponse.json({ error: ["Error getting list of jobs"] });
     }
