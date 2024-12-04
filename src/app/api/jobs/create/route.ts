@@ -78,7 +78,7 @@ export async function GET(req: NextRequest) {
       "https://worldcerealprocesses-dev.gisat.cz/be-interface-openeo/openeo/jobs/create" :
       "http://localhost:6100/openeo/jobs/create"
 
-    const response = await fetchWithSessions(
+    const {status, backendContent, setCookieHeader} = await fetchWithSessions(
       {
         method: "POST",
         url,
@@ -89,8 +89,13 @@ export async function GET(req: NextRequest) {
         body: JSON.stringify(data)
       })
       
-    if (response.ok) {
-      return NextResponse.json(await response.json());
+      if (status === 200) {
+        const nextResponse = NextResponse.json(backendContent);
+  
+        if (setCookieHeader) {
+          nextResponse.headers.set('set-cookie', setCookieHeader);
+        }
+        return nextResponse
     } else {
       return NextResponse.json({ error: ["Error creating entity"] });
     }

@@ -1,3 +1,4 @@
+import { Nullable } from "../_logic/types.universal";
 
 interface FetchWithBrowserSessionProps {
   method: "GET" | "POST",
@@ -7,6 +8,12 @@ interface FetchWithBrowserSessionProps {
   headers?: any
 }
 
+interface FetchWithSessionsResponse{
+  status: number, 
+  backendContent: Nullable<any>
+  setCookieHeader: Nullable<string>
+}
+
 /**
  * Fetch from API handler to backend service with session ID included in cookies
  * @param url URL of target endpoint
@@ -14,8 +21,8 @@ interface FetchWithBrowserSessionProps {
  * @param headers Optional - any headers added to request
  * @returns Response from backend back to Next API route handler
  */
-export const fetchWithSessions = async (props: FetchWithBrowserSessionProps) => {
-  const {url, browserCookies, method, body, headers
+export const fetchWithSessions = async (props: FetchWithBrowserSessionProps): Promise<FetchWithSessionsResponse> => {
+  const { url, browserCookies, method, body, headers
   } = props
 
   const sessionCookie = (browserCookies as any).get('sid');
@@ -35,5 +42,13 @@ export const fetchWithSessions = async (props: FetchWithBrowserSessionProps) => 
     }
   );
 
-  return response // TODO: Return also SID from response
+  if (response.ok) {
+    const backendContent = await response.json()
+    const setCookieHeader = response.headers.get('set-cookie');
+
+    return { status: response.status, backendContent, setCookieHeader }
+  }
+
+  else return {status: response.status, backendContent: null, setCookieHeader: null}
+
 }

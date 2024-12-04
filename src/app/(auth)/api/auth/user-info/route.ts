@@ -12,17 +12,18 @@ export async function GET(req: NextRequest) {
         console.log(userInfoUrl)
 
         // build cookie domain of the backend app
-        const response = await fetchWithSessions({
+        const {backendContent, setCookieHeader} = await fetchWithSessions({
             method: "GET",
             url: userInfoUrl,
             browserCookies: req.cookies
         })
 
-        // response user info back to FE client part
-        const body = await response.json()
+        const nextResponse = NextResponse.json(backendContent);
 
-
-        return NextResponse.json(body)
+        if (setCookieHeader) {
+          nextResponse.headers.set('set-cookie', setCookieHeader);
+        }
+        return nextResponse
 
     } catch (error: any) {
         return NextResponse.json({ "error": error["message"] })

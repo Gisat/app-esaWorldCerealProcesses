@@ -44,7 +44,7 @@ export async function GET(
       `https://worldcerealprocesses-dev.gisat.cz/be-interface-openeo/openeo/jobs/${jobid}` :
       `http://localhost:6100/openeo/jobs/${jobid}`
 
-    const response = await fetchWithSessions(
+    const {status, backendContent, setCookieHeader} = await fetchWithSessions(
       {
         method: "GET",
         url,
@@ -54,8 +54,13 @@ export async function GET(
         },
       })
 
-    if (response.ok) {
-      return NextResponse.json(await response.json());
+      if (status === 200) {
+        const nextResponse = NextResponse.json(backendContent);
+  
+        if (setCookieHeader) {
+          nextResponse.headers.set('set-cookie', setCookieHeader);
+        }
+        return nextResponse
     } else {
       return NextResponse.json({ error: ["Error getting job"] });
     }
