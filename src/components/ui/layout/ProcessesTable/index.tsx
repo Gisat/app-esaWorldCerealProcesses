@@ -1,6 +1,5 @@
 import "./style.scss";
 import { Table, Loader, Center } from "@mantine/core";
-
 import Record from "./Record";
 
 type Props = {
@@ -18,17 +17,21 @@ type Props = {
         "results": Array<{ "source_link": string }>,
         "status": string,
         "timeRange": Array<Date>,
-        "updatedIso": Date
-    }[];
+        "updatedIso": Date,
+    }[]
+    ;
 }
 
 const ProcessesTable = ({ data, loading, forceReloadList }: Props) => {
-    const rows = data && data.map(({ resultFileFormat, createdIso, status, results, key, bbox, timeRange, oeoCollection }) => (
-        <Record key={key} id={key} createdIso={createdIso} status={status} results={results} bbox={bbox}
-            timeRange={timeRange}
-            resultFileFormat={resultFileFormat}
-            oeoCollection={oeoCollection} forceReloadList={forceReloadList} />
-    ));
+
+    const rows = data?.map(
+        ({ resultFileFormat, createdIso, status, results, key, bbox, timeRange, oeoCollection }) => (
+            <Record key={key} id={key} createdIso={createdIso} status={status} results={results} bbox={bbox}
+                timeRange={timeRange}
+                resultFileFormat={resultFileFormat}
+                oeoCollection={oeoCollection} forceReloadList={forceReloadList} />
+        )
+    ) ?? (<p>No records</p>);
 
     return (
         <>{loading ? (<Center><Loader /></Center>) : (<Table horizontalSpacing="md" className="worldCereal-ProcessesTable">

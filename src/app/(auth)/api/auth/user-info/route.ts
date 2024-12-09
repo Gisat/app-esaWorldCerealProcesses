@@ -18,6 +18,12 @@ export async function GET(req: NextRequest) {
             browserCookies: req.cookies
         })
 
+        if(!backendContent)
+            throw new Error("Fetch response data missing in session fetch");
+        
+        if(!setCookieHeader)
+            throw new Error("Fetch response with new session cookie missing");
+            
         const nextResponse = NextResponse.json(backendContent);
 
         if (setCookieHeader) {

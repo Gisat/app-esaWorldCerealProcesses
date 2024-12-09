@@ -8,8 +8,8 @@ interface FetchWithBrowserSessionProps {
   headers?: any
 }
 
-interface FetchWithSessionsResponse{
-  status: number, 
+interface FetchWithSessionsResponse {
+  status: number,
   backendContent: Nullable<any>
   setCookieHeader: Nullable<string>
 }
@@ -22,8 +22,12 @@ interface FetchWithSessionsResponse{
  * @returns Response from backend back to Next API route handler
  */
 export const fetchWithSessions = async (props: FetchWithBrowserSessionProps): Promise<FetchWithSessionsResponse> => {
-  const { url, browserCookies, method, body, headers
+  const {
+    url, browserCookies, method, body, headers
   } = props
+
+  if (!url)
+    throw new Error("Missing URL for session fetch");
 
   const sessionCookie = (browserCookies as any).get('sid');
 
@@ -49,6 +53,5 @@ export const fetchWithSessions = async (props: FetchWithBrowserSessionProps): Pr
     return { status: response.status, backendContent, setCookieHeader }
   }
 
-  else return {status: response.status, backendContent: null, setCookieHeader: null}
-
+  else return { status: response.status, backendContent: null, setCookieHeader: null }
 }
