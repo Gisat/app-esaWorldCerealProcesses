@@ -11,13 +11,12 @@ const fetcher = (url: string) => {
 
 export default function Page() {
 
-    // const [cookieValue, _] = useUserInfoCookie()
-    // useRedirectIf(() => cookieValue === undefined, "/")
-
     const url = `/api/jobs/get/list`
 
-    const { data, mutate } = useSWR(url, fetcher, { refreshInterval: 1000, });
+    const { data, mutate, error } = useSWR(url, fetcher, { refreshInterval: 1000 });
 
+    if(error)
+        return "Error from data request"
 
     function forceReloadList() {
         mutate();
