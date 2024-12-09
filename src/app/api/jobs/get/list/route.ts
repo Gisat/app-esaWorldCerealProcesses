@@ -30,9 +30,9 @@ export async function GET(req: NextRequest) {
     const isProd = process.env.NODE_ENV === "production"
     const url = isProd ?
       `https://worldcerealprocesses-dev.gisat.cz/be-interface-openeo/openeo/jobs/list-all` :
-      `http://localhost:6101/openeo/jobs/list-all`
+      `http://localhost:6100/openeo/jobs/list-all`
 
-    const response = await fetchWithSessions(
+    const {backendContent, setCookieHeader, status} = await fetchWithSessions(
       {
         method: "GET",
         url,
@@ -42,8 +42,14 @@ export async function GET(req: NextRequest) {
         },
       })
 
-    if (response.ok) {
-      return NextResponse.json(await response.json());
+    if (status === 200) {
+      const nextResponse = NextResponse.json(backendContent);
+
+      if (setCookieHeader) {
+        nextResponse.headers.set('set-cookie', setCookieHeader);
+      }
+      return nextResponse
+      
     } else {
       return NextResponse.json({ error: ["Error getting list of jobs"] });
     }
