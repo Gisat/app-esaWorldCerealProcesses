@@ -10,6 +10,7 @@ import { swrFetcher } from "../_logic/utils";
  * @returns User Info information for client components
  */
 export const useUserInfoFromIdentity = (userInfoUrl: string) => {
+
     const [userInfoValue, setUserInfo] = useState<Unsure<UserInfo>>(undefined);
     const { data, error, isLoading, isValidating } = useSWR(userInfoUrl, swrFetcher);
 
