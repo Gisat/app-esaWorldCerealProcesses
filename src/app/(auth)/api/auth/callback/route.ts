@@ -17,7 +17,9 @@ export async function GET(req: NextRequest) {
         const issuerUrlRaw = process.env.OID_IAM_ISSUER_URL
         const redirectUrl = process.env.OID_SELF_REDIRECT_URL
         const clientIdRaw = process.env.CLIENT_ID
-        const exchangeUrl = process.env.PID_SESSION_EXCHANGE
+
+        const identityUrl = process.env.PID_URL
+        const exchangeUrl = `${identityUrl}/sessions/exchange/tokens`
 
         // get auth context and handle tokens from IAM
         const auth = authContext(clientIdRaw, issuerUrlRaw, redirectUrl)

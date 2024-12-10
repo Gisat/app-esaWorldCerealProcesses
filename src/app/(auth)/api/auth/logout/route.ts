@@ -9,7 +9,8 @@ export async function GET(req: NextRequest) {
         const selfUrl = `${parsedUrl.protocol}//${parsedUrl.host}`
 
         // where to make logout
-        const logoutUrl = process.env.PID_LOGOUT as string
+        const identityUrl = process.env.PID_URL as string
+        const logoutUrl = `${identityUrl}/oid/logout`
 
         // build cookie domain of the backend app
         const feRedirect = NextResponse.redirect(logoutUrl as string)
