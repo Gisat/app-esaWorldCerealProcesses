@@ -11,6 +11,8 @@ import MantineProvider from '@/components/providers/Mantine';
 import '@mantine/core/styles.css';
 import '@mantine/dates/styles.css';
 
+import FaroFrontendMonitoring from '../features/(grafana)/_components/FaroFrontendMonitoring';
+
 export const metadata: Metadata = {
   title: "WorldCereals Processes",
 };
@@ -26,6 +28,7 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Sen:wght@400;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet"></link>
       </head>
       <body className={`ptr-dark esaWorldCerealProcesses`}>
+        <FaroFrontendMonitoring envUrl="/api/faro" />
         <MantineProvider>
           <AppShell
             withBorder={false}
