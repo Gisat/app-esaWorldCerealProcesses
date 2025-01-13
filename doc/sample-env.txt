@@ -2,3 +2,4 @@ CLIENT_ID="worldcereal-vdm"
 OID_IAM_ISSUER_URL="https://sso.terrascope.be/auth/realms/terrascope"
 OID_SELF_REDIRECT_URL="http://localhost:3000/api/auth/callback"
 PID_URL=http://localhost:6111
+OEO_URL=http://localhost:6100
