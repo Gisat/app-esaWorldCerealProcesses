@@ -38,11 +38,12 @@ export async function GET(
     // return result
     // return NextResponse.json(fakeDatabaseResult);
 
+    const openeoUrlPrefix = process.env.OEO_URL
 
-    const isProd = process.env.NODE_ENV === "production"
-    const url = isProd ?
-      `https://worldcerealprocesses-dev.gisat.cz/be-interface-openeo/openeo/jobs/${jobid}` :
-      `http://localhost:6100/openeo/jobs/${jobid}`
+    if(!openeoUrlPrefix)
+      throw new Error("Missing openeo URL variable")
+
+    const url = `${openeoUrlPrefix}/openeo/jobs/${jobid}`
 
     const {status, backendContent, setCookieHeader} = await fetchWithSessions(
       {
