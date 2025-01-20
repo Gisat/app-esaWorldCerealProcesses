@@ -1,5 +1,4 @@
 import { fetchWithSessions } from "@/features/(auth)/_ssr/handlers.sessionFetch";
-import { log } from "console";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
