@@ -1,6 +1,6 @@
 import { createTheme } from "@mantine/core";
 import variables from "../../../variables.module.scss";
-import colors from "@features/(shared)/_components/utils/colors.js";
+import colors from "@/features/(shared)/_components/providers/Mantine/colors.js";
 
 const theme: any = createTheme({
   fontFamily: "Roboto, sans-serif",

@@ -2,7 +2,7 @@ import "./style.scss";
 import React from "react";
 import MapExtentSelect from '@/features/(map)/_components/MapExtentSelect';	
 import { products } from '@/features/(processes)/_constants/app';
-import { getPoinsDistance } from '@/features/(shared)/_components/utils/map';
+import { getPoinsDistance } from '@/features/(processes)/_utils/map';
 
 type DetailsItemProps = {
 	children: React.ReactNode,
