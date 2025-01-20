@@ -1,7 +1,7 @@
 import "./style.scss";
 import React from "react";
 import MapExtentSelect from '@/features/(map)/_components/MapExtentSelect';	
-import { products } from '@/features/(shared)/constants/app';
+import { products } from '@/features/(processes)/constants/app';
 import { getPoinsDistance } from '@/features/(shared)/_components/utils/map';
 
 type DetailsItemProps = {
