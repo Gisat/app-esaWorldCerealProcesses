@@ -1,7 +1,7 @@
-import { Unsure } from "@/app/(shared)/_logic/types.universal";
-import { swrFetcher } from "@/app/(shared)/_logic/utils";
 import { useEffect, useState } from "react";
 import useSWR from "swr";
+import { Unsure } from "../_logic/types.universal";
+import { swrFetcher } from "../_logic/utils";
 
 export const useUserInfoFromAuth = () => {
 

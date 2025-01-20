@@ -4,8 +4,8 @@ import { AppShellHeader } from '@mantine/core'
 import Title from "../Title";
 import EsaLogo from "../../../atoms/EsaLogo";
 import "./style.scss";
-import { useUserInfoFromIdentity } from "@/app/(shared)/_hooks/useUserInfoFromIdentity";
 import Link from "next/link";
+import { useUserInfoFromIdentity } from "@/features/(shared)/_hooks/user.useUserInfoFromIdentity";
 
 const Header = () => {
 

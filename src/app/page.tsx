@@ -4,9 +4,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button, Container, Space, Alert, Center } from '@mantine/core';
 import { IconUser } from '@tabler/icons-react';
-import { useUserInfoFromIdentity } from "./(shared)/_hooks/useUserInfoFromIdentity";
-import PageLoader from "./(shared)/_components/PageLoader";
-
+import { useUserInfoFromIdentity } from "@/features/(shared)/_hooks/user.useUserInfoFromIdentity";
+import PageLoader from "@/features/(shared)/_components/PageLoader"; 
 
 export default function Home() {
 
