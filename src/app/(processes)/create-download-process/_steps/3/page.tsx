@@ -7,7 +7,7 @@ import { Button } from '@mantine/core';
 
 import PageSteps from '@/features/(processes)/_components/PageSteps';
 
-import { pages } from '@/features/(processes)/constants/app';
+import { pages } from '@/features/(processes)/_constants/app';
 import Details from '@/features/(shared)/_components/ui/layout/ProcessesTable/Details';
 
 const fetcher = (url: string) => {
