@@ -5,7 +5,7 @@ import { Button } from '@mantine/core';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Select } from '@mantine/core';
 import { products } from '@/features/(shared)/constants/app';
-import PageSteps from '@/features/(shared)/_components/atoms/PageSteps';
+import PageSteps from '@/features/(processes)/_components/PageSteps';
 import TwoColumns, { Column } from '@/features/(shared)/_components/ui/layout/TwoColumns';
 
 

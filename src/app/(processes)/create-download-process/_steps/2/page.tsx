@@ -7,8 +7,8 @@ import { DateInput } from '@mantine/dates';
 import { Button, Stack, Input } from '@mantine/core';
 import { SegmentedControl } from '@mantine/core';
 import { products } from "@/features/(shared)/constants/app";
-import PageSteps from '@/features/(shared)/_components/atoms/PageSteps';
-import MapExtentSelect from '@/features/(shared)/_components/map/MapExtentSelect';
+import PageSteps from '@/features/(processes)/_components/PageSteps';
+import MapExtentSelect from '@/features/(map)/_components/MapExtentSelect';
 import FormLabel from '@/features/(shared)/_components/ui/layout/FormLabel';
 import TwoColumns, { Column } from '@/features/(shared)/_components/ui/layout/TwoColumns';
 

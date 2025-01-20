@@ -5,7 +5,7 @@ import useSWR from "swr";
 import { useRouter } from "next/navigation";
 import { Button } from '@mantine/core';
 
-import PageSteps from '@/features/(shared)/_components/atoms/PageSteps';
+import PageSteps from '@/features/(processes)/_components/PageSteps';
 
 import { pages } from '@/features/(shared)/constants/app';
 import Details from '@/features/(shared)/_components/ui/layout/ProcessesTable/Details';

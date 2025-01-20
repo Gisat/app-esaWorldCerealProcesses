@@ -2,7 +2,7 @@ import "./style.scss";
 import { ActionIcon, Button, Table, Modal, Title, Flex } from "@mantine/core";
 import { useDisclosure } from '@mantine/hooks';
 import { IconDotsVertical, IconDownload, IconTrash, IconPlayerPlay } from '@tabler/icons-react';
-import ProcessStatus from "../../../../atoms/ProcessStatus";
+import ProcessStatus from "../../../../../../(processes)/_components/ProcessStatus";
 import { useState } from "react";
 import Details from "@/features/(shared)/_components/ui/layout/ProcessesTable/Details";
 
