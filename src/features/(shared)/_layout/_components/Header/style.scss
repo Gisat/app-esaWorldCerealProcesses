@@ -1,0 +1,29 @@
+@import "../../../variables.module.scss";
+
+.worldCereal-Header {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 1rem;
+  border-bottom: 1px solid $borderColorSecondary;
+  min-height: 3rem;
+  max-width: $pageWidth;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.worldCereal-Header-esaLogo {
+  margin-right: 0.5rem;
+}
+
+.worldCereal-Header-esaLogo > svg {
+  width: 3rem;
+}
+
+.worldCereal-Header-tools {
+  display: flex;
+  grid-gap: 1rem;
+  align-items: center;
+}
