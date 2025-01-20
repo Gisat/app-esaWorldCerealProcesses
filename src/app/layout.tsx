@@ -10,7 +10,7 @@ import '@mantine/core/styles.css';
 import '@mantine/dates/styles.css';
 
 import FaroFrontendMonitoring from '../features/(grafana)/_components/FaroFrontendMonitoring';
-import Header from "@/features/(shared)/_layout/_components/Header";
+import Header from "@features/(shared)/_layout/_components/Header";
 
 export const metadata: Metadata = {
   title: "WorldCereals Processes",

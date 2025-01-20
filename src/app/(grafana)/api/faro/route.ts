@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import fs from 'fs';
 import path from 'path';
-import { FaroConfigProps } from "@/features/(grafana)/_logic/models.faro";
-import { parseFaroParameters } from "@/features/(grafana)/_logic/parsers.faro";
+import { FaroConfigProps } from "@features/(grafana)/_logic/models.faro";
+import { parseFaroParameters } from "@features/(grafana)/_logic/parsers.faro";
 
 // do not batch into app build
 export const dynamic = 'force-dynamic'

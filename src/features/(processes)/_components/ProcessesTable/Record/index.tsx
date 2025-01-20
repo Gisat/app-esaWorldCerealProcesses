@@ -6,7 +6,7 @@ import { useState } from "react";
 
 import useSWR from "swr";
 import Details from "../Details";
-import ProcessStatus from "@/features/(processes)/_components/ProcessStatus";
+import ProcessStatus from "@features/(processes)/_components/ProcessStatus";
 
 
 const fetcher = (url: string) => {

@@ -1,10 +1,10 @@
 "use client"
 import { Suspense } from 'react'
 import { usePathname, useSelectedLayoutSegment } from 'next/navigation'
-import { navbarItems } from "@/features/(processes)/_constants/app";
-import NavbarItem from '@/features/(shared)/_layout/_components/Navbar/NavbarItem';
-import Navbar from '@/features/(shared)/_layout/_components/Navbar';
-import Content from '@/features/(shared)/_layout/_components/Content';
+import { navbarItems } from "@features/(processes)/_constants/app";
+import NavbarItem from '@features/(shared)/_layout/_components/Navbar/NavbarItem';
+import Navbar from '@features/(shared)/_layout/_components/Navbar';
+import Content from '@features/(shared)/_layout/_components/Content';
 
 export default function ProcessesLayout({
   children,

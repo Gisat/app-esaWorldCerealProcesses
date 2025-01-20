@@ -1,4 +1,4 @@
-import { authContext } from "@/features/(auth)/_ssr/handlers.auth";
+import { authContext } from "@features/(auth)/_ssr/handlers.auth";
 import { NextRequest, NextResponse } from "next/server";
 
 export const dynamic = 'force-dynamic'

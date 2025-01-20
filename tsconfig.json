@@ -23,9 +23,6 @@
       }
     ],
     "paths": {
-      "@/*": [ //TODO: Delete later after folder normalised structure
-        "./src/*"
-      ],
       "@app/*": [
         "./src/app/*"
       ],
