@@ -1,6 +1,6 @@
 "use client"
 
-import { ProcessesTable } from "@/features/(shared)/_components/ui/layout/ProcessesTable";
+import { ProcessesTable } from "@/features/(shared)/_layout/_components/ProcessesTable";
 import useSWR from "swr";
 
 
