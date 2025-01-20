@@ -1,0 +1,30 @@
+@import "../../../../../variables.module.scss";
+
+.worldCereal-ProcessesTable .worldCereal-ProcessesTable-row {
+  border-bottom: 1px solid $borderColorPrimary;
+
+  &.is-expanded {
+    background: $highlightBackground;
+  }
+}
+
+.worldCereal-ProcessesTable .mantine-Table-td {
+  font-size: $a1;
+  color: $textColorPrimary;
+  vertical-align: middle;
+
+  &.highlightedCell {
+    font-weight: bold;
+  }
+
+  &.shrinkedCell {
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+    padding-left: 4px;
+    padding-right: 4px;
+  }
+
+  &.alignRight {
+    text-align: right;
+  }
+}

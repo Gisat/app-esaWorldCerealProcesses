@@ -4,9 +4,9 @@ import React from 'react';
 import { Button } from '@mantine/core';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Select } from '@mantine/core';
-import { products } from '@/constants/app';
-import PageSteps from '@/components/atoms/PageSteps';
-import TwoColumns, { Column } from "@/components/ui/layout/TwoColumns";
+import { products } from '@/features/(shared)/constants/app';
+import PageSteps from '@/features/(shared)/_components/atoms/PageSteps';
+import TwoColumns, { Column } from '@/features/(shared)/_components/ui/layout/TwoColumns';
 
 
 

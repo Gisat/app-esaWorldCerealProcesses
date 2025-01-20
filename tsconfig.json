@@ -43,7 +43,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts"
-  ],
+, "src/features/(shared)/_components/map/layers/ExtentLayer.ts"  ],
   "exclude": [
     "node_modules"
   ]

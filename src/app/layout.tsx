@@ -2,16 +2,15 @@
 
 import type { Metadata } from "next";
 import React from "react";
-import { AppShell, AppShellMain, rem } from '@mantine/core';
+import { AppShell, AppShellMain, MantineProvider, rem } from '@mantine/core';
 
-import '../styles/index.scss';
-import '../styles/variables.module.scss';
-import Header from "@/components/ui/layout/Header";
-import MantineProvider from '@/components/providers/Mantine';
+import './styles/index.scss';
+import '../features/(shared)/variables.module.scss';
 import '@mantine/core/styles.css';
 import '@mantine/dates/styles.css';
 
 import FaroFrontendMonitoring from '../features/(grafana)/_components/FaroFrontendMonitoring';
+import Header from "@/features/(shared)/_components/ui/layout/Header";
 
 export const metadata: Metadata = {
   title: "WorldCereals Processes",
