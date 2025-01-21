@@ -1,5 +1,5 @@
 @import "@gisatcz/ptr-core/lib/styles/reset.css";
-@import "../../features/\(shared\)/variables.module.scss";
+@import "@features/(shared)/variables.module.scss";
 
 .ptr-light {
   --base0: #{$lightBase0};
