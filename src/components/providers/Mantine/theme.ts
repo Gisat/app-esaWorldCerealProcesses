@@ -2,7 +2,7 @@ import { createTheme } from "@mantine/core";
 import variables from "../../../styles/variables.module.scss";
 import colors from "../../utils/colors.js";
 
-const theme = createTheme({
+const theme: any = createTheme({
   fontFamily: "Roboto, sans-serif",
   primaryColor: "accented",
   primaryShade: 5,
