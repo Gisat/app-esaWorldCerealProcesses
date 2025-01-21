@@ -1,5 +1,6 @@
 @use "sass:math";
-@import "../../../variables.module.scss";
+@import "@features/(shared)/variables.module.scss";
+
 
 .worldCereal-Title {
   display: flex;
