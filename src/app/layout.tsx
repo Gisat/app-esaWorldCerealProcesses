@@ -2,7 +2,8 @@
 
 import type { Metadata } from "next";
 import React from "react";
-import { AppShell, AppShellMain, MantineProvider, rem } from '@mantine/core';
+import { AppShell, AppShellMain, rem } from '@mantine/core';
+import MantineProvider from "@features/(shared)/_components/providers/Mantine";
 
 import './styles/index.scss';
 import '../features/(shared)/variables.module.scss';
