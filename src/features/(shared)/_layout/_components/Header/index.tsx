@@ -9,7 +9,7 @@ import { useUserInfoFromIdentity } from "@features/(shared)/_hooks/user.useUserI
 
 const Header = () => {
 
-  const { error, isLoading, userInfoValue } = useUserInfoFromIdentity("api/auth/user-info")
+  const { isLoading, userInfoValue } = useUserInfoFromIdentity("api/auth/user-info")
 
   if (isLoading)
     return null
