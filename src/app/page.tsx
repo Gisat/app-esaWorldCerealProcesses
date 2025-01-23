@@ -14,10 +14,8 @@ export default function Home() {
 
   if (isLoading)
     return (
-      <PageLoader />
+      <PageLoader color="hsl(44.12, 83.33%, 60%)" />
     )
-
-  console.dir(userInfoValue)
 
   return (
     <div >
