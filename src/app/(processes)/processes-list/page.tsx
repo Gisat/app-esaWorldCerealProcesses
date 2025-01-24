@@ -1,8 +1,8 @@
 "use client"
 
+import { ProcessesTable } from "@features/(processes)/_components/ProcessesTable";
 import useSWR from "swr";
 
-import ProcessesTable from "@/components/ui/layout/ProcessesTable";
 
 const fetcher = (url: string) => {
     return fetch(`${url}`).then(r => r.json());

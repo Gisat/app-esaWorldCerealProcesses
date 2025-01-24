@@ -6,11 +6,11 @@ import { useRouter } from 'next/navigation';
 import { DateInput } from '@mantine/dates';
 import { Button, Stack, Input } from '@mantine/core';
 import { SegmentedControl } from '@mantine/core';
-import MapExtentSelect from '@/components/map/MapExtentSelect';
-import PageSteps from '@/components/atoms/PageSteps';
-import TwoColumns, { Column } from "@/components/ui/layout/TwoColumns";
-import FormLabel from "@/components/ui/layout/FormLabel";
-import { products } from "@/constants/app";
+import { products } from "@features/(processes)/_constants/app";
+import PageSteps from '@features/(processes)/_components/PageSteps';
+import MapExtentSelect from '@features/(map)/_components/MapExtentSelect';
+import FormLabel from '@features/(shared)/_layout/_components/FormLabel';
+import TwoColumns, { Column } from '@features/(shared)/_layout/_components/TwoColumns';
 
 
 

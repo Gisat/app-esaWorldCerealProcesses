@@ -1,4 +1,4 @@
-import { fetchWithSessions } from "@/app/(shared)/_ssr/handlers.sessionFetch";
+import { fetchWithSessions } from "@features/(auth)/_ssr/handlers.sessionFetch";
 import { NextRequest, NextResponse } from "next/server";
 
 export const dynamic = 'force-dynamic'

@@ -5,10 +5,10 @@ import useSWR from "swr";
 import { useRouter } from "next/navigation";
 import { Button } from '@mantine/core';
 
-import PageSteps from '@/components/atoms/PageSteps';
-import Details from '@/components/ui/layout/ProcessesTable/Details';
+import PageSteps from '@features/(processes)/_components/PageSteps';
 
-import { pages } from '@/constants/app';
+import { pages } from '@features/(processes)/_constants/app';
+import Details from '@features/(processes)/_components/ProcessesTable/Details';
 
 const fetcher = (url: string) => {
 	return fetch(`${url}`).then(r => r.json());

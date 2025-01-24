@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { authContext } from "../../../_ssr/handlers.auth";
 import { ResponseCookie } from "next/dist/compiled/@edge-runtime/cookies";
-import { pages } from "@/constants/app";
+import { pages } from "@features/(processes)/_constants/app";
+import { authContext } from "@features/(auth)/_ssr/handlers.auth";
 
 export const dynamic = 'force-dynamic'
 

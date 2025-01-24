@@ -1,0 +1,7 @@
+@import "@features/(shared)/variables.module.scss";
+
+
+// Form label
+.worldCereal-FormLabel {
+  @include label;
+}

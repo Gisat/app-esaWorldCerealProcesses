@@ -1,0 +1,16 @@
+@use "sass:math";
+@import "@features/(shared)/variables.module.scss";
+
+.worldCereal-esaLogo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.worldCereal-esaLogo svg > path {
+  fill: var(--base90);
+}
+
+.worldCereal-esaLogo:hover svg > path {
+  fill: var(--accent50);
+}

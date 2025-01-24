@@ -1,0 +1,11 @@
+@import "@features/(shared)/variables.module.scss";
+
+
+.worldCereal-ProcessesTable {
+
+}
+
+.worldCereal-ProcessesTable .mantine-Table-th {
+    font-size: $b1;
+    color: $textColorSecondary;
+}

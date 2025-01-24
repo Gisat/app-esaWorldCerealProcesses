@@ -1,0 +1,16 @@
+@import "@features/(shared)/variables.module.scss";
+
+
+.worldCereal-TwoColumns {
+  display: flex;
+  grid-gap: 1rem;
+  width: 100%;
+}
+
+.worldCereal-Column {
+  flex: 1;
+  max-width: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
