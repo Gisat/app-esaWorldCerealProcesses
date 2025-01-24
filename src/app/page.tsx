@@ -14,7 +14,7 @@ export default function Home() {
 
   if (isLoading)
     return (
-      <PageLoader color="hsl(44.12, 83.33%, 60%)" />
+      <PageLoader />
     )
 
   return (
