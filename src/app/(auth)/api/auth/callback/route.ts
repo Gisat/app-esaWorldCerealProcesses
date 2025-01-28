@@ -22,26 +22,40 @@ export async function GET(req: NextRequest) {
 
         // get auth context and handle tokens from IAM
         const auth = authContext(clientIdRaw, issuerUrlRaw, redirectUrl)
-        const {tokens: tokenSet, tokenExchangeUrl, clientId, issuerUrl } = await auth.handleAuthCallback(req, exchangeUrl)            
+        const { tokens: tokenSet, tokenExchangeUrl, clientId, issuerUrl } = await auth.handleAuthCallback(req, exchangeUrl)
+
+
+        const body = {
+            access_token: tokenSet.access_token,
+            refresh_token: tokenSet.refresh_token,
+            id_token: tokenSet.id_token,
+            client_id: clientId,
+            issuer_url: issuerUrl
+        };
+
+        // make POST request to backend for session exchange with tokens
+        const response = await fetch(tokenExchangeUrl as string, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(body)
+        });
+
+        const setCookieHeader = response.headers.get('set-cookie');
+
+        if (!setCookieHeader)
+            throw new Error("Missing session cookie in response")
 
         // build URL to return back to FE app
-        const parsedRedirectUrl = new URL(process.env.OID_SELF_REDIRECT_URL as string)
+        const parsedRedirectUrl = new URL(redirectUrl as string)
         const urlToReturnWithSession = `${parsedRedirectUrl.protocol}//${parsedRedirectUrl.host}/${pages.processesList.url}`
 
-        // build query params for token exchange
-        const urlparams = new URLSearchParams(tokenExchangeUrl as string)
-        urlparams.append('access_token', tokenSet.access_token)
-        urlparams.append('refresh_token', tokenSet.refresh_token)
-        urlparams.append('id_token', tokenSet.id_token)
-        urlparams.append('client_id', clientId)
-        urlparams.append('client_redirect', urlToReturnWithSession)
-        urlparams.append('issuer_url', issuerUrl)
-        
-        // redirect to backend for session exchange with tokens
-        const finalurl = new URL(tokenExchangeUrl as string)
-        const feRedirect = NextResponse.redirect(`${finalurl.origin}${finalurl.pathname}?${urlparams.toString()}`)
-       
+        const feRedirect = NextResponse.redirect(urlToReturnWithSession)
+
+        feRedirect.headers.set('set-cookie', setCookieHeader);
         return feRedirect
+
     } catch (error: any) {
         return NextResponse.json({ "error": error["message"] })
     }
