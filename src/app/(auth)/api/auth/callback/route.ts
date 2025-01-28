@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { pages } from "@features/(processes)/_constants/app";
 import { authContext } from "@features/(auth)/_ssr/handlers.auth";
+import { fetchForCookies } from "@features/(auth)/_ssr/handlers.callbackFetch";
 
 export const dynamic = 'force-dynamic'
 
@@ -35,19 +36,7 @@ export async function GET(req: NextRequest) {
         };
 
         // make POST request to backend for session exchange with tokens
-        const response = await fetch(tokenExchangeUrl as string, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(body)
-        });
-
-        // get session cookie from response
-        const setCookieHeader = response.headers.get('set-cookie');
-
-        if (!setCookieHeader)
-            throw new Error("Missing session cookie in response")
+        const setCookieHeader = await fetchForCookies(tokenExchangeUrl, body)
 
         // build URL to redirect back to FE app
         const parsedRedirectUrl = new URL(redirectUrl as string)
