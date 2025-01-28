@@ -17,6 +17,7 @@ export async function GET(req: NextRequest) {
         const redirectUrl = process.env.OID_SELF_REDIRECT_URL
         const clientIdRaw = process.env.CLIENT_ID
 
+        // build exchange URL at identity service
         const identityUrl = process.env.PID_URL
         const exchangeUrl = `${identityUrl}/sessions/exchange/tokens`
 
@@ -24,7 +25,7 @@ export async function GET(req: NextRequest) {
         const auth = authContext(clientIdRaw, issuerUrlRaw, redirectUrl)
         const { tokens: tokenSet, tokenExchangeUrl, clientId, issuerUrl } = await auth.handleAuthCallback(req, exchangeUrl)
 
-
+        // prepare body for session exchange
         const body = {
             access_token: tokenSet.access_token,
             refresh_token: tokenSet.refresh_token,
@@ -42,18 +43,20 @@ export async function GET(req: NextRequest) {
             body: JSON.stringify(body)
         });
 
+        // get session cookie from response
         const setCookieHeader = response.headers.get('set-cookie');
 
         if (!setCookieHeader)
             throw new Error("Missing session cookie in response")
 
-        // build URL to return back to FE app
+        // build URL to redirect back to FE app
         const parsedRedirectUrl = new URL(redirectUrl as string)
         const urlToReturnWithSession = `${parsedRedirectUrl.protocol}//${parsedRedirectUrl.host}/${pages.processesList.url}`
 
+        // prepare redirect response with session cookie
         const feRedirect = NextResponse.redirect(urlToReturnWithSession)
-
         feRedirect.headers.set('set-cookie', setCookieHeader);
+       
         return feRedirect
 
     } catch (error: any) {
