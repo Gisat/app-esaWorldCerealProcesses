@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { ResponseCookie } from "next/dist/compiled/@edge-runtime/cookies";
 import { pages } from "@features/(processes)/_constants/app";
 import { authContext } from "@features/(auth)/_ssr/handlers.auth";
 
@@ -29,32 +28,19 @@ export async function GET(req: NextRequest) {
         const parsedRedirectUrl = new URL(process.env.OID_SELF_REDIRECT_URL as string)
         const urlToReturnWithSession = `${parsedRedirectUrl.protocol}//${parsedRedirectUrl.host}/${pages.processesList.url}`
 
-        // build cookie domain of the backend app
-        const feRedirect = NextResponse.redirect(tokenExchangeUrl as string)
-        const backendDomain = new URL(process.env.OID_SELF_REDIRECT_URL as string).hostname
-
-        // check production
-        const isProd = process.env.NODE_ENV === "production"
-
-        // define cookie options (same for all)
-        const cookieOptions: Partial<ResponseCookie> = {
-            httpOnly: true,
-            secure: isProd, // true for production
-            path: '/',
-            sameSite: 'lax', // TODO: check with strinc on subdomains
-            maxAge: isProd ? 8 : 120, // 8 seconds for prod | 120 for dev
-            domain: backendDomain
-        };
-
-        // Set temporary cookie for each token exchange parameter
-        feRedirect.cookies.set('access_token', tokenSet.access_token, cookieOptions); // TODO check types
-        feRedirect.cookies.set('refresh_token', tokenSet.refresh_token, cookieOptions);
-        feRedirect.cookies.set('id_token', tokenSet.id_token, cookieOptions);
-        feRedirect.cookies.set('client_id', clientId, cookieOptions);
-        feRedirect.cookies.set('client_redirect', urlToReturnWithSession, cookieOptions);
-        feRedirect.cookies.set('issuer_url', issuerUrl, cookieOptions);
-
-        // make redirect to backend with tokens for session cookie (tey will be exchanged)
+        // build query params for token exchange
+        const urlparams = new URLSearchParams(tokenExchangeUrl as string)
+        urlparams.append('access_token', tokenSet.access_token)
+        urlparams.append('refresh_token', tokenSet.refresh_token)
+        urlparams.append('id_token', tokenSet.id_token)
+        urlparams.append('client_id', clientId)
+        urlparams.append('client_redirect', urlToReturnWithSession)
+        urlparams.append('issuer_url', issuerUrl)
+        
+        // redirect to backend for session exchange with tokens
+        const finalurl = new URL(tokenExchangeUrl as string)
+        const feRedirect = NextResponse.redirect(`${finalurl.origin}${finalurl.pathname}?${urlparams.toString()}`)
+       
         return feRedirect
     } catch (error: any) {
         return NextResponse.json({ "error": error["message"] })
