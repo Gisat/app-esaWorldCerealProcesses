@@ -1,9 +1,8 @@
 "use client";
 
-import React from 'react';
-import { Button } from '@mantine/core';
+import React, { createElement } from 'react';
+import { Button, Select } from '@mantine/core';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Select } from '@mantine/core';
 import { products } from '@features/(processes)/_constants/app';
 import PageSteps from '@features/(processes)/_components/PageSteps';
 import TwoColumns, { Column } from '@features/(shared)/_layout/_components/TwoColumns';
@@ -40,7 +39,7 @@ export default function Page({ searchParams }: {
 }) {
 	const router = useRouter()
 	const collection = searchParams?.collection || null;
-	const productIsValid = products.some((p: { value: String }) => p.value === collection);
+	const productIsValid = products.some((p: { value: string }) => p.value === collection);
 
 
 	const setValue = (collection: string | null) => {
@@ -62,7 +61,7 @@ export default function Page({ searchParams }: {
 				value={productIsValid && collection || null}
 				onChange={setValue}
 			/>
-			<PageSteps NextButton={React.createElement(NextButton, { collection })} />
+			<PageSteps NextButton={createElement(NextButton, { collection })} />
 		</Column>
 	</TwoColumns>
 }

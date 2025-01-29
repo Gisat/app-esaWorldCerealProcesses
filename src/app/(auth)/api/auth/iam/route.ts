@@ -1,5 +1,5 @@
 import { authContext } from "@features/(auth)/_ssr/handlers.auth";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 export const dynamic = 'force-dynamic'
 export async function GET() {

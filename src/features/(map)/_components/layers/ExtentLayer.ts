@@ -1,6 +1,5 @@
-import { CompositeLayer } from "@deck.gl/core";
+import { CompositeLayer, COORDINATE_SYSTEM } from "@deck.gl/core";
 import { GeoJsonLayer } from "@deck.gl/layers";
-import { COORDINATE_SYSTEM } from "@deck.gl/core";
 
 export class ExtentLayer extends CompositeLayer {
   shouldUpdateState() {

@@ -67,6 +67,6 @@ function hslToHex(hsl) {
   return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
 }
 
-export default {
+export  {
   hslToHex,
 };

@@ -9,18 +9,20 @@ export default function DownloadLayout({ children }: { children: React.ReactNode
 	const params = useSearchParams()
 	const activeStep = Number.parseInt(params.get('step') || "");
 
-	const setActive = (step: any) => {
-		const url = new URL(window.location.href);
-		url.searchParams.set('step', step);
-		router.push(url.toString())
-	}
 	useEffect(() => {
+
+		const setActive = (step: any) => {
+			const url = new URL(window.location.href);
+			url.searchParams.set('step', step);
+			router.push(url.toString())
+		}
+
 		const activeStep = Number.parseInt(params.get('step') || "");
 		if (activeStep > 3 || activeStep < 1 || Number.isNaN(activeStep)) {
 			setActive(1)
 		}
 
-	}, [])
+	}, [params, router])
 
 	return (
 		<Suspense>

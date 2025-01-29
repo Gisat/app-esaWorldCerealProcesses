@@ -1,11 +1,11 @@
 "use client"
-import React, { ReactElement } from 'react';
+import React from 'react';
 import { Button, Group } from '@mantine/core';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 
 
-export default function PageSteps({ children, NextButton }: { children?: React.ReactNode, NextButton?: React.FunctionComponentElement<any> }) {
+export default function PageSteps({ NextButton }: { children?: React.ReactNode, NextButton?: React.FunctionComponentElement<any> }) {
 	const router = useRouter()
 	const params = useSearchParams()
 	const activeStep = Number.parseInt(params.get('step') || "");

@@ -1,14 +1,13 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, createElement } from 'react';
 import useSWR from "swr";
 import { useRouter } from 'next/navigation';
 import { DateInput } from '@mantine/dates';
-import { Button, Stack, Input } from '@mantine/core';
-import { SegmentedControl } from '@mantine/core';
+import { Button, Stack, Input, SegmentedControl } from '@mantine/core';
 import { products } from "@features/(processes)/_constants/app";
 import PageSteps from '@features/(processes)/_components/PageSteps';
-import MapExtentSelect from '@features/(map)/_components/MapExtentSelect';
+import { MapExtentSelect } from '@features/(shared)/_components/map/MapExtentSelect';
 import FormLabel from '@features/(shared)/_layout/_components/FormLabel';
 import TwoColumns, { Column } from '@features/(shared)/_layout/_components/TwoColumns';
 
@@ -141,7 +140,7 @@ export default function Page({ searchParams }: {
 	useEffect(() => {
 		setValue(transformDate(endDateDate), 'endDate')
 		setValue(transformDate(startDateDate), 'startDate')
-	}, []);
+	}, [endDateDate, setValue, startDateDate]);
 
 	const collectionName = collection && products.find(p => p.value === collection)?.label;
 
@@ -153,7 +152,7 @@ export default function Page({ searchParams }: {
 		<Column>
 			<FormLabel>Zoom map to select extent</FormLabel>
 			<MapExtentSelect onBboxChange={onBboxChange} extentSizeInMeters={[Number.parseInt(width), Number.parseInt(height)]} longitude={longitude} latitude={latitude} />
-			<PageSteps NextButton={React.createElement(CreateJobButton, { setValues, params, searchParams })} />
+			<PageSteps NextButton={createElement(CreateJobButton, { setValues, params, searchParams })} />
 		</Column>
 		<Column>
 			<Stack gap="lg" w="100%" align="flex-start">

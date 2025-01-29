@@ -1,4 +1,4 @@
-import PropTypes from "prop-types";
+import { node } from "prop-types";
 import { MantineProvider } from "@mantine/core";
 import theme from "./theme";
 
@@ -11,7 +11,7 @@ const Mantine = ({ children }: { children: any }) => {
 };
 
 Mantine.propTypes = {
-  children: PropTypes.node,
+  children: node,
 };
 
 export default Mantine;

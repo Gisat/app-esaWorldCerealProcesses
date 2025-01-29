@@ -1,5 +1,5 @@
 "use client"
-import PropTypes from "prop-types";
+import { bool } from "prop-types";
 import { AppShellHeader } from '@mantine/core'
 import Title from "../Title";
 import EsaLogo from "@features/(processes)/_components/EsaLogo";
@@ -32,7 +32,7 @@ const Header = () => {
 };
 
 Header.propTypes = {
-  tourGuideIsOpen: PropTypes.bool,
+  tourGuideIsOpen: bool,
 };
 
 export default Header;
