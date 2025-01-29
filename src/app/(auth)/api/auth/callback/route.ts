@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { ResponseCookie } from "next/dist/compiled/@edge-runtime/cookies";
 import { pages } from "@features/(processes)/_constants/app";
 import { authContext } from "@features/(auth)/_ssr/handlers.auth";
+import { fetchForCookies } from "@features/(auth)/_ssr/handlers.callbackFetch";
 
 export const dynamic = 'force-dynamic'
 
@@ -18,44 +18,36 @@ export async function GET(req: NextRequest) {
         const redirectUrl = process.env.OID_SELF_REDIRECT_URL
         const clientIdRaw = process.env.CLIENT_ID
 
+        // build exchange URL at identity service
         const identityUrl = process.env.PID_URL
         const exchangeUrl = `${identityUrl}/sessions/exchange/tokens`
 
         // get auth context and handle tokens from IAM
         const auth = authContext(clientIdRaw, issuerUrlRaw, redirectUrl)
-        const {tokens: tokenSet, tokenExchangeUrl, clientId, issuerUrl } = await auth.handleAuthCallback(req, exchangeUrl)            
+        const { tokens: tokenSet, tokenExchangeUrl, clientId, issuerUrl } = await auth.handleAuthCallback(req, exchangeUrl)
 
-        // build URL to return back to FE app
-        const parsedRedirectUrl = new URL(process.env.OID_SELF_REDIRECT_URL as string)
-        const urlToReturnWithSession = `${parsedRedirectUrl.protocol}//${parsedRedirectUrl.host}/${pages.processesList.url}`
-
-        // build cookie domain of the backend app
-        const feRedirect = NextResponse.redirect(tokenExchangeUrl as string)
-        const backendDomain = new URL(process.env.OID_SELF_REDIRECT_URL as string).hostname
-
-        // check production
-        const isProd = process.env.NODE_ENV === "production"
-
-        // define cookie options (same for all)
-        const cookieOptions: Partial<ResponseCookie> = {
-            httpOnly: true,
-            secure: isProd, // true for production
-            path: '/',
-            sameSite: 'lax', // TODO: check with strinc on subdomains
-            maxAge: isProd ? 8 : 120, // 8 seconds for prod | 120 for dev
-            domain: backendDomain
+        // prepare body for session exchange
+        const body = {
+            access_token: tokenSet.access_token,
+            refresh_token: tokenSet.refresh_token,
+            id_token: tokenSet.id_token,
+            client_id: clientId,
+            issuer_url: issuerUrl
         };
 
-        // Set temporary cookie for each token exchange parameter
-        feRedirect.cookies.set('access_token', tokenSet.access_token, cookieOptions); // TODO check types
-        feRedirect.cookies.set('refresh_token', tokenSet.refresh_token, cookieOptions);
-        feRedirect.cookies.set('id_token', tokenSet.id_token, cookieOptions);
-        feRedirect.cookies.set('client_id', clientId, cookieOptions);
-        feRedirect.cookies.set('client_redirect', urlToReturnWithSession, cookieOptions);
-        feRedirect.cookies.set('issuer_url', issuerUrl, cookieOptions);
+        // make POST request to backend for session exchange with tokens
+        const setCookieHeader = await fetchForCookies(tokenExchangeUrl, body)
 
-        // make redirect to backend with tokens for session cookie (tey will be exchanged)
+        // build URL to redirect back to FE app
+        const parsedRedirectUrl = new URL(redirectUrl as string)
+        const urlToReturnWithSession = `${parsedRedirectUrl.protocol}//${parsedRedirectUrl.host}/${pages.processesList.url}`
+
+        // prepare redirect response with session cookie
+        const feRedirect = NextResponse.redirect(urlToReturnWithSession)
+        feRedirect.headers.set('set-cookie', setCookieHeader);
+       
         return feRedirect
+
     } catch (error: any) {
         return NextResponse.json({ "error": error["message"] })
     }

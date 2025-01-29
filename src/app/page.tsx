@@ -17,8 +17,6 @@ export default function Home() {
       <PageLoader />
     )
 
-  console.dir(userInfoValue)
-
   return (
     <div >
       <Space h="xl" />
