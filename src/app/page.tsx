@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { Button, Container, Space, Alert, Center } from '@mantine/core';
 import { IconUser } from '@tabler/icons-react';
 import { useUserInfoFromIdentity } from "@features/(shared)/_hooks/user.useUserInfoFromIdentity";
@@ -9,8 +8,7 @@ import PageLoader from "@features/(shared)/_components/PageLoader";
 
 export default function Home() {
 
-  const { isLoading, error, userInfoValue } = useUserInfoFromIdentity("api/auth/user-info")
-  const router = useRouter()
+  const { isLoading, userInfoValue } = useUserInfoFromIdentity("api/auth/user-info")
 
   if (isLoading)
     return (

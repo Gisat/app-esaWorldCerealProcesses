@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { ResponseCookie } from "next/dist/compiled/@edge-runtime/cookies";
 
 export const dynamic = 'force-dynamic'
-export async function GET(req: NextRequest) {
+export async function GET() {
     try {
         // get url origin
         const parsedUrl = new URL(process.env.OID_SELF_REDIRECT_URL as string)
@@ -32,7 +32,7 @@ export async function GET(req: NextRequest) {
         feRedirect.cookies.set('client_redirect', selfUrl, cookieOptions);
         return feRedirect
 
-    } catch (error: any) {
+    } catch {
         const backendDomain = new URL(process.env.OID_SELF_REDIRECT_URL as string).hostname
         const feRedirect = NextResponse.redirect(backendDomain as string)
 

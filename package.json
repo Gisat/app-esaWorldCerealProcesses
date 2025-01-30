@@ -34,8 +34,11 @@
     "swr": "^2.2.5"
   },
   "devDependencies": {
-    "eslint": "^8",
+    "eslint": "^8.0.0",
     "eslint-config-next": "14.2.13",
+    "eslint-plugin-import": "^2.31.0",
+    "@typescript-eslint/eslint-plugin": "^8.19.1",
+    "@typescript-eslint/parser": "^8.19.1",
     "typescript": "^5",
     "@types/js-cookie": "^3.0.6",
     "@types/jsonwebtoken": "^9.0.7",

@@ -5,7 +5,7 @@ import Link from 'next/link'
 import './style.scss'
 import { IconTypeface } from "@tabler/icons-react";
 
-const NavbarItem = ({ title, icon, href, active, value }: { title: string, icon: typeof IconTypeface, href: string, active: boolean, value: string }) => {
+const NavbarItem = ({ title, icon, href, value }: { title: string, icon: typeof IconTypeface, href: string, active: boolean, value: string }) => {
 	return (
 		<Link href={href} >
 			<Tabs.Tab className="worldCereal-NavbarItem" value={value} leftSection={createElement(icon, {

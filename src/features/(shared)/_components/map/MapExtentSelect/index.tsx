@@ -3,7 +3,7 @@ import { GeoJsonLayer, BitmapLayer } from '@deck.gl/layers';
 import { TileLayer } from '@deck.gl/geo-layers';
 import { WebMercatorViewport } from '@deck.gl/core';
 import { useRef, useState } from 'react';
-import { ExtentLayer } from '../layers/ExtentLayer';
+import { ExtentLayer } from '../../../../(map)/_components/layers/ExtentLayer';
 
 const ExtentLayerID = "ExtentLayer";
 const defaultMapSize: Array<number> = [500, 500] //in pixels
@@ -59,7 +59,7 @@ const tileLayer = new TileLayer({
 	},
 });
 
-export default function ({ longitude, latitude, onBboxChange, bbox, disabled, mapSize = defaultMapSize, extentSizeInMeters = defaultExtentSizeInMeters }: { extentSizeInMeters?: Array<number>, mapSize?: Array<number>, disabled?: boolean, bbox?: ExtentType, onBboxChange?: (extent?: ExtentType) => void, longitude?: number, latitude?: number }) {
+export const MapExtentSelect = function ({ longitude, latitude, onBboxChange, bbox, disabled, mapSize = defaultMapSize, extentSizeInMeters = defaultExtentSizeInMeters }: { extentSizeInMeters?: Array<number>, mapSize?: Array<number>, disabled?: boolean, bbox?: ExtentType, onBboxChange?: (extent?: ExtentType) => void, longitude?: number, latitude?: number }) {
 	const mapRef = useRef<any>(null);
 	const layer = bbox ? new GeoJsonLayer({
 		id: ExtentLayerID, data: getGeoJsonFromBbox(bbox), getLineColor: [0, 0, 0],

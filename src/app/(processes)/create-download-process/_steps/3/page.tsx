@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { createElement, useState } from 'react';
 import useSWR from "swr";
 import { useRouter } from "next/navigation";
 import { Button } from '@mantine/core';
@@ -62,6 +62,6 @@ export default function Page({ searchParams }: {
 
 	return <>
 		{data ? <Details bbox={data?.bbox} startDate={data?.timeRange?.[0]} endDate={data?.timeRange?.[1]} resultFileFormat={data?.resultFileFormat} oeoCollection={data?.oeoCollection} /> : null}
-		<PageSteps NextButton={React.createElement(StartJobButton, { jobId })} />
+		<PageSteps NextButton={createElement(StartJobButton, { jobId })} />
 	</>
 }
