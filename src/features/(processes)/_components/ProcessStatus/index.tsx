@@ -11,7 +11,7 @@ const ProcessStatus = ({ status }: Props) => {
     let icon = null;
     switch (status) {
         case 'pending':
-            color = "#6c6c6c";
+            color = "var(--base500)";
             icon = <IconDots style={{ width: rem(16), height: rem(16) }} />
             break;
         case 'error':
@@ -23,7 +23,7 @@ const ProcessStatus = ({ status }: Props) => {
             icon = <IconChecks style={{ width: rem(16), height: rem(16) }} />
             break;
         case 'created':
-            color = "#a97818";
+            color = "var(--base500)";
             icon = <IconCheck style={{ width: rem(16), height: rem(16) }} />
             break;
     }

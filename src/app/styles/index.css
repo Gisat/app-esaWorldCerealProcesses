@@ -42,13 +42,14 @@ input {
   padding: 0 0 1rem;
 }
 
-
+/* Buttons */
 .worldCereal-appContent .worldCereal-Button {
   height: 2rem;
 
   span {
     color: var(--textInvertedColor);
-    /*//@include label;*/
+    font-size: var(--a1);
+    font-family: var(--labelFontFamily), sans-serif;
   }
 
   &.is-disabled {

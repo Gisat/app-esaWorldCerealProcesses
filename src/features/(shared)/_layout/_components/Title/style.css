@@ -16,7 +16,7 @@
 .worldCereal-Title h1 {
   margin: 0.2rem 0 0;
   color: var(--textAccentedColor);
-  font-size: 1.0725rem;
+  font-size: var(--a2);
   letter-spacing: 0;
 }
 

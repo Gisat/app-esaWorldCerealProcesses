@@ -29,3 +29,8 @@
   grid-gap: 1rem;
   align-items: center;
 }
+
+.worldCereal-Header-email {
+  font-size: var(--a1);
+  font-family: var(--labelFontFamily), sans-serif;
+}

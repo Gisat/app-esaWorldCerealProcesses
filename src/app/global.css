@@ -31,7 +31,7 @@
     --textPrimaryColor: var(--base25);
     --textSecondaryColor: var(--base400);
     --textTertiaryColor: var(--base600);
-    --textInvertedColor: var(--base100);
+    --textInvertedColor: var(--base950);
     --textDisabledColor: var(--base700);
     --textAccentedColor: var(--accent500);
 
@@ -48,7 +48,7 @@
 
     /* Text sizes */
     --textSizeRatio: 1.2;
-    --a1: 1rem;
+    --a1: 0.875rem;
 
     --a0: calc(var(--a1) / var(--textSizeRatio));
     --a00: calc(var(--a0) / var(--textSizeRatio));
@@ -60,6 +60,7 @@
 
     /* Fonts */
     --titleFontFamily: "Sen", "Roboto";
+    --labelFontFamily: "Sen", "Roboto";
     --titleFontWeight: bold;
 
     /* Layout sizes */

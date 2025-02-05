@@ -21,9 +21,13 @@
     color: var(--textSecondaryColor);
     font-size: var(--a0);
   }
+  div {
+    color: var(--textPrimaryColor);
+    font-size: var(--a1);
+  }
 }
 
 .worldCereal-MapDetails-coordinates {
-  color: var(--base400);
+  color: var(--textSecondaryColor);
   font-size: 0.7497857755rem;
 }

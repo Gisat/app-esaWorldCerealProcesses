@@ -8,6 +8,10 @@ a:has(.worldCereal-NavbarItem) {
   color: var(--textPrimaryColor);
   font-family: var(--titleFontFamily), sans-serif;
 
+  &:hover {
+    background: var(--highlightedBackgroundColor);
+  }
+
   &:where([data-active]) {
     border-bottom-width: 3px;
 
