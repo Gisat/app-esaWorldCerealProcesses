@@ -1,4 +1,4 @@
-import "./style.scss";
+import "./style.css";
 
 const FormLabel = ({children}: Readonly<{
 	children: React.ReactNode;

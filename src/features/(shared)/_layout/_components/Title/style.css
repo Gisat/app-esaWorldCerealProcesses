@@ -1,7 +1,3 @@
-@use "sass:math";
-@import "@features/(shared)/variables.module.scss";
-
-
 .worldCereal-Title {
   display: flex;
   align-items: center;
@@ -19,7 +15,7 @@
 
 .worldCereal-Title h1 {
   margin: 0.2rem 0 0;
-  color: $textColorAccented;
+  color: var(--textAccentedColor);
   font-size: 1.0725rem;
   letter-spacing: 0;
 }
@@ -31,6 +27,6 @@
 }
 
 .worldCereal-Title h1 span:first-child {
-  border-right: 2px solid $borderColorPrimary;
-  color: $textColorPrimary;
+  border-right: 2px solid var(--borderPrimaryColor);
+  color: var(--textPrimaryColor);
 }

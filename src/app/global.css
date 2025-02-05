@@ -40,6 +40,7 @@
 
     --iconPrimaryColor: var(--base200);
     --iconSecondaryColor: var(--base500);
+    --iconAccentedColor: var(--accent500);
 
     --lightBackgroundColor: var(--base900);
     --highlightedBackgroundColor: var(--base800);
@@ -58,7 +59,7 @@
     --a5: calc(var(--a4) * var(--textSizeRatio));
 
     /* Fonts */
-    --titleFontFamily: "Sen", "Roboto", sans-serif;
+    --titleFontFamily: "Sen", "Roboto";
     --titleFontWeight: bold;
 
     /* Layout sizes */

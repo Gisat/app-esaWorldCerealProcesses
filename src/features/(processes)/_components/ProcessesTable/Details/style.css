@@ -1,6 +1,3 @@
-@import "@features/(shared)/variables.module.scss";
-
-
 .worldCereal-ProcessesTable-Details {
   padding: 0.5rem;
   display: flex;
@@ -21,12 +18,12 @@
 
 .worldCereal-ProcessesTable-DetailItem {
   span {
-    color: $textColorSecondary;
-    font-size: $b1;
+    color: var(--textSecondaryColor);
+    font-size: var(--a0);
   }
 }
 
 .worldCereal-MapDetails-coordinates {
-  color: var(--base65);
+  color: var(--base400);
   font-size: 0.7497857755rem;
 }

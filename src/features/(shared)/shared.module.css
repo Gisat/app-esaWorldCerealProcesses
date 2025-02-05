@@ -1,5 +1,3 @@
-@import "@features/(shared)/variables.css";
-
 .label {
     font-family: var(--titleFontFamily) sans-serif;
     font-size: var(--a1);

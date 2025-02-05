@@ -1,0 +1,129 @@
+@import "@gisatcz/ptr-core/lib/styles/reset.css";
+
+body.esaWorldCerealProcesses {
+  font-family: "Roboto", sans-serif;
+  color: var(--textPrimaryColor);
+}
+
+input {
+  accent-color: var(--accent400);
+}
+
+
+/* width */
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: var(--base600);
+  border-radius: 5px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: var(--base500);
+}
+
+
+.esaWorldCerealProcesses {
+  background: var(--base950);
+}
+
+.worldCereal-appContent {
+  max-width: var(--pageWidth);
+  margin: 0 auto;
+  padding: 0 0 1rem;
+}
+
+
+.worldCereal-appContent .worldCereal-Button {
+  height: 2rem;
+
+  span {
+    color: var(--textInvertedColor);
+    /*//@include label;*/
+  }
+
+  &.is-disabled {
+    span {
+      color: var(--textDisabledColor);
+    }
+  }
+
+  &.circle {
+    border-radius: 50%;
+    height: 2rem;
+    width: 2rem;
+    padding: 0;
+    border-color: transparent;
+  }
+}
+
+.worldCereal-appContent .worldCereal-SecondaryButton {
+  span {
+    color: var(--textPrimaryColor);
+  }
+}
+
+
+.worldCereal-appContent .worldCereal-Select {
+  /*//@include formItem;*/
+
+  .mantine-Select-label {
+    /*//@include label;*/
+  }
+}
+
+
+.worldCereal-appContent .worldCereal-Stepper {
+  .mantine-Stepper-stepLabel {
+    /*//@include labelFont;*/
+    font-size: var(--a2);
+  }
+
+  .mantine-Stepper-content {
+    padding-top: 1.5rem;
+  }
+}
+
+
+.worldCereal-appContent .worldCereal-DateInput {
+  /*//@include formItem;*/
+
+  .mantine-DateInput-label {
+    /*//@include label;*/
+  }
+}
+
+.worldCereal-appContent .worldCereal-InputWrapper {
+  /*//@include formItem;*/
+}
+
+.worldCereal-ExtentInputs {
+  display: flex;
+  flex-flow: row;
+  justify-content: space-between;
+
+  .mantine-Input-wrapper {
+    min-width: 9rem;
+  }
+}
+
+.worldCereal-appContent .worldCereal-SegmentedControl {
+  .mantine-SegmentedControl-label {
+    /*//@include label;*/
+    color: var(--textTertiaryColor);
+  }
+
+  .mantine-SegmentedControl-label:where([data-active]) .mantine-SegmentedControl-innerLabel {
+    font-weight: bold;
+    color: var(--textPrimaryColor);
+  }
+}

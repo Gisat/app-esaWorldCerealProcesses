@@ -1,4 +1,4 @@
-import "./style.scss";
+import "./style.css";
 
 export const Column = ({children}: Readonly<{
     children: React.ReactNode;

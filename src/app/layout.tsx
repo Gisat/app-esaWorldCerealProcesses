@@ -5,8 +5,8 @@ import React from "react";
 import { AppShell, AppShellMain, rem } from '@mantine/core';
 import MantineProvider from "@features/(shared)/_components/providers/Mantine";
 
-import './styles/index.scss';
-import '../features/(shared)/variables.module.scss';
+import './styles/index.css';
+import './global.css';
 import '@mantine/core/styles.css';
 import '@mantine/dates/styles.css';
 
@@ -27,7 +27,7 @@ export default function RootLayout({
       <head>
         <link href="https://fonts.googleapis.com/css2?family=Sen:wght@400;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet"></link>
       </head>
-      <body className={`ptr-dark esaWorldCerealProcesses`}>
+      <body className={`esaWorldCerealProcesses`}>
         <FaroFrontendMonitoring envUrl="/api/faro" />
         <MantineProvider>
           <AppShell

@@ -1,5 +1,6 @@
-@import "@features/(shared)/variables.module.scss";
-
+.mantine-AppShell-header {
+  background: var(--base950);
+}
 
 .worldCereal-Header {
   position: relative;
@@ -8,9 +9,9 @@
   justify-content: space-between;
   align-items: center;
   padding: 0 1rem;
-  border-bottom: 1px solid $borderColorSecondary;
+  border-bottom: 1px solid var(--borderSecondaryColor);
   min-height: 3rem;
-  max-width: $pageWidth;
+  max-width: var(--pageWidth);
   width: 100%;
   margin: 0 auto;
 }

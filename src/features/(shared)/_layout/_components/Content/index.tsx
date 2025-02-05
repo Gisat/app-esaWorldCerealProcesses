@@ -1,4 +1,4 @@
-import "./style.scss";
+import "./style.css";
 import { Container } from '@mantine/core';
 
 const Content = ({ children }: Readonly<{
