@@ -1,6 +1,6 @@
 import { Chip, rem } from '@mantine/core';
 import { IconX, IconCheck, IconDots, IconChecks } from '@tabler/icons-react';
-import './style.scss';
+import './style.css';
 
 type Props = {
     status: string

@@ -1,15 +1,12 @@
-@import "@features/(shared)/variables.module.scss";
-
-
 a:has(.worldCereal-NavbarItem) {
   text-decoration: none;
 }
 
 .worldCereal-NavbarItem {
-  font-size: $a1;
+  font-size: var(--a1);
   text-decoration: none;
-  color: $textColorPrimary;
-  font-family: "Sen","Roboto", sans-serif;
+  color: var(--textPrimaryColor);
+  font-family: var(--titleFontFamily), sans-serif;
 
   &:where([data-active]) {
     border-bottom-width: 3px;

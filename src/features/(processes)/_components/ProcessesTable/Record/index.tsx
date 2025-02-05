@@ -1,4 +1,4 @@
-import "./style.scss";
+import "./style.css";
 import { ActionIcon, Button, Table, Modal, Title, Flex } from "@mantine/core";
 import { useDisclosure } from '@mantine/hooks';
 import { IconDotsVertical, IconDownload, IconTrash, IconPlayerPlay } from '@tabler/icons-react';

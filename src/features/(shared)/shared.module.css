@@ -1,3 +1,14 @@
+.label {
+    font-family: var(--titleFontFamily) sans-serif;
+    font-size: var(--a1);
+}
+
+.formItem {
+    width: 100%;
+    max-width: 20rem;
+}
+
+
 .pageLoader{
     display: flex;
     width: 100%;

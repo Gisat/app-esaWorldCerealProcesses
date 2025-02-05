@@ -3,7 +3,7 @@ import { bool } from "prop-types";
 import { AppShellHeader } from '@mantine/core'
 import Title from "../Title";
 import EsaLogo from "@features/(processes)/_components/EsaLogo";
-import "./style.scss";
+import "./style.css";
 import Link from "next/link";
 import { useUserInfoFromIdentity } from "@features/(shared)/_hooks/user.useUserInfoFromIdentity";
 

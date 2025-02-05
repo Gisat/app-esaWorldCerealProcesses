@@ -2,7 +2,7 @@
 import React, { createElement } from 'react'
 import { Tabs, rem } from '@mantine/core';
 import Link from 'next/link'
-import './style.scss'
+import './style.css'
 import { IconTypeface } from "@tabler/icons-react";
 
 const NavbarItem = ({ title, icon, href, value }: { title: string, icon: typeof IconTypeface, href: string, active: boolean, value: string }) => {

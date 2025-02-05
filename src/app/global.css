@@ -1,0 +1,68 @@
+:root {
+    /* Color scales */
+    --accent25: #FDF6E5;
+    --accent50: #FBEFCE;
+    --accent100: #F8E7B7;
+    --accent200: #F6DFA0;
+    --accent300: #F2D072;
+    --accent400: #EEC144;
+    --accent500: #E9B116;
+    --accent600: #BB8E12;
+    --accent700: #8E6C0D;
+    --accent800: #604909;
+    --accent900: #322604;
+    --accent950: #1B1402;
+
+    --base0: #FFFEFC;
+    --base25: #F8F7F5;
+    --base50: #F3F2F0;
+    --base100: #EDECEA;
+    --base200: #E5E4E2;
+    --base300: #CCCBC9;
+    --base400: #ABAAA8;
+    --base500: #868684;
+    --base600: #666563;
+    --base700: #4E4D4B;
+    --base800: #353432;
+    --base900: #2B2A28;
+    --base950: #1D1D1B;
+
+    /* Named colors */
+    --textPrimaryColor: var(--base25);
+    --textSecondaryColor: var(--base400);
+    --textTertiaryColor: var(--base600);
+    --textInvertedColor: var(--base100);
+    --textDisabledColor: var(--base700);
+    --textAccentedColor: var(--accent500);
+
+    --borderPrimaryColor: var(--base700);
+    --borderSecondaryColor: var(--base800);
+
+    --iconPrimaryColor: var(--base200);
+    --iconSecondaryColor: var(--base500);
+    --iconAccentedColor: var(--accent500);
+
+    --lightBackgroundColor: var(--base900);
+    --highlightedBackgroundColor: var(--base800);
+    --hoverBackgroundColor: var(--base700);
+
+    /* Text sizes */
+    --textSizeRatio: 1.2;
+    --a1: 1rem;
+
+    --a0: calc(var(--a1) / var(--textSizeRatio));
+    --a00: calc(var(--a0) / var(--textSizeRatio));
+
+    --a2: calc(var(--a1) * var(--textSizeRatio));
+    --a3: calc(var(--a2) * var(--textSizeRatio));
+    --a4: calc(var(--a3) * var(--textSizeRatio));
+    --a5: calc(var(--a4) * var(--textSizeRatio));
+
+    /* Fonts */
+    --titleFontFamily: "Sen", "Roboto";
+    --titleFontWeight: bold;
+
+    /* Layout sizes */
+    --headerHeight: 2.75rem;
+    --pageWidth: 70rem;
+}

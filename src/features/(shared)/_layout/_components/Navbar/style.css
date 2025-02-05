@@ -1,0 +1,7 @@
+.worldCereal-Navbar {
+    margin-top: .5rem;
+}
+
+.worldCereal-Navbar-list:before {
+    border: 1px solid var(--borderPrimaryColor);
+}

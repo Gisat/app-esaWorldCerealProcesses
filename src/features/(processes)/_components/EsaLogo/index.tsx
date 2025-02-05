@@ -1,6 +1,6 @@
 import classNames from "classnames";
 
-import "./style.scss";
+import "./style.css";
 
 const EsaLogo = ({ className }: Readonly<{
   className: string

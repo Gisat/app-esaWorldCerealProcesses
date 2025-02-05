@@ -1,4 +1,4 @@
-import "./style.scss";
+import "./style.css";
 import React from "react";
 import { getPoinsDistance } from '@features/(processes)/_utils/map';
 import {MapExtentSelect} from "@features/(shared)/_components/map/MapExtentSelect";

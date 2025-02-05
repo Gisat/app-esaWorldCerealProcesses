@@ -1,4 +1,4 @@
-import "./style.scss";
+import "./style.css";
 import { Table, Loader, Center } from "@mantine/core";
 import Record from "./Record";
 

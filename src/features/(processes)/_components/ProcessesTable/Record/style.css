@@ -1,17 +1,14 @@
-@import "@features/(shared)/variables.module.scss";
-
-
 .worldCereal-ProcessesTable .worldCereal-ProcessesTable-row {
-  border-bottom: 1px solid $borderColorPrimary;
+  border-bottom: 1px solid var(--borderPrimaryColor);
 
   &.is-expanded {
-    background: $highlightBackground;
+    background: var(--highlightedBackgroundColor);
   }
 }
 
 .worldCereal-ProcessesTable .mantine-Table-td {
-  font-size: $a1;
-  color: $textColorPrimary;
+  font-size: var(--a1);
+  color: var(--textPrimaryColor);
   vertical-align: middle;
 
   &.highlightedCell {

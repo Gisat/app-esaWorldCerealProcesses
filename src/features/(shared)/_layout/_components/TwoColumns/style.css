@@ -1,6 +1,3 @@
-@import "@features/(shared)/variables.module.scss";
-
-
 .worldCereal-TwoColumns {
   display: flex;
   grid-gap: 1rem;

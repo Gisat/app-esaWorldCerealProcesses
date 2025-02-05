@@ -2,7 +2,7 @@
 
 import {string, func} from "prop-types";
 import logoData from "../Header/logo";
-import "./style.scss";
+import "./style.css";
 
 const Title = () => {
   const title = "Processes";
