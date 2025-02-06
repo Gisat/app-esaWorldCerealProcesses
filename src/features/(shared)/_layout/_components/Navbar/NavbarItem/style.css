@@ -9,7 +9,7 @@ a:has(.worldCereal-NavbarItem) {
   font-family: var(--titleFontFamily), sans-serif;
 
   &:hover {
-    background: var(--highlightedBackgroundColor);
+    background: var(--hoverBackgroundColor);
   }
 
   &:where([data-active]) {

@@ -28,7 +28,7 @@ export default function Home() {
                 </p>
                 <Space h="sm" />
                 {/* <Link href="/account/login" ><Button>Login</Button></Link> */}
-                <Link href="/api/auth/iam" ><Button autoContrast leftSection={<IconUser size={14} />}>Login</Button></Link>
+                <Link href="/api/auth/iam" ><Button className="worldCereal-Button" autoContrast leftSection={<IconUser size={14} />}>Login</Button></Link>
               </Alert>
             </Center>
           </Container>

@@ -25,9 +25,10 @@ type DetailsProps = {
 	duration?: number,
 	oeoCollection?: string,
 	resultFileFormat?: string,
+	results?: Array<{ source_link: string }>,
 }
 
-const Details = ({ bbox, startDate, endDate, resultFileFormat, oeoCollection }: DetailsProps) => {
+const Details = ({ bbox, startDate, endDate, resultFileFormat, oeoCollection, results }: DetailsProps) => {
 	const collection = products.find(p => p.value === oeoCollection)
 	return <div className="worldCereal-ProcessesTable-Details">
 		<div className="worldCereal-ProcessesTable-Details-column">
@@ -41,6 +42,11 @@ const Details = ({ bbox, startDate, endDate, resultFileFormat, oeoCollection }: 
 			<DetailsItem label={"End date"}>{endDate ? new Date(endDate).toDateString() : ''}</DetailsItem>
 			<DetailsItem label={"Output file format"}>{resultFileFormat}</DetailsItem>
 		</div>
+		{results?.[0] && <div className="worldCereal-ProcessesTable-Details-column">
+			<DetailsItem label={"Download results"}>
+				{results.map((result, index) => <a key={result.source_link} href={result.source_link}>{index > 0 ? ', ' : ''}Product {index + 1}</a>)}
+			</DetailsItem>
+		</div>}
 	</div>
 }
 

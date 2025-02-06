@@ -1,12 +1,16 @@
 .worldCereal-ProcessStatus {
   font-size: var(--a2);
-  font-family: var(--titleFontFamily) sans-serif;
   pointer-events: none;
 }
 
 .worldCereal-ProcessStatus label {
   font-size: var(--a0);
+  font-family: var(--titleFontFamily) sans-serif;
   height: 1.5rem;
+}
+
+.worldCereal-ProcessStatus label span {
+  font-family: var(--titleFontFamily) sans-serif;
 }
 
 .worldCereal-ProcessStatus label span:last-child {

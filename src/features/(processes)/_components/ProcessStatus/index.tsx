@@ -15,11 +15,11 @@ const ProcessStatus = ({ status }: Props) => {
             icon = <IconDots style={{ width: rem(16), height: rem(16) }} />
             break;
         case 'error':
-            color = "#8c2e2e";
+            color = "var(--errorColor)";
             icon = <IconX style={{ width: rem(16), height: rem(16) }} />
             break;
         case 'finished':
-            color = "#327c4f";
+            color = "var(--successColor)";
             icon = <IconChecks style={{ width: rem(16), height: rem(16) }} />
             break;
         case 'created':

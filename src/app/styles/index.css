@@ -1,7 +1,11 @@
 @import "@gisatcz/ptr-core/lib/styles/reset.css";
 
+a {
+    color: var(--textAccentedColor);
+}
+
 body.esaWorldCerealProcesses {
-  font-family: "Roboto", sans-serif;
+  font-family: var(--titleFontFamily), sans-serif;
   color: var(--textPrimaryColor);
 }
 
@@ -50,20 +54,13 @@ input {
     color: var(--textInvertedColor);
     font-size: var(--a1);
     font-family: var(--labelFontFamily), sans-serif;
+    font-weight: 600;
   }
 
   &.is-disabled {
     span {
       color: var(--textDisabledColor);
     }
-  }
-
-  &.circle {
-    border-radius: 50%;
-    height: 2rem;
-    width: 2rem;
-    padding: 0;
-    border-color: transparent;
   }
 }
 

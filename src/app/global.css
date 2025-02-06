@@ -4,13 +4,13 @@
     --accent50: #FBEFCE;
     --accent100: #F8E7B7;
     --accent200: #F6DFA0;
-    --accent300: #F2D072;
-    --accent400: #EEC144;
-    --accent500: #E9B116;
-    --accent600: #BB8E12;
-    --accent700: #8E6C0D;
-    --accent800: #604909;
-    --accent900: #322604;
+    --accent300: #F4D889;
+    --accent400: #F0C85B;
+    --accent500: #EBB92D;
+    --accent600: #D2A014;
+    --accent700: #A47D0F;
+    --accent800: #775A0B;
+    --accent900: #493707;
     --accent950: #1B1402;
 
     --base0: #FFFEFC;
@@ -44,7 +44,12 @@
 
     --lightBackgroundColor: var(--base900);
     --highlightedBackgroundColor: var(--base800);
-    --hoverBackgroundColor: var(--base700);
+    --hoverBackgroundColor: color-mix(in srgb, var(--accent300), transparent 80%);
+
+    --startColor: #19aa33;
+    --successColor: #216c2e;
+    --deleteColor: #dd2100;
+    --errorColor: #912816;
 
     /* Text sizes */
     --textSizeRatio: 1.2;

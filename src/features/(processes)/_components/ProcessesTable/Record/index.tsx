@@ -1,7 +1,13 @@
 import "./style.css";
 import { ActionIcon, Button, Table, Modal, Title, Flex } from "@mantine/core";
 import { useDisclosure } from '@mantine/hooks';
-import { IconDotsVertical, IconDownload, IconTrash, IconPlayerPlay } from '@tabler/icons-react';
+import {
+	IconChevronDown,
+	IconDownload,
+	IconTrash,
+	IconPlayerPlay,
+	IconChevronUp
+} from '@tabler/icons-react';
 import { useState } from "react";
 
 import useSWR from "swr";
@@ -53,17 +59,17 @@ const StartJobButton = ({ jobId, forceReloadList }: { jobId?: string, forceReloa
 	}
 
 	return (
-		data?.result?.jobId ? null : <Button
-			className="worldCereal-Button circle"
-			size="sm"
+		data?.result?.jobId ? null : <ActionIcon
+			size="lg"
+			radius="xl"
 			component="a"
 			target="_blank"
-			variant="outline"
+			variant="subtle"
 			onClick={handleClick}
 			loading={isLoading}
 		>
-			<IconPlayerPlay size={14} color="green" />
-		</Button>
+			<IconPlayerPlay size={16} color="var(--startColor)" />
+		</ActionIcon>
 	);
 }
 
@@ -155,16 +161,16 @@ const RemoveJobButton = ({
 				</Flex>
 			</Modal >
 
-			<Button
-				className="worldCereal-Button circle"
-				size="sm"
+			<ActionIcon
+				size="lg"
+				radius="xl"
 				component="a"
 				target="_blank"
-				variant="outline"
+				variant="subtle"
 				onClick={open}
 			>
-				<IconTrash size={14} color="red" />
-			</Button>
+				<IconTrash size={16} color="var(--deleteColor)" />
+			</ActionIcon>
 		</>
 	);
 }
@@ -188,40 +194,27 @@ const Record = ({
 	return (
 		<>
 			<Table.Tr key={id} className={className}>
-				<Table.Td>{id}</Table.Td>
+				<Table.Td className="smallTextCell">{id}</Table.Td>
 				<Table.Td className="highlightedCell">Download</Table.Td>
 				<Table.Td>{createdIso && new Date(createdIso).toDateString()}</Table.Td>
 				<Table.Td>{status ? <ProcessStatus status={status} /> : null}</Table.Td>
-				<Table.Td className="shrinkedCell">{results?.[0] &&
-					<Button
-						leftSection={<IconDownload size={14} />}
-						className="worldCereal-Button"
-						size="sm"
-						component="a"
-						target="_blank"
-						href={results[0]?.source_link}
-					>
-						Download
-					</Button>
-				}</Table.Td>
-				<Table.Td className="shrinkedCell">
+				<Table.Td className="shrinkedCell alignRight">
+					<RemoveJobButton jobId={id} forceReloadList={forceReloadList} bbox={bbox} timeRange={timeRange} resultFileFormat={resultFileFormat} oeoCollection={oeoCollection} />
 					{status === 'created' ?
 						<StartJobButton jobId={id} forceReloadList={forceReloadList} />
 						: null}
-				</Table.Td>
-				<Table.Td className="shrinkedCell">{
-					<RemoveJobButton jobId={id} forceReloadList={forceReloadList} bbox={bbox} timeRange={timeRange} resultFileFormat={resultFileFormat} oeoCollection={oeoCollection} />
-				}</Table.Td>
-				< Table.Td className="alignRight">
-					<ActionIcon variant="subtle" aria-label="Settings" onClick={() => setIsExpanded(!isExpanded)}>
-						<IconDotsVertical style={{ width: '70%', height: '70%' }} stroke={1.5} />
+					{results?.[0] ? <ActionIcon radius="lg" size="lg" variant="subtle" aria-label="Settings" onClick={() => setIsExpanded(!isExpanded)}>
+						<IconDownload color="var(--textAccentedColor)" size={16} />
+					</ActionIcon> : null}
+					<ActionIcon radius="lg" size="lg" variant="subtle" aria-label="Settings" onClick={() => setIsExpanded(!isExpanded)}>
+						{isExpanded ? <IconChevronUp size={16} /> : <IconChevronDown size={16} />}
 					</ActionIcon>
 				</Table.Td>
 			</Table.Tr>
 			{isExpanded && (
 				<Table.Tr className={className}>
-					<Table.Td colSpan={6}>
-						<Details bbox={bbox} startDate={timeRange?.[0]} endDate={timeRange?.[1]} resultFileFormat={resultFileFormat} oeoCollection={oeoCollection} />
+					<Table.Td colSpan={7}>
+						<Details bbox={bbox} startDate={timeRange?.[0]} endDate={timeRange?.[1]} resultFileFormat={resultFileFormat} oeoCollection={oeoCollection} results={results}/>
 					</Table.Td>
 				</Table.Tr>
 			)
