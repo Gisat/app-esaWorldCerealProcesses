@@ -136,7 +136,7 @@ const RemoveJobButton = ({
 					wrap="wrap"
 				>
 					<Button
-						className="worldCereal-Button worldCereal-SecondaryButton"
+						className="worldCereal-Button is-secondary"
 						size="sm"
 						component="a"
 						target="_blank"
@@ -210,7 +210,7 @@ const Record = ({
 					</Tooltip> : null}
 					<Tooltip label="Show details" openDelay={500}>
 						<ActionIcon radius="lg" size="lg" variant="subtle" aria-label="Settings" onClick={() => setIsExpanded(!isExpanded)}>
-							{isExpanded ? <IconChevronUp size={16} /> : <IconChevronDown size={16} />}
+							{isExpanded ? <IconChevronUp color="var(--iconPrimaryColor)" size={16} /> : <IconChevronDown color="var(--iconPrimaryColor)" size={16} />}
 						</ActionIcon>
 					</Tooltip>
 				</Table.Td>

@@ -32,9 +32,10 @@
     --textSecondaryColor: var(--base400);
     --textTertiaryColor: var(--base600);
     --textInvertedColor: var(--base950);
-    --textDisabledColor: var(--base700);
+    --textDisabledColor: var(--base800);
     --textAccentedColor: var(--accent500);
 
+    --borderLightColor: var(--base200);
     --borderPrimaryColor: var(--base700);
     --borderSecondaryColor: var(--base800);
 
@@ -44,6 +45,7 @@
 
     --lightBackgroundColor: var(--base900);
     --highlightedBackgroundColor: var(--base800);
+    --disabledBackgroundColor: var(--base600);
     --hoverBackgroundColor: color-mix(in srgb, var(--accent300), transparent 80%);
 
     --startColor: #19aa33;

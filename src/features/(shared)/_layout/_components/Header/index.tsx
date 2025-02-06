@@ -28,7 +28,7 @@ const Header = () => {
                   <Button
                       color="var(--base500)"
                       leftSection={<IconLogout size={14} />}
-                      className="worldCereal-Button worldCereal-SecondaryButton"
+                      className="worldCereal-Button is-secondary"
                       size="sm"
                       component="a"
                       target="_blank"

@@ -2,6 +2,7 @@
 import React from 'react';
 import { Button, Group } from '@mantine/core';
 import { useRouter, useSearchParams } from 'next/navigation';
+import {IconArrowLeft} from "@tabler/icons-react";
 
 
 
@@ -23,7 +24,7 @@ export default function PageSteps({ NextButton }: { children?: React.ReactNode, 
 	const backVisible = activeStep > 1
 	return (
 		<Group justify="center" mt="xl">
-			{backVisible ? <Button className="worldCereal-Button worldCereal-SecondaryButton" variant="default" onClick={prevStep}>Back</Button> : null}
+			{backVisible ? <Button className="worldCereal-Button is-secondary is-ghost" variant="outline" onClick={prevStep} leftSection={<IconArrowLeft size={14} />}>Back</Button> : null}
 			{NextButton || <Button className="worldCereal-Button" onClick={nextStep}>Next step</Button>}
 		</Group>
 	);

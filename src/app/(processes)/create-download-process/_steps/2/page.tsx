@@ -4,12 +4,13 @@ import React, { useState, useEffect, createElement } from 'react';
 import useSWR from "swr";
 import { useRouter } from 'next/navigation';
 import { DateInput } from '@mantine/dates';
-import { Button, Stack, Input, SegmentedControl } from '@mantine/core';
+import { Button, Stack, SegmentedControl } from '@mantine/core';
 import { products } from "@features/(processes)/_constants/app";
 import PageSteps from '@features/(processes)/_components/PageSteps';
 import { MapExtentSelect } from '@features/(shared)/_components/map/MapExtentSelect';
 import FormLabel from '@features/(shared)/_layout/_components/FormLabel';
 import TwoColumns, { Column } from '@features/(shared)/_layout/_components/TwoColumns';
+import {IconCheck} from "@tabler/icons-react";
 
 
 
@@ -66,7 +67,7 @@ const CreateJobButton = ({ setValues, params, searchParams }: { searchParams?: s
 	const heightInvalid = height && (Number(height) < minSize || Number(height) > maxSize)
 
 	return (
-		<Button disabled={isLoading || !!widthInvalid || !!heightInvalid} className="worldCereal-Button" onClick={handleClick} >{isLoading ? 'Creating...' : 'Create process'}</Button>
+		<Button leftSection={<IconCheck size={14} />} disabled={isLoading || !!widthInvalid || !!heightInvalid} className="worldCereal-Button" onClick={handleClick} >{isLoading ? 'Creating...' : 'Create process'}</Button>
 	);
 }
 
@@ -186,36 +187,6 @@ export default function Page({ searchParams }: {
 					clearable={false}
 					disabled
 				/>
-				<Input.Wrapper label="Map extent size" description={`Width and height in meters. Minimum size is ${minSize}m and maximum is ${maxSize}m.`} className='worldCereal-InputWrapper'>
-					<div className='worldCereal-ExtentInputs'>
-						<Input
-							leftSection={"Width: "}
-							leftSectionWidth={"5rem"}
-							size="md"
-							value={width}
-							error={width && (Number(width) < minSize || Number(width) > maxSize)}
-							onChange={(value) => setValue(value.target.value ? value.target.value.toString() : '', 'width')}
-							min={minSize}
-							max={maxSize}
-							placeholder="width"
-							type='number'
-							width={"9rem"}
-						/>
-						<Input
-							leftSection={"Height: "}
-							leftSectionWidth={"5rem"}
-							size="md"
-							value={height}
-							onChange={(value) => setValue(value.target.value ? value.target.value.toString() : '', 'height')}
-							error={height && (Number(height) < minSize || Number(height) > maxSize)}
-							min={minSize}
-							max={maxSize}
-							placeholder="height"
-							type='number'
-							width={"9rem"}
-						/>
-					</div>
-				</Input.Wrapper >
 
 
 				<div>
