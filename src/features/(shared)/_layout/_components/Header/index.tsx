@@ -26,12 +26,12 @@ const Header = () => {
                 <>
                   <span className="worldCereal-Header-email">{userInfoValue.email} </span>
                   <Button
-                      color="var(--base500)"
                       leftSection={<IconLogout size={14} />}
-                      className="worldCereal-Button is-secondary"
+                      className="worldCereal-Button is-secondary is-ghost"
                       size="sm"
                       component="a"
                       target="_blank"
+                      variant="outline"
                       href="api/auth/logout"
                   >
                     Logout

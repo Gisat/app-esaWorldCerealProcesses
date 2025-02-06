@@ -136,12 +136,12 @@ const RemoveJobButton = ({
 					wrap="wrap"
 				>
 					<Button
-						className="worldCereal-Button is-secondary"
+						className="worldCereal-Button is-secondary is-ghost"
 						size="sm"
 						component="a"
 						target="_blank"
 						onClick={close}
-						color="var(--base500)"
+						variant="outline"
 						disabled={isLoading}
 					>
 						Decline
