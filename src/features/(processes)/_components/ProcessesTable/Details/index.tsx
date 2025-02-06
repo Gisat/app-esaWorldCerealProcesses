@@ -38,8 +38,8 @@ const Details = ({ bbox, startDate, endDate, resultFileFormat, oeoCollection, re
 		</div>
 		<div className="worldCereal-ProcessesTable-Details-column">
 			<DetailsItem label={"Product"}>{collection?.label}</DetailsItem>
-			<DetailsItem label={"Start date"}>{startDate ? new Date(startDate).toDateString() : ''}</DetailsItem>
-			<DetailsItem label={"End date"}>{endDate ? new Date(endDate).toDateString() : ''}</DetailsItem>
+			<DetailsItem label={"Start date"}>{startDate ? new Date(startDate).toLocaleDateString() : ''}</DetailsItem>
+			<DetailsItem label={"End date"}>{endDate ? new Date(endDate).toLocaleDateString() : ''}</DetailsItem>
 			<DetailsItem label={"Output file format"}>{resultFileFormat}</DetailsItem>
 		</div>
 		{results?.[0] && <div className="worldCereal-ProcessesTable-Details-column">

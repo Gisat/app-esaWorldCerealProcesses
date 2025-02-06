@@ -47,7 +47,7 @@ input {
 }
 
 /* Buttons */
-.worldCereal-appContent .worldCereal-Button {
+.esaWorldCerealProcesses .worldCereal-Button {
   height: 2rem;
 
   span {
@@ -64,10 +64,17 @@ input {
   }
 }
 
-.worldCereal-appContent .worldCereal-SecondaryButton {
+.esaWorldCerealProcesses .worldCereal-SecondaryButton {
   span {
     color: var(--textPrimaryColor);
   }
+}
+
+/* Modals */
+.esaWorldCerealProcesses .worldCereal-Modal .mantine-Modal-content {
+  background: var(--lightBackgroundColor);
+  border: 1px solid var(--borderPrimaryColor);
+  padding: 1rem;
 }
 
 

@@ -1,5 +1,5 @@
 import "./style.css";
-import { ActionIcon, Button, Table, Modal, Title, Flex } from "@mantine/core";
+import { Tooltip, ActionIcon, Button, Table, Modal, Title, Flex } from "@mantine/core";
 import { useDisclosure } from '@mantine/hooks';
 import {
 	IconChevronDown,
@@ -59,7 +59,8 @@ const StartJobButton = ({ jobId, forceReloadList }: { jobId?: string, forceReloa
 	}
 
 	return (
-		data?.result?.jobId ? null : <ActionIcon
+		data?.result?.jobId ? null : <Tooltip label="Start process" openDelay={500}>
+			<ActionIcon
 			size="lg"
 			radius="xl"
 			component="a"
@@ -70,6 +71,7 @@ const StartJobButton = ({ jobId, forceReloadList }: { jobId?: string, forceReloa
 		>
 			<IconPlayerPlay size={16} color="var(--startColor)" />
 		</ActionIcon>
+		</Tooltip>
 	);
 }
 
@@ -115,23 +117,18 @@ const RemoveJobButton = ({
 	return (
 		<>
 			<Modal
+				className="worldCereal-Modal"
 				opened={opened}
 				onClose={close}
-
-				overlayProps={{
-					color: '#ffffff61',
-				}}
 				radius={0}
-				closeOnClickOutside={false}
+				closeOnClickOutside={true}
 				withCloseButton={false}
 				size={"xl"}
 				transitionProps={{ transition: 'fade', duration: 200 }}
 			>
-				<Title order={3}>Confirm delete job results.</Title>
 				<Details bbox={bbox} startDate={timeRange?.[0]} endDate={timeRange?.[1]} resultFileFormat={resultFileFormat} oeoCollection={oeoCollection} />
 				<Flex
 					mih={50}
-					bg="rgba(0, 0, 0, .3)"
 					gap="lg"
 					justify="flex-end"
 					align="flex-start"
@@ -139,17 +136,18 @@ const RemoveJobButton = ({
 					wrap="wrap"
 				>
 					<Button
+						className="worldCereal-Button worldCereal-SecondaryButton"
 						size="sm"
 						component="a"
 						target="_blank"
-						variant="outline"
 						onClick={close}
+						color="var(--base500)"
 						disabled={isLoading}
 					>
-						Decide
+						Decline
 					</Button>
 					<Button
-						className="worldCereal-Button circle"
+						className="worldCereal-Button"
 						size="sm"
 						component="a"
 						target="_blank"
@@ -160,17 +158,19 @@ const RemoveJobButton = ({
 					</Button>
 				</Flex>
 			</Modal >
-
-			<ActionIcon
-				size="lg"
-				radius="xl"
-				component="a"
-				target="_blank"
-				variant="subtle"
-				onClick={open}
-			>
-				<IconTrash size={16} color="var(--deleteColor)" />
-			</ActionIcon>
+			
+			<Tooltip label="Delete process" openDelay={500}>
+				<ActionIcon
+					size="lg"
+					radius="xl"
+					component="a"
+					target="_blank"
+					variant="subtle"
+					onClick={open}
+				>
+					<IconTrash size={16} color="var(--deleteColor)" />
+				</ActionIcon>
+			</Tooltip>
 		</>
 	);
 }
@@ -196,19 +196,23 @@ const Record = ({
 			<Table.Tr key={id} className={className}>
 				<Table.Td className="smallTextCell">{id}</Table.Td>
 				<Table.Td className="highlightedCell">Download</Table.Td>
-				<Table.Td>{createdIso && new Date(createdIso).toDateString()}</Table.Td>
+				<Table.Td>{createdIso && new Date(createdIso).toLocaleString()}</Table.Td>
 				<Table.Td>{status ? <ProcessStatus status={status} /> : null}</Table.Td>
 				<Table.Td className="shrinkedCell alignRight">
 					<RemoveJobButton jobId={id} forceReloadList={forceReloadList} bbox={bbox} timeRange={timeRange} resultFileFormat={resultFileFormat} oeoCollection={oeoCollection} />
 					{status === 'created' ?
 						<StartJobButton jobId={id} forceReloadList={forceReloadList} />
 						: null}
-					{results?.[0] ? <ActionIcon radius="lg" size="lg" variant="subtle" aria-label="Settings" onClick={() => setIsExpanded(!isExpanded)}>
-						<IconDownload color="var(--textAccentedColor)" size={16} />
-					</ActionIcon> : null}
-					<ActionIcon radius="lg" size="lg" variant="subtle" aria-label="Settings" onClick={() => setIsExpanded(!isExpanded)}>
-						{isExpanded ? <IconChevronUp size={16} /> : <IconChevronDown size={16} />}
-					</ActionIcon>
+					{results?.[0] ? <Tooltip label="Go to downloads" openDelay={500}>
+						<ActionIcon radius="lg" size="lg" variant="subtle" aria-label="Settings" onClick={() => setIsExpanded(!isExpanded)}>
+							<IconDownload color="var(--textAccentedColor)" size={16} />
+						</ActionIcon>
+					</Tooltip> : null}
+					<Tooltip label="Show details" openDelay={500}>
+						<ActionIcon radius="lg" size="lg" variant="subtle" aria-label="Settings" onClick={() => setIsExpanded(!isExpanded)}>
+							{isExpanded ? <IconChevronUp size={16} /> : <IconChevronDown size={16} />}
+						</ActionIcon>
+					</Tooltip>
 				</Table.Td>
 			</Table.Tr>
 			{isExpanded && (
