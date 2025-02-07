@@ -14,7 +14,6 @@
     "@deck.gl/geo-layers": "^9.0.32",
     "@deck.gl/layers": "^9.0.32",
     "@deck.gl/react": "^9.0.32",
-    "@gisatcz/ptr-core": "^1.8.0",
     "@grafana/faro-web-sdk": "^1.12.2",
     "@grafana/faro-web-tracing": "^1.12.2",
     "@mantine/core": "^7.13.2",
