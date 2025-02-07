@@ -1,3 +1,10 @@
+/*
+CSS variables intended to be exported together with features from fe-core as default values.
+
+TO-DO: Decide what variables are global
+TO-DO: Bundle & export this file with /features
+*/
+
 :root {
     /* Color scales */
     --accent25: #FDF6E5;
@@ -27,32 +34,6 @@
     --base900: #2B2A28;
     --base950: #1D1D1B;
 
-    /* Named colors */
-    --textPrimaryColor: var(--base25);
-    --textSecondaryColor: var(--base400);
-    --textTertiaryColor: var(--base600);
-    --textInvertedColor: var(--base950);
-    --textDisabledColor: var(--base800);
-    --textAccentedColor: var(--accent500);
-
-    --borderLightColor: var(--base200);
-    --borderPrimaryColor: var(--base700);
-    --borderSecondaryColor: var(--base800);
-
-    --iconPrimaryColor: var(--base200);
-    --iconSecondaryColor: var(--base500);
-    --iconAccentedColor: var(--accent500);
-
-    --lightBackgroundColor: var(--base900);
-    --highlightedBackgroundColor: var(--base800);
-    --disabledBackgroundColor: var(--base600);
-    --hoverBackgroundColor: color-mix(in srgb, var(--accent300), transparent 80%);
-
-    --startColor: #19aa33;
-    --successColor: #216c2e;
-    --deleteColor: #dd2100;
-    --errorColor: #912816;
-
     /* Text sizes */
     --textSizeRatio: 1.2;
     --a1: 0.875rem;
@@ -65,12 +46,6 @@
     --a4: calc(var(--a3) * var(--textSizeRatio));
     --a5: calc(var(--a4) * var(--textSizeRatio));
 
-    /* Fonts */
-    --titleFontFamily: "Sen", "Roboto";
-    --labelFontFamily: "Sen", "Roboto";
-    --titleFontWeight: bold;
-
-    /* Layout sizes */
-    --headerHeight: 2.75rem;
-    --pageWidth: 70rem;
+    /* Default font */
+    --defaultFontFamily: "Roboto";
 }

@@ -1,3 +1,43 @@
+@import "global.css";
+
+/* project-specific CSS variables */
+:root {
+  /* Named colors */
+  --textPrimaryColor: var(--base25);
+  --textSecondaryColor: var(--base400);
+  --textTertiaryColor: var(--base600);
+  --textInvertedColor: var(--base950);
+  --textDisabledColor: var(--base800);
+  --textAccentedColor: var(--accent500);
+
+  --borderLightColor: var(--base200);
+  --borderPrimaryColor: var(--base700);
+  --borderSecondaryColor: var(--base800);
+
+  --iconPrimaryColor: var(--base200);
+  --iconSecondaryColor: var(--base500);
+  --iconAccentedColor: var(--accent500);
+
+  --lightBackgroundColor: var(--base900);
+  --highlightedBackgroundColor: var(--base800);
+  --disabledBackgroundColor: var(--base600);
+  --hoverBackgroundColor: color-mix(in srgb, var(--accent300), transparent 80%);
+
+  --startColor: #19aa33;
+  --successColor: #216c2e;
+  --deleteColor: #dd2100;
+  --errorColor: #912816;
+
+  /* Fonts */
+  --titleFontFamily: "Sen", var(--defaultFontFamily);
+  --labelFontFamily: "Sen", var(--defaultFontFamily);
+  --titleFontWeight: bold;
+
+  /* Layout sizes */
+  --headerHeight: 2.75rem;
+  --pageWidth: 70rem;
+}
+
 a {
     color: var(--textAccentedColor);
 }
