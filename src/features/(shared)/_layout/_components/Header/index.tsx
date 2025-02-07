@@ -1,11 +1,11 @@
 "use client"
 import { bool } from "prop-types";
-import { AppShellHeader } from '@mantine/core'
+import {AppShellHeader, Button} from '@mantine/core'
 import Title from "../Title";
 import EsaLogo from "@features/(processes)/_components/EsaLogo";
 import "./style.css";
-import Link from "next/link";
 import { useUserInfoFromIdentity } from "@features/(shared)/_hooks/user.useUserInfoFromIdentity";
+import {IconLogout} from "@tabler/icons-react";
 
 const Header = () => {
 
@@ -23,7 +23,20 @@ const Header = () => {
           {
             (!userInfoValue || !userInfoValue.email) ?
               null :
-              <span>{userInfoValue.email} <Link href={"api/auth/logout"}>Logout</Link></span>
+                <>
+                  <span className="worldCereal-Header-email">{userInfoValue.email} </span>
+                  <Button
+                      leftSection={<IconLogout size={14} />}
+                      className="worldCereal-Button is-secondary is-ghost"
+                      size="sm"
+                      component="a"
+                      target="_blank"
+                      variant="outline"
+                      href="api/auth/logout"
+                  >
+                    Logout
+                  </Button>
+                </>
           }
         </div>
       </div>

@@ -11,19 +11,19 @@ const ProcessStatus = ({ status }: Props) => {
     let icon = null;
     switch (status) {
         case 'pending':
-            color = "#6c6c6c";
+            color = "var(--base500)";
             icon = <IconDots style={{ width: rem(16), height: rem(16) }} />
             break;
         case 'error':
-            color = "#8c2e2e";
+            color = "var(--errorColor)";
             icon = <IconX style={{ width: rem(16), height: rem(16) }} />
             break;
         case 'finished':
-            color = "#327c4f";
+            color = "var(--successColor)";
             icon = <IconChecks style={{ width: rem(16), height: rem(16) }} />
             break;
         case 'created':
-            color = "#a97818";
+            color = "var(--base500)";
             icon = <IconCheck style={{ width: rem(16), height: rem(16) }} />
             break;
     }

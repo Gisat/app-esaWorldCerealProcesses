@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { products } from '@features/(processes)/_constants/app';
 import PageSteps from '@features/(processes)/_components/PageSteps';
 import TwoColumns, { Column } from '@features/(shared)/_layout/_components/TwoColumns';
+import {IconArrowRight} from "@tabler/icons-react";
 
 
 
@@ -26,7 +27,7 @@ const NextButton = ({ collection }: { collection: string | null }) => {
 
 	const nextStep = () => setActive(activeStep + 1);
 	return (
-		<Button disabled={disabled} className={`worldCereal-Button${disabled ? ' is-disabled' : ''}`} onClick={nextStep} >Continue to set parameters</Button>
+		<Button rightSection={<IconArrowRight size={14} />} disabled={disabled} className={`worldCereal-Button${disabled ? ' is-disabled' : ''}`} onClick={nextStep} >Continue to set parameters</Button>
 	);
 }
 
@@ -52,6 +53,7 @@ export default function Page({ searchParams }: {
 	return <TwoColumns>
 		<Column>
 			<Select
+				withAsterisk
 				className="worldCereal-Select"
 				size="md"
 				allowDeselect={false}

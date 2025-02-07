@@ -11,8 +11,7 @@
   grid-gap: 0.5rem;
 
   &:not(:first-child) {
-    min-width: 20rem;
-    margin-left: 2rem;
+    margin-left: 5rem;
   }
 }
 
@@ -21,9 +20,13 @@
     color: var(--textSecondaryColor);
     font-size: var(--a0);
   }
+  div {
+    color: var(--textPrimaryColor);
+    font-size: var(--a1);
+  }
 }
 
 .worldCereal-MapDetails-coordinates {
-  color: var(--base400);
+  color: var(--textSecondaryColor);
   font-size: 0.7497857755rem;
 }

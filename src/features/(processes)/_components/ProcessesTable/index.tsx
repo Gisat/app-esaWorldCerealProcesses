@@ -41,7 +41,6 @@ export const ProcessesTable = ({ data, loading, forceReloadList }: Props) => {
                     <Table.Th>Type</Table.Th>
                     <Table.Th>Created</Table.Th>
                     <Table.Th>Status</Table.Th>
-                    <Table.Th>Result</Table.Th>
                     <Table.Th></Table.Th>
                 </Table.Tr>
             </Table.Thead>
