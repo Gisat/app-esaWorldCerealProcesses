@@ -31,11 +31,11 @@ export default function RootLayout({
         <MantineProvider>
           <AppShell
             withBorder={false}
-            padding="md"
+            padding={0}
             className={"worldCereal-appContent"}
           >
             <Header />
-            <AppShellMain pt={`calc(${rem(50)}`}>
+            <AppShellMain pt={`calc(${rem(64)}`}>
               {children}
             </AppShellMain>
           </AppShell>
