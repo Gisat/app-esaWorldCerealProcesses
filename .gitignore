@@ -36,3 +36,5 @@ next-env.d.ts
 
 #environments
 *.env.*
+.env.*
+.env
