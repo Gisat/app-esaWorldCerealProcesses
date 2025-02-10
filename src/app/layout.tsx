@@ -6,7 +6,6 @@ import { AppShell, AppShellMain, rem } from '@mantine/core';
 import MantineProvider from "@features/(shared)/_components/providers/Mantine";
 
 import './styles/index.css';
-import './global.css';
 import '@mantine/core/styles.css';
 import '@mantine/dates/styles.css';
 
@@ -32,12 +31,11 @@ export default function RootLayout({
         <MantineProvider>
           <AppShell
             withBorder={false}
-            header={{ height: 50 }}
-            padding="md"
+            padding={0}
             className={"worldCereal-appContent"}
           >
             <Header />
-            <AppShellMain pt={`calc(${rem(50)}`}>
+            <AppShellMain pt={`calc(${rem(64)}`}>
               {children}
             </AppShellMain>
           </AppShell>
