@@ -126,12 +126,7 @@ export default function Page({ searchParams }: {
 	}
 
 	const transformDate = (value: Date | null) => {
-		const stringDate = value?.toLocaleDateString();
-		if (stringDate) {
-			return `${stringDate.substring(6, 10)}-${stringDate.substring(3, 5)}-${stringDate.substring(0, 2)}`
-		} else {
-			return null
-		}
+		return value ? new Date(value).toISOString().split("T")[0] : null;
 	}
 
 	const onBboxChange = (extent?: BboxType) => {
