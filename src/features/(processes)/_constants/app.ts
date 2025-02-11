@@ -1,4 +1,8 @@
-import { IconCirclePlus, IconListDetails } from "@tabler/icons-react";
+import {
+  IconCirclePlus,
+  IconListDetails,
+  IconPhotoPlus,
+} from "@tabler/icons-react";
 
 export const products: Array<{ value: string; label: string }> = [
   {
@@ -30,6 +34,7 @@ export const products: Array<{ value: string; label: string }> = [
 export const pages = {
   processesList: { url: "processes-list" },
   createDownloadProcess: { url: "create-download-process" },
+  createProductProcess: { url: "create-product-process" },
 };
 
 export const navbarItems = [
@@ -42,5 +47,10 @@ export const navbarItems = [
     key: pages.createDownloadProcess.url,
     title: "Create download process",
     icon: IconCirclePlus,
+  },
+  {
+    key: pages.createProductProcess.url,
+    title: "Create product process",
+    icon: IconPhotoPlus,
   },
 ];
