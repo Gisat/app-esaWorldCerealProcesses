@@ -10,7 +10,7 @@ import PageSteps from '@features/(processes)/_components/PageSteps';
 import { MapExtentSelect } from '@features/(shared)/_components/map/MapExtentSelect';
 import FormLabel from '@features/(shared)/_layout/_components/FormLabel';
 import TwoColumns, { Column } from '@features/(shared)/_layout/_components/TwoColumns';
-import {IconCheck} from "@tabler/icons-react";
+import { IconCheck } from "@tabler/icons-react";
 
 
 
@@ -23,8 +23,10 @@ const defaultHeight = "10000";
 const minSize = 100;
 const maxSize = 500000;
 
+const defaultOutputFileFormat = "GTIFF";
 
 type BboxType = [] | number[] | undefined;
+type OutputFileFormatType = string | undefined;
 
 type searchParamsType = {
 	step?: string;
@@ -34,13 +36,14 @@ type searchParamsType = {
 	bbox?: string;
 	width?: string;
 	height?: string;
+	off?: string;
 }
 
 const fetcher = (url: string, queryParams: string) => {
 	return fetch(`${url}?${queryParams}`).then(r => r.json());
 }
 
-const CreateJobButton = ({ setValues, params, searchParams }: { searchParams?: searchParamsType, setValues: (pairs: Array<[value: string, key: string]>) => void, params: { startDate?: string, endDate?: string, bbox?: string, outputFileFormat?: string, collection?: string } }) => {
+const CreateJobButton = ({ setValues, params, searchParams }: { searchParams?: searchParamsType, setValues: (pairs: Array<[value: string, key: string]>) => void, params: { startDate?: string, endDate?: string, bbox?: string, off?: string, collection?: string } }) => {
 	const [shouldFetch, setShouldFetch] = useState(false);
 	const url = `/api/jobs/create`
 	const urlParams = new URLSearchParams(params)
@@ -72,15 +75,7 @@ const CreateJobButton = ({ setValues, params, searchParams }: { searchParams?: s
 }
 
 export default function Page({ searchParams }: {
-	searchParams?: {
-		step?: string;
-		startDate?: string;
-		endDate?: string;
-		collection?: string;
-		bbox?: string;
-		width?: string;
-		height?: string;
-	}
+	searchParams?: searchParamsType
 }) {
 
 	// const [cookieValue, _] = useUserInfoCookie()
@@ -103,7 +98,7 @@ export default function Page({ searchParams }: {
 		startDate: startDate,
 		endDate: endDate,
 		collection: collection,
-		outputFileFormat: 'NETCDF',
+		off: searchParams?.off || defaultOutputFileFormat,
 	}
 
 	const setValue = (value: string | null | undefined, key: string, val?: any) => {
@@ -131,6 +126,10 @@ export default function Page({ searchParams }: {
 
 	const onBboxChange = (extent?: BboxType) => {
 		setValue(extent?.join(","), 'bbox');
+	}
+
+	const onOutpoutFormatChange = (off?: OutputFileFormatType) => {
+		setValue(off, 'off');
 	}
 
 	useEffect(() => {
@@ -186,7 +185,7 @@ export default function Page({ searchParams }: {
 
 				<div>
 					<FormLabel>Output file format</FormLabel>
-					<SegmentedControl className="worldCereal-SegmentedControl" size="md" readOnly defaultValue="NETCDF" data={[{ label: 'netCDF', value: 'NETCDF' }, { label: 'GeoTIFF', value: 'geotiff', disabled: true, }]} />
+					<SegmentedControl onChange={(value) => onOutpoutFormatChange(value)} className="worldCereal-SegmentedControl" size="md" defaultValue={defaultOutputFileFormat} data={[{ label: 'netCDF', value: 'NETCDF' }, { label: 'GeoTIFF', value: 'GTIFF' }]} />
 				</div>
 			</Stack>
 		</Column>
