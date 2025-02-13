@@ -7,26 +7,24 @@ import { DateInput } from '@mantine/dates';
 import { Button, Stack, SegmentedControl } from '@mantine/core';
 import { products } from "@features/(processes)/_constants/app";
 import PageSteps from '@features/(processes)/_components/PageSteps';
-import { MapExtentSelect } from '@features/(shared)/_components/map/MapExtentSelect';
+import { MapBBox } from '@features/(shared)/_components/map/MapBBox';
 import FormLabel from '@features/(shared)/_layout/_components/FormLabel';
 import TwoColumns, { Column } from '@features/(shared)/_layout/_components/TwoColumns';
 import { IconCheck } from "@tabler/icons-react";
 
-
-
 const minDate = new Date("2021-01-01");
 const maxDate = new Date("2022-01-01");
-
-const defaultWidth = "10000";
-const defaultHeight = "10000";
-
-const minSize = 100;
-const maxSize = 500000;
 
 const defaultOutputFileFormat = "GTIFF";
 
 type BboxType = [] | number[] | undefined;
 type OutputFileFormatType = string | undefined;
+
+const roundCoordinates = (coordinatesToRound) => coordinatesToRound.map((coordinates, index) => {
+	return `[${coordinates.map(coordinate => {
+		return `${Math.round(coordinate * 100) / 100}`
+	})}]${coordinatesToRound?.length - 1 !== index ? "," : ""} `
+})
 
 type searchParamsType = {
 	step?: string;
@@ -50,6 +48,8 @@ const CreateJobButton = ({ setValues, params, searchParams }: { searchParams?: s
 
 	const { data, isLoading } = useSWR(shouldFetch ? [url, urlParams.toString()] : null, () => fetcher(url, urlParams.toString()));
 
+	//console.log(data, params, searchParams, urlParams)
+
 	if (shouldFetch && data) {
 		setShouldFetch(false)
 	}
@@ -64,13 +64,10 @@ const CreateJobButton = ({ setValues, params, searchParams }: { searchParams?: s
 		setShouldFetch(true);
 	}
 
-	const width = searchParams?.width || defaultWidth;
-	const height = searchParams?.height || defaultHeight;
-	const widthInvalid = width && (Number(width) < minSize || Number(width) > maxSize)
-	const heightInvalid = height && (Number(height) < minSize || Number(height) > maxSize)
+	const bboxPoints = searchParams?.bbox?.split(",");
 
 	return (
-		<Button leftSection={<IconCheck size={14} />} disabled={isLoading || !!widthInvalid || !!heightInvalid} className="worldCereal-Button" onClick={handleClick} >{isLoading ? 'Creating...' : 'Create process'}</Button>
+		<Button leftSection={<IconCheck size={14} />} disabled={isLoading || !bboxPoints} className="worldCereal-Button" onClick={handleClick} >{isLoading ? 'Creating...' : 'Create process'}</Button>
 	);
 }
 
@@ -78,8 +75,8 @@ export default function Page({ searchParams }: {
 	searchParams?: searchParamsType
 }) {
 
-	// const [cookieValue, _] = useUserInfoCookie()
-	// useRedirectIf(() => cookieValue === undefined, "/")
+	const [areaBbox, setAreaBbox] = useState<number | undefined>(undefined);
+	const [currentExtent, setCurrentExtent] = useState<BboxType>(undefined);
 
 	const router = useRouter()
 	const startDate = searchParams?.startDate || "2021-01-01";
@@ -90,8 +87,6 @@ export default function Page({ searchParams }: {
 
 	const collection = searchParams?.collection || undefined;
 
-	const width = searchParams?.width || defaultWidth;
-	const height = searchParams?.height || defaultHeight;
 
 	const params = {
 		bbox: searchParams?.bbox || undefined,
@@ -104,11 +99,15 @@ export default function Page({ searchParams }: {
 	const setValue = (value: string | null | undefined, key: string, val?: any) => {
 		const url = new URL(window.location.href);
 
-		url.searchParams.set(key, value || "");
+		if (value) {
+			url.searchParams.set(key, value);
+		} else {
+			url.searchParams.delete(key);
+		}
 		// @ts-expect-error 'shallow' does not exist in type 'NavigateOptions'
 		router.push(url.toString(), { shallow: true, scroll: false })
-	}
 
+	}
 	const setValues = (pairs: [value: string | null | undefined, key: string, val?: any][]) => {
 		const url = new URL(window.location.href);
 
@@ -125,7 +124,12 @@ export default function Page({ searchParams }: {
 	}
 
 	const onBboxChange = (extent?: BboxType) => {
-		setValue(extent?.join(","), 'bbox');
+		if (extent?.length === 4) {
+			const cornerPoints = [extent?.[2], extent?.[0]];
+			setCurrentExtent(cornerPoints);
+		} else {
+			setCurrentExtent(undefined);
+		}
 	}
 
 	const onOutpoutFormatChange = (off?: OutputFileFormatType) => {
@@ -135,18 +139,39 @@ export default function Page({ searchParams }: {
 	useEffect(() => {
 		setValue(transformDate(endDateDate), 'endDate')
 		setValue(transformDate(startDateDate), 'startDate')
-	}, [endDateDate, setValue, startDateDate]);
+		setValue(currentExtent?.join(","), 'bbox');
+	}, [endDateDate, setValue, startDateDate, currentExtent]);
 
 	const collectionName = collection && products.find(p => p.value === collection)?.label;
 
 	const bbox = searchParams?.bbox?.split(",");
-	const longitude = bbox ? (Number(bbox[0]) + Number(bbox[2])) / 2 : 15
-	const latitude = bbox ? (Number(bbox[1]) + Number(bbox[3])) / 2 : 50
+	// const longitude = bbox ? (Number(bbox[0]) + Number(bbox[2])) / 2 : 15
+	// const latitude = bbox ? (Number(bbox[1]) + Number(bbox[3])) / 2 : 50
+
+
+	let coordinatesToDisplay = null;
+
+	//console.log(coordinatesToDisplay, bbox, currentExtent)
+
+	if (currentExtent) {
+		coordinatesToDisplay = roundCoordinates([currentExtent?.[0], currentExtent?.[1]]);
+	} else if (bbox) {
+		coordinatesToDisplay = roundCoordinates([[bbox?.[0], bbox?.[1]], [bbox?.[2], bbox?.[3]]]);
+	} else {
+		coordinatesToDisplay = "none";
+	}
+
+	//let bboxArea;
+
+
+
+	console.log(areaBbox)
 
 	return <TwoColumns>
 		<Column>
-			<FormLabel>Zoom map to select extent</FormLabel>
-			<MapExtentSelect onBboxChange={onBboxChange} extentSizeInMeters={[Number.parseInt(width), Number.parseInt(height)]} longitude={longitude} latitude={latitude} />
+			<FormLabel>Draw the extent (maximum 500 x 500 km)</FormLabel>
+			<MapBBox onBboxChange={onBboxChange} bbox={bbox} setAreaBbox={setAreaBbox}/>
+			<FormLabel>Current extent: {coordinatesToDisplay} ({areaBbox} sqkm)</FormLabel>
 			<PageSteps NextButton={createElement(CreateJobButton, { setValues, params, searchParams })} />
 		</Column>
 		<Column>
