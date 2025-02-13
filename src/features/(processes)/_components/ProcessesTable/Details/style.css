@@ -26,6 +26,11 @@
   }
 }
 
+.worldCereal-ProcessesTable-DetailItem-result {
+  display: inline;
+  margin-right: 0.5rem;
+}
+
 .worldCereal-MapDetails-coordinates {
   color: var(--textSecondaryColor);
   font-size: 0.7497857755rem;
