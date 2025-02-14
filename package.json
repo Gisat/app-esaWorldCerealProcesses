@@ -27,22 +27,23 @@
     "jsonwebtoken": "^9.0.2",
     "next": "14.2.13",
     "openid-client": "^5.7.0",
+    "prop-types": "^15.8.1",
     "react": "^18",
     "react-dom": "^18",
     "swr": "^2.2.5"
   },
   "devDependencies": {
-    "eslint": "^8.0.0",
-    "eslint-config-next": "14.2.13",
-    "eslint-plugin-import": "^2.31.0",
-    "@typescript-eslint/eslint-plugin": "^8.19.1",
-    "@typescript-eslint/parser": "^8.19.1",
-    "typescript": "^5",
     "@types/js-cookie": "^3.0.6",
     "@types/jsonwebtoken": "^9.0.7",
     "@types/lodash": "^4.17.10",
     "@types/node": "^20",
     "@types/react": "^18",
-    "@types/react-dom": "^18"
+    "@types/react-dom": "^18",
+    "@typescript-eslint/eslint-plugin": "^8.19.1",
+    "@typescript-eslint/parser": "^8.19.1",
+    "eslint": "^8.0.0",
+    "eslint-config-next": "14.2.13",
+    "eslint-plugin-import": "^2.31.0",
+    "typescript": "^5"
   }
 }
