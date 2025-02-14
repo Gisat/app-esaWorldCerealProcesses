@@ -185,7 +185,7 @@ export default function Page({ searchParams }: {
 
 				<div>
 					<FormLabel>Output file format</FormLabel>
-					<SegmentedControl onChange={(value) => onOutpoutFormatChange(value)} className="worldCereal-SegmentedControl" size="md" defaultValue={defaultOutputFileFormat} data={[{ label: 'netCDF', value: 'NETCDF' }, { label: 'GeoTIFF', value: 'GTIFF' }]} />
+					<SegmentedControl onChange={(value) => onOutpoutFormatChange(value)} className="worldCereal-SegmentedControl" size="md" defaultValue={defaultOutputFileFormat} data={[{ label: 'netCDF', value: 'NETCDF' }, { label: 'GeoTIFF', value: 'GTiff' }]} />
 				</div>
 			</Stack>
 		</Column>

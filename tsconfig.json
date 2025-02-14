@@ -40,8 +40,9 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    ".next/types/**/*.ts"
-, "src/features/(map)/_components/layers/ExtentLayer.ts"  ],
+    ".next/types/**/*.ts",
+    "src/features/(map)/_components/layers/ExtentLayer.ts"
+  ],
   "exclude": [
     "node_modules"
   ]
