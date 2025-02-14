@@ -11,6 +11,7 @@ type Props = {
         "createdIso": Date,
         "duration": number,
         "key": string,
+        "type": string,
         "name": string,
         "oeoCollection": string,
         "resultFileFormat": string,
@@ -25,8 +26,8 @@ type Props = {
 export const ProcessesTable = ({ data, loading, forceReloadList }: Props) => {
 
     const rows = data?.map(
-        ({ resultFileFormat, createdIso, status, results, key, bbox, timeRange, oeoCollection }) => (
-            <Record key={key} id={key} createdIso={createdIso} status={status} results={results} bbox={bbox}
+        ({ resultFileFormat, createdIso, status, results, key, type, bbox, timeRange, oeoCollection }) => (
+            <Record key={key} id={key} type={type} createdIso={createdIso} status={status} results={results} bbox={bbox}
                 timeRange={timeRange}
                 resultFileFormat={resultFileFormat}
                 oeoCollection={oeoCollection} forceReloadList={forceReloadList} />

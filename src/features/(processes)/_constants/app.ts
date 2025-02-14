@@ -44,3 +44,9 @@ export const navbarItems = [
     icon: IconCirclePlus,
   },
 ];
+
+export const processTypes = {
+  download: "Download",
+  product: "Product",
+  unknown: "Unknown type"
+}
