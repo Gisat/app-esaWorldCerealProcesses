@@ -44,7 +44,7 @@ const Details = ({ bbox, startDate, endDate, resultFileFormat, oeoCollection, re
 		</div>
 		{results?.[0] && <div className="worldCereal-ProcessesTable-Details-column">
 			<DetailsItem label={"Download results"}>
-				{results.map((result, index) => <div className="worldCereal-ProcessesTable-DetailItem-result"><a key={result.source_link} href={result.source_link}>Product {index + 1}</a></div>)}
+				{results.map((result, index) => <div key={result.source_link} className="worldCereal-ProcessesTable-DetailItem-result"><a href={result.source_link}>Product {index + 1}</a></div>)}
 			</DetailsItem>
 		</div>}
 	</div>
