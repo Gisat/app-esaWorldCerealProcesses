@@ -23,7 +23,7 @@ const defaultHeight = "10000";
 const minSize = 100;
 const maxSize = 500000;
 
-const defaultOutputFileFormat = "GTIFF";
+const defaultOutputFileFormat = "GTiff";
 
 type BboxType = [] | number[] | undefined;
 type OutputFileFormatType = string | undefined;
@@ -185,7 +185,7 @@ export default function Page({ searchParams }: {
 
 				<div>
 					<FormLabel>Output file format</FormLabel>
-					<SegmentedControl onChange={(value) => onOutpoutFormatChange(value)} className="worldCereal-SegmentedControl" size="md" defaultValue={defaultOutputFileFormat} data={[{ label: 'netCDF', value: 'NETCDF' }, { label: 'GeoTIFF', value: 'GTiff' }]} />
+					<SegmentedControl onChange={(value) => onOutpoutFormatChange(value)} className="worldCereal-SegmentedControl" size="md" defaultValue={defaultOutputFileFormat} data={[{ label: 'NetCDF', value: 'NETCDF' }, { label: 'GeoTiff', value: 'GTiff' }]} />
 				</div>
 			</Stack>
 		</Column>
