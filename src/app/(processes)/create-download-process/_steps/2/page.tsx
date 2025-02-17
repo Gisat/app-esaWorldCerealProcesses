@@ -17,14 +17,8 @@ const maxDate = new Date("2022-01-01");
 
 const defaultOutputFileFormat = "GTIFF";
 
-type BboxType = [] | number[] | undefined;
+type BboxType = [] | number[][] | null | undefined;
 type OutputFileFormatType = string | undefined;
-
-const roundCoordinates = (coordinatesToRound) => coordinatesToRound.map((coordinates, index) => {
-	return `[${coordinates.map(coordinate => {
-		return `${Math.round(coordinate * 100) / 100}`
-	})}]${coordinatesToRound?.length - 1 !== index ? "," : ""} `
-})
 
 type searchParamsType = {
 	step?: string;
@@ -47,8 +41,6 @@ const CreateJobButton = ({ setValues, params, searchParams }: { searchParams?: s
 	const urlParams = new URLSearchParams(params)
 
 	const { data, isLoading } = useSWR(shouldFetch ? [url, urlParams.toString()] : null, () => fetcher(url, urlParams.toString()));
-
-	//console.log(data, params, searchParams, urlParams)
 
 	if (shouldFetch && data) {
 		setShouldFetch(false)
@@ -74,9 +66,11 @@ const CreateJobButton = ({ setValues, params, searchParams }: { searchParams?: s
 export default function Page({ searchParams }: {
 	searchParams?: searchParamsType
 }) {
+	const bbox = searchParams?.bbox?.split(",");
 
 	const [areaBbox, setAreaBbox] = useState<number | undefined>(undefined);
-	const [currentExtent, setCurrentExtent] = useState<BboxType>(undefined);
+	const [coordinatesToDisplay, setCoordinatesToDisplay] = useState<string | string[] | null>(null);
+	const [currentExtent, setCurrentExtent] = useState<BboxType>(bbox ? [bbox.map(Number)] : undefined);
 
 	const router = useRouter()
 	const startDate = searchParams?.startDate || "2021-01-01";
@@ -96,7 +90,8 @@ export default function Page({ searchParams }: {
 		off: searchParams?.off || defaultOutputFileFormat,
 	}
 
-	const setValue = (value: string | null | undefined, key: string, val?: any) => {
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	const setValue = (value: string | null | undefined, key: string) => {
 		const url = new URL(window.location.href);
 
 		if (value) {
@@ -106,8 +101,8 @@ export default function Page({ searchParams }: {
 		}
 		// @ts-expect-error 'shallow' does not exist in type 'NavigateOptions'
 		router.push(url.toString(), { shallow: true, scroll: false })
-
 	}
+
 	const setValues = (pairs: [value: string | null | undefined, key: string, val?: any][]) => {
 		const url = new URL(window.location.href);
 
@@ -123,7 +118,7 @@ export default function Page({ searchParams }: {
 		return value ? new Date(value).toISOString().split("T")[0] : null;
 	}
 
-	const onBboxChange = (extent?: BboxType) => {
+	const onBboxChange = (extent?: Array<Array<number>> | null) => {
 		if (extent?.length === 4) {
 			const cornerPoints = [extent?.[2], extent?.[0]];
 			setCurrentExtent(cornerPoints);
@@ -140,38 +135,15 @@ export default function Page({ searchParams }: {
 		setValue(transformDate(endDateDate), 'endDate')
 		setValue(transformDate(startDateDate), 'startDate')
 		setValue(currentExtent?.join(","), 'bbox');
-	}, [endDateDate, setValue, startDateDate, currentExtent]);
+	}, [setValue, endDateDate, startDateDate, currentExtent]);
 
 	const collectionName = collection && products.find(p => p.value === collection)?.label;
-
-	const bbox = searchParams?.bbox?.split(",");
-	// const longitude = bbox ? (Number(bbox[0]) + Number(bbox[2])) / 2 : 15
-	// const latitude = bbox ? (Number(bbox[1]) + Number(bbox[3])) / 2 : 50
-
-
-	let coordinatesToDisplay = null;
-
-	//console.log(coordinatesToDisplay, bbox, currentExtent)
-
-	if (currentExtent) {
-		coordinatesToDisplay = roundCoordinates([currentExtent?.[0], currentExtent?.[1]]);
-	} else if (bbox) {
-		coordinatesToDisplay = roundCoordinates([[bbox?.[0], bbox?.[1]], [bbox?.[2], bbox?.[3]]]);
-	} else {
-		coordinatesToDisplay = "none";
-	}
-
-	//let bboxArea;
-
-
-
-	console.log(areaBbox)
 
 	return <TwoColumns>
 		<Column>
 			<FormLabel>Draw the extent (maximum 500 x 500 km)</FormLabel>
-			<MapBBox onBboxChange={onBboxChange} bbox={bbox} setAreaBbox={setAreaBbox}/>
-			<FormLabel>Current extent: {coordinatesToDisplay} ({areaBbox} sqkm)</FormLabel>
+			<MapBBox onBboxChange={onBboxChange} bbox={bbox?.map(Number)} setAreaBbox={setAreaBbox} setCoordinatesToDisplay={setCoordinatesToDisplay} />
+			<FormLabel>Current extent: {bbox ? coordinatesToDisplay : "none"} {areaBbox && bbox ? `(${areaBbox} sqkm)` : ""}</FormLabel>
 			<PageSteps NextButton={createElement(CreateJobButton, { setValues, params, searchParams })} />
 		</Column>
 		<Column>
@@ -184,7 +156,7 @@ export default function Page({ searchParams }: {
 					size="md"
 					className="worldCereal-DateInput"
 					value={startDateDate}
-					onChange={(value) => setValue(transformDate(value), 'startDate', value)}
+					onChange={(value) => setValue(transformDate(value), 'startDate')}
 					label="Start date"
 					placeholder="Select start date"
 					valueFormat="YYYY-MM-DD"

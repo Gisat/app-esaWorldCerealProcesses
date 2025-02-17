@@ -79,6 +79,7 @@ const BoundingBox: React.FC<BoundingBoxProps> = ({
 		} else if (bboxDragInfo?.dragType === DRAG_LAYER_BORDER) {
 			editLayerBorder(bboxDragInfo?.coordinates, activeBboxPoints, originalBboxBorderCoordinates, updatedAvailableAreaLat, updatedAvailableAreaLong, minBboxArea, updatedAvailableArea, setActiveBboxPoints, setOriginalBboxBorderCoordinates);
 		}
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [bboxDragInfo]);
 
 	// Effect to update available area based on the provided coordinates
@@ -118,7 +119,7 @@ const BoundingBox: React.FC<BoundingBoxProps> = ({
 					setEditModeIsActive(false);
                 }
 			}
-		} else if (info.layer.id === LAYER_ID_BBOX && bboxIsHovered !== HOVER_BLOCKED) {
+		} else if (info.layer?.id === LAYER_ID_BBOX && bboxIsHovered !== HOVER_BLOCKED) {
 			setEditModeIsActive(!editModeIsActive);
 		}
 	};
@@ -243,7 +244,7 @@ const BoundingBox: React.FC<BoundingBoxProps> = ({
 						availableAreaLayer(updatedAvailableArea, editModeIsActive),
 						bboxLayer(activeBboxPoints, bboxIsHovered, editModeIsActive, predictedHoveredPoints)
 					]],
-					getCursor: !disabled ? getCursor : null,
+					getCursor: !disabled ? getCursor : () => {return "default"},
 					onHover: !disabled ? onHover : null,
 					onDrag: !disabled ? onDrag : null,
 					onStartDragging: !disabled ? onStartDragging : null,

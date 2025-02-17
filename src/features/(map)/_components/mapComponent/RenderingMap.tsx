@@ -1,7 +1,7 @@
 "use client"
 
 import styles from "./map.module.css";
-import React, { useEffect } from "react";
+import React from "react";
 import { LayersList } from "@deck.gl/core";
 import DeckGL from '@deck.gl/react';
 import { TileLayer } from "@deck.gl/geo-layers";
@@ -20,8 +20,8 @@ export interface RenderMapProps {
 	onStopDragging?: (info: object) => void,
 	onViewStateChange?: (info: object) => void,
 	disableControlls?: boolean,
-	initialView: object,
-	getMetersPerUnit?: (unit: string) => number
+	initialView: object | null,
+	getMetersPerUnit?: (distanceScales: { unitsPerDegree?: Array<number>; metersPerUnit: Array<number>; }) => void
 }
 
 /** Rendered map with DeckGL tool used as a geospatial renderer */
@@ -29,13 +29,9 @@ const RenderingMap: React.FC<RenderMapProps> = (props: RenderMapProps) => {
 
 	const distanceScales = props?.mapRef?.current?.deck?.viewManager?._viewports?.[0]?.distanceScales;
 
-	useEffect(() => {
-		if (props.getMetersPerUnit) {
-			props.getMetersPerUnit(distanceScales)
-		}
-	}, [distanceScales])
-
-	console.log(props?.mapRef?.current?.deck?.viewManager?._viewports?.[0]?.distanceScales?.metersPerUnit)
+	if (props.getMetersPerUnit && distanceScales) {
+		props.getMetersPerUnit(distanceScales);
+	}
 	
 	const tileLayer = new TileLayer({
 		id: 'TileLayer',
@@ -59,7 +55,7 @@ const layers = [tileLayer, props.layer];
     <section className={`${styles.mapRender}`}>
       <DeckGL
 				ref={props.mapRef}
-        initialViewState={props.initialView} // get it from bbox points
+        initialViewState={props.initialView}
         layers={layers}
         controller={!props.disableControlls}
         style={{ position: "relative", width: props.width, height: props.height }}

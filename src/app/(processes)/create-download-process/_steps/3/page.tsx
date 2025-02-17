@@ -59,10 +59,8 @@ export default function Page({ searchParams }: {
 
 	const { data } = useSWR(`/api/jobs/get/${jobId}`, fetcher)
 
-	const bboxDefault = [14.930110323103813,49.9550126943005,15.070020534862463,50.04494524876757]; // data?.bbox
-
 	return <>
-		{data ? <Details bbox={bboxDefault} startDate={data?.timeRange?.[0]} endDate={data?.timeRange?.[1]} resultFileFormat={data?.resultFileFormat} oeoCollection={data?.oeoCollection} /> : null}
+		{data ? <Details bbox={data?.bbox} startDate={data?.timeRange?.[0]} endDate={data?.timeRange?.[1]} resultFileFormat={data?.resultFileFormat} oeoCollection={data?.oeoCollection} /> : null}
 		<PageSteps NextButton={createElement(StartJobButton, { jobId })} />
 	</>
 }
