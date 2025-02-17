@@ -82,7 +82,7 @@ export const MapBBox = function ({ onBboxChange, bbox, disabled, mapSize = defau
 				width="100%"
 				height="100%"
 				initialView={initialView}
-				getMetersPerUnit={setDistanceScales}
+				setDistanceScales={setDistanceScales}
 			/>
 		</BoundingBox>
 	</div>

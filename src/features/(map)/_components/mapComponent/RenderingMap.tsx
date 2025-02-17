@@ -21,7 +21,7 @@ export interface RenderMapProps {
 	onViewStateChange?: (info: object) => void,
 	disableControlls?: boolean,
 	initialView: object | null,
-	getMetersPerUnit?: (distanceScales: { unitsPerDegree?: Array<number>; metersPerUnit: Array<number>; }) => void
+	setDistanceScales?: (distanceScales: { unitsPerDegree?: Array<number>; metersPerUnit: Array<number>; }) => void
 }
 
 /** Rendered map with DeckGL tool used as a geospatial renderer */
@@ -29,8 +29,8 @@ const RenderingMap: React.FC<RenderMapProps> = (props: RenderMapProps) => {
 
 	const distanceScales = props?.mapRef?.current?.deck?.viewManager?._viewports?.[0]?.distanceScales;
 
-	if (props.getMetersPerUnit && distanceScales) {
-		props.getMetersPerUnit(distanceScales);
+	if (props.setDistanceScales && distanceScales) {
+		props.setDistanceScales(distanceScales);
 	}
 	
 	const tileLayer = new TileLayer({
