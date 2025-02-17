@@ -1,4 +1,5 @@
 import { fetchWithSessions } from "@features/(auth)/_ssr/handlers.sessionFetch";
+import { getSamples } from "@features/(processes)/_utils/sample.loader";
 import { NextRequest, NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
@@ -22,8 +23,10 @@ export async function GET(req: NextRequest) {
         },
       })
 
+    const samples = getSamples();
+
     if (status === 200) {
-      const nextResponse = NextResponse.json(backendContent);
+      const nextResponse = NextResponse.json([].concat(samples, backendContent));
 
       if (setCookieHeader) {
         nextResponse.headers.set('set-cookie', setCookieHeader);
