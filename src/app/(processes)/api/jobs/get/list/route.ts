@@ -13,7 +13,7 @@ import { NextRequest, NextResponse } from "next/server";
 const getProcessesWithCorrectProductType = (processes: any[]): any[] => {
   // Map processes to prevent mutation and set type to default value
   return processes.map((p: any) => {
-    let processWithCorrectProductType = {
+    const processWithCorrectProductType = {
       ...p,
       type: processTypes.unknown,
     }
