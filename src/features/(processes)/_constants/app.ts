@@ -45,8 +45,8 @@ export const navbarItems = [
   },
 ];
 
-export const processTypes = {
-  download: "Download",
-  product: "Product",
-  unknown: "Unknown type"
+export const enum processTypes {
+  download = "Download",
+  product = "Product",
+  unknown = "Unknown type"
 }
