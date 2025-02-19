@@ -23,7 +23,17 @@ type Props = {
     ;
 }
 
-export const ProcessesTable = ({ data, loading, forceReloadList }: Props) => {
+/**
+ * ProcessesTable component renders a table displaying a list of processes.
+ *
+ * @param {Object} props - The component props.
+ * @param {Array} props.data - The data array containing process information.
+ * @param {boolean} props.loading - A boolean indicating if the data is still loading.
+ * @param {Function} props.forceReloadList - A function to force reload the list of processes.
+ *
+ * @returns {JSX.Element} The rendered ProcessesTable component.
+ */
+export const ProcessesTable = ({ data, loading, forceReloadList }: Props): JSX.Element => {
 
     const rows = data?.map(
         ({ resultFileFormat, createdIso, status, results, key, type, bbox, timeRange, oeoCollection }) => (
