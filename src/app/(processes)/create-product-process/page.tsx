@@ -2,6 +2,17 @@ import Step1 from "./_steps/1/page";
 import Step2 from "./_steps/2/page";
 import Step3 from "./_steps/3/page";
 
+/**
+ * Returns the appropriate step component based on the provided step number.
+ *
+ * @param {number} step - The current step number.
+ * @param {Object} searchParams - The search parameters passed to the step component.
+ * @returns {JSX.Element} The corresponding step component or an error message if the step is invalid.
+ *
+ * @example
+ * const stepComponent = getStepComponent(2, { query: "example" });
+ * console.log(stepComponent); // Renders <Step2 searchParams={{ query: "example" }} />
+ */
 const getStepComponent = (step: number, searchParams: any) => {
   switch (step) {
     case 1:
@@ -16,6 +27,19 @@ const getStepComponent = (step: number, searchParams: any) => {
   }
 };
 
+/**
+ * The main page component that renders the appropriate step component
+ * based on the `step` query parameter in `searchParams`.
+ *
+ * @param {Object} props - Component props.
+ * @param {Object} [props.searchParams] - Optional search parameters containing query values.
+ * @param {string} [props.searchParams.query] - An optional query string.
+ * @param {string} [props.searchParams.step] - The step number as a string.
+ * @returns {JSX.Element} The corresponding step component based on the step number.
+ *
+ * @example
+ * <Page searchParams={{ step: "1", query: "example" }} />
+ */
 export default function Page({
   searchParams,
 }: {

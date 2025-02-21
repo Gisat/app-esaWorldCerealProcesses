@@ -1,5 +1,7 @@
 "use client";
 
+import { apiFetcher } from "@app/(shared)/_fetch/apiFetcher";
+import { getBBoxFromSearchParams } from "@app/(shared)/_map/getBbox";
 import PageSteps from "@features/(processes)/_components/PageSteps";
 import { products } from "@features/(processes)/_constants/app";
 import { MapExtentSelect } from "@features/(shared)/_components/map/MapExtentSelect";
@@ -35,10 +37,15 @@ type searchParamsType = {
   height?: string;
 };
 
-const fetcher = (url: string, queryParams: string) => {
-  return fetch(`${url}?${queryParams}`).then((r) => r.json());
-};
-
+/**
+ * CreateJobButton Component
+ *
+ * @param {Object} props - Component props
+ * @param {Function} props.setValues - Function to update search parameters.
+ * @param {Object} props.params - The parameters required for job creation.
+ * @param {searchParamsType} props.searchParams - URL search parameters.
+ * @returns {JSX.Element} Button component for creating a job process.
+ */
 const CreateJobButton = ({
   setValues,
   params,
@@ -60,7 +67,7 @@ const CreateJobButton = ({
 
   const { data, isLoading } = useSWR(
     shouldFetch ? [url, urlParams.toString()] : null,
-    () => fetcher(url, urlParams.toString())
+    () => apiFetcher(url, urlParams.toString())
   );
 
   if (shouldFetch && data) {
@@ -76,6 +83,9 @@ const CreateJobButton = ({
     }, 50);
   }
 
+  /**
+   * Handles button click event to initiate job creation.
+   */
   function handleClick() {
     setShouldFetch(true);
   }
@@ -99,6 +109,13 @@ const CreateJobButton = ({
   );
 };
 
+/**
+ * Page Component
+ *
+ * @param {Object} props - Component props
+ * @param {searchParamsType} [props.searchParams] - URL search parameters.
+ * @returns {JSX.Element} Page component rendering the job creation process.
+ */
 export default function Page({
   searchParams,
 }: {
@@ -112,9 +129,6 @@ export default function Page({
     height?: string;
   };
 }) {
-  // const [cookieValue, _] = useUserInfoCookie()
-  // useRedirectIf(() => cookieValue === undefined, "/")
-
   const router = useRouter();
   const startDate = searchParams?.startDate || "2021-01-01";
   const startDateDate = new Date(startDate);
@@ -135,6 +149,13 @@ export default function Page({
     outputFileFormat: "NETCDF",
   };
 
+  /**
+   * Updates the URL search parameters and navigates to the new URL.
+   *
+   * @param {string | null | undefined} value - The value to set for the query parameter.
+   * @param {string} key - The key of the query parameter to update.
+   * @param {any} [val] - Optional additional value.
+   */
   const setValue = (
     value: string | null | undefined,
     key: string,
@@ -147,6 +168,11 @@ export default function Page({
     router.push(url.toString(), { shallow: true, scroll: false });
   };
 
+  /**
+   * Updates multiple URL search parameters and navigates to the new URL.
+   *
+   * @param {Array<[string | null | undefined, string, any?]>} pairs - An array of key-value pairs to set in the search parameters.
+   */
   const setValues = (
     pairs: [value: string | null | undefined, key: string, val?: any][]
   ) => {
@@ -176,7 +202,8 @@ export default function Page({
   const collectionName =
     collection && products.find((p) => p.value === collection)?.label;
 
-  const bbox = searchParams?.bbox?.split(",");
+  const urlParams = new URLSearchParams(window.location.search);
+  const bbox = getBBoxFromSearchParams(urlParams);
   const longitude = bbox ? (Number(bbox[0]) + Number(bbox[2])) / 2 : 15;
   const latitude = bbox ? (Number(bbox[1]) + Number(bbox[3])) / 2 : 50;
 

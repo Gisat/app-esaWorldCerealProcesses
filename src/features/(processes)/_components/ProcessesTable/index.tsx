@@ -22,33 +22,55 @@ type Props = {
   }[];
 };
 
+/**
+ * Displays a table of processes with their status, type, and creation date.
+ * If `loading` is `true`, a spinner is displayed instead of the table.
+ *
+ * @param {Props} props - The component properties.
+ * @param {boolean} [props.loading] - Indicates if data is still being fetched.
+ * @param {() => void} [props.forceReloadList] - Function to force refresh the table data.
+ * @param {Array<Object>} props.data - The list of process records.
+ * @returns {JSX.Element} A table displaying process records or a loading indicator.
+ *
+ * @example
+ * <ProcessesTable
+ *   data={[{ key: "123", type: "Analysis", createdIso: new Date(), status: "Completed", bbox: [], timeRange: [], oeoCollection: "", resultFileFormat: "", results: [] }]}
+ *   loading={false}
+ *   forceReloadList={() => console.log("Reload triggered")}
+ * />
+ */
 export const ProcessesTable = ({ data, loading, forceReloadList }: Props) => {
-  const rows = data?.map(
-    ({
-      resultFileFormat,
-      createdIso,
-      status,
-      results,
-      key,
-      bbox,
-      timeRange,
-      oeoCollection,
-    }) => (
-      <Record
-        key={key}
-        id={key}
-        type={"type"} // TODO: FIX
-        createdIso={createdIso}
-        status={status}
-        results={results}
-        bbox={bbox}
-        timeRange={timeRange}
-        resultFileFormat={resultFileFormat}
-        oeoCollection={oeoCollection}
-        forceReloadList={forceReloadList}
-      />
+  const rows = Array.isArray(data) ? (
+    data.map(
+      ({
+        resultFileFormat,
+        createdIso,
+        status,
+        results,
+        key,
+        bbox,
+        timeRange,
+        oeoCollection,
+        type,
+      }) => (
+        <Record
+          key={key}
+          id={key}
+          type={type}
+          createdIso={createdIso}
+          status={status}
+          results={results}
+          bbox={bbox}
+          timeRange={timeRange}
+          resultFileFormat={resultFileFormat}
+          oeoCollection={oeoCollection}
+          forceReloadList={forceReloadList}
+        />
+      )
     )
-  ) ?? <p>No records</p>;
+  ) : (
+    <p>No records</p>
+  );
 
   return (
     <>
