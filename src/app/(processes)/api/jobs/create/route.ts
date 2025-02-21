@@ -9,7 +9,7 @@ export async function GET(req: NextRequest) {
     const startDate = searchParams.get("startDate");
     const endDate = searchParams.get("endDate");
     const bbox = searchParams.get("bbox");
-    const outputFileFormat = searchParams.get("outputFileFormat");
+    const off = searchParams.get("off");
     const collection = searchParams.get("collection");
 
     // validate inputs for safe aggragation
@@ -31,13 +31,20 @@ export async function GET(req: NextRequest) {
       });
     }
 
+    if (!off) {
+      return NextResponse.json("Missing outputFileFormat value", {
+        status: 400,
+      });
+    } 
+
     const data = {
       collection: collection,
       bbox: bbox.split(",").map(Number),
+      crs: "EPSG:4326",
       timeRange: [startDate, endDate],
       // bands: ["B01", "B02"],
       // outputFileFormat: "NETCDF",
-      outputFileFormat: outputFileFormat,
+      outputFileFormat: off,
     };
 
     const openeoUrlPrefix = process.env.OEO_URL
