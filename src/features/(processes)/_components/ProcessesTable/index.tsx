@@ -1,62 +1,97 @@
-import "./style.css";
-import { Table, Loader, Center } from "@mantine/core";
+import { Center, Loader, Table } from "@mantine/core";
 import Record from "./Record";
+import "./style.css";
 
 type Props = {
-    loading?: boolean,
-    forceReloadList?: () => void,
-    data: {
-        "bbox": Array<number>,
-        "costs": number,
-        "createdIso": Date,
-        "duration": number,
-        "key": string,
-        "type": string,
-        "name": string,
-        "oeoCollection": string,
-        "resultFileFormat": string,
-        "results": Array<{ "source_link": string }>,
-        "status": string,
-        "timeRange": Array<Date>,
-        "updatedIso": Date,
-    }[]
-    ;
-}
+  loading?: boolean;
+  forceReloadList?: () => void;
+  data: {
+    bbox: Array<number>;
+    costs: number;
+    createdIso: Date;
+    duration: number;
+    key: string;
+    type: string;
+    name: string;
+    oeoCollection: string;
+    resultFileFormat: string;
+    results: Array<{ source_link: string }>;
+    status: string;
+    timeRange: Array<Date>;
+    updatedIso: Date;
+  }[];
+};
 
 /**
- * ProcessesTable component renders a table displaying a list of processes.
+ * Displays a table of processes with their status, type, and creation date.
+ * If `loading` is `true`, a spinner is displayed instead of the table.
  *
- * @param {Object} props - The component props.
- * @param {Array} props.data - The data array containing process information.
- * @param {boolean} props.loading - A boolean indicating if the data is still loading.
- * @param {Function} props.forceReloadList - A function to force reload the list of processes.
+ * @param {Props} props - The component properties.
+ * @param {boolean} [props.loading] - Indicates if data is still being fetched.
+ * @param {() => void} [props.forceReloadList] - Function to force refresh the table data.
+ * @param {Array<Object>} props.data - The list of process records.
+ * @returns {JSX.Element} A table displaying process records or a loading indicator.
  *
- * @returns {JSX.Element} The rendered ProcessesTable component.
+ * @example
+ * <ProcessesTable
+ *   data={[{ key: "123", type: "Analysis", createdIso: new Date(), status: "Completed", bbox: [], timeRange: [], oeoCollection: "", resultFileFormat: "", results: [] }]}
+ *   loading={false}
+ *   forceReloadList={() => console.log("Reload triggered")}
+ * />
  */
-export const ProcessesTable = ({ data, loading, forceReloadList }: Props): JSX.Element => {
+export const ProcessesTable = ({ data, loading, forceReloadList }: Props) => {
+  const rows = Array.isArray(data) ? (
+    data.map(
+      ({
+        resultFileFormat,
+        createdIso,
+        status,
+        results,
+        key,
+        bbox,
+        timeRange,
+        oeoCollection,
+        type,
+      }) => (
+        <Record
+          key={key}
+          id={key}
+          type={type}
+          createdIso={createdIso}
+          status={status}
+          results={results}
+          bbox={bbox}
+          timeRange={timeRange}
+          resultFileFormat={resultFileFormat}
+          oeoCollection={oeoCollection}
+          forceReloadList={forceReloadList}
+        />
+      )
+    )
+  ) : (
+    <p>No records</p>
+  );
 
-    const rows = data?.map(
-        ({ resultFileFormat, createdIso, status, results, key, type, bbox, timeRange, oeoCollection }) => (
-            <Record key={key} id={key} type={type} createdIso={createdIso} status={status} results={results} bbox={bbox}
-                timeRange={timeRange}
-                resultFileFormat={resultFileFormat}
-                oeoCollection={oeoCollection} forceReloadList={forceReloadList} />
-        )
-    ) ?? (<p>No records</p>);
-
-    return (
-        <>{loading ? (<Center><Loader /></Center>) : (<Table horizontalSpacing="md" className="worldCereal-ProcessesTable">
-            <Table.Thead>
-                <Table.Tr className="worldCereal-ProcessesTable-row">
-                    <Table.Th>ID</Table.Th>
-                    <Table.Th>Type</Table.Th>
-                    <Table.Th>Created</Table.Th>
-                    <Table.Th>Status</Table.Th>
-                    <Table.Th></Table.Th>
-                </Table.Tr>
-            </Table.Thead>
-            <Table.Tbody>{rows}</Table.Tbody>
-        </Table>)
-        }</>
-    );
+  return (
+    <>
+      {loading ? (
+        <Center>
+          <Loader />
+        </Center>
+      ) : (
+        <Table horizontalSpacing="md" className="worldCereal-ProcessesTable">
+          <Table.Thead>
+            <Table.Tr className="worldCereal-ProcessesTable-row">
+              <Table.Th>ID</Table.Th>
+              <Table.Th>Type</Table.Th>
+              <Table.Th>Created</Table.Th>
+              <Table.Th>Status</Table.Th>
+              <Table.Th></Table.Th>
+            </Table.Tr>
+          </Table.Thead>
+          <Table.Tbody>{rows}</Table.Tbody>
+        </Table>
+      )}
+    </>
+  );
 };
