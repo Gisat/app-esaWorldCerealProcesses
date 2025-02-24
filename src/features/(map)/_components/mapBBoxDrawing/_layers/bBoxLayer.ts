@@ -1,5 +1,4 @@
 import { GeoJsonLayer } from "@deck.gl/layers";
-import { PathStyleExtension } from "@deck.gl/extensions";
 import { FeatureCollection, Geometry } from 'geojson';
 import { LAYER_ID_BBOX_LINES } from "../constants";
 import {

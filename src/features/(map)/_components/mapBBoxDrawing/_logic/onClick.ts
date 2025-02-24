@@ -1,6 +1,6 @@
 import { HOVER_BLOCKED, LAYER_ID_BBOX } from "../constants";
 import { isPointInPolygon } from "../helpers";
-import { BboxEnclosedPoints, BboxPoint, BboxPoints, ClickInfo, Coordinate } from "../types";
+import { BboxEnclosedPoints, BboxPoint, BboxPoints, ClickInfo } from "../types";
 import { addPointToMap } from "./addPointToMap";
 
 // Function to handle click events on a map layer

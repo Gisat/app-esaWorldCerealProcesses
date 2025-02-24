@@ -1,4 +1,4 @@
-import { BboxPoint, BboxPoints, Coordinate } from "../types";
+import { BboxPoints } from "../types";
 
 // Function to clear active points and predicted hovered points
 export const clearPoints = (
