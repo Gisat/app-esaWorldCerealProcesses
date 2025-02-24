@@ -1,11 +1,11 @@
 /**
  * Determines if a given point is inside a specified polygon using the ray-casting algorithm.
  *
- * @param {number[][] | null | undefined} polygon - An array of [x, y] coordinates representing the polygon.
+ * @param {number[][] | null} polygon - An array of [x, y] coordinates representing the polygon.
  * @param {[number, number]} point - An array [x, y] representing the point to check.
  * @returns {boolean | null} True if the point is inside the polygon, false if outside, and null if invalid input.
  */
-export function isPointInPolygon(polygon: number[][] | null | undefined, point: [number, number]): boolean | null {
+export function isPointInPolygon(polygon: number[][] | null, point: [number, number]): boolean | null {
 	if (polygon && point) {
 			let odd = false;
 			for (let i = 0, j = polygon.length - 1; i < polygon.length; i++) {

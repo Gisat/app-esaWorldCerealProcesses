@@ -9,6 +9,7 @@ import { BitmapLayer } from "@deck.gl/layers";
 
 export interface RenderMapProps {
 	mapRef?: any,
+	customBaseMap?: TileLayer,
   width?: string,
   height?: string,
 	layer?: LayersList,
@@ -19,14 +20,14 @@ export interface RenderMapProps {
 	onStartDragging?: (info: object) => void,
 	onStopDragging?: (info: object) => void,
 	onViewStateChange?: (info: object) => void,
-	disableControlls?: boolean,
+	disableControls?: boolean,
 	initialView: object | null,
 	setDistanceScales?: (distanceScales: { unitsPerDegree?: Array<number>; metersPerUnit: Array<number>; }) => void
 }
-
 /** Rendered map with DeckGL tool used as a geospatial renderer */
 const RenderingMap: React.FC<RenderMapProps> = (props: RenderMapProps) => {
 
+	// Retrieve distanceScales from the mapRef if available - otherwise dont show any distance calculations
 	const distanceScales = props?.mapRef?.current?.deck?.viewManager?._viewports?.[0]?.distanceScales;
 
 	if (props.setDistanceScales && distanceScales) {
@@ -49,7 +50,7 @@ const RenderingMap: React.FC<RenderMapProps> = (props: RenderMapProps) => {
 			});
 		},
 	});
-const layers = [tileLayer, props.layer];
+const layers = [props.customBaseMap ? props.customBaseMap : tileLayer, props.layer].filter(layer => layer !== undefined);
 
   return (
     <section className={`${styles.mapRender}`}>
@@ -57,7 +58,7 @@ const layers = [tileLayer, props.layer];
 				ref={props.mapRef}
         initialViewState={props.initialView}
         layers={layers}
-        controller={!props.disableControlls}
+        controller={!props.disableControls}
         style={{ position: "relative", width: props.width, height: props.height }}
 				onClick={props.onClick}
 				onHover={props.onHover}
