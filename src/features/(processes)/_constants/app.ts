@@ -44,3 +44,18 @@ export const navbarItems = [
     icon: IconCirclePlus,
   },
 ];
+
+
+/**
+ * Enum representing different types of processes.
+ * 
+ * @enum {string}
+ * @property {string} download - Represents a download process.
+ * @property {string} product - Represents a product-related process.
+ * @property {string} unknown - Represents an unknown type of process.
+ */
+export const enum processTypes {
+  download = "Download",
+  product = "Product",
+  unknown = "Unknown type"
+}

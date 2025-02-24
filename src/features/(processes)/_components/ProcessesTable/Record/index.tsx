@@ -25,6 +25,7 @@ type Props = {
 	"createdIso"?: Date,
 	"duration"?: number,
 	"id"?: string,
+	"type": string,
 	"name"?: string,
 	"oeoCollection"?: string,
 	"resultFileFormat"?: string,
@@ -177,7 +178,7 @@ const RemoveJobButton = ({
 
 const Record = ({
 	id,
-	// type,
+	type,
 	createdIso,
 	status,
 	results,
@@ -195,7 +196,7 @@ const Record = ({
 		<>
 			<Table.Tr key={id} className={className}>
 				<Table.Td className="smallTextCell">{id}</Table.Td>
-				<Table.Td className="highlightedCell">Download</Table.Td>
+				<Table.Td className="highlightedCell">{type}</Table.Td>
 				<Table.Td>{createdIso && new Date(createdIso).toLocaleString()}</Table.Td>
 				<Table.Td>{status ? <ProcessStatus status={status} /> : null}</Table.Td>
 				<Table.Td className="shrinkedCell alignRight">

@@ -15,7 +15,7 @@ import { IconCheck } from "@tabler/icons-react";
 const minDate = new Date("2021-01-01");
 const maxDate = new Date("2022-01-01");
 
-const defaultOutputFileFormat = "GTIFF";
+const defaultOutputFileFormat = "GTiff";
 
 type BboxCornerPointsType = [number, number, number, number] | undefined;
 type OutputFileFormatType = string | undefined;
@@ -223,8 +223,8 @@ export default function Page({ searchParams }: {
                 />
                 <div>
                     <FormLabel>Output file format</FormLabel>
-                    <SegmentedControl onChange={(value) => onOutpoutFormatChange(value)} className="worldCereal-SegmentedControl" size="md" defaultValue={defaultOutputFileFormat} data={[{ label: 'netCDF', value: 'NETCDF' }, { label: 'GeoTIFF', value: 'GTiff' }]} />
-                </div>
+										<SegmentedControl onChange={(value) => onOutpoutFormatChange(value)} className="worldCereal-SegmentedControl" size="md" defaultValue={defaultOutputFileFormat} data={[{ label: 'NetCDF', value: 'NETCDF' }, { label: 'GeoTiff', value: 'GTiff' }]} />
+								</div>
             </Stack>
         </Column>
     </TwoColumns>
