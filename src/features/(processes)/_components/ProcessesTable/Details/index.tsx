@@ -1,7 +1,6 @@
 import "./style.css";
-import React from "react";
-import { getPoinsDistance } from '@features/(processes)/_utils/map';
-import {MapExtentSelect} from "@features/(shared)/_components/map/MapExtentSelect";
+import React, { useState } from "react";
+import {MapBBox} from "@features/(shared)/_components/map/MapBBox";
 import { products } from "@features/(processes)/_constants/app";
 
 type DetailsItemProps = {
@@ -29,12 +28,18 @@ type DetailsProps = {
 }
 
 const Details = ({ bbox, startDate, endDate, resultFileFormat, oeoCollection, results }: DetailsProps) => {
-	const collection = products.find(p => p.value === oeoCollection)
+	const [areaBbox, setAreaBbox] = useState<number | undefined>(undefined);
+	const [coordinatesToDisplay, setCoordinatesToDisplay] = useState<string | Array<string> | null>(null);
+	const collection = products.find(p => p.value === oeoCollection);
+
 	return <div className="worldCereal-ProcessesTable-Details">
 		<div className="worldCereal-ProcessesTable-Details-column">
-			<MapExtentSelect bbox={bbox} disabled mapSize={[300, 300]} />
-			{bbox ? <div className="worldCereal-MapDetails-coordinates">Current map extent: <b>{Math.round(getPoinsDistance([bbox[0], bbox[1]],
-				[bbox[2], bbox[1]],))} x {Math.round(getPoinsDistance([bbox[0], bbox[3]], [bbox[0], bbox[1]]))} m</b></div> : null}
+			<MapBBox bbox={bbox} disabled mapSize={[300, 300]} setAreaBbox={setAreaBbox} setCoordinatesToDisplay={setCoordinatesToDisplay}/>
+			{bbox ? <div className="worldCereal-MapDetails-coordinates">
+				<b>
+					Extent: {coordinatesToDisplay} {areaBbox && bbox ? `(${areaBbox} sqkm)` : ""}
+				</b>
+			</div> : null}
 		</div>
 		<div className="worldCereal-ProcessesTable-Details-column">
 			<DetailsItem label={"Product"}>{collection?.label}</DetailsItem>

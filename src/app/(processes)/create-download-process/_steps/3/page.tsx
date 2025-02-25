@@ -9,12 +9,14 @@ import PageSteps from '@features/(processes)/_components/PageSteps';
 
 import { pages } from '@features/(processes)/_constants/app';
 import Details from '@features/(processes)/_components/ProcessesTable/Details';
+import { fetcher } from '@features/(shared)/_logic/utils';
 
-const fetcher = (url: string) => {
-	return fetch(`${url}`).then(r => r.json());
-}
-
-
+/**
+ * StartJobButton component.
+ * @param {Object} props - The component props.
+ * @param {string} [props.jobId] - The job ID.
+ * @returns {JSX.Element} - The rendered component.
+ */
 const StartJobButton = ({ jobId }: { jobId?: string }) => {
 	const router = useRouter();
 	const [shouldFetch, setShouldFetch] = useState(false);
@@ -43,6 +45,17 @@ const StartJobButton = ({ jobId }: { jobId?: string }) => {
 	);
 }
 
+/**
+ * Page component.
+ * @param {Object} props - The component props.
+ * @param {Object} [props.searchParams] - The search parameters.
+ * @param {string} [props.searchParams.query] - The query parameter.
+ * @param {string} [props.searchParams.step] - The step parameter.
+ * @param {string} [props.searchParams.startDate] - The start date parameter.
+ * @param {string} [props.searchParams.endDate] - The end date parameter.
+ * @param {string} [props.searchParams.jobid] - The job ID parameter.
+ * @returns {JSX.Element} - The rendered component.
+ */
 export default function Page({ searchParams }: {
 	searchParams?: {
 		query?: string;

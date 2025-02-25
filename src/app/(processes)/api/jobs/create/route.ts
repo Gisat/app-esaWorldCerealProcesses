@@ -52,7 +52,7 @@ export async function GET(req: NextRequest) {
     if(!openeoUrlPrefix)
       throw new Error("Missing openeo URL variable")
 
-    const url = `${openeoUrlPrefix}/openeo/jobs/create`
+    const url = `${openeoUrlPrefix}/openeo/jobs/create/from-collection`;
 
     const {status, backendContent, setCookieHeader} = await fetchWithSessions(
       {
