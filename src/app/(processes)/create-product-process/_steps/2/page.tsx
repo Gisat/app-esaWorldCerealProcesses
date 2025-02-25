@@ -74,11 +74,11 @@ const CreateJobButton = ({
     setShouldFetch(false);
   }
 
-  if (data?.jobId) {
+  if (data?.key) {
     setTimeout(() => {
       setValues([
         ["3", "step"],
-        [data.jobId, "jobid"],
+        [data.key, "jobid"],
       ]);
     }, 50);
   }
