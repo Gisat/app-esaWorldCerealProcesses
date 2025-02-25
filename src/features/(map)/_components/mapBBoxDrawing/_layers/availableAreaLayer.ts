@@ -34,7 +34,7 @@ import {
 export const availableAreaLayer = (
     availableArea: BboxEnclosedPoints | null,
     editModeIsActive: boolean,
-    config?: Object,
+    config?: object,
 ) => {
     // Check if availableArea is provided and edit mode is active
     if (availableArea && editModeIsActive) {
@@ -53,14 +53,14 @@ export const availableAreaLayer = (
                         }
                     }
                 ]
-            },
+            } as GeoJSON.FeatureCollection,
             stroked: AVAILABLE_AREA_LAYER_STROKED,
             filled: AVAILABLE_AREA_LAYER_FILLED,
             pointRadiusMinPixels: AVAILABLE_AREA_LAYER_POINT_RADIUS_MIN_PIXELS,
             pointRadiusMaxPixels: AVAILABLE_AREA_LAYER_POINT_RADIUS_MAX_PIXELS,
             pickable: AVAILABLE_AREA_LAYER_PICKABLE,
-            getFillColor: AVAILABLE_AREA_LAYER_FILL_COLOR as [number, number, number],
-            getLineColor: AVAILABLE_AREA_LAYER_LINE_COLOR as [number, number, number],
+            getFillColor: AVAILABLE_AREA_LAYER_FILL_COLOR,
+            getLineColor: AVAILABLE_AREA_LAYER_LINE_COLOR,
             lineWidthMinPixels: AVAILABLE_AREA_LAYER_LINE_WIDTH_MIN_PIXELS,
             lineWidthMaxPixels: AVAILABLE_AREA_LAYER_LINE_WIDTH_MAX_PIXELS,
             getLineWidth: AVAILABLE_AREA_LAYER_LINE_WIDTH,

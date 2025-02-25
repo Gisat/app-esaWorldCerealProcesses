@@ -16,7 +16,7 @@ import { onStopDragging } from "./_logic/onStopDragging";
 import { onViewStateChange } from "./_logic/onViewStateChange";
 import { clearPoints } from "./_logic/clearPoints";
 import { onHover } from "./_logic/onHover";
-import { bboxDragInfo, BboxEnclosedPoints, BboxLinePoints, BboxPoint, BboxPoints, ClickInfo, Coordinate, DragInfo, DragStartInfo, GetCursorInfo, HoverInfo, ViewStateChangeInfo } from "./types";
+import { bboxDragInfo, BboxEnclosedPoints, BboxPoint, BboxPoints, ClickInfo, Coordinate, DragInfo, DragStartInfo, GetCursorInfo, HoverInfo, ViewStateChangeInfo } from "./types";
 
 interface BoundingBoxProps {
     availableArea?: Array<Array<number>>;
@@ -27,8 +27,8 @@ interface BoundingBoxProps {
     buttonsStyles?: object;
     bboxPoints?: BboxPoints;
     disabled?: boolean;
-		availableAreaConfig?: Object,
-		bboxConfig?: Object
+    availableAreaConfig?: object;
+    bboxConfig?: object;
 }
 
 /**
@@ -53,8 +53,8 @@ const BoundingBox: React.FC<BoundingBoxProps> = ({
     buttonsStyles = {},
     bboxPoints = [],
     disabled = false,
-		availableAreaConfig = {},
-		bboxConfig = {}
+    availableAreaConfig = {},
+    bboxConfig = {}
 }) => {
     const mapRef = useRef<any>(null); // Reference to the map
     const [editModeIsActive, setEditModeIsActive] = useState(false); // Edit mode state
@@ -68,33 +68,51 @@ const BoundingBox: React.FC<BoundingBoxProps> = ({
 
     // Effect to handle dragging of the bounding box
     const updateBboxDragInfo = (updatedDragInfo: bboxDragInfo | null) => {
-				setBboxDragInfo(updatedDragInfo);
+        setBboxDragInfo(updatedDragInfo);
         // Calculate updated available area bounds
-				let updatedAvailableAreaBounds;
+        let updatedAvailableAreaBounds;
         let updatedAvailableAreaLat;
         let updatedAvailableAreaLong;
-				if (updatedAvailableArea) {
-					updatedAvailableAreaBounds = [updatedAvailableArea[0], updatedAvailableArea[2]];
-					updatedAvailableAreaLat = [updatedAvailableAreaBounds[0][0], updatedAvailableAreaBounds[1][0]] as Coordinate;
-					updatedAvailableAreaLong = [updatedAvailableAreaBounds[0][1], updatedAvailableAreaBounds[1][1]] as Coordinate;
-				}
-				if (updatedDragInfo) {
-					switch (updatedDragInfo.dragType) {
-							case DRAG_LAYER:
-									dragLayer(updatedDragInfo?.coordinates, activeBboxPoints, updatedAvailableAreaLat, updatedAvailableAreaLong, minBboxArea, updatedAvailableArea, setActiveBboxPoints);
-									break;
-							case DRAG_LAYER_BORDER:
-									editLayerBorder(updatedDragInfo?.coordinates, activeBboxPoints, originalBboxBorderCoordinates, updatedAvailableAreaLat, updatedAvailableAreaLong, minBboxArea, updatedAvailableArea, setActiveBboxPoints, setOriginalBboxBorderCoordinates);
-									break;
-							default:
-									break;
-					}
-				}
+        if (updatedAvailableArea) {
+            updatedAvailableAreaBounds = [updatedAvailableArea[0], updatedAvailableArea[2]];
+            updatedAvailableAreaLat = [updatedAvailableAreaBounds[0][0], updatedAvailableAreaBounds[1][0]] as Coordinate;
+            updatedAvailableAreaLong = [updatedAvailableAreaBounds[0][1], updatedAvailableAreaBounds[1][1]] as Coordinate;
+        }
+        if (updatedDragInfo) {
+            switch (updatedDragInfo.dragType) {
+                case DRAG_LAYER:
+                    dragLayer({
+                        coordinates: updatedDragInfo.coordinates,
+                        activeBboxPoints,
+                        updatedAvailableAreaLat,
+                        updatedAvailableAreaLong,
+                        minBboxArea,
+                        updatedAvailableArea,
+                        setActiveBboxPoints
+                    });
+                    break;
+                case DRAG_LAYER_BORDER:
+                    editLayerBorder({
+                        coordinates: updatedDragInfo.coordinates,
+                        activeBboxPoints,
+                        originLinePointCoordinates: originalBboxBorderCoordinates,
+                        updatedAvailableAreaLat,
+                        updatedAvailableAreaLong,
+                        minBboxArea,
+                        updatedAvailableArea,
+                        setActiveBboxPoints,
+                        setOriginalBboxBorderCoordinates
+                    });
+                    break;
+                default:
+                    break;
+            }
+        }
     };
 
     // Effect to update available area based on the provided coordinates
     useEffect(() => {
-			const viewport = mapRef?.current?.deck?.viewManager?._viewports?.[0];
+        const viewport = mapRef?.current?.deck?.viewManager?._viewports?.[0];
         if (viewport) {
             switch (availableArea.length) {
                 case 1: {
@@ -116,20 +134,81 @@ const BoundingBox: React.FC<BoundingBoxProps> = ({
     const mappedChildren = Children.map(children, child => {
         // Destructure props for better readability
         const isDisabled = disabled;
-        const cursorHandler = isDisabled ? () => "default" : (info: GetCursorInfo) => getCursor(info, bboxDragInfo, activeBboxPoints, editModeIsActive, bboxIsHovered);
-        const clickHandler = isDisabled ? null : (info: ClickInfo) => onClick(info, updatedAvailableArea, editModeIsActive, predictedHoveredPoints, bboxIsHovered, activeBboxPoints, setActiveBboxPoints, setPredictedHoveredPoints, onBboxCoordinatesChange, setEditModeIsActive, setBboxIsHovered);
-        const hoverHandler = isDisabled ? null : (info: HoverInfo) => onHover(info, updatedAvailableArea, activeBboxPoints, minBboxArea, editModeIsActive, setBboxIsHovered, setActiveBboxPoints, setPredictedHoveredPoints, onBboxCoordinatesChange);
-        const dragHandler = isDisabled ? null : (info: DragInfo) => onDrag(info, updatedAvailableArea, editModeIsActive, bboxDragInfo, updateBboxDragInfo, setOriginalBboxBorderCoordinates);
-        const startDragHandler = isDisabled ? null : (info: DragStartInfo) => onStartDragging(info, updateBboxDragInfo, setOriginalBboxBorderCoordinates);
-        const stopDragHandler = isDisabled ? null : () => onStopDragging(updateBboxDragInfo, setOriginalBboxBorderCoordinates, onBboxCoordinatesChange, activeBboxPoints);
-        const viewStateChangeHandler = isDisabled ? null : (info: ViewStateChangeInfo) => onViewStateChange(info, followMapScreen, activeBboxPoints, updatedAvailableArea, previousDraggedPoint, editModeIsActive, setPreviousDraggedPoint, setUpdatedAvailableArea, setActiveBboxPoints, onBboxCoordinatesChange);
+        const cursorHandler = isDisabled ? () => "default" : (info: GetCursorInfo) => getCursor({
+            info,
+            bboxDragInfo,
+            activeBboxPoints,
+            editModeIsActive,
+            bboxIsHovered
+        });
+        const clickHandler = isDisabled ? null : (info: ClickInfo) => onClick({
+            info,
+            updatedAvailableArea,
+            editModeIsActive,
+            predictedHoveredPoints,
+            bboxIsHovered,
+            activeBboxPoints,
+            setActiveBboxPoints,
+            setPredictedHoveredPoints,
+            onBboxCoordinatesChange,
+            setEditModeIsActive,
+            setBboxIsHovered
+        });
+        const hoverHandler = isDisabled ? null : (info: HoverInfo) => onHover({
+            info,
+            updatedAvailableArea,
+            activeBboxPoints,
+            minBboxArea,
+            editModeIsActive,
+            setBboxIsHovered,
+            setActiveBboxPoints,
+            setPredictedHoveredPoints,
+            onBboxCoordinatesChange
+        });
+        const dragHandler = isDisabled ? null : (info: DragInfo) => onDrag({
+            info,
+            updatedAvailableArea,
+            editModeIsActive,
+            bboxDragInfo,
+            updateBboxDragInfo,
+            setOriginalBboxBorderCoordinates
+        });
+        const startDragHandler = isDisabled ? null : (info: DragStartInfo) => onStartDragging(
+            info,
+            updateBboxDragInfo,
+            setOriginalBboxBorderCoordinates
+        );
+        const stopDragHandler = isDisabled ? null : () => onStopDragging({
+						updateBboxDragInfo,
+            setOriginalBboxBorderCoordinates,
+            onBboxCoordinatesChange,
+            activeBboxPoints
+        });
+        const viewStateChangeHandler = isDisabled ? null : (info: ViewStateChangeInfo) => onViewStateChange({
+            viewInfo: info,
+            followMapScreen,
+            activeBboxPoints,
+            updatedAvailableArea,
+            previousDraggedPoint,
+            editModeIsActive,
+            setPreviousDraggedPoint,
+            setUpdatedAvailableArea,
+            setActiveBboxPoints,
+            onBboxCoordinatesChange
+        });
 
         return cloneElement(child as React.ReactElement<any>, {
             mapRef: mapRef,
             onClick: clickHandler,
             layer: [
                 availableAreaLayer(updatedAvailableArea, editModeIsActive, availableAreaConfig),
-                bboxLayer(activeBboxPoints, bboxIsHovered, editModeIsActive, predictedHoveredPoints, bboxConfig)
+                bboxLayer({
+                    activeBboxPoints,
+                    bboxIsHovered,
+                    editModeIsActive,
+                    predictedHoveredPoints,
+                    config: bboxConfig
+                })
             ],
             getCursor: cursorHandler,
             onHover: hoverHandler,

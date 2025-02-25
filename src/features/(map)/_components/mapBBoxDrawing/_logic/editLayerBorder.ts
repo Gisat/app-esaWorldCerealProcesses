@@ -2,31 +2,47 @@ import { findClosest } from "../helpers";
 import { BboxEnclosedPoints, BboxPoint, BboxPoints, Coordinate } from "../types";
 
 /**
+ * Interface for the editLayerBorder function props.
+ */
+interface EditLayerBorderProps {
+    /** The coordinates of the drag event. */
+    coordinates: Coordinate[];
+    /** Current active bounding box points. */
+    activeBboxPoints: BboxPoints | BboxPoint | [];
+    /** Original coordinates of the line points. */
+    originLinePointCoordinates: Coordinate[];
+    /** Updated available latitude area. */
+    updatedAvailableAreaLat: Coordinate | undefined;
+    /** Updated available longitude area. */
+    updatedAvailableAreaLong: Coordinate | undefined;
+    /** Minimum area allowed for the bounding box. */
+    minBboxArea: number;
+    /** Updated available area coordinates. */
+    updatedAvailableArea: BboxEnclosedPoints | null;
+    /** Function to update active bounding box points. */
+    setActiveBboxPoints: (activeBboxPoints: BboxPoints | BboxPoint | []) => void;
+    /** Function to set original bbox border coordinates. */
+    setOriginalBboxBorderCoordinates: (current: Coordinate[]) => void;
+}
+
+/**
  * Handles the editing of bounding box (bbox) borders when they are dragged.
  * Adjusts the bbox coordinates based on the drag distance, ensuring the bbox 
  * does not become smaller than the minimum allowed area.
- *
- * @param {Array} coordinates - The coordinates of the drag event.
- * @param {Array} activeBboxPoints - Current active bounding box points.
- * @param {Array} originLinePointCoordinates - Original coordinates of the line points.
- * @param {Array} updatedAvailableAreaLat - Updated available latitude area.
- * @param {Array} updatedAvailableAreaLong - Updated available longitude area.
- * @param {number} minBboxArea - Minimum area allowed for the bounding box.
- * @param {Array} updatedAvailableArea - Updated available area coordinates.
- * @param {Function} setActiveBboxPoints - Function to update active bounding box points.
- * @param {Function} setOriginalBboxBorderCoordinates - Function to set original bbox border coordinates.
+ * 
+ * @param {EditLayerBorderProps} props - The props for the editLayerBorder function.
  */
-export const editLayerBorder = (
-    coordinates: Coordinate[],
-    activeBboxPoints: BboxPoints | BboxPoint | [],
-    originLinePointCoordinates: Coordinate[],
-    updatedAvailableAreaLat: Coordinate | undefined,
-    updatedAvailableAreaLong: Coordinate | undefined,
-    minBboxArea: number,
-    updatedAvailableArea: BboxEnclosedPoints | null,
-    setActiveBboxPoints: (activeBboxPoints: BboxPoints | BboxPoint | []) => void,
-    setOriginalBboxBorderCoordinates: (current: Coordinate[]) => void
-) => {
+export const editLayerBorder = ({
+    coordinates,
+    activeBboxPoints,
+    originLinePointCoordinates,
+    updatedAvailableAreaLat,
+    updatedAvailableAreaLong,
+    minBboxArea,
+    updatedAvailableArea,
+    setActiveBboxPoints,
+    setOriginalBboxBorderCoordinates
+}: EditLayerBorderProps) => {
 
     const previousPoint = coordinates[0];
     const currentPoint = coordinates[1];
@@ -88,4 +104,4 @@ export const editLayerBorder = (
         // Set the new active bounding box points
         setActiveBboxPoints(newPoints as BboxPoints);
     }
-}
+};

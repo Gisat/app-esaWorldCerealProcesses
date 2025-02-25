@@ -12,15 +12,36 @@ import {
 } from '../constants';
 import { GetCursorInfo, Coordinate, bboxDragInfo } from '../types';
 
-// This function determines the cursor style based on the dragging state, bounding box hover state, and edit mode. 
-// It returns different cursor styles such as 'grabbing', 'e-resize', 's-resize', 'not-allowed', 'pointer', or 'grab' depending on the conditions met.
-export const getCursor = (
-	info: GetCursorInfo,
-	bboxDragInfo: bboxDragInfo | null, // Add bboxDragInfo as a parameter
-	activeBboxPoints: Coordinate[], // Array of active bounding box points
-	editModeIsActive: boolean, // Boolean indicating if edit mode is active
-	bboxIsHovered: string | boolean // Current hover state of the bounding box
-) => {
+/**
+* Interface for the getCursor function props.
+*/
+interface GetCursorProps {
+	/** Information about the cursor state. */
+	info: GetCursorInfo;
+	/** Information about the bounding box drag. */
+	bboxDragInfo: bboxDragInfo | null;
+	/** Array of active bounding box points. */
+	activeBboxPoints: Coordinate[];
+	/** Boolean indicating if edit mode is active. */
+	editModeIsActive: boolean;
+	/** Current hover state of the bounding box. */
+	bboxIsHovered: string | boolean;
+}
+
+/**
+* Determines the cursor style based on the dragging state, bounding box hover state, and edit mode.
+* It returns different cursor styles such as 'grabbing', 'e-resize', 's-resize', 'not-allowed', 'pointer', or 'grab' depending on the conditions met.
+* 
+* @param {GetCursorProps} props - The props for the getCursor function.
+* @returns {string} The cursor style.
+*/
+export const getCursor = ({
+	info,
+	bboxDragInfo,
+	activeBboxPoints,
+	editModeIsActive,
+	bboxIsHovered
+}: GetCursorProps): string => {
 	// If the user is currently dragging or if there is drag information
 	if (info.isDragging || bboxDragInfo) {
 			return CURSOR_GRABBING;

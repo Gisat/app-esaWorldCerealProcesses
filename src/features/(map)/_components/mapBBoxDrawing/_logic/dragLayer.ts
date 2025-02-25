@@ -2,26 +2,40 @@ import { findClosest } from "../helpers";
 import { BboxEnclosedPoints, BboxPoint, BboxPoints, Coordinate } from "../types";
 
 /**
+ * Interface for the dragLayer function props.
+ */
+interface DragLayerProps {
+    /** An array containing the previous and current coordinates of the drag. */
+    coordinates: BboxPoint;
+    /** Current coordinates of the active bounding box. */
+    activeBboxPoints: BboxPoints | BboxPoint | [];
+    /** Updated latitude bounds of the available area. */
+    updatedAvailableAreaLat?: Coordinate;
+    /** Updated longitude bounds of the available area. */
+    updatedAvailableAreaLong?: Coordinate;
+    /** Minimum area required for the bounding box. */
+    minBboxArea: number;
+    /** Updated available area as an array of coordinates. */
+    updatedAvailableArea: BboxEnclosedPoints | null;
+    /** Function to update the active bounding box points. */
+    setActiveBboxPoints: (activeBboxPoints: BboxPoints | BboxPoint | []) => void;
+}
+
+/**
  * Handles the dragging of a bounding box (bbox).
  * Updates the active bbox coordinates based on the drag distance.
  * 
- * @param {Array} coordinates - An array containing the previous and current coordinates of the drag.
- * @param {Array} activeBboxPoints - Current coordinates of the active bounding box.
- * @param {Array} updatedAvailableAreaLat - Updated latitude bounds of the available area.
- * @param {Array} updatedAvailableAreaLong - Updated longitude bounds of the available area.
- * @param {Number} minBboxArea - Minimum area required for the bounding box.
- * @param {Array} updatedAvailableArea - Updated available area as an array of coordinates.
- * @param {Function} setActiveBboxPoints - Function to update the active bounding box points.
+ * @param {DragLayerProps} props - The props for the dragLayer function.
  */
-export const dragLayer = (
-    coordinates: BboxPoint,
-    activeBboxPoints: BboxPoints | BboxPoint | [],
-    updatedAvailableAreaLat: Coordinate | undefined,
-    updatedAvailableAreaLong: Coordinate | undefined,
-    minBboxArea: number,
-    updatedAvailableArea: BboxEnclosedPoints | null,
-    setActiveBboxPoints: (activeBboxPoints: BboxPoints | BboxPoint | []) => void
-) => {
+export const dragLayer = ({
+    coordinates,
+    activeBboxPoints,
+    updatedAvailableAreaLat,
+    updatedAvailableAreaLong,
+    minBboxArea,
+    updatedAvailableArea,
+    setActiveBboxPoints
+}: DragLayerProps) => {
     const previousPoint = coordinates[0]; // Previous position of the bbox
     const draggedPoint = coordinates[1]; // Current position of the bbox being dragged
 

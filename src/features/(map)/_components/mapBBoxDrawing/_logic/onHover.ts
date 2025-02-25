@@ -10,18 +10,46 @@ import { isPointInPolygon } from '../helpers';
 import { BboxEnclosedPoints, BboxPoint, BboxPoints, Coordinate, HoverInfo } from '../types';
 import { addPointToMap } from './addPointToMap';
 
-// Function to handle hover events on a bounding box layer
-export const onHover = (
-	info: HoverInfo,
-	updatedAvailableArea: BboxEnclosedPoints | null,
-	activeBboxPoints: BboxPoints | BboxPoint | [],
-	minBboxArea: number,
-	editModeIsActive: boolean,
-	setBboxIsHovered: (state: string | boolean) => void,
-	setActiveBboxPoints: (points: BboxPoints | BboxPoint | []) => void,
-	setPredictedHoveredPoints: (points: BboxPoints | null) => void,
-	onBboxCoordinatesChange: (bbox: BboxPoints | BboxPoint | null) => void
-) => {
+/**
+* Interface for the onHover function props.
+*/
+interface OnHoverProps {
+	/** Information about the hover event. */
+	info: HoverInfo;
+	/** Updated available area as an array of coordinates. */
+	updatedAvailableArea: BboxEnclosedPoints | null;
+	/** Current coordinates of the active bounding box. */
+	activeBboxPoints: BboxPoints | BboxPoint | [];
+	/** Minimum area required for the bounding box. */
+	minBboxArea: number;
+	/** Indicates if the edit mode is active. */
+	editModeIsActive: boolean;
+	/** Function to set the bounding box hover state. */
+	setBboxIsHovered: (state: string | boolean) => void;
+	/** Function to set the active bounding box points. */
+	setActiveBboxPoints: (points: BboxPoints | BboxPoint | []) => void;
+	/** Function to set predicted hovered points. */
+	setPredictedHoveredPoints: (points: BboxPoints | null) => void;
+	/** Callback function to handle changes in bounding box coordinates. */
+	onBboxCoordinatesChange: (bbox: BboxPoints | BboxPoint | null) => void;
+}
+
+/**
+* Handles hover events on a bounding box layer.
+* 
+* @param {OnHoverProps} props - The props for the onHover function.
+*/
+export const onHover = ({
+	info,
+	updatedAvailableArea,
+	activeBboxPoints,
+	minBboxArea,
+	editModeIsActive,
+	setBboxIsHovered,
+	setActiveBboxPoints,
+	setPredictedHoveredPoints,
+	onBboxCoordinatesChange
+}: OnHoverProps) => {
 	// Check if the coordinate information is available
 	if (!info?.coordinate) return;
 
@@ -35,7 +63,14 @@ export const onHover = (
 			const longDiff = activeBboxPoints[0][1] - currentPoint[1];
 			isLargeEnough = (latDiff > minBboxArea || latDiff < -minBboxArea) && 
 											(longDiff > minBboxArea || longDiff < -minBboxArea);
-			addPointToMap(currentPoint, activeBboxPoints, true, setActiveBboxPoints, setPredictedHoveredPoints, onBboxCoordinatesChange);
+			addPointToMap({
+					coordinates: currentPoint,
+					activeBboxPoints,
+					isDraft: true,
+					setActiveBboxPoints,
+					setPredictedHoveredPoints,
+					onFinishDragging: onBboxCoordinatesChange
+			});
 	}
 
 	// Check conditions for hover state
@@ -51,7 +86,12 @@ export const onHover = (
 	}
 };
 
-// Function to determine the hover state for borders
+/**
+* Determines the hover state for borders.
+* 
+* @param {Coordinate[]} coordinates - The coordinates of the border.
+* @returns {string} The hover state.
+*/
 const determineBorderHover = (coordinates: Coordinate[]): string => {
 	if (coordinates[0][0] === coordinates[1][0]) {
 			return HOVER_BORDER_HORIZONTAL; // Horizontal border hover

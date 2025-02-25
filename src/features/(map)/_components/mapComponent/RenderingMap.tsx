@@ -7,70 +7,95 @@ import DeckGL from '@deck.gl/react';
 import { TileLayer } from "@deck.gl/geo-layers";
 import { BitmapLayer } from "@deck.gl/layers";
 
+/**
+ * Interface for the RenderMapProps.
+ */
 export interface RenderMapProps {
-	mapRef?: any,
-	customBaseMap?: TileLayer,
-  width?: string,
-  height?: string,
-	layer?: LayersList,
-	onClick?: (info: object) => void,
-	getCursor?: (info: object) => string,
-	onHover?: (info: object) => void,
-	onDrag?: (info: object) => void,
-	onStartDragging?: (info: object) => void,
-	onStopDragging?: (info: object) => void,
-	onViewStateChange?: (info: object) => void,
-	disableControls?: boolean,
-	initialView: object | null,
-	setDistanceScales?: (distanceScales: { unitsPerDegree?: Array<number>; metersPerUnit: Array<number>; }) => void
+    /** Reference to the map. */
+    mapRef?: any;
+    /** Custom base map layer. */
+    customBaseMap?: TileLayer;
+    /** Width of the map. */
+    width?: string;
+    /** Height of the map. */
+    height?: string;
+    /** List of layers to be rendered. */
+    layer?: LayersList;
+    /** Callback function for click events. */
+    onClick?: (info: object) => void;
+    /** Function to get the cursor style. */
+    getCursor?: (info: object) => string;
+    /** Callback function for hover events. */
+    onHover?: (info: object) => void;
+    /** Callback function for drag events. */
+    onDrag?: (info: object) => void;
+    /** Callback function for drag start events. */
+    onStartDragging?: (info: object) => void;
+    /** Callback function for drag stop events. */
+    onStopDragging?: (info: object) => void;
+    /** Callback function for view state change events. */
+    onViewStateChange?: (info: object) => void;
+    /** Boolean to disable controls. */
+    disableControls?: boolean;
+    /** Initial view state of the map. */
+    initialView: object | null;
+    /** Function to set distance scales. */
+    setDistanceScales?: (distanceScales: { unitsPerDegree?: Array<number>; metersPerUnit: Array<number>; }) => void;
 }
-/** Rendered map with DeckGL tool used as a geospatial renderer */
+
+/**
+ * Rendered map with DeckGL tool used as a geospatial renderer.
+ * 
+ * @param {RenderMapProps} props - The props for the RenderingMap component.
+ * @returns {JSX.Element} The rendered map component.
+ */
 const RenderingMap: React.FC<RenderMapProps> = (props: RenderMapProps) => {
 
-	// Retrieve distanceScales from the mapRef if available - otherwise dont show any distance calculations
-	const distanceScales = props?.mapRef?.current?.deck?.viewManager?._viewports?.[0]?.distanceScales;
+    // Retrieve distanceScales from the mapRef if available - otherwise don't show any distance calculations
+    const distanceScales = props?.mapRef?.current?.deck?.viewManager?._viewports?.[0]?.distanceScales;
 
-	if (props.setDistanceScales && distanceScales) {
-		props.setDistanceScales(distanceScales);
-	}
-	
-	const tileLayer = new TileLayer({
-		id: 'TileLayer',
-		data: 'https://c.tile.openstreetmap.org/{z}/{x}/{y}.png',
-		maxZoom: 19,
-		minZoom: 0,
+    if (props.setDistanceScales && distanceScales) {
+        props.setDistanceScales(distanceScales);
+    }
+    
+    const tileLayer = new TileLayer({
+        id: 'TileLayer',
+        data: 'https://c.tile.openstreetmap.org/{z}/{x}/{y}.png',
+        maxZoom: 19,
+        minZoom: 0,
 
-		renderSubLayers: (props: any) => {
-			const { boundingBox } = props.tile;
+        renderSubLayers: (props: any) => {
+            const { boundingBox } = props.tile;
 
-			return new BitmapLayer(props, {
-				data: undefined,
-				image: props.data,
-				bounds: [boundingBox[0][0], boundingBox[0][1], boundingBox[1][0], boundingBox[1][1]]
-			});
-		},
-	});
-const layers = [props.customBaseMap ? props.customBaseMap : tileLayer, props.layer].filter(layer => layer !== undefined);
+            return new BitmapLayer(props, {
+                data: undefined,
+                image: props.data,
+                bounds: [boundingBox[0][0], boundingBox[0][1], boundingBox[1][0], boundingBox[1][1]]
+            });
+        },
+    });
 
-  return (
-    <section className={`${styles.mapRender}`}>
-      <DeckGL
-				ref={props.mapRef}
-        initialViewState={props.initialView}
-        layers={layers}
-        controller={!props.disableControls}
-        style={{ position: "relative", width: props.width, height: props.height }}
-				onClick={props.onClick}
-				onHover={props.onHover}
-				onDrag={props.onDrag}
-				onDragStart={props.onStartDragging}
-				onDragEnd={props.onStopDragging}
-				onViewStateChange={props.onViewStateChange}
-				getCursor={(info) => {return props.getCursor ? props.getCursor(info) : (info.isDragging ? "grabbing" : "grab")}} // otherwise throws an error
-      >
-      </DeckGL>
-    </section>
-  )
+    const layers = [props.customBaseMap ? props.customBaseMap : tileLayer, props.layer].filter(layer => layer !== undefined);
+
+    return (
+        <section className={`${styles.mapRender}`}>
+            <DeckGL
+                ref={props.mapRef}
+                initialViewState={props.initialView}
+                layers={layers}
+                controller={!props.disableControls}
+                style={{ position: "relative", width: props.width, height: props.height }}
+                onClick={props.onClick}
+                onHover={props.onHover}
+                onDrag={props.onDrag}
+                onDragStart={props.onStartDragging}
+                onDragEnd={props.onStopDragging}
+                onViewStateChange={props.onViewStateChange}
+                getCursor={(info) => {return props.getCursor ? props.getCursor(info) : (info.isDragging ? "grabbing" : "grab")}} // otherwise throws an error
+            >
+            </DeckGL>
+        </section>
+    )
 }
 
-export default RenderingMap
+export default RenderingMap;

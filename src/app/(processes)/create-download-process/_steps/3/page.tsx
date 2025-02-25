@@ -9,15 +9,7 @@ import PageSteps from '@features/(processes)/_components/PageSteps';
 
 import { pages } from '@features/(processes)/_constants/app';
 import Details from '@features/(processes)/_components/ProcessesTable/Details';
-
-/**
- * Fetches data from the given URL.
- * @param {string} url - The URL to fetch data from.
- * @returns {Promise<any>} - The fetched data.
- */
-const fetcher = (url: string) => {
-	return fetch(`${url}`).then(r => r.json());
-}
+import { fetcher } from '@features/(shared)/_logic/utils';
 
 /**
  * StartJobButton component.

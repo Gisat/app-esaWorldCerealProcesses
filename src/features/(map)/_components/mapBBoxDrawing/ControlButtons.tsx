@@ -26,8 +26,12 @@ const ControlButtons: React.FC<ControlButtonsProps> = ({
     activeBboxPoints,
     setEditModeIsActive,
     clearPoints,
-		customStyles
+    customStyles
 }) => {
+    /**
+     * Toggles the edit mode. If the edit mode is active and there is only one active bounding box point,
+     * it clears the points before toggling the edit mode.
+     */
     const handleEditToggle = () => {
         if (isActive && activeBboxPoints.length === 1) {
             clearPoints();
@@ -35,6 +39,11 @@ const ControlButtons: React.FC<ControlButtonsProps> = ({
         setEditModeIsActive(!isActive);
     };
 
+    /**
+     * Returns the tooltip label based on the number of active bounding box points and the edit mode state.
+     * 
+     * @returns {string} The tooltip label.
+     */
     const getTooltipLabel = () => {
         if (activeBboxPoints.length > 1) {
             return isActive ? "Stop editing" : "Start editing";
@@ -42,11 +51,22 @@ const ControlButtons: React.FC<ControlButtonsProps> = ({
         return isActive ? "Stop drawing" : "Start drawing";
     };
 
-		const editIcon = activeBboxPoints.length > 1 ? (
-			isActive ? <IconEditOff className={styles["mapBBoxDrawing-buttons-icons"]} /> : <IconEdit className={styles["mapBBoxDrawing-buttons-icons"]} />
-		) : (
-				<IconCircleDashedPlus className={styles["mapBBoxDrawing-buttons-icons"]} color={isActive ? DEFAULT_ICON_ACTIVE_COLOR : undefined} />
-		);
+    /**
+     * Determines the icon to display based on the number of active bounding box points and the edit mode state.
+     * 
+     * @returns {JSX.Element} The icon to display.
+     */
+    const getEditIcon = () => {
+        if (activeBboxPoints.length > 1) {
+            if (isActive) {
+                return <IconEditOff className={styles["mapBBoxDrawing-buttons-icons"]} />;
+            } else {
+                return <IconEdit className={styles["mapBBoxDrawing-buttons-icons"]} />;
+            }
+        } else {
+            return <IconCircleDashedPlus className={styles["mapBBoxDrawing-buttons-icons"]} color={isActive ? DEFAULT_ICON_ACTIVE_COLOR : undefined} />;
+        }
+    };
 
     return (
         <Stack
@@ -59,7 +79,7 @@ const ControlButtons: React.FC<ControlButtonsProps> = ({
                     variant="default" 
                     onClick={handleEditToggle}
                 >
-                    {editIcon}
+                    {getEditIcon()}
                 </ActionIcon>
             </Tooltip>
             <Tooltip label={"Clear selection"}>

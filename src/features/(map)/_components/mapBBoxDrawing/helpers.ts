@@ -15,12 +15,12 @@ export function isPointInPolygon(polygon: number[][] | null, point: [number, num
 									odd = !odd;
 					}
 					j = i;
-			};
+			}
 			return odd;
 	} else {
 			return null;
-	};
-};
+	}
+}
 
 /**
 * Finds the closest number to the target in an array of numbers.

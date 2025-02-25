@@ -16,9 +16,6 @@ import { IconArrowRight } from "@tabler/icons-react";
  */
 const NextButton = ({ collection }: { collection: string | null }) => {
 
-    // const [cookieValue, _] = useUserInfoCookie()
-    // useRedirectIf(() => cookieValue === undefined, "/")
-
     const router = useRouter();
     const params = useSearchParams();
     const activeStep = Number.parseInt(params.get('step') || "");

@@ -11,6 +11,7 @@ import { MapBBox } from '@features/(shared)/_components/map/MapBBox';
 import FormLabel from '@features/(shared)/_layout/_components/FormLabel';
 import TwoColumns, { Column } from '@features/(shared)/_layout/_components/TwoColumns';
 import { IconCheck } from "@tabler/icons-react";
+import { queryFetcher } from '@features/(shared)/_logic/utils';
 
 const minDate = new Date("2021-01-01");
 const maxDate = new Date("2022-01-01");
@@ -32,16 +33,6 @@ type searchParamsType = {
 }
 
 /**
- * Fetches data from the given URL with query parameters.
- * @param {string} url - The URL to fetch data from.
- * @param {string} queryParams - The query parameters.
- * @returns {Promise<any>} - The fetched data.
- */
-const fetcher = (url: string, queryParams: string) => {
-    return fetch(`${url}?${queryParams}`).then(r => r.json());
-}
-
-/**
  * CreateJobButton component.
  * @param {Object} props - The component props.
  * @param {searchParamsType} [props.searchParams] - The search parameters.
@@ -54,7 +45,7 @@ const CreateJobButton = ({ setValues, params, searchParams }: { searchParams?: s
     const url = `/api/jobs/create`
     const urlParams = new URLSearchParams(params)
 
-    const { data, isLoading } = useSWR(shouldFetch ? [url, urlParams.toString()] : null, () => fetcher(url, urlParams.toString()));
+    const { data, isLoading } = useSWR(shouldFetch ? [url, urlParams.toString()] : null, () => queryFetcher(url, urlParams.toString()));
 
     if (shouldFetch && data) {
         setShouldFetch(false)
