@@ -17,3 +17,22 @@ export const strCapitalizeFirstLetter = (str: string) => {
     if (!str) return str;
     return str.charAt(0).toUpperCase() + str.slice(1);
   }
+
+/**
+ * Fetches data from the given URL with query parameters.
+ * @param {string} url - The URL to fetch data from.
+ * @param {string} queryParams - The query parameters.
+ * @returns {Promise<any>} - The fetched data.
+ */
+export const queryFetcher = (url: string, queryParams: string) => {
+	return fetch(`${url}?${queryParams}`).then(r => r.json());
+}
+
+/**
+ * Fetches data from the given URL.
+ * @param {string} url - The URL to fetch data from.
+ * @returns {Promise<any>} - The fetched data.
+ */
+export const fetcher = (url: string) => {
+	return fetch(`${url}`).then(r => r.json());
+}
