@@ -54,9 +54,9 @@ const CreateJobButton = ({ setValues, params, searchParams }: { searchParams?: s
 		setShouldFetch(false)
 	}
 
-	if (data?.jobId) {
+	if (data?.key) {
 		setTimeout(() => {
-			setValues([["3", 'step'], [data.jobId, 'jobid']])
+			setValues([["3", 'step'], [data.key, 'jobid']])
 		}, 50)
 	}
 
