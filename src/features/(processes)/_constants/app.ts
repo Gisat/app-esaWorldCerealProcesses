@@ -69,3 +69,16 @@ export const enum processTypes {
   product = "Product",
   unknown = "Unknown type"
 }
+
+
+/**
+ * Enum representing different types of World Cereal processes.
+ * @enum {string}
+ * @readonly
+ * @property {string} WorldCerealDataCrop - Process for world cereal crop extent
+ * @property {string} WorldCerealCropType - Process for world cereal crop type classification
+ */
+export enum UsedCerealProcesses {
+    WorldCerealDataCrop = "worldcereal_crop_extent",
+    WorldCerealCropType = "worldcereal_crop_type"
+}
