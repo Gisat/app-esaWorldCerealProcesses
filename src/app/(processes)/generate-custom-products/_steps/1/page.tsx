@@ -46,7 +46,7 @@ const NextButton = ({ collection }: { collection: string | null }) => {
       className={`worldCereal-Button${disabled ? " is-disabled" : ""}`}
       onClick={nextStep}
     >
-      Continue to set parameters
+      Continue to set parameters & create process
     </Button>
   );
 };
@@ -95,11 +95,24 @@ export default function Page({
           className="worldCereal-Select"
           size="md"
           allowDeselect={false}
-          label="Product/Collection"
+          label="Select you product"
           placeholder="Pick one"
           data={products}
           value={(productIsValid && collection) || null}
           onChange={setValue}
+          mb="md"
+        />
+        <Select
+          // withAsterisk
+          className="worldCereal-Select"
+          size="md"
+          allowDeselect={false}
+          label="Select model"
+          placeholder="Default model"
+          // data={undefined}
+          value={(productIsValid && collection) || null}
+          onChange={setValue}
+          disabled
         />
         <PageSteps NextButton={createElement(NextButton, { collection })} />
       </Column>

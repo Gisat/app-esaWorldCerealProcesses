@@ -1,17 +1,9 @@
 "use client";
 
+import { apiFetcher } from "@app/(shared)/_fetch/apiFetcher";
 import PageSteps from "@features/(processes)/_components/PageSteps";
 import { products } from "@features/(processes)/_constants/app";
 import { MapBBox } from "@features/(shared)/_components/map/MapBBox";
-import FormLabel from "@features/(shared)/_layout/_components/FormLabel";
-import TwoColumns, {
-  Column,
-} from "@features/(shared)/_layout/_components/TwoColumns";
-import { queryFetcher } from "@features/(shared)/_logic/utils";
-import { Button, SegmentedControl, Stack } from "@mantine/core";
-import { DateInput } from "@mantine/dates";
-import { IconCheck } from "@tabler/icons-react";
-import { useRouter } from "next/navigation";
 import {
   createElement,
   useCallback,
@@ -19,6 +11,22 @@ import {
   useMemo,
   useState,
 } from "react";
+// import { MapExtentSelect } from "@features/(shared)/_components/map/MapExtentSelect";
+import FormLabel from "@features/(shared)/_layout/_components/FormLabel";
+import TwoColumns, {
+  Column,
+} from "@features/(shared)/_layout/_components/TwoColumns";
+import {
+  Anchor,
+  Button,
+  Group,
+  SegmentedControl,
+  Stack,
+  Text,
+} from "@mantine/core";
+import { DateInput } from "@mantine/dates";
+import { IconCheck } from "@tabler/icons-react";
+import { useRouter } from "next/navigation";
 import useSWR from "swr";
 
 const minDate = new Date("2021-01-01");
@@ -28,6 +36,12 @@ const defaultOutputFileFormat = "GTiff";
 
 type BboxCornerPointsType = [number, number, number, number] | undefined;
 type OutputFileFormatType = string | undefined;
+
+const defaultWidth = "10000";
+const defaultHeight = "10000";
+
+const minSize = 100;
+const maxSize = 500000;
 
 type searchParamsType = {
   step?: string;
@@ -41,12 +55,13 @@ type searchParamsType = {
 };
 
 /**
- * CreateJobButton component.
- * @param {Object} props - The component props.
- * @param {searchParamsType} [props.searchParams] - The search parameters.
- * @param {Function} props.setValues - Function to set values.
- * @param {Object} props.params - The parameters.
- * @returns {JSX.Element} - The rendered component.
+ * CreateJobButton Component
+ *
+ * @param {Object} props - Component props
+ * @param {Function} props.setValues - Function to update search parameters.
+ * @param {Object} props.params - The parameters required for job creation.
+ * @param {searchParamsType} props.searchParams - URL search parameters.
+ * @returns {JSX.Element} Button component for creating a job process.
  */
 const CreateJobButton = ({
   setValues,
@@ -60,6 +75,7 @@ const CreateJobButton = ({
     endDate?: string;
     bbox?: string;
     off?: string;
+    outputFileFormat?: string;
     collection?: string;
   };
 }) => {
@@ -69,7 +85,7 @@ const CreateJobButton = ({
 
   const { data, isLoading } = useSWR(
     shouldFetch ? [url, urlParams.toString()] : null,
-    () => queryFetcher(url, urlParams.toString())
+    () => apiFetcher(url, urlParams.toString())
   );
 
   if (shouldFetch && data) {
@@ -86,18 +102,23 @@ const CreateJobButton = ({
   }
 
   /**
-   * Handles the button click event.
+   * Handles button click event to initiate job creation.
    */
   function handleClick() {
     setShouldFetch(true);
   }
 
-  const bboxPoints = searchParams?.bbox?.split(",");
+  const width = searchParams?.width || defaultWidth;
+  const height = searchParams?.height || defaultHeight;
+  const widthInvalid =
+    width && (Number(width) < minSize || Number(width) > maxSize);
+  const heightInvalid =
+    height && (Number(height) < minSize || Number(height) > maxSize);
 
   return (
     <Button
       leftSection={<IconCheck size={14} />}
-      disabled={isLoading || !bboxPoints}
+      disabled={isLoading || !!widthInvalid || !!heightInvalid}
       className="worldCereal-Button"
       onClick={handleClick}
     >
@@ -107,10 +128,11 @@ const CreateJobButton = ({
 };
 
 /**
- * Page component.
- * @param {Object} props - The component props.
- * @param {searchParamsType} [props.searchParams] - The search parameters.
- * @returns {JSX.Element} - The rendered component.
+ * Page Component
+ *
+ * @param {Object} props - Component props
+ * @param {searchParamsType} [props.searchParams] - URL search parameters.
+ * @returns {JSX.Element} Page component rendering the job creation process.
  */
 export default function Page({
   searchParams,
@@ -150,7 +172,7 @@ export default function Page({
     startDate: startDate,
     endDate: endDate,
     collection: collection,
-    off: searchParams?.off || defaultOutputFileFormat,
+    off: defaultOutputFileFormat,
   };
 
   /**
@@ -237,17 +259,34 @@ export default function Page({
   return (
     <TwoColumns>
       <Column>
-        <FormLabel>Draw the extent (maximum 500 x 500 km)</FormLabel>
+        <Group justify="space-between" w="100%" mb="md">
+          <FormLabel>Draw the extent</FormLabel>
+          <Text fz="14">
+            Current extent: -2.53, 35.23, 4.56, 49,72 (7654 sqkm)
+          </Text>
+        </Group>
         <MapBBox
           onBboxChange={onBboxChange}
           bbox={bbox?.map(Number)}
           setAreaBbox={setAreaBbox}
           setCoordinatesToDisplay={setCoordinatesToDisplay}
         />
-        <FormLabel>
-          Current extent: {bbox ? coordinatesToDisplay : "none"}{" "}
-          {areaBbox && bbox ? `(${areaBbox} sqkm)` : ""}
-        </FormLabel>
+        <Text fw="bold" fz="sm" mt="md">
+          Avoid too large areas to prevent excessive credit usage and long
+          processing times!
+        </Text>
+        <Text fz="sm">
+          A run of 250km2 will typically consume 40 credits and last around
+          20min.
+        </Text>
+        <Text fz="sm">
+          A run of 750km2 will typically consume 90 credits and last around
+          50min.
+        </Text>
+        <Text fz="sm">
+          A run of 2500km2 will typically consume 250 credits and last around 1h
+          40min.
+        </Text>
         <PageSteps
           NextButton={createElement(CreateJobButton, {
             setValues,
@@ -257,37 +296,48 @@ export default function Page({
         />
       </Column>
       <Column>
-        <Stack gap="lg" w="100%" align="flex-start">
+        <Stack gap="md" w="100%" align="flex-start">
           <div>
-            <FormLabel>Product/collection</FormLabel>
-            <div>{collectionName}</div>
+            <FormLabel>Select season of interest</FormLabel>
+            <div>
+              <Text>
+                Define the end month of your processing period. The default
+                length of the period is 12 months.
+              </Text>
+              <Text>
+                To guide your decision concerning the processing period, you can
+                consult the{" "}
+                <Anchor
+                  href="https://ipad.fas.usda.gov/ogamaps/cropcalendar.aspx"
+                  target="_blank"
+                  underline="always"
+                >
+                  USDA crop calendars
+                </Anchor>
+              </Text>
+            </div>
           </div>
-          <DateInput
-            size="md"
-            className="worldCereal-DateInput"
-            value={startDateDate}
-            onChange={(value) => setValue(transformDate(value), "startDate")}
-            label="Start date"
-            placeholder="Select start date"
-            valueFormat="YYYY-MM-DD"
-            minDate={minDate}
-            maxDate={endDateDate || maxDate}
-            clearable={false}
-            disabled
-          />
-          <DateInput
-            size="md"
-            className="worldCereal-DateInput"
-            value={endDateDate}
-            onChange={(value) => setValue(transformDate(value), "endDate")}
-            label="End date"
-            placeholder="Select end date"
-            valueFormat="YYYY-MM-DD"
-            minDate={startDateDate || minDate}
-            maxDate={maxDate}
-            clearable={false}
-            disabled
-          />
+          <div>
+            <DateInput
+              size="md"
+              className="worldCereal-DateInput"
+              value={startDateDate}
+              onChange={(value) => setValue(transformDate(value), "startDate")}
+              label="Ending month"
+              placeholder="Select month"
+              valueFormat="MMMM YYYY"
+              minDate={minDate}
+              maxDate={endDateDate || maxDate}
+              clearable={false}
+              disabled
+            />
+
+            <Stack mt="xs" gap={0}>
+              <Text fz="sm">Start date: 2023-05-01</Text>
+              <Text fz="sm">End date: 2024-04-30</Text>
+            </Stack>
+          </div>
+
           <div>
             <FormLabel>Output file format</FormLabel>
             <SegmentedControl

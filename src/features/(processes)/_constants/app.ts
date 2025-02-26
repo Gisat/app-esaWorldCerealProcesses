@@ -34,7 +34,7 @@ export const products: Array<{ value: string; label: string }> = [
 export const pages = {
   processesList: { url: "processes-list" },
   createDownloadProcess: { url: "create-download-process" },
-  createProductProcess: { url: "create-product-process" },
+  generateCustomProducts: { url: "generate-custom-products" },
 };
 
 export const navbarItems = [
@@ -49,16 +49,15 @@ export const navbarItems = [
     icon: IconCirclePlus,
   },
   {
-    key: pages.createProductProcess.url,
-    title: "Create product process",
+    key: pages.generateCustomProducts.url,
+    title: "Generate custom products",
     icon: IconPhotoPlus,
   },
 ];
 
-
 /**
  * Enum representing different types of processes.
- * 
+ *
  * @enum {string}
  * @property {string} download - Represents a download process.
  * @property {string} product - Represents a product-related process.
@@ -67,9 +66,8 @@ export const navbarItems = [
 export const enum processTypes {
   download = "Download",
   product = "Product",
-  unknown = "Unknown type"
+  unknown = "Unknown type",
 }
-
 
 /**
  * Enum representing different types of World Cereal processes.
@@ -79,6 +77,6 @@ export const enum processTypes {
  * @property {string} WorldCerealCropType - Process for world cereal crop type classification
  */
 export enum UsedCerealProcesses {
-    WorldCerealDataCrop = "worldcereal_crop_extent",
-    WorldCerealCropType = "worldcereal_crop_type"
+  WorldCerealDataCrop = "worldcereal_crop_extent",
+  WorldCerealCropType = "worldcereal_crop_type",
 }

@@ -46,14 +46,14 @@ export default function DownloadLayout({
         active={activeStep - 1}
       >
         <Stepper.Step
-          label="Select product"
+          label="Select product & model"
           allowStepClick={false}
           allowStepSelect={false}
         >
           {children}
         </Stepper.Step>
         <Stepper.Step
-          label="Create process"
+          label="Set parameters & create process"
           allowStepClick={false}
           allowStepSelect={false}
         >
