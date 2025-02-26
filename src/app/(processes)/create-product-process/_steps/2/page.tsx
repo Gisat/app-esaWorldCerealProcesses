@@ -1,33 +1,31 @@
 "use client";
 
+import { apiFetcher } from "@app/(shared)/_fetch/apiFetcher";
+import { getBBoxFromSearchParams } from "@app/(shared)/_map/getBbox";
 import PageSteps from "@features/(processes)/_components/PageSteps";
 import { products } from "@features/(processes)/_constants/app";
-import { MapBBox } from "@features/(shared)/_components/map/MapBBox";
+import { MapExtentSelect } from "@features/(shared)/_components/map/MapExtentSelect";
 import FormLabel from "@features/(shared)/_layout/_components/FormLabel";
 import TwoColumns, {
   Column,
 } from "@features/(shared)/_layout/_components/TwoColumns";
-import { queryFetcher } from "@features/(shared)/_logic/utils";
 import { Button, SegmentedControl, Stack } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
 import { IconCheck } from "@tabler/icons-react";
 import { useRouter } from "next/navigation";
-import {
-  createElement,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { createElement, useEffect, useState } from "react";
 import useSWR from "swr";
 
 const minDate = new Date("2021-01-01");
 const maxDate = new Date("2022-01-01");
 
-const defaultOutputFileFormat = "GTiff";
+const defaultWidth = "10000";
+const defaultHeight = "10000";
 
-type BboxCornerPointsType = [number, number, number, number] | undefined;
-type OutputFileFormatType = string | undefined;
+const minSize = 100;
+const maxSize = 500000;
+
+type BboxType = [] | number[] | undefined;
 
 type searchParamsType = {
   step?: string;
@@ -37,16 +35,16 @@ type searchParamsType = {
   bbox?: string;
   width?: string;
   height?: string;
-  off?: string;
 };
 
 /**
- * CreateJobButton component.
- * @param {Object} props - The component props.
- * @param {searchParamsType} [props.searchParams] - The search parameters.
- * @param {Function} props.setValues - Function to set values.
- * @param {Object} props.params - The parameters.
- * @returns {JSX.Element} - The rendered component.
+ * CreateJobButton Component
+ *
+ * @param {Object} props - Component props
+ * @param {Function} props.setValues - Function to update search parameters.
+ * @param {Object} props.params - The parameters required for job creation.
+ * @param {searchParamsType} props.searchParams - URL search parameters.
+ * @returns {JSX.Element} Button component for creating a job process.
  */
 const CreateJobButton = ({
   setValues,
@@ -59,7 +57,7 @@ const CreateJobButton = ({
     startDate?: string;
     endDate?: string;
     bbox?: string;
-    off?: string;
+    outputFileFormat?: string;
     collection?: string;
   };
 }) => {
@@ -69,35 +67,40 @@ const CreateJobButton = ({
 
   const { data, isLoading } = useSWR(
     shouldFetch ? [url, urlParams.toString()] : null,
-    () => queryFetcher(url, urlParams.toString())
+    () => apiFetcher(url, urlParams.toString())
   );
 
   if (shouldFetch && data) {
     setShouldFetch(false);
   }
 
-  if (data?.jobId) {
+  if (data?.key) {
     setTimeout(() => {
       setValues([
         ["3", "step"],
-        [data.jobId, "jobid"],
+        [data.key, "jobid"],
       ]);
     }, 50);
   }
 
   /**
-   * Handles the button click event.
+   * Handles button click event to initiate job creation.
    */
   function handleClick() {
     setShouldFetch(true);
   }
 
-  const bboxPoints = searchParams?.bbox?.split(",");
+  const width = searchParams?.width || defaultWidth;
+  const height = searchParams?.height || defaultHeight;
+  const widthInvalid =
+    width && (Number(width) < minSize || Number(width) > maxSize);
+  const heightInvalid =
+    height && (Number(height) < minSize || Number(height) > maxSize);
 
   return (
     <Button
       leftSection={<IconCheck size={14} />}
-      disabled={isLoading || !bboxPoints}
+      disabled={isLoading || !!widthInvalid || !!heightInvalid}
       className="worldCereal-Button"
       onClick={handleClick}
     >
@@ -107,10 +110,11 @@ const CreateJobButton = ({
 };
 
 /**
- * Page component.
- * @param {Object} props - The component props.
- * @param {searchParamsType} [props.searchParams] - The search parameters.
- * @returns {JSX.Element} - The rendered component.
+ * Page Component
+ *
+ * @param {Object} props - Component props
+ * @param {searchParamsType} [props.searchParams] - URL search parameters.
+ * @returns {JSX.Element} Page component rendering the job creation process.
  */
 export default function Page({
   searchParams,
@@ -125,57 +129,49 @@ export default function Page({
     height?: string;
   };
 }) {
-  const bbox: BboxCornerPointsType = searchParams?.bbox
-    ?.split(",")
-    .map(Number) as BboxCornerPointsType;
-
-  const [areaBbox, setAreaBbox] = useState<number | undefined>(undefined);
-  const [coordinatesToDisplay, setCoordinatesToDisplay] = useState<
-    string | string[] | null
-  >(null);
-  const [currentExtent, setCurrentExtent] =
-    useState<BboxCornerPointsType>(bbox);
-
   const router = useRouter();
   const startDate = searchParams?.startDate || "2021-01-01";
-  const startDateDate = useMemo(() => new Date(startDate), [startDate]);
+  const startDateDate = new Date(startDate);
 
   const endDate = searchParams?.endDate || "2021-12-30";
-  const endDateDate = useMemo(() => new Date(endDate), [endDate]);
+  const endDateDate = new Date(endDate);
 
   const collection = searchParams?.collection || undefined;
+
+  const width = searchParams?.width || defaultWidth;
+  const height = searchParams?.height || defaultHeight;
 
   const params = {
     bbox: searchParams?.bbox || undefined,
     startDate: startDate,
     endDate: endDate,
     collection: collection,
-    off: defaultOutputFileFormat,
+    outputFileFormat: "NETCDF",
   };
 
   /**
-   * Sets a value in the URL search parameters.
-   * @param {string | null | undefined} value - The value to set.
-   * @param {string} key - The key to set the value for.
+   * Updates the URL search parameters and navigates to the new URL.
+   *
+   * @param {string | null | undefined} value - The value to set for the query parameter.
+   * @param {string} key - The key of the query parameter to update.
+   * @param {any} [val] - Optional additional value.
    */
-  const setValue = useCallback(
-    (value: string | null | undefined, key: string) => {
-      const url = new URL(window.location.href);
+  const setValue = (
+    value: string | null | undefined,
+    key: string,
+    val?: any
+  ) => {
+    const url = new URL(window.location.href);
 
-      if (value) {
-        url.searchParams.set(key, value);
-      } else {
-        url.searchParams.delete(key);
-      }
-      // @ts-expect-error 'shallow' does not exist in type 'NavigateOptions'
-      router.push(url.toString(), { shallow: true, scroll: false });
-    },
-    [router]
-  );
+    url.searchParams.set(key, value || "");
+    // @ts-expect-error 'shallow' does not exist in type 'NavigateOptions'
+    router.push(url.toString(), { shallow: true, scroll: false });
+  };
 
   /**
-   * Sets multiple values in the URL search parameters.
-   * @param {Array<[string | null | undefined, string]>} pairs - The pairs of values and keys to set.
+   * Updates multiple URL search parameters and navigates to the new URL.
+   *
+   * @param {Array<[string | null | undefined, string, any?]>} pairs - An array of key-value pairs to set in the search parameters.
    */
   const setValues = (
     pairs: [value: string | null | undefined, key: string, val?: any][]
@@ -190,64 +186,37 @@ export default function Page({
     router.push(url.toString(), { shallow: true, scroll: false });
   };
 
-  /**
-   * Transforms a Date object to a string in the format YYYY-MM-DD.
-   * @param {Date | null} value - The date to transform.
-   * @returns {string | null} - The transformed date string.
-   */
   const transformDate = (value: Date | null) => {
     return value ? new Date(value).toISOString().split("T")[0] : null;
   };
 
-  /**
-   * Handles the change of the bounding box.
-   * @param {Array<Array<number>> | null} extent - The new bounding box extent.
-   */
-  const onBboxChange = (extent?: Array<Array<number>> | null) => {
-    if (extent?.length === 4) {
-      const cornerPoints: BboxCornerPointsType = [
-        extent?.[2][0],
-        extent?.[2][1],
-        extent?.[0][0],
-        extent?.[0][1],
-      ];
-      setCurrentExtent(cornerPoints);
-    } else {
-      setCurrentExtent(undefined);
-    }
-  };
-
-  /**
-   * Handles the change of the output file format.
-   * @param {OutputFileFormatType} off - The new output file format.
-   */
-  const onOutpoutFormatChange = (off?: OutputFileFormatType) => {
-    setValue(off, "off");
+  const onBboxChange = (extent?: BboxType) => {
+    setValue(extent?.join(","), "bbox");
   };
 
   useEffect(() => {
     setValue(transformDate(endDateDate), "endDate");
     setValue(transformDate(startDateDate), "startDate");
-    setValue(currentExtent?.join(","), "bbox");
-  }, [setValue, endDateDate, startDateDate, currentExtent]);
+  }, [endDateDate, setValue, startDateDate]);
 
   const collectionName =
     collection && products.find((p) => p.value === collection)?.label;
 
+  const urlParams = new URLSearchParams(window.location.search);
+  const bbox = getBBoxFromSearchParams(urlParams);
+  const longitude = bbox ? (Number(bbox[0]) + Number(bbox[2])) / 2 : 15;
+  const latitude = bbox ? (Number(bbox[1]) + Number(bbox[3])) / 2 : 50;
+
   return (
     <TwoColumns>
       <Column>
-        <FormLabel>Draw the extent (maximum 500 x 500 km)</FormLabel>
-        <MapBBox
+        <FormLabel>Zoom map to select extent</FormLabel>
+        <MapExtentSelect
           onBboxChange={onBboxChange}
-          bbox={bbox?.map(Number)}
-          setAreaBbox={setAreaBbox}
-          setCoordinatesToDisplay={setCoordinatesToDisplay}
+          extentSizeInMeters={[Number.parseInt(width), Number.parseInt(height)]}
+          longitude={longitude}
+          latitude={latitude}
         />
-        <FormLabel>
-          Current extent: {bbox ? coordinatesToDisplay : "none"}{" "}
-          {areaBbox && bbox ? `(${areaBbox} sqkm)` : ""}
-        </FormLabel>
         <PageSteps
           NextButton={createElement(CreateJobButton, {
             setValues,
@@ -266,7 +235,9 @@ export default function Page({
             size="md"
             className="worldCereal-DateInput"
             value={startDateDate}
-            onChange={(value) => setValue(transformDate(value), "startDate")}
+            onChange={(value) =>
+              setValue(transformDate(value), "startDate", value)
+            }
             label="Start date"
             placeholder="Select start date"
             valueFormat="YYYY-MM-DD"
@@ -288,16 +259,17 @@ export default function Page({
             clearable={false}
             disabled
           />
+
           <div>
             <FormLabel>Output file format</FormLabel>
             <SegmentedControl
-              onChange={(value) => onOutpoutFormatChange(value)}
               className="worldCereal-SegmentedControl"
               size="md"
-              defaultValue={defaultOutputFileFormat}
+              readOnly
+              defaultValue="NETCDF"
               data={[
-                { label: "NetCDF", value: "NETCDF" },
-                { label: "GeoTiff", value: "GTiff" },
+                { label: "netCDF", value: "NETCDF" },
+                { label: "GeoTIFF", value: "geotiff", disabled: true },
               ]}
             />
           </div>
