@@ -80,7 +80,7 @@ const CreateJobButton = ({
   };
 }) => {
   const [shouldFetch, setShouldFetch] = useState(false);
-  const url = `/api/jobs/create`;
+  const url = `/api/jobs/create/from-process`;
   const urlParams = new URLSearchParams(params);
 
   const { data, isLoading } = useSWR(
@@ -92,11 +92,11 @@ const CreateJobButton = ({
     setShouldFetch(false);
   }
 
-  if (data?.jobId) {
+  if (data?.key) {
     setTimeout(() => {
       setValues([
         ["3", "step"],
-        [data.jobId, "jobid"],
+        [data.key, "jobid"],
       ]);
     }, 50);
   }

@@ -76,11 +76,11 @@ const CreateJobButton = ({
     setShouldFetch(false);
   }
 
-  if (data?.jobId) {
+  if (data?.key) {
     setTimeout(() => {
       setValues([
         ["3", "step"],
-        [data.jobId, "jobid"],
+        [data.key, "jobid"],
       ]);
     }, 50);
   }
@@ -115,15 +115,7 @@ const CreateJobButton = ({
 export default function Page({
   searchParams,
 }: {
-  searchParams?: {
-    step?: string;
-    startDate?: string;
-    endDate?: string;
-    collection?: string;
-    bbox?: string;
-    width?: string;
-    height?: string;
-  };
+  searchParams?: searchParamsType;
 }) {
   const bbox: BboxCornerPointsType = searchParams?.bbox
     ?.split(",")
@@ -150,7 +142,7 @@ export default function Page({
     startDate: startDate,
     endDate: endDate,
     collection: collection,
-    off: defaultOutputFileFormat,
+    off: searchParams?.off || defaultOutputFileFormat,
   };
 
   /**

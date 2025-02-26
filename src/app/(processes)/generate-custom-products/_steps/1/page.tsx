@@ -95,7 +95,7 @@ export default function Page({
           className="worldCereal-Select"
           size="md"
           allowDeselect={false}
-          label="Select you product"
+          label="Select your product"
           placeholder="Pick one"
           data={products}
           value={(productIsValid && collection) || null}
@@ -103,13 +103,11 @@ export default function Page({
           mb="md"
         />
         <Select
-          // withAsterisk
           className="worldCereal-Select"
           size="md"
           allowDeselect={false}
           label="Select model"
           placeholder="Default model"
-          // data={undefined}
           value={(productIsValid && collection) || null}
           onChange={setValue}
           disabled
