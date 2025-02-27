@@ -130,7 +130,6 @@ export default function Page({
     setValue(transformDate(startDateDate), "startDate");
     setValue(currentExtent?.join(","), "bbox");
   }, [setValue, endDateDate, startDateDate, currentExtent]);
-
   return (
     <TwoColumns>
       <Column>
