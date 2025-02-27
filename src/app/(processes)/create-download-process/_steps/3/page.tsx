@@ -73,9 +73,6 @@ export default function Page({
     jobid?: string;
   };
 }) {
-  // const [cookieValue, _] = useUserInfoCookie()
-  // useRedirectIf(() => cookieValue === undefined, "/")
-
   const jobId = searchParams?.jobid;
 
   const { data } = useSWR(`/api/jobs/get/${jobId}`, fetcher);

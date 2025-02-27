@@ -4,6 +4,17 @@ import {
   IconPhotoPlus,
 } from "@tabler/icons-react";
 
+/**
+ * Represents a product available for selection.
+ * @typedef {Object} Product
+ * @property {string} value - The unique identifier for the product.
+ * @property {string} label - The display name of the product.
+ */
+
+/**
+ * List of available products for selection.
+ * @type {Array<Product>}
+ */
 export const products: Array<{ value: string; label: string }> = [
   {
     value: "ESA_WORLDCEREAL_ACTIVECROPLAND",

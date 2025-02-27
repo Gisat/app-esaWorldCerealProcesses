@@ -1,16 +1,16 @@
 "use client";
 
+import CreateJobButton from "@app/(shared)/_components/CreateJobButton";
 import PageSteps from "@features/(processes)/_components/PageSteps";
 import { products } from "@features/(processes)/_constants/app";
+import { transformDate } from "@features/(processes)/_utils/transformDate";
 import { MapBBox } from "@features/(shared)/_components/map/MapBBox";
 import FormLabel from "@features/(shared)/_layout/_components/FormLabel";
 import TwoColumns, {
   Column,
 } from "@features/(shared)/_layout/_components/TwoColumns";
-import { queryFetcher } from "@features/(shared)/_logic/utils";
-import { Button, SegmentedControl, Stack } from "@mantine/core";
+import { SegmentedControl, Stack } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
-import { IconCheck } from "@tabler/icons-react";
 import { useRouter } from "next/navigation";
 import {
   createElement,
@@ -19,7 +19,6 @@ import {
   useMemo,
   useState,
 } from "react";
-import useSWR from "swr";
 
 const minDate = new Date("2021-01-01");
 const maxDate = new Date("2022-01-01");
@@ -41,72 +40,6 @@ type searchParamsType = {
 };
 
 /**
- * CreateJobButton component.
- * @param {Object} props - The component props.
- * @param {searchParamsType} [props.searchParams] - The search parameters.
- * @param {Function} props.setValues - Function to set values.
- * @param {Object} props.params - The parameters.
- * @returns {JSX.Element} - The rendered component.
- */
-const CreateJobButton = ({
-  setValues,
-  params,
-  searchParams,
-}: {
-  searchParams?: searchParamsType;
-  setValues: (pairs: Array<[value: string, key: string]>) => void;
-  params: {
-    startDate?: string;
-    endDate?: string;
-    bbox?: string;
-    off?: string;
-    collection?: string;
-  };
-}) => {
-  const [shouldFetch, setShouldFetch] = useState(false);
-  const url = `/api/jobs/create`;
-  const urlParams = new URLSearchParams(params);
-
-  const { data, isLoading } = useSWR(
-    shouldFetch ? [url, urlParams.toString()] : null,
-    () => queryFetcher(url, urlParams.toString())
-  );
-
-  if (shouldFetch && data) {
-    setShouldFetch(false);
-  }
-
-  if (data?.key) {
-    setTimeout(() => {
-      setValues([
-        ["3", "step"],
-        [data.key, "jobid"],
-      ]);
-    }, 50);
-  }
-
-  /**
-   * Handles the button click event.
-   */
-  function handleClick() {
-    setShouldFetch(true);
-  }
-
-  const bboxPoints = searchParams?.bbox?.split(",");
-
-  return (
-    <Button
-      leftSection={<IconCheck size={14} />}
-      disabled={isLoading || !bboxPoints}
-      className="worldCereal-Button"
-      onClick={handleClick}
-    >
-      {isLoading ? "Creating..." : "Create process"}
-    </Button>
-  );
-};
-
-/**
  * Page component.
  * @param {Object} props - The component props.
  * @param {searchParamsType} [props.searchParams] - The search parameters.
@@ -117,6 +50,7 @@ export default function Page({
 }: {
   searchParams?: searchParamsType;
 }) {
+  const apiUrl = "/api/jobs/create/from-process";
   const bbox: BboxCornerPointsType = searchParams?.bbox
     ?.split(",")
     .map(Number) as BboxCornerPointsType;
@@ -166,32 +100,6 @@ export default function Page({
   );
 
   /**
-   * Sets multiple values in the URL search parameters.
-   * @param {Array<[string | null | undefined, string]>} pairs - The pairs of values and keys to set.
-   */
-  const setValues = (
-    pairs: [value: string | null | undefined, key: string, val?: any][]
-  ) => {
-    const url = new URL(window.location.href);
-
-    pairs.forEach(([value, key]) => {
-      url.searchParams.set(key, value || "");
-    });
-
-    // @ts-expect-error 'shallow' does not exist in type 'NavigateOptions'
-    router.push(url.toString(), { shallow: true, scroll: false });
-  };
-
-  /**
-   * Transforms a Date object to a string in the format YYYY-MM-DD.
-   * @param {Date | null} value - The date to transform.
-   * @returns {string | null} - The transformed date string.
-   */
-  const transformDate = (value: Date | null) => {
-    return value ? new Date(value).toISOString().split("T")[0] : null;
-  };
-
-  /**
    * Handles the change of the bounding box.
    * @param {Array<Array<number>> | null} extent - The new bounding box extent.
    */
@@ -224,7 +132,8 @@ export default function Page({
   }, [setValue, endDateDate, startDateDate, currentExtent]);
 
   const collectionName =
-    collection && products.find((p) => p.value === collection)?.label;
+    (collection && products.find((p) => p.value === collection)?.label) ??
+    "Unknown Collection";
 
   return (
     <TwoColumns>
@@ -242,9 +151,9 @@ export default function Page({
         </FormLabel>
         <PageSteps
           NextButton={createElement(CreateJobButton, {
-            setValues,
             params,
             searchParams,
+            apiUrl,
           })}
         />
       </Column>
@@ -258,7 +167,7 @@ export default function Page({
             size="md"
             className="worldCereal-DateInput"
             value={startDateDate}
-            onChange={(value) => setValue(transformDate(value), "startDate")}
+            onChange={() => null} // TODO:
             label="Start date"
             placeholder="Select start date"
             valueFormat="YYYY-MM-DD"
@@ -271,7 +180,7 @@ export default function Page({
             size="md"
             className="worldCereal-DateInput"
             value={endDateDate}
-            onChange={(value) => setValue(transformDate(value), "endDate")}
+            onChange={() => null} // TODO:
             label="End date"
             placeholder="Select end date"
             valueFormat="YYYY-MM-DD"
