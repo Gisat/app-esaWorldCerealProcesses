@@ -34,6 +34,7 @@ const useUpdateUrlParams = (): UpdateUrlParamsFn => {
           url.searchParams.set(key, value);
         }
       });
+      
 
       // Use provided push function to update the URL
       push(url.toString(), { shallow, scroll });
