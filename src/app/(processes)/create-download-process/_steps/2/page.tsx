@@ -1,6 +1,6 @@
 "use client";
 
-import CreateJobButton from "@app/(shared)/_components/CreateJobButton";
+import { CreateJobButton } from "@features/(processes)/_components/CreateJobButton";
 import PageSteps from "@features/(processes)/_components/PageSteps";
 import { products } from "@features/(processes)/_constants/app";
 import { transformDate } from "@features/(processes)/_utils/transformDate";

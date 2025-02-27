@@ -1,7 +1,7 @@
 "use client";
 
-import { apiFetcher } from "@app/(shared)/_fetch/apiFetcher";
-import useUpdateUrlParams from "@app/(shared)/_url/useUpdateUrlParams";
+import { apiFetcher } from "@features/(shared)/_url/apiFetcher";
+import useUpdateUrlParams from "@features/(shared)/_url/useUpdateUrlParams";
 import { Button } from "@mantine/core";
 import { IconCheck } from "@tabler/icons-react";
 import { useRouter } from "next/navigation";
@@ -103,8 +103,8 @@ const CreateJobButton = ({
   };
 
   // Extract search parameters for validation
-  const width = searchParams?.width || defaultWidth;
-  const height = searchParams?.height || defaultHeight;
+  const width = searchParams?.width ?? defaultWidth;
+  const height = searchParams?.height ?? defaultHeight;
   const widthInvalid =
     width && (Number(width) < minSize || Number(width) > maxSize);
   const heightInvalid =
@@ -122,4 +122,4 @@ const CreateJobButton = ({
   );
 };
 
-export default CreateJobButton;
+export { CreateJobButton };

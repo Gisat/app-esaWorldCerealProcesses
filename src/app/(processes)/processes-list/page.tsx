@@ -1,7 +1,7 @@
 "use client";
 
-import { apiFetcher } from "@app/(shared)/_fetch/apiFetcher";
 import { ProcessesTable } from "@features/(processes)/_components/ProcessesTable";
+import { apiFetcher } from "@features/(shared)/_url/apiFetcher";
 import useSWR from "swr";
 
 /**
