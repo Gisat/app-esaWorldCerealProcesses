@@ -81,13 +81,28 @@ export const enum processTypes {
 }
 
 /**
- * Enum representing different types of World Cereal processes.
- * @enum {string}
- * @readonly
- * @property {string} WorldCerealDataCrop - Process for world cereal crop extent
- * @property {string} WorldCerealCropType - Process for world cereal crop type classification
+ * An array of custom product objects used in the application.
+ * Each object represents a product with a value, label, and an optional disabled state.
+ * 
+ * @type {Array<{ value: string; label: string; disabled?: boolean }>}
+ * 
+ * @property {string} value - The unique identifier for the product.
+ * @property {string} label - The display name for the product.
+ * @property {boolean} [disabled] - Optional flag indicating if the product is disabled.
  */
-export enum UsedCerealProcesses {
-  WorldCerealDataCrop = "worldcereal_crop_extent",
-  WorldCerealCropType = "worldcereal_crop_type",
-}
+export const customProducts: { value: string; label: string; disabled?: boolean }[] = [
+  {
+    value: "worldcereal_crop_extent",
+    label: "Cropland",
+  },
+  {
+    value: "worldcereal_crop_type",
+    label: "Crop type",
+    disabled: true
+  },
+  {
+    value: "worldcereal_active_cropland",
+    label: "Active cropland",
+    disabled: true
+  }
+];
