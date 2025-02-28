@@ -1,15 +1,15 @@
 "use client";
 
-import React, { createElement, useState } from 'react';
-import useSWR from "swr";
+import { Button } from "@mantine/core";
 import { useRouter } from "next/navigation";
-import { Button } from '@mantine/core';
+import { createElement, useState } from "react";
+import useSWR from "swr";
 
-import PageSteps from '@features/(processes)/_components/PageSteps';
+import PageSteps from "@features/(processes)/_components/PageSteps";
 
-import { pages } from '@features/(processes)/_constants/app';
-import Details from '@features/(processes)/_components/ProcessesTable/Details';
-import { fetcher } from '@features/(shared)/_logic/utils';
+import Details from "@features/(processes)/_components/ProcessesTable/Details";
+import { pages } from "@features/(processes)/_constants/app";
+import { fetcher } from "@features/(shared)/_logic/utils";
 
 /**
  * StartJobButton component.
@@ -18,32 +18,38 @@ import { fetcher } from '@features/(shared)/_logic/utils';
  * @returns {JSX.Element} - The rendered component.
  */
 const StartJobButton = ({ jobId }: { jobId?: string }) => {
-	const router = useRouter();
-	const [shouldFetch, setShouldFetch] = useState(false);
-	const url = `/api/jobs/start/${jobId}`
+  const router = useRouter();
+  const [shouldFetch, setShouldFetch] = useState(false);
+  const url = `/api/jobs/start/${jobId}`;
 
-	const { data, isLoading } = useSWR(shouldFetch ? [url,] : null, () => fetcher(url));
+  const { data, isLoading } = useSWR(shouldFetch ? [url] : null, () =>
+    fetcher(url)
+  );
 
+  if (shouldFetch && data) {
+    setShouldFetch(false);
+  }
 
-	if (shouldFetch && data) {
-		setShouldFetch(false)
-	}
+  if (data?.result?.jobId) {
+    setTimeout(() => {
+      router.push(`/${pages.processesList.url}`);
+    }, 50);
+  }
 
-	if (data?.result?.jobId) {
-		setTimeout(() => {
-			router.push(`/${pages.processesList.url}`)
-		}, 50)
+  function handleClick() {
+    setShouldFetch(true);
+  }
 
-	}
-
-	function handleClick() {
-		setShouldFetch(true);
-	}
-
-	return (
-		<Button className="worldCereal-Button" disabled={isLoading} onClick={handleClick} >{isLoading ? 'Starting...' : 'Start process and go to the list'}</Button>
-	);
-}
+  return (
+    <Button
+      className="worldCereal-Button"
+      disabled={isLoading}
+      onClick={handleClick}
+    >
+      {isLoading ? "Starting..." : "Start process and go to the list"}
+    </Button>
+  );
+};
 
 /**
  * Page component.
@@ -56,25 +62,33 @@ const StartJobButton = ({ jobId }: { jobId?: string }) => {
  * @param {string} [props.searchParams.jobid] - The job ID parameter.
  * @returns {JSX.Element} - The rendered component.
  */
-export default function Page({ searchParams }: {
-	searchParams?: {
-		query?: string;
-		step?: string;
-		startDate?: string;
-		endDate?: string;
-		jobid?: string;
-	}
+export default function Page({
+  searchParams,
+}: {
+  searchParams?: {
+    query?: string;
+    step?: string;
+    startDate?: string;
+    endDate?: string;
+    jobid?: string;
+  };
 }) {
+  const jobId = searchParams?.jobid;
 
-	// const [cookieValue, _] = useUserInfoCookie()
-	// useRedirectIf(() => cookieValue === undefined, "/")
+  const { data } = useSWR(`/api/jobs/get/${jobId}`, fetcher);
 
-	const jobId = searchParams?.jobid;
-
-	const { data } = useSWR(`/api/jobs/get/${jobId}`, fetcher)
-
-	return <>
-		{data ? <Details bbox={data?.bbox} startDate={data?.timeRange?.[0]} endDate={data?.timeRange?.[1]} resultFileFormat={data?.resultFileFormat} oeoCollection={data?.oeoCollection} /> : null}
-		<PageSteps NextButton={createElement(StartJobButton, { jobId })} />
-	</>
+  return (
+    <>
+      {data ? (
+        <Details
+          bbox={data?.bbox}
+          startDate={data?.timeRange?.[0]}
+          endDate={data?.timeRange?.[1]}
+          resultFileFormat={data?.resultFileFormat}
+          oeoCollection={data?.oeoCollection}
+        />
+      ) : null}
+      <PageSteps NextButton={createElement(StartJobButton, { jobId })} />
+    </>
+  );
 }

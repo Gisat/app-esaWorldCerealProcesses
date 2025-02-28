@@ -1,6 +1,6 @@
 "use client";
 
-import { apiFetcher } from "@app/(shared)/_fetch/apiFetcher";
+import { apiFetcher } from "@features/(shared)/_url/apiFetcher";
 import { Button } from "@mantine/core";
 import { useRouter } from "next/navigation";
 import { createElement, useState } from "react";

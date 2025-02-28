@@ -2,16 +2,8 @@
 
 import { CreateJobButton } from "@features/(processes)/_components/CreateJobButton";
 import PageSteps from "@features/(processes)/_components/PageSteps";
-import { products } from "@features/(processes)/_constants/app";
 import { transformDate } from "@features/(processes)/_utils/transformDate";
 import { MapBBox } from "@features/(shared)/_components/map/MapBBox";
-import FormLabel from "@features/(shared)/_layout/_components/FormLabel";
-import TwoColumns, {
-  Column,
-} from "@features/(shared)/_layout/_components/TwoColumns";
-import { SegmentedControl, Stack } from "@mantine/core";
-import { DateInput } from "@mantine/dates";
-import { useRouter } from "next/navigation";
 import {
   createElement,
   useCallback,
@@ -19,6 +11,15 @@ import {
   useMemo,
   useState,
 } from "react";
+// TODO: update imports with new reusable feature
+// import { MapExtentSelect } from "@features/(shared)/_components/map/MapExtentSelect";
+import FormLabel from "@features/(shared)/_layout/_components/FormLabel";
+import TwoColumns, {
+  Column,
+} from "@features/(shared)/_layout/_components/TwoColumns";
+import { Anchor, Group, SegmentedControl, Stack, Text } from "@mantine/core";
+import { DateInput } from "@mantine/dates";
+import { useRouter } from "next/navigation";
 
 const minDate = new Date("2021-01-01");
 const maxDate = new Date("2022-01-01");
@@ -28,29 +29,28 @@ const defaultOutputFileFormat = "GTiff";
 type BboxCornerPointsType = [number, number, number, number] | undefined;
 type OutputFileFormatType = string | undefined;
 
-type searchParamsType = {
-  step?: string;
-  startDate?: string;
-  endDate?: string;
-  collection?: string;
-  bbox?: string;
-  width?: string;
-  height?: string;
-  off?: string;
-};
-
 /**
- * Page component.
- * @param {Object} props - The component props.
- * @param {searchParamsType} [props.searchParams] - The search parameters.
- * @returns {JSX.Element} - The rendered component.
+ * Page Component
+ *
+ * @param {Object} props - Component props
+ * @param {searchParamsType} [props.searchParams] - URL search parameters.
+ * @returns {JSX.Element} Page component rendering the job creation process.
  */
 export default function Page({
   searchParams,
 }: {
-  searchParams?: searchParamsType;
+  searchParams?: {
+    step?: string;
+    startDate?: string;
+    endDate?: string;
+    collection?: string;
+    bbox?: string;
+    width?: string;
+    height?: string;
+  };
 }) {
   const apiUrl = "/api/jobs/create/from-process";
+
   const bbox: BboxCornerPointsType = searchParams?.bbox
     ?.split(",")
     .map(Number) as BboxCornerPointsType;
@@ -76,7 +76,7 @@ export default function Page({
     startDate: startDate,
     endDate: endDate,
     collection: collection,
-    off: searchParams?.off || defaultOutputFileFormat,
+    off: defaultOutputFileFormat,
   };
 
   /**
@@ -130,25 +130,38 @@ export default function Page({
     setValue(transformDate(startDateDate), "startDate");
     setValue(currentExtent?.join(","), "bbox");
   }, [setValue, endDateDate, startDateDate, currentExtent]);
-
-  const collectionName =
-    (collection && products.find((p) => p.value === collection)?.label) ??
-    "Unknown Collection";
-
   return (
     <TwoColumns>
       <Column>
-        <FormLabel>Draw the extent (maximum 500 x 500 km)</FormLabel>
+        <Group justify="space-between" w="100%" mb="md">
+          <FormLabel>Draw the extent</FormLabel>
+          <Text fz="14">
+            Current extent: {bbox ? coordinatesToDisplay : "none"}{" "}
+            {areaBbox && bbox ? `(${areaBbox} sqkm)` : ""}
+          </Text>
+        </Group>
         <MapBBox
           onBboxChange={onBboxChange}
           bbox={bbox?.map(Number)}
           setAreaBbox={setAreaBbox}
           setCoordinatesToDisplay={setCoordinatesToDisplay}
         />
-        <FormLabel>
-          Current extent: {bbox ? coordinatesToDisplay : "none"}{" "}
-          {areaBbox && bbox ? `(${areaBbox} sqkm)` : ""}
-        </FormLabel>
+        <Text fw="bold" fz="sm" mt="md">
+          Avoid too large areas to prevent excessive credit usage and long
+          processing times!
+        </Text>
+        <Text fz="sm">
+          A run of 250km2 will typically consume 40 credits and last around
+          20min.
+        </Text>
+        <Text fz="sm">
+          A run of 750km2 will typically consume 90 credits and last around
+          50min.
+        </Text>
+        <Text fz="sm">
+          A run of 2500km2 will typically consume 250 credits and last around 1h
+          40min.
+        </Text>
         <PageSteps
           NextButton={createElement(CreateJobButton, {
             params,
@@ -158,37 +171,48 @@ export default function Page({
         />
       </Column>
       <Column>
-        <Stack gap="lg" w="100%" align="flex-start">
+        <Stack gap="md" w="100%" align="flex-start">
           <div>
-            <FormLabel>Product/collection</FormLabel>
-            <div>{collectionName}</div>
+            <FormLabel>Select season of interest</FormLabel>
+            <div>
+              <Text>
+                Define the end month of your processing period. The default
+                length of the period is 12 months.
+              </Text>
+              <Text>
+                To guide your decision concerning the processing period, you can
+                consult the{" "}
+                <Anchor
+                  href="https://ipad.fas.usda.gov/ogamaps/cropcalendar.aspx"
+                  target="_blank"
+                  underline="always"
+                >
+                  USDA crop calendars
+                </Anchor>
+              </Text>
+            </div>
           </div>
-          <DateInput
-            size="md"
-            className="worldCereal-DateInput"
-            value={startDateDate}
-            onChange={() => null} // TODO:
-            label="Start date"
-            placeholder="Select start date"
-            valueFormat="YYYY-MM-DD"
-            minDate={minDate}
-            maxDate={endDateDate || maxDate}
-            clearable={false}
-            disabled
-          />
-          <DateInput
-            size="md"
-            className="worldCereal-DateInput"
-            value={endDateDate}
-            onChange={() => null} // TODO:
-            label="End date"
-            placeholder="Select end date"
-            valueFormat="YYYY-MM-DD"
-            minDate={startDateDate || minDate}
-            maxDate={maxDate}
-            clearable={false}
-            disabled
-          />
+          <div>
+            <DateInput
+              size="md"
+              className="worldCereal-DateInput"
+              value={startDateDate}
+              onChange={(value) => setValue(transformDate(value), "startDate")}
+              label="Ending month"
+              placeholder="Select month"
+              valueFormat="MMMM YYYY"
+              minDate={minDate}
+              maxDate={endDateDate || maxDate}
+              clearable={false}
+              disabled
+            />
+
+            <Stack mt="xs" gap={0}>
+              <Text fz="sm">Start date: 2023-05-01</Text>
+              <Text fz="sm">End date: 2024-04-30</Text>
+            </Stack>
+          </div>
+
           <div>
             <FormLabel>Output file format</FormLabel>
             <SegmentedControl
