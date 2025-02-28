@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
         // environment parameters
         const issuerUrlRaw = process.env.OID_IAM_ISSUER_URL
         const redirectUrl = process.env.OID_SELF_REDIRECT_URL
-        const clientIdRaw = process.env.CLIENT_ID
+        const clientIdRaw = process.env.OID_CLIENT_ID
 
         // build exchange URL at identity service
         const identityUrl = process.env.PID_URL

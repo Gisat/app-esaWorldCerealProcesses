@@ -1,6 +1,6 @@
-CLIENT_ID="worldcereal-vdm"
-OID_IAM_ISSUER_URL="https://sso.terrascope.be/auth/realms/terrascope"
+OID_CLIENT_ID="my-client"
+OID_IAM_ISSUER_URL="https://sso.example.com/auth/realms/myapp"
 OID_SELF_REDIRECT_URL="http://localhost:3000/api/auth/callback"
 PID_URL=http://localhost:6111
 OEO_URL=http://localhost:6100
-FARO_URL=https://faro-collector-prod-us-central-0.grafana.net/collect/6f9a32321c5705176cdc5e641f6d3660
+FARO_URL=https://collector.example.com/collect/your-collector-id
