@@ -48,4 +48,9 @@ TO-DO: Bundle & export this file with /features
 
     /* Default font */
     --defaultFontFamily: "Roboto";
+
+}
+
+.mantine-MonthPickerInput-calendarHeader {
+    color: var(--mantine-color-gray-7);
 }

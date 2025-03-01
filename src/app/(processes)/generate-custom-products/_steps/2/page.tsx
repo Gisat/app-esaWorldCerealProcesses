@@ -2,27 +2,17 @@
 
 import { CreateJobButton } from "@features/(processes)/_components/CreateJobButton";
 import PageSteps from "@features/(processes)/_components/PageSteps";
-import { transformDate } from "@features/(processes)/_utils/transformDate";
 import { MapBBox } from "@features/(shared)/_components/map/MapBBox";
-import {
-  createElement,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { createElement, useCallback, useState } from "react";
 // TODO: update imports with new reusable feature
 // import { MapExtentSelect } from "@features/(shared)/_components/map/MapExtentSelect";
+import { SelectMonth } from "@features/(processes)/_components/SelectMonth";
 import FormLabel from "@features/(shared)/_layout/_components/FormLabel";
 import TwoColumns, {
   Column,
 } from "@features/(shared)/_layout/_components/TwoColumns";
 import { Anchor, Group, SegmentedControl, Stack, Text } from "@mantine/core";
-import { DateInput } from "@mantine/dates";
 import { useRouter } from "next/navigation";
-
-const minDate = new Date("2021-01-01");
-const maxDate = new Date("2022-01-01");
 
 const defaultOutputFileFormat = "GTiff";
 
@@ -59,22 +49,22 @@ export default function Page({
   const [coordinatesToDisplay, setCoordinatesToDisplay] = useState<
     string | string[] | null
   >(null);
-  const [currentExtent, setCurrentExtent] =
-    useState<BboxCornerPointsType>(bbox);
+  // const [currentExtent, setCurrentExtent] =
+  //   useState<BboxCornerPointsType>(bbox);
 
   const router = useRouter();
-  const startDate = searchParams?.startDate || "2021-01-01";
-  const startDateDate = useMemo(() => new Date(startDate), [startDate]);
+  // const startDate = searchParams?.startDate || "2021-01-01";
+  // const startDateDate = useMemo(() => new Date(startDate), [startDate]);
 
-  const endDate = searchParams?.endDate || "2021-12-30";
-  const endDateDate = useMemo(() => new Date(endDate), [endDate]);
+  // const endDate = searchParams?.endDate || "2021-12-30";
+  // const endDateDate = useMemo(() => new Date(endDate), [endDate]);
 
   const collection = searchParams?.collection || undefined;
 
   const params = {
     bbox: searchParams?.bbox || undefined,
-    startDate: startDate,
-    endDate: endDate,
+    //startDate: startDate,
+    //endDate: endDate,
     collection: collection,
     off: defaultOutputFileFormat,
   };
@@ -103,19 +93,19 @@ export default function Page({
    * Handles the change of the bounding box.
    * @param {Array<Array<number>> | null} extent - The new bounding box extent.
    */
-  const onBboxChange = (extent?: Array<Array<number>> | null) => {
-    if (extent?.length === 4) {
-      const cornerPoints: BboxCornerPointsType = [
-        extent?.[2][0],
-        extent?.[2][1],
-        extent?.[0][0],
-        extent?.[0][1],
-      ];
-      setCurrentExtent(cornerPoints);
-    } else {
-      setCurrentExtent(undefined);
-    }
-  };
+  // const onBboxChange = (extent?: Array<Array<number>> | null) => {
+  //   if (extent?.length === 4) {
+  //     const cornerPoints: BboxCornerPointsType = [
+  //       extent?.[2][0],
+  //       extent?.[2][1],
+  //       extent?.[0][0],
+  //       extent?.[0][1],
+  //     ];
+  //     setCurrentExtent(cornerPoints);
+  //   } else {
+  //     setCurrentExtent(undefined);
+  //   }
+  // };
 
   /**
    * Handles the change of the output file format.
@@ -125,11 +115,11 @@ export default function Page({
     setValue(off, "off");
   };
 
-  useEffect(() => {
-    setValue(transformDate(endDateDate), "endDate");
-    setValue(transformDate(startDateDate), "startDate");
-    setValue(currentExtent?.join(","), "bbox");
-  }, [setValue, endDateDate, startDateDate, currentExtent]);
+  // useEffect(() => {
+  //   setValue(transformDate(endDateDate), "endDate");
+  //   setValue(transformDate(startDateDate), "startDate");
+  //   setValue(currentExtent?.join(","), "bbox");
+  // }, [setValue, endDateDate, startDateDate, currentExtent]);
   return (
     <TwoColumns>
       <Column>
@@ -141,7 +131,7 @@ export default function Page({
           </Text>
         </Group>
         <MapBBox
-          onBboxChange={onBboxChange}
+          // onBboxChange={onBboxChange}
           bbox={bbox?.map(Number)}
           setAreaBbox={setAreaBbox}
           setCoordinatesToDisplay={setCoordinatesToDisplay}
@@ -193,24 +183,25 @@ export default function Page({
             </div>
           </div>
           <div>
-            <DateInput
-              size="md"
-              className="worldCereal-DateInput"
-              value={startDateDate}
+            <SelectMonth
+              label="Ending month"
+              disabled={false}
+              placeholder="Select month"
+              minDate={new Date("2018-01-01")} // Min Start Date (1/1/18)
+              maxDate={new Date("2024-12-31")} // Max End Date (31/12/24)
+            />
+            {/* <DateInput
+
+              // value={startDateDate}
               onChange={(value) => setValue(transformDate(value), "startDate")}
               label="Ending month"
               placeholder="Select month"
               valueFormat="MMMM YYYY"
-              minDate={minDate}
-              maxDate={endDateDate || maxDate}
+            
+  
               clearable={false}
               disabled
-            />
-
-            <Stack mt="xs" gap={0}>
-              <Text fz="sm">Start date: 2023-05-01</Text>
-              <Text fz="sm">End date: 2024-04-30</Text>
-            </Stack>
+            /> */}
           </div>
 
           <div>
