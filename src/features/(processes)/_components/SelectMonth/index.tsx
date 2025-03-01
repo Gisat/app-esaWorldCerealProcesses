@@ -1,3 +1,4 @@
+import { transformDate } from "@features/(processes)/_utils/transformDate";
 import { Stack, Text } from "@mantine/core";
 import { MonthPickerInput } from "@mantine/dates";
 import { FC, useEffect, useState } from "react";
@@ -8,6 +9,7 @@ interface SelectMonthProps {
   placeholder?: string;
   minDate?: Date | undefined;
   maxDate?: Date | undefined;
+  onChange: (startDate: string, endDate: string) => void;
 }
 
 const SelectMonth: FC<SelectMonthProps> = ({
@@ -16,6 +18,7 @@ const SelectMonth: FC<SelectMonthProps> = ({
   placeholder = "Default placeholder",
   minDate = undefined,
   maxDate = undefined,
+  onChange,
 }) => {
   const defaultEndMonth = new Date("2024-12-01"); // Rule: Default end month (Dec 2024)
   const [endMonth, setEndMonth] = useState<Date | null>(defaultEndMonth);
@@ -36,12 +39,27 @@ const SelectMonth: FC<SelectMonthProps> = ({
   const formatStartDate =
     startMonth !== null
       ? new Date(startMonth.getFullYear(), startMonth.getMonth(), 2)
-      : null;
+      : undefined;
 
   const formatEndDate =
     endMonth !== null
       ? new Date(endMonth.getFullYear(), endMonth.getMonth() + 1, 1)
-      : null; // Last day of end month
+      : undefined; // Last day of end month
+
+  // Handle `onChange` inside MonthPickerInput
+  const handleMonthChange = (value: Date | null) => {
+    if (!value) return;
+    setEndMonth(value);
+
+    if (formatStartDate && formatEndDate) {
+      const startDate = transformDate(formatStartDate);
+      const endDate = transformDate(formatEndDate);
+
+      if (startDate && endDate) {
+        onChange(startDate, endDate);
+      }
+    }
+  };
 
   return (
     <div>
@@ -52,7 +70,7 @@ const SelectMonth: FC<SelectMonthProps> = ({
         value={endMonth}
         minDate={minDate}
         maxDate={maxDate}
-        onChange={setEndMonth}
+        onChange={handleMonthChange}
         clearable={false}
         disabled={disabled}
         valueFormat="MMMM YYYY"
@@ -60,12 +78,8 @@ const SelectMonth: FC<SelectMonthProps> = ({
 
       {formatStartDate && formatEndDate && (
         <Stack mt="xs" gap={0}>
-          <Text fz="sm">
-            Start date: {formatStartDate.toISOString().split("T")[0]}
-          </Text>
-          <Text fz="sm">
-            End date: {formatEndDate.toISOString().split("T")[0]}
-          </Text>
+          <Text fz="sm">Start date: {transformDate(formatStartDate)}</Text>
+          <Text fz="sm">End date: {transformDate(formatEndDate)}</Text>
         </Stack>
       )}
     </div>

@@ -2,22 +2,18 @@
 
 import { CreateJobButton } from "@features/(processes)/_components/CreateJobButton";
 import PageSteps from "@features/(processes)/_components/PageSteps";
-import { MapBBox } from "@features/(shared)/_components/map/MapBBox";
-import { createElement, useCallback, useState } from "react";
-// TODO: update imports with new reusable feature
-// import { MapExtentSelect } from "@features/(shared)/_components/map/MapExtentSelect";
 import { SelectMonth } from "@features/(processes)/_components/SelectMonth";
+import { SelectOutput } from "@features/(processes)/_components/SelectOutput";
+import { MapBBox } from "@features/(shared)/_components/map/MapBBox";
+import { useUrlParam } from "@features/(shared)/_hooks/_url/useUrlParam";
 import FormLabel from "@features/(shared)/_layout/_components/FormLabel";
 import TwoColumns, {
   Column,
 } from "@features/(shared)/_layout/_components/TwoColumns";
-import { Anchor, Group, SegmentedControl, Stack, Text } from "@mantine/core";
-import { useRouter } from "next/navigation";
-
-const defaultOutputFileFormat = "GTiff";
+import { Anchor, Group, Stack, Text } from "@mantine/core";
+import { createElement, useEffect, useState } from "react";
 
 type BboxCornerPointsType = [number, number, number, number] | undefined;
-type OutputFileFormatType = string | undefined;
 
 /**
  * Page Component
@@ -37,8 +33,12 @@ export default function Page({
     bbox?: string;
     width?: string;
     height?: string;
+    off?: string;
   };
 }) {
+  // hooks
+  const { setUrlParam } = useUrlParam();
+
   const apiUrl = "/api/jobs/create/from-process";
 
   const bbox: BboxCornerPointsType = searchParams?.bbox
@@ -49,77 +49,58 @@ export default function Page({
   const [coordinatesToDisplay, setCoordinatesToDisplay] = useState<
     string | string[] | null
   >(null);
-  // const [currentExtent, setCurrentExtent] =
-  //   useState<BboxCornerPointsType>(bbox);
-
-  const router = useRouter();
-  // const startDate = searchParams?.startDate || "2021-01-01";
-  // const startDateDate = useMemo(() => new Date(startDate), [startDate]);
-
-  // const endDate = searchParams?.endDate || "2021-12-30";
-  // const endDateDate = useMemo(() => new Date(endDate), [endDate]);
+  const [currentExtent, setCurrentExtent] =
+    useState<BboxCornerPointsType>(bbox);
 
   const collection = searchParams?.collection || undefined;
+  const off = searchParams?.off || undefined;
+  const startDate = searchParams?.startDate || undefined;
+  const endDate = searchParams?.endDate || undefined;
 
   const params = {
     bbox: searchParams?.bbox || undefined,
-    //startDate: startDate,
-    //endDate: endDate,
+    startDate: startDate,
+    endDate: endDate,
     collection: collection,
-    off: defaultOutputFileFormat,
+    off: off,
   };
-
-  /**
-   * Sets a value in the URL search parameters.
-   * @param {string | null | undefined} value - The value to set.
-   * @param {string} key - The key to set the value for.
-   */
-  const setValue = useCallback(
-    (value: string | null | undefined, key: string) => {
-      const url = new URL(window.location.href);
-
-      if (value) {
-        url.searchParams.set(key, value);
-      } else {
-        url.searchParams.delete(key);
-      }
-      // @ts-expect-error 'shallow' does not exist in type 'NavigateOptions'
-      router.push(url.toString(), { shallow: true, scroll: false });
-    },
-    [router]
-  );
 
   /**
    * Handles the change of the bounding box.
    * @param {Array<Array<number>> | null} extent - The new bounding box extent.
    */
-  // const onBboxChange = (extent?: Array<Array<number>> | null) => {
-  //   if (extent?.length === 4) {
-  //     const cornerPoints: BboxCornerPointsType = [
-  //       extent?.[2][0],
-  //       extent?.[2][1],
-  //       extent?.[0][0],
-  //       extent?.[0][1],
-  //     ];
-  //     setCurrentExtent(cornerPoints);
-  //   } else {
-  //     setCurrentExtent(undefined);
-  //   }
-  // };
-
-  /**
-   * Handles the change of the output file format.
-   * @param {OutputFileFormatType} off - The new output file format.
-   */
-  const onOutpoutFormatChange = (off?: OutputFileFormatType) => {
-    setValue(off, "off");
+  const onBboxChange = (extent?: Array<Array<number>> | null) => {
+    if (extent?.length === 4) {
+      const cornerPoints: BboxCornerPointsType = [
+        extent?.[2][0],
+        extent?.[2][1],
+        extent?.[0][0],
+        extent?.[0][1],
+      ];
+      setCurrentExtent(cornerPoints);
+    } else {
+      setCurrentExtent(undefined);
+    }
   };
 
-  // useEffect(() => {
-  //   setValue(transformDate(endDateDate), "endDate");
-  //   setValue(transformDate(startDateDate), "startDate");
-  //   setValue(currentExtent?.join(","), "bbox");
-  // }, [setValue, endDateDate, startDateDate, currentExtent]);
+  /**
+   *  Pushing params to URL
+   */
+  const onOutpoutFormatChange = (value: "GTiff" | "NETCDF") => {
+    setUrlParam("off", value);
+  };
+
+  const handleDateChange = (startDate: string, endDate: string) => {
+    setUrlParam("startDate", startDate);
+    setUrlParam("endDate", endDate);
+  };
+
+  useEffect(() => {
+    setUrlParam("bbox", currentExtent?.join(","));
+  }, [setUrlParam, currentExtent]);
+
+  const isDisabled = !params.bbox || !params.collection || !params.endDate;
+
   return (
     <TwoColumns>
       <Column>
@@ -131,7 +112,9 @@ export default function Page({
           </Text>
         </Group>
         <MapBBox
-          // onBboxChange={onBboxChange}
+          mapSize={[500, 500]}
+          extentSizeInMeters={[50000, 50000]} // MAX Bbox size set to 2500km2
+          onBboxChange={onBboxChange}
           bbox={bbox?.map(Number)}
           setAreaBbox={setAreaBbox}
           setCoordinatesToDisplay={setCoordinatesToDisplay}
@@ -152,12 +135,15 @@ export default function Page({
           A run of 2500km2 will typically consume 250 credits and last around 1h
           40min.
         </Text>
+
         <PageSteps
           NextButton={createElement(CreateJobButton, {
             params,
             searchParams,
             apiUrl,
+            disabled: isDisabled,
           })}
+          disabled={isDisabled}
         />
       </Column>
       <Column>
@@ -189,28 +175,15 @@ export default function Page({
               placeholder="Select month"
               minDate={new Date("2018-01-01")} // Min Start Date (1/1/18)
               maxDate={new Date("2024-12-31")} // Max End Date (31/12/24)
+              onChange={handleDateChange}
             />
-            {/* <DateInput
-
-              // value={startDateDate}
-              onChange={(value) => setValue(transformDate(value), "startDate")}
-              label="Ending month"
-              placeholder="Select month"
-              valueFormat="MMMM YYYY"
-            
-  
-              clearable={false}
-              disabled
-            /> */}
           </div>
 
           <div>
             <FormLabel>Output file format</FormLabel>
-            <SegmentedControl
-              onChange={(value) => onOutpoutFormatChange(value)}
-              className="worldCereal-SegmentedControl"
-              size="md"
-              defaultValue={defaultOutputFileFormat}
+            <SelectOutput
+              onChange={onOutpoutFormatChange}
+              defaultValue="GTiff"
               data={[
                 { label: "NetCDF", value: "NETCDF" },
                 { label: "GeoTiff", value: "GTiff" },
