@@ -3,6 +3,17 @@ import { Stack, Text } from "@mantine/core";
 import { MonthPickerInput } from "@mantine/dates";
 import { FC, useEffect, useState } from "react";
 
+/**
+ * Props for the SelectMonth component.
+ *
+ * @typedef {Object} SelectMonthProps
+ * @property {string} [label] - The label for the month picker.
+ * @property {boolean} [disabled] - Whether the month picker is disabled.
+ * @property {string} [placeholder] - The placeholder text for the input.
+ * @property {Date} [minDate] - The minimum selectable date.
+ * @property {Date} [maxDate] - The maximum selectable date.
+ * @property {(startDate: string, endDate: string) => void} onChange - Callback function called when a month is selected.
+ */
 interface SelectMonthProps {
   label?: string;
   disabled?: boolean;
@@ -12,6 +23,16 @@ interface SelectMonthProps {
   onChange: (startDate: string, endDate: string) => void;
 }
 
+/**
+ * SelectMonth Component
+ *
+ * A reusable component that allows users to pick an ending month, automatically setting the start date
+ * to 12 months prior. The selected start and end dates are passed to the parent component via `onChange`.
+ *
+ * @component
+ * @param {SelectMonthProps} props - Component props.
+ * @returns {JSX.Element} A month picker input with auto-calculated start and end dates.
+ */
 const SelectMonth: FC<SelectMonthProps> = ({
   label = "Default label",
   disabled = false,
@@ -24,7 +45,10 @@ const SelectMonth: FC<SelectMonthProps> = ({
   const [endMonth, setEndMonth] = useState<Date | null>(defaultEndMonth);
   const [startMonth, setStartMonth] = useState<Date | null>(null);
 
-  // Update start month when end month is selected
+  /**
+   * Updates the start month when the end month is selected.
+   * Ensures the start date is exactly 12 months prior to the selected end month.
+   */
   useEffect(() => {
     if (endMonth) {
       const newStartMonth = new Date(endMonth);
@@ -46,7 +70,12 @@ const SelectMonth: FC<SelectMonthProps> = ({
       ? new Date(endMonth.getFullYear(), endMonth.getMonth() + 1, 1)
       : undefined; // Last day of end month
 
-  // Handle `onChange` inside MonthPickerInput
+  /**
+   * Handles the selection of a month, updating state and triggering `onChange`.
+   * (Handle `onChange` inside MonthPickerInput)
+   *
+   * @param {Date | null} value - The newly selected month.
+   */
   const handleMonthChange = (value: Date | null) => {
     if (!value) return;
     setEndMonth(value);

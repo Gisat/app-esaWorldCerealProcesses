@@ -39,6 +39,14 @@ export default function Page({
   // hooks
   const { setUrlParam } = useUrlParam();
 
+  // constants
+  const minDate = new Date("2018-01-01");
+  const maxDate = new Date("2024-12-31");
+  const defaultOutputValue: "GTiff" | "NETCDF" = "GTiff";
+  const defaultOutputValues: object = [
+    { label: "NetCDF", value: "NETCDF" },
+    { label: "GeoTiff", value: "GTiff" },
+  ];
   const apiUrl = "/api/jobs/create/from-process";
 
   const bbox: BboxCornerPointsType = searchParams?.bbox
@@ -173,8 +181,8 @@ export default function Page({
               label="Ending month"
               disabled={false}
               placeholder="Select month"
-              minDate={new Date("2018-01-01")} // Min Start Date (1/1/18)
-              maxDate={new Date("2024-12-31")} // Max End Date (31/12/24)
+              minDate={minDate} // Min Start Date (1/1/18)
+              maxDate={maxDate} // Max End Date (31/12/24)
               onChange={handleDateChange}
             />
           </div>
@@ -183,11 +191,8 @@ export default function Page({
             <FormLabel>Output file format</FormLabel>
             <SelectOutput
               onChange={onOutpoutFormatChange}
-              defaultValue="GTiff"
-              data={[
-                { label: "NetCDF", value: "NETCDF" },
-                { label: "GeoTiff", value: "GTiff" },
-              ]}
+              defaultValue={defaultOutputValue}
+              data={defaultOutputValues}
             />
           </div>
         </Stack>
