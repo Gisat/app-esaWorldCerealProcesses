@@ -4,7 +4,7 @@ import PageSteps from "@features/(processes)/_components/PageSteps";
 import { products } from "@features/(processes)/_constants/app";
 import TwoColumns, {
   Column,
-} from "@features/(shared)/_layout/_components/TwoColumns";
+} from "@features/(shared)/_layout/_components/Content/TwoColumns";
 import { Button, Select } from "@mantine/core";
 import { IconArrowRight } from "@tabler/icons-react";
 import { useRouter, useSearchParams } from "next/navigation";

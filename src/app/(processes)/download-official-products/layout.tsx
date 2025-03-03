@@ -2,6 +2,7 @@
 import React, { useEffect, Suspense } from 'react';
 import { Stepper } from '@mantine/core';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { ContentContainer } from '@features/(shared)/_layout/_components/Content/ContentContainer';
 
 export default function DownloadLayout({ children }: { children: React.ReactNode }) {
 		
@@ -26,21 +27,22 @@ export default function DownloadLayout({ children }: { children: React.ReactNode
 
 	return (
 		<Suspense>
-			<Stepper className="worldCereal-Stepper" size="sm" active={activeStep - 1} >
-				<Stepper.Step label="Select product" allowStepClick={false} allowStepSelect={false}>
-					{children}
-				</Stepper.Step>
-				<Stepper.Step label="Create process" allowStepClick={false} allowStepSelect={false}>
-					{children}
-				</Stepper.Step>
-				<Stepper.Step label="Start process" allowStepClick={false} allowStepSelect={false}>
-					{children}
-				</Stepper.Step>
-				<Stepper.Completed>
-					{children}
-				</Stepper.Completed>
-			</Stepper>
-
+			<ContentContainer>
+				<Stepper className="worldCereal-Stepper" size="sm" active={activeStep - 1} >
+					<Stepper.Step label="Select product" allowStepClick={false} allowStepSelect={false}>
+						{children}
+					</Stepper.Step>
+					<Stepper.Step label="Create process" allowStepClick={false} allowStepSelect={false}>
+						{children}
+					</Stepper.Step>
+					<Stepper.Step label="Start process" allowStepClick={false} allowStepSelect={false}>
+						{children}
+					</Stepper.Step>
+					<Stepper.Completed>
+						{children}
+					</Stepper.Completed>
+				</Stepper>
+			</ContentContainer>
 		</Suspense>
 	);
 }

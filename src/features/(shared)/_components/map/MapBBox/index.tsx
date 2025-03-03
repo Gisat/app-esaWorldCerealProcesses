@@ -1,5 +1,5 @@
 import { WebMercatorViewport } from '@deck.gl/core';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import BoundingBox from '@features/(map)/_components/mapBBoxDrawing/BoundingBox';
 import RenderingMap from '@features/(map)/_components/mapComponent/RenderingMap';
 import { BboxPoints } from '@features/(map)/_components/mapBBoxDrawing/types';
@@ -43,17 +43,17 @@ const roundCoordinates = (coordinatesToRound: Array<Array<number>>) => coordinat
  * @param {Function} [props.setCoordinatesToDisplay] - Callback function for setting the coordinates to display.
  * @returns {JSX.Element} The rendered map with bounding box component.
  */
-export const MapBBox = function ({ onBboxChange, bbox, disabled, mapSize = defaultMapSize, setAreaBbox, setCoordinatesToDisplay }: 
-    { extentSizeInMeters?: Array<number>, mapSize?: Array<number>, disabled?: boolean, bbox?: Array<number>, onBboxChange?: (extent?:  Array<Array<number>> | null) => void, setAreaBbox?: (area: number | undefined) => void, setCoordinatesToDisplay?: React.Dispatch<React.SetStateAction<string | string[] | null>> }
+export const MapBBox = function ({ onBboxChange, bbox, disabled, mapSize = defaultMapSize, setAreaBbox, setCoordinatesToDisplay, coordinatesToDisplay }: 
+    { extentSizeInMeters?: Array<number>, mapSize?: Array<number>, disabled?: boolean, bbox?: Array<number>, onBboxChange?: (extent?:  Array<Array<number>> | null) => void, setAreaBbox?: (area: number | undefined) => void, setCoordinatesToDisplay?: React.Dispatch<React.SetStateAction<string | string[] | null>>, coordinatesToDisplay: string | string[] | null }
 ) {
     const [initialView, setInitialView] = useState<object | null>(null); // State for the initial view of the map
     const [distanceScales, setDistanceScales] = useState<{unitsPerDegree?: Array<number>, metersPerUnit: Array<number>} | null>(null); // State for the distance scales
 
-    let bboxPoints;
+    let bboxPoints: BboxPoints | undefined;
 
     // Convert bbox coordinates to bbox points
     if (bbox) {
-        bboxPoints = [[bbox[2], bbox[3]], [bbox[2], bbox[1]], [bbox[0], bbox[1]], [bbox[0], bbox[3]]] as BboxPoints;
+        bboxPoints = [[bbox[2], bbox[3]], [bbox[2], bbox[1]], [bbox[0], bbox[1]], [bbox[0], bbox[3]]];
     }
 
     /**
@@ -82,6 +82,12 @@ export const MapBBox = function ({ onBboxChange, bbox, disabled, mapSize = defau
             }
         }
     }, [distanceScales, setAreaBbox, setCoordinatesToDisplay]);
+
+		useEffect(() => {
+			if (!coordinatesToDisplay && distanceScales && bboxPoints) {
+				setBboxDescription(bboxPoints)
+			}
+		}, [distanceScales, bboxPoints, setBboxDescription, coordinatesToDisplay])
 
     // Set the initial view and distance scales if bbox is provided
     if (!initialView && bbox) {

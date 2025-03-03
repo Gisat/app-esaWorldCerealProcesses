@@ -34,12 +34,11 @@ const Details = ({ bbox, startDate, endDate, resultFileFormat, oeoCollection, re
 
 	return <div className="worldCereal-ProcessesTable-Details">
 		<div className="worldCereal-ProcessesTable-Details-column">
-			<MapBBox bbox={bbox} disabled mapSize={[300, 300]} setAreaBbox={setAreaBbox} setCoordinatesToDisplay={setCoordinatesToDisplay}/>
-			{bbox ? <div className="worldCereal-MapDetails-coordinates">
-				<b>
-					Extent: {coordinatesToDisplay} {areaBbox && bbox ? `(${areaBbox} sqkm)` : ""}
-				</b>
-			</div> : null}
+			<span>
+				Extent: {bbox ? coordinatesToDisplay : "none"}{" "}
+				{areaBbox && bbox ? `(${areaBbox} sqkm)` : ""}
+			</span>
+			<MapBBox bbox={bbox?.map(Number)} disabled mapSize={[300, 300]} setAreaBbox={setAreaBbox} setCoordinatesToDisplay={setCoordinatesToDisplay} coordinatesToDisplay={coordinatesToDisplay}/>
 		</div>
 		<div className="worldCereal-ProcessesTable-Details-column">
 			<DetailsItem label={"Product"}>{collection?.label}</DetailsItem>

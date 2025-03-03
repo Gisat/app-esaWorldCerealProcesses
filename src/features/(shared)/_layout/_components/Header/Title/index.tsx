@@ -1,7 +1,7 @@
 "use client";
 
 import {string, func} from "prop-types";
-import logoData from "../Header/logo";
+import logoData from "../logo";
 import "./style.css";
 
 const Title = () => {

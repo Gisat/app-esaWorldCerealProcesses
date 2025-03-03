@@ -1,6 +1,7 @@
 import {
-  IconCirclePlus,
-  IconListDetails,
+  IconFileDownload,
+  IconHome,
+  IconListCheck,
   IconPhotoPlus,
 } from "@tabler/icons-react";
 
@@ -43,26 +44,32 @@ export const products: Array<{ value: string; label: string }> = [
 ];
 
 export const pages = {
+	home: { url: "home" },
   processesList: { url: "processes-list" },
-  createDownloadProcess: { url: "create-download-process" },
+  downloadOfficialProducts: { url: "download-official-products" },
   generateCustomProducts: { url: "generate-custom-products" },
 };
 
 export const navbarItems = [
-  {
-    key: pages.processesList.url,
-    title: "List of processes",
-    icon: IconListDetails,
+	{
+    key: pages.home.url,
+    title: "Home",
+    icon: IconHome,
   },
   {
-    key: pages.createDownloadProcess.url,
-    title: "Create download process",
-    icon: IconCirclePlus,
+    key: pages.downloadOfficialProducts.url,
+    title: "Download official products",
+    icon: IconFileDownload,
   },
   {
     key: pages.generateCustomProducts.url,
     title: "Generate custom products",
     icon: IconPhotoPlus,
+  },
+  {
+    key: pages.processesList.url,
+    title: "Your processes",
+    icon: IconListCheck,
   },
 ];
 

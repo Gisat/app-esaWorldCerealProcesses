@@ -13,10 +13,10 @@ import {
 } from "react";
 // TODO: update imports with new reusable feature
 // import { MapExtentSelect } from "@features/(shared)/_components/map/MapExtentSelect";
-import FormLabel from "@features/(shared)/_layout/_components/FormLabel";
+import FormLabel from "@features/(shared)/_layout/_components/Content/FormLabel";
 import TwoColumns, {
   Column,
-} from "@features/(shared)/_layout/_components/TwoColumns";
+} from "@features/(shared)/_layout/_components/Content/TwoColumns";
 import { Anchor, Group, SegmentedControl, Stack, Text } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
 import { useRouter } from "next/navigation";
