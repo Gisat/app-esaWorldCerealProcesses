@@ -30,7 +30,7 @@ const Header = () => {
 								leftSection={<IconUser size={14}/>}
 								size="sm"
 							>
-								<Text fz={13}>Login/Sign up</Text>
+								Login/Sign up
 							</Button>
 						</Link> :
                 <>
