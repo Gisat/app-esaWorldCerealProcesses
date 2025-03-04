@@ -2,15 +2,15 @@
 
 import { CreateJobButton } from "@features/(processes)/_components/CreateJobButton";
 import PageSteps from "@features/(processes)/_components/PageSteps";
-import { products } from "@features/(processes)/_constants/app";
 import { transformDate } from "@features/(processes)/_utils/transformDate";
 import { MapBBox } from "@features/(shared)/_components/map/MapBBox";
-import FormLabel from "@features/(shared)/_layout/_components/FormLabel";
+import { TextLink } from "@features/(shared)/_layout/_components/Content/TextLink";
+import { TextParagraph } from "@features/(shared)/_layout/_components/Content/TextParagraph";
+import FormLabel from "@features/(shared)/_layout/_components/Content/FormLabel";
 import TwoColumns, {
   Column,
-} from "@features/(shared)/_layout/_components/TwoColumns";
-import { SegmentedControl, Stack } from "@mantine/core";
-import { DateInput } from "@mantine/dates";
+} from "@features/(shared)/_layout/_components/Content/TwoColumns";
+import { Flex, Group, SegmentedControl, Stack, Text } from "@mantine/core";
 import { useRouter } from "next/navigation";
 import {
   createElement,
@@ -19,9 +19,8 @@ import {
   useMemo,
   useState,
 } from "react";
-
-const minDate = new Date("2021-01-01");
-const maxDate = new Date("2022-01-01");
+import { TextDescription } from "@features/(shared)/_layout/_components/Content/TextDescription";
+import { SectionContainer } from "@features/(shared)/_layout/_components/Content/SectionContainer";
 
 const defaultOutputFileFormat = "GTiff";
 
@@ -131,66 +130,47 @@ export default function Page({
     setValue(currentExtent?.join(","), "bbox");
   }, [setValue, endDateDate, startDateDate, currentExtent]);
 
-  const collectionName =
-    (collection && products.find((p) => p.value === collection)?.label) ??
-    "Unknown Collection";
+	const isDisabled = !params.bbox || !params.endDate || !params.startDate || !params.off;
+
 
   return (
     <TwoColumns>
       <Column>
-        <FormLabel>Draw the extent (maximum 500 x 500 km)</FormLabel>
-        <MapBBox
-          onBboxChange={onBboxChange}
-          bbox={bbox?.map(Number)}
-          setAreaBbox={setAreaBbox}
-          setCoordinatesToDisplay={setCoordinatesToDisplay}
-        />
-        <FormLabel>
-          Current extent: {bbox ? coordinatesToDisplay : "none"}{" "}
-          {areaBbox && bbox ? `(${areaBbox} sqkm)` : ""}
-        </FormLabel>
+				<SectionContainer>
+					<Group gap={"0.3rem"} align="baseline">
+						<FormLabel>Draw the extent</FormLabel>
+						<TextDescription color={"var(--textSecondaryColor)"}>(maximum 500 x 500 km)</TextDescription>
+					</Group>
+					<MapBBox
+						mapSize={[550, 400]}
+						onBboxChange={onBboxChange}
+						bbox={bbox?.map(Number)}
+						setAreaBbox={setAreaBbox}
+						setCoordinatesToDisplay={setCoordinatesToDisplay}
+						coordinatesToDisplay={coordinatesToDisplay}
+					/>
+					<TextDescription>
+						Current extent: {bbox ? coordinatesToDisplay : "none"}{" "}
+						{areaBbox && bbox ? `(${areaBbox} sqkm)` : ""}
+					</TextDescription>
+				</SectionContainer>
+				<TextDescription>
+					In case you are interested in larger areas, we recommend to download the AEZ-based products directly from <TextLink url="https://zenodo.org/records/7875105">Zenodo</TextLink>.
+				</TextDescription>
         <PageSteps
           NextButton={createElement(CreateJobButton, {
             params,
             searchParams,
             apiUrl,
+						disabled: isDisabled
           })}
+					disabled={isDisabled}
         />
       </Column>
       <Column>
         <Stack gap="lg" w="100%" align="flex-start">
-          <div>
-            <FormLabel>Product/collection</FormLabel>
-            <div>{collectionName}</div>
-          </div>
-          <DateInput
-            size="md"
-            className="worldCereal-DateInput"
-            value={startDateDate}
-            onChange={() => null} // TODO:
-            label="Start date"
-            placeholder="Select start date"
-            valueFormat="YYYY-MM-DD"
-            minDate={minDate}
-            maxDate={endDateDate || maxDate}
-            clearable={false}
-            disabled
-          />
-          <DateInput
-            size="md"
-            className="worldCereal-DateInput"
-            value={endDateDate}
-            onChange={() => null} // TODO:
-            label="End date"
-            placeholder="Select end date"
-            valueFormat="YYYY-MM-DD"
-            minDate={startDateDate || minDate}
-            maxDate={maxDate}
-            clearable={false}
-            disabled
-          />
-          <div>
-            <FormLabel>Output file format</FormLabel>
+					<div style={{width: "100%"}}>
+            <FormLabel>Choose output file format</FormLabel>
             <SegmentedControl
               onChange={(value) => onOutpoutFormatChange(value)}
               className="worldCereal-SegmentedControl"

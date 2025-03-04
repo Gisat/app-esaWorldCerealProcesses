@@ -10,6 +10,8 @@ import PageSteps from "@features/(processes)/_components/PageSteps";
 import Details from "@features/(processes)/_components/ProcessesTable/Details";
 import { pages } from "@features/(processes)/_constants/app";
 import { fetcher } from "@features/(shared)/_logic/utils";
+import { TextParagraph } from "@features/(shared)/_layout/_components/Content/TextParagraph";
+import { IconPlayerPlayFilled } from "@tabler/icons-react";
 
 /**
  * StartJobButton component.
@@ -45,8 +47,9 @@ const StartJobButton = ({ jobId }: { jobId?: string }) => {
       className="worldCereal-Button"
       disabled={isLoading}
       onClick={handleClick}
+			leftSection={<IconPlayerPlayFilled size={14} />}
     >
-      {isLoading ? "Starting..." : "Start process and go to the list"}
+      {isLoading ? "Starting..." : "Start process & go to the list"}
     </Button>
   );
 };
@@ -79,11 +82,10 @@ export default function Page({
 
   return (
     <>
+			<TextParagraph color="var(--textAccentedColor)"><b>You have created the Download official products process with following parameters:</b></TextParagraph>
       {data ? (
         <Details
           bbox={data?.bbox}
-          startDate={data?.timeRange?.[0]}
-          endDate={data?.timeRange?.[1]}
           resultFileFormat={data?.resultFileFormat}
           oeoCollection={data?.oeoCollection}
         />

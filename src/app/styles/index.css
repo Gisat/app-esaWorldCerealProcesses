@@ -118,6 +118,8 @@ input {
 /* Select */
 .worldCereal-appContent .worldCereal-Select {
   font-family: var(--titleFontFamily) sans-serif;
+	width: -webkit-fill-available;
+	max-width: 25rem;
 
   .mantine-Select-input {
     font-family: var(--titleFontFamily) sans-serif;
@@ -147,12 +149,14 @@ input {
   }
 
   .mantine-Stepper-content {
-    padding-top: 1.5rem;
+    padding-top: 2rem;
   }
 }
 
 /* SegmentedControl */
 .worldCereal-appContent .worldCereal-SegmentedControl {
+	max-width: 25rem;
+	width: -webkit-fill-available;
   .mantine-SegmentedControl-label:where([data-active]) .mantine-SegmentedControl-innerLabel {
     font-weight: bold;
   }

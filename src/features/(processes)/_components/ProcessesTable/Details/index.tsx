@@ -2,6 +2,7 @@ import "./style.css";
 import React, { useState } from "react";
 import {MapBBox} from "@features/(shared)/_components/map/MapBBox";
 import { products } from "@features/(processes)/_constants/app";
+import { TextDescription } from "@features/(shared)/_layout/_components/Content/TextDescription";
 
 type DetailsItemProps = {
 	children: React.ReactNode,
@@ -34,12 +35,11 @@ const Details = ({ bbox, startDate, endDate, resultFileFormat, oeoCollection, re
 
 	return <div className="worldCereal-ProcessesTable-Details">
 		<div className="worldCereal-ProcessesTable-Details-column">
-			<MapBBox bbox={bbox} disabled mapSize={[300, 300]} setAreaBbox={setAreaBbox} setCoordinatesToDisplay={setCoordinatesToDisplay}/>
-			{bbox ? <div className="worldCereal-MapDetails-coordinates">
-				<b>
-					Extent: {coordinatesToDisplay} {areaBbox && bbox ? `(${areaBbox} sqkm)` : ""}
-				</b>
-			</div> : null}
+			<TextDescription>
+				Extent: {bbox ? coordinatesToDisplay : "none"}{" "}
+				{areaBbox && bbox ? `(${areaBbox} sqkm)` : ""}
+			</TextDescription>
+			<MapBBox bbox={bbox?.map(Number)} disabled mapSize={[300, 300]} setAreaBbox={setAreaBbox} setCoordinatesToDisplay={setCoordinatesToDisplay} coordinatesToDisplay={coordinatesToDisplay}/>
 		</div>
 		<div className="worldCereal-ProcessesTable-Details-column">
 			<DetailsItem label={"Product"}>{collection?.label}</DetailsItem>

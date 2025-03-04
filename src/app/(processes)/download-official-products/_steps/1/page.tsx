@@ -2,10 +2,14 @@
 
 import PageSteps from "@features/(processes)/_components/PageSteps";
 import { products } from "@features/(processes)/_constants/app";
+import { SectionContainer } from "@features/(shared)/_layout/_components/Content/SectionContainer";
+import { TextDescription } from "@features/(shared)/_layout/_components/Content/TextDescription";
+import { TextLink } from "@features/(shared)/_layout/_components/Content/TextLink";
+import { TextParagraph } from "@features/(shared)/_layout/_components/Content/TextParagraph";
 import TwoColumns, {
   Column,
-} from "@features/(shared)/_layout/_components/TwoColumns";
-import { Button, Select } from "@mantine/core";
+} from "@features/(shared)/_layout/_components/Content/TwoColumns";
+import { Button, Select, Space } from "@mantine/core";
 import { IconArrowRight } from "@tabler/icons-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createElement } from "react";
@@ -44,7 +48,7 @@ const NextButton = ({ collection }: { collection: string | null }) => {
       className={`worldCereal-Button${disabled ? " is-disabled" : ""}`}
       onClick={nextStep}
     >
-      Continue to set parameters
+      Continue to set parameters & create process
     </Button>
   );
 };
@@ -86,17 +90,36 @@ export default function Page({
   return (
     <TwoColumns>
       <Column>
-        <Select
-          withAsterisk
-          className="worldCereal-Select"
-          size="md"
-          allowDeselect={false}
-          label="Product/Collection"
-          placeholder="Pick one"
-          data={products}
-          value={(productIsValid && collection) || null}
-          onChange={setValue}
-        />
+				<SectionContainer>
+					<TextDescription color="var(--textSecondaryColor)">
+						Currently the WorldCereal project has created several <TextLink url="https://esa-worldcereal.org/en/products/global-maps" color="var(--textSecondaryColor)">global products</TextLink> for the year 2021. 
+					</TextDescription>
+					<TextDescription color="var(--textSecondaryColor)">
+						By end of 2026, a new batch of global products for a more recent year will be released.
+					</TextDescription>
+				</SectionContainer>
+				<Select
+					withAsterisk
+					className="worldCereal-Select"
+					size="md"
+					allowDeselect={false}
+					label="Select the product collection"
+					placeholder="2021"
+					disabled
+					value={"2021"}
+				/>
+				<Space h="md" />
+				<Select
+					withAsterisk
+					className="worldCereal-Select"
+					size="md"
+					allowDeselect={false}
+					label="Select your product"
+					placeholder="Pick one"
+					data={products}
+					value={(productIsValid && collection) || null}
+					onChange={setValue}
+				/>
         <PageSteps NextButton={createElement(NextButton, { collection })} />
       </Column>
     </TwoColumns>

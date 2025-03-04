@@ -1,5 +1,4 @@
 .worldCereal-ProcessesTable-Details {
-  padding: 0.5rem;
   display: flex;
   width: 100%;
   justify-content: start;
@@ -8,7 +7,6 @@
 .worldCereal-ProcessesTable-Details-column {
   display: flex;
   flex-direction: column;
-  grid-gap: 0.5rem;
 
   &:not(:first-child) {
     margin-left: 5rem;

@@ -32,6 +32,7 @@ const SelectOutput: FC<SelectOutputProps> = ({
 }) => {
   return (
     <SegmentedControl
+			className="worldCereal-SegmentedControl"
       onChange={(value) => onChange(value as OutputFileFormat)}
       size="md"
       defaultValue={defaultValue}

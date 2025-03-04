@@ -1,9 +1,9 @@
-"use client";
-import { useUrlParam } from "@features/(shared)/_hooks/_url/useUrlParam";
-import { ContentContainer } from "@features/(shared)/_layout/_components/Content/ContentContainer";
-import { Stepper } from "@mantine/core";
-import { useSearchParams } from "next/navigation";
-import React, { Suspense, useCallback, useEffect, useState } from "react";
+"use client"
+import React, { useEffect, Suspense, useState, useCallback } from 'react';
+import { Stepper } from '@mantine/core';
+import { useSearchParams } from 'next/navigation';
+import { ContentContainer } from '@features/(shared)/_layout/_components/Content/ContentContainer';
+import { useUrlParam } from '@features/(shared)/_hooks/_url/useUrlParam';
 
 /**
  * DownloadLayout component that provides a step-based UI for managing a multi-step process.
@@ -13,11 +13,7 @@ import React, { Suspense, useCallback, useEffect, useState } from "react";
  * @param {React.ReactNode} props.children - The content to render inside each step.
  * @returns {JSX.Element} A stepper layout for guiding users through a download or processing workflow.
  */
-export default function DownloadLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function DownloadLayout({ children }: { children: React.ReactNode }) {
   const params = useSearchParams();
   const { setUrlParam } = useUrlParam(); // Use the custom hook to push params to URL
 
@@ -49,32 +45,30 @@ export default function DownloadLayout({
     }
   }, [params, setActive]); // Include `setActive` in the dependency array
 
-  return (
-    <Suspense>
+	return (
+		<Suspense>
 			<ContentContainer>
-				<Stepper
-					className="worldCereal-Stepper"
-					size="sm"
+				<Stepper 
+					className="worldCereal-Stepper" 
+					size="sm" 
 					active={activeStep - 1}
 					onStepClick={(step) => step === 0 && activeStep === 2 && setActive(1)}
 					allowNextStepsSelect={false}
 				>
-					<Stepper.Step
-						label="Select product & model"
-						style={{ cursor: activeStep === 2 ? "pointer" : "default" }}
-					>
+					<Stepper.Step label="Select collection & product" allowStepClick={false} style={{ cursor: activeStep === 2 ? "pointer" : "default" }}>
 						{children}
 					</Stepper.Step>
-
-					<Stepper.Step label="Set parameters & create process" style={{ cursor: "default"}}>
+					<Stepper.Step label="Set parameters & create process" allowStepClick={false} style={{ cursor: "default"}}>
 						{children}
 					</Stepper.Step>
-
-					<Stepper.Step label="Start process" style={{ cursor: "default"}}>{children}</Stepper.Step>
-
-					<Stepper.Completed>{children}</Stepper.Completed>
+					<Stepper.Step label="Start process" allowStepClick={false} style={{ cursor: "default"}}>
+						{children}
+					</Stepper.Step>
+					<Stepper.Completed>
+						{children}
+					</Stepper.Completed>
 				</Stepper>
 			</ContentContainer>
-    </Suspense>
-  );
+		</Suspense>
+	);
 }

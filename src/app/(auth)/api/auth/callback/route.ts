@@ -40,7 +40,7 @@ export async function GET(req: NextRequest) {
 
         // build URL to redirect back to FE app
         const parsedRedirectUrl = new URL(redirectUrl as string)
-        const urlToReturnWithSession = `${parsedRedirectUrl.protocol}//${parsedRedirectUrl.host}/${pages.processesList.url}`
+        const urlToReturnWithSession = `${parsedRedirectUrl.protocol}//${parsedRedirectUrl.host}/${pages.home.url}`
 
         // prepare redirect response with session cookie
         const feRedirect = NextResponse.redirect(urlToReturnWithSession)
