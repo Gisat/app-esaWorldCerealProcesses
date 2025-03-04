@@ -84,7 +84,6 @@ export default function Page({
           endDate={data?.timeRange?.[1]}
           resultFileFormat={data?.resultFileFormat}
           oeoCollection={data?.oeoCollection}
-					model={"Default model"}
         />
       ) : null}
       <PageSteps NextButton={createElement(StartJobButton, { jobId: jobKey })} />
