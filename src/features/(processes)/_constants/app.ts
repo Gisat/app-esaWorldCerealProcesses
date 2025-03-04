@@ -130,3 +130,16 @@ export const customProducts: { value: string; label: string; namespace?: string;
     disabled: true
   }
 ];
+
+/**
+ * Date range limitations for custom products in the application.
+ * 
+ * @enum {string}
+ * @readonly
+ * @property {string} min - The minimum allowed date for custom products (December 31, 2018)
+ * @property {string} max - The maximum allowed date for custom products (December 31, 2024)
+ */
+export const enum customProductsDateLimits {
+  min = "2018-12-31",
+  max = "2024-12-31",
+}
