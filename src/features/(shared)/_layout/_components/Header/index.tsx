@@ -5,7 +5,8 @@ import Title from "./Title";
 import EsaLogo from "@features/(processes)/_components/EsaLogo";
 import "./style.css";
 import { useUserInfoFromIdentity } from "@features/(shared)/_hooks/user.useUserInfoFromIdentity";
-import {IconLogout} from "@tabler/icons-react";
+import {IconLogout, IconUser} from "@tabler/icons-react";
+import Link from "next/link";
 
 const Header = () => {
 
@@ -22,7 +23,16 @@ const Header = () => {
           <EsaLogo className="worldCereal-Header-esaLogo" />
           {
             (!userInfoValue || !userInfoValue.email) ?
-              null :
+						<Link href="/api/auth/iam">
+							<Button
+								className="worldCereal-Button"
+								autoContrast
+								leftSection={<IconUser size={14}/>}
+								size="sm"
+							>
+								Login/Sign up
+							</Button>
+						</Link> :
                 <>
                   <span className="worldCereal-Header-email">{userInfoValue.email} </span>
                   <Button
