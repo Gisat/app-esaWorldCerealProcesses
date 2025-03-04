@@ -4,6 +4,7 @@ import { CreateJobButton } from "@features/(processes)/_components/CreateJobButt
 import PageSteps from "@features/(processes)/_components/PageSteps";
 import { SelectMonth } from "@features/(processes)/_components/SelectMonth";
 import { SelectOutput } from "@features/(processes)/_components/SelectOutput";
+import { customProductsDateLimits } from "@features/(processes)/_constants/app";
 import { MapBBox } from "@features/(shared)/_components/map/MapBBox";
 import { useUrlParam } from "@features/(shared)/_hooks/_url/useUrlParam";
 import FormLabel from "@features/(shared)/_layout/_components/FormLabel";
@@ -41,8 +42,8 @@ export default function Page({
   const { setUrlParam, setUrlParams } = useUrlParam();
 
   // constants
-  const minDate = new Date("2018-12-31");
-  const maxDate = new Date("2024-12-31");
+  const minDate = new Date(customProductsDateLimits.min);
+  const maxDate = new Date(customProductsDateLimits.max);
   const defaultOutputValue: "GTiff" | "NETCDF" = "GTiff";
   const defaultOutputValues: object = [
     { label: "NetCDF", value: "NETCDF" },
