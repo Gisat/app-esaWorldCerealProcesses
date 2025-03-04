@@ -26,11 +26,9 @@ type DetailsProps = {
 	oeoCollection?: string,
 	resultFileFormat?: string,
 	results?: Array<{ source_link: string }>,
-	model?: string,
-	productCollection?: number,
 }
 
-const Details = ({ bbox, startDate, endDate, resultFileFormat, oeoCollection, results, model, productCollection }: DetailsProps) => {
+const Details = ({ bbox, startDate, endDate, resultFileFormat, oeoCollection, results }: DetailsProps) => {
 	const [areaBbox, setAreaBbox] = useState<number | undefined>(undefined);
 	const [coordinatesToDisplay, setCoordinatesToDisplay] = useState<string | Array<string> | null>(null);
 	const collection = products.find(p => p.value === oeoCollection);
@@ -41,15 +39,13 @@ const Details = ({ bbox, startDate, endDate, resultFileFormat, oeoCollection, re
 				Extent: {bbox ? coordinatesToDisplay : "none"}{" "}
 				{areaBbox && bbox ? `(${areaBbox} sqkm)` : ""}
 			</TextDescription>
-			<MapBBox bbox={bbox?.map(Number)} disabled mapSize={[450, 300]} setAreaBbox={setAreaBbox} setCoordinatesToDisplay={setCoordinatesToDisplay} coordinatesToDisplay={coordinatesToDisplay}/>
+			<MapBBox bbox={bbox?.map(Number)} disabled mapSize={[300, 300]} setAreaBbox={setAreaBbox} setCoordinatesToDisplay={setCoordinatesToDisplay} coordinatesToDisplay={coordinatesToDisplay}/>
 		</div>
 		<div className="worldCereal-ProcessesTable-Details-column">
-			{productCollection ? <DetailsItem label={"Product collection:"}>{productCollection}</DetailsItem> : null}
-			<DetailsItem label={"Product:"}>{collection?.label}</DetailsItem>
-			{model ? <DetailsItem label={"Model:"}>{model}</DetailsItem> : null}
-			{startDate ? <DetailsItem label={"Start date:"}>{new Date(startDate).toLocaleDateString()}</DetailsItem> : null}
-			{endDate ? <DetailsItem label={"End date:"}>{new Date(endDate).toLocaleDateString()}</DetailsItem> : null}
-			<DetailsItem label={"Output file format:"}>{resultFileFormat}</DetailsItem>
+			<DetailsItem label={"Product"}>{collection?.label}</DetailsItem>
+			<DetailsItem label={"Start date"}>{startDate ? new Date(startDate).toLocaleDateString() : ''}</DetailsItem>
+			<DetailsItem label={"End date"}>{endDate ? new Date(endDate).toLocaleDateString() : ''}</DetailsItem>
+			<DetailsItem label={"Output file format"}>{resultFileFormat}</DetailsItem>
 		</div>
 		{results?.[0] && <div className="worldCereal-ProcessesTable-Details-column">
 			<DetailsItem label={"Download results"}>

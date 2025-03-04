@@ -88,7 +88,6 @@ export default function Page({
           bbox={data?.bbox}
           resultFileFormat={data?.resultFileFormat}
           oeoCollection={data?.oeoCollection}
-					productCollection={2021}
         />
       ) : null}
       <PageSteps NextButton={createElement(StartJobButton, { jobId })} />

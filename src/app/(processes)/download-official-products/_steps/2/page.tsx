@@ -130,6 +130,9 @@ export default function Page({
     setValue(currentExtent?.join(","), "bbox");
   }, [setValue, endDateDate, startDateDate, currentExtent]);
 
+	const isDisabled = !params.bbox || !params.endDate || !params.startDate || !params.off;
+
+
   return (
     <TwoColumns>
       <Column>
@@ -159,7 +162,9 @@ export default function Page({
             params,
             searchParams,
             apiUrl,
+						disabled: isDisabled
           })}
+					disabled={isDisabled}
         />
       </Column>
       <Column>

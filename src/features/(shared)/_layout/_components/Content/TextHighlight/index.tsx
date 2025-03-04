@@ -1,4 +1,3 @@
-import "./style.css";
 import { Text } from '@mantine/core';
 
 /**

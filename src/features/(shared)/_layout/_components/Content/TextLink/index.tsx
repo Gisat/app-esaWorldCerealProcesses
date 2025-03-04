@@ -1,4 +1,3 @@
-import "./style.css";
 import { Anchor } from '@mantine/core';
 
 /**
