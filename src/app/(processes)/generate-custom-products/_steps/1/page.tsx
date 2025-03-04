@@ -1,7 +1,7 @@
 "use client";
 
 import PageSteps from "@features/(processes)/_components/PageSteps";
-import { products } from "@features/(processes)/_constants/app";
+import { customProducts } from "@features/(processes)/_constants/app";
 import TwoColumns, {
   Column,
 } from "@features/(shared)/_layout/_components/Content/TwoColumns";
@@ -72,7 +72,7 @@ export default function Page({
 }) {
   const router = useRouter();
   const collection = searchParams?.collection || null;
-  const productIsValid = products.some(
+  const productIsValid = customProducts.some(
     (p: { value: string }) => p.value === collection
   );
 
@@ -97,7 +97,7 @@ export default function Page({
           allowDeselect={false}
           label="Select your product"
           placeholder="Pick one"
-          data={products}
+          data={customProducts}
           value={(productIsValid && collection) || null}
           onChange={setValue}
           mb="md"

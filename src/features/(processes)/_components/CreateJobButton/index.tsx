@@ -47,6 +47,7 @@ interface CreateJobButtonProps {
   params: JobParams;
   searchParams?: SearchParamsType;
   apiUrl: string;
+  disabled?: boolean;
 }
 
 /**
@@ -59,6 +60,7 @@ const CreateJobButton = ({
   params,
   searchParams,
   apiUrl,
+  disabled = false,
 }: CreateJobButtonProps): JSX.Element => {
   const router = useRouter();
   const updateUrlParams = useUpdateUrlParams();
@@ -113,7 +115,7 @@ const CreateJobButton = ({
   return (
     <Button
       leftSection={<IconCheck size={14} />}
-      disabled={isLoading || !!widthInvalid || !!heightInvalid}
+      disabled={isLoading || !!widthInvalid || !!heightInvalid || disabled}
       className="worldCereal-Button"
       onClick={handleClick}
     >
