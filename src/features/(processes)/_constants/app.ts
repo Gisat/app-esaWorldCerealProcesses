@@ -42,12 +42,32 @@ export const products: Array<{ value: string; label: string }> = [
   },
 ];
 
+/**
+ * URL path mappings for application process pages.
+ * 
+ * @property {object} processesList - Configuration for the processes list page.
+ * @property {string} processesList.url - URL path segment for the processes list page.
+ * @property {object} createDownloadProcess - Configuration for the download process creation page.
+ * @property {string} createDownloadProcess.url - URL path segment for the download process creation page.
+ * @property {object} generateCustomProducts - Configuration for the custom products generation page.
+ * @property {string} generateCustomProducts.url - URL path segment for the custom products generation page.
+ */
 export const pages = {
   processesList: { url: "processes-list" },
   createDownloadProcess: { url: "create-download-process" },
   generateCustomProducts: { url: "generate-custom-products" },
 };
 
+/**
+ * Navigation items configuration for the application's navbar.
+ * 
+ * Each item in the array represents a navigation destination in the UI with:
+ * - key: The URL path of the page (references pages object constants)
+ * - title: Display text shown in the navigation
+ * - icon: Icon component to display alongside the title
+ * 
+ * @type {Array<{key: string, title: string, icon: React.ComponentType}>}
+ */
 export const navbarItems = [
   {
     key: pages.processesList.url,
