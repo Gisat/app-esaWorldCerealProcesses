@@ -1,6 +1,6 @@
 "use client"
 import { bool } from "prop-types";
-import {AppShellHeader, Button, Text} from '@mantine/core'
+import {AppShellHeader, Button} from '@mantine/core'
 import Title from "./Title";
 import EsaLogo from "@features/(processes)/_components/EsaLogo";
 import "./style.css";
