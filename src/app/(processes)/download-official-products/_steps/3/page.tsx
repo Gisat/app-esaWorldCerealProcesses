@@ -11,6 +11,7 @@ import Details from "@features/(processes)/_components/ProcessesTable/Details";
 import { pages } from "@features/(processes)/_constants/app";
 import { fetcher } from "@features/(shared)/_logic/utils";
 import { TextParagraph } from "@features/(shared)/_layout/_components/Content/TextParagraph";
+import { IconPlayerPlayFilled } from "@tabler/icons-react";
 
 /**
  * StartJobButton component.
@@ -46,6 +47,7 @@ const StartJobButton = ({ jobId }: { jobId?: string }) => {
       className="worldCereal-Button"
       disabled={isLoading}
       onClick={handleClick}
+			leftSection={<IconPlayerPlayFilled size={14} />}
     >
       {isLoading ? "Starting..." : "Start process & go to the list"}
     </Button>
@@ -86,6 +88,7 @@ export default function Page({
           bbox={data?.bbox}
           resultFileFormat={data?.resultFileFormat}
           oeoCollection={data?.oeoCollection}
+					productCollection={2021}
         />
       ) : null}
       <PageSteps NextButton={createElement(StartJobButton, { jobId })} />

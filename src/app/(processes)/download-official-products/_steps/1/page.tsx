@@ -3,6 +3,7 @@
 import PageSteps from "@features/(processes)/_components/PageSteps";
 import { products } from "@features/(processes)/_constants/app";
 import { SectionContainer } from "@features/(shared)/_layout/_components/Content/SectionContainer";
+import { TextDescription } from "@features/(shared)/_layout/_components/Content/TextDescription";
 import { TextLink } from "@features/(shared)/_layout/_components/Content/TextLink";
 import { TextParagraph } from "@features/(shared)/_layout/_components/Content/TextParagraph";
 import TwoColumns, {
@@ -90,35 +91,36 @@ export default function Page({
     <TwoColumns>
       <Column>
 				<SectionContainer>
-					<TextParagraph color="var(--textSecondaryColor)">
+					<TextDescription color="var(--textSecondaryColor)">
 						Currently the WorldCereal project has created several <TextLink url="https://esa-worldcereal.org/en/products/global-maps" color="var(--textSecondaryColor)">global products</TextLink> for the year 2021. 
+					</TextDescription>
+					<TextDescription color="var(--textSecondaryColor)">
 						By end of 2026, a new batch of global products for a more recent year will be released.
-					</TextParagraph>
-					<Select
-						withAsterisk
-						className="worldCereal-Select"
-						size="md"
-						allowDeselect={false}
-						label="Select the product collection"
-						placeholder="2021"
-						disabled
-						leftSectionWidth={"10rem"}
-						value={"2021"}
-					/>
-					<Space h="md" />
-					<Select
-						withAsterisk
-						className="worldCereal-Select"
-						size="md"
-						allowDeselect={false}
-						label="Select your product"
-						placeholder="Pick one"
-						data={products}
-						value={(productIsValid && collection) || null}
-						onChange={setValue}
-					/>
-        <PageSteps NextButton={createElement(NextButton, { collection })} />
+					</TextDescription>
 				</SectionContainer>
+				<Select
+					withAsterisk
+					className="worldCereal-Select"
+					size="md"
+					allowDeselect={false}
+					label="Select the product collection"
+					placeholder="2021"
+					disabled
+					value={"2021"}
+				/>
+				<Space h="md" />
+				<Select
+					withAsterisk
+					className="worldCereal-Select"
+					size="md"
+					allowDeselect={false}
+					label="Select your product"
+					placeholder="Pick one"
+					data={products}
+					value={(productIsValid && collection) || null}
+					onChange={setValue}
+				/>
+        <PageSteps NextButton={createElement(NextButton, { collection })} />
       </Column>
     </TwoColumns>
   );

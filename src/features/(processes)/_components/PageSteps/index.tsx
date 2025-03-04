@@ -1,6 +1,6 @@
 "use client";
 import { Button, Group } from "@mantine/core";
-import { IconArrowLeft } from "@tabler/icons-react";
+import { IconArrowLeft, IconArrowRight, IconPlus } from "@tabler/icons-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { cloneElement } from "react";
 
@@ -56,11 +56,24 @@ export default function PageSteps({ NextButton, disabled }: PageStepsProps) {
    */
   const prevStep = () => setActive(activeStep - 1);
 
-  const backVisible = activeStep > 1;
+  /**
+   * Starts a new process by setting the active step to 1.
+   */
+  const newProcess = () => setActive(1);
+
+  /**
+   * Navigates to the process list page.
+   */
+  const processList = () => {
+    window.location.href = `/${"processes-list"}`;
+  };
+
+  const backButton = activeStep === 2;
+  const finalButtons = activeStep === 3;
 
   return (
-    <Group justify="center" mt="xl">
-      {backVisible && (
+    <Group mt="xl">
+      {backButton && (
         <Button
           className="worldCereal-Button is-secondary is-ghost"
           variant="outline"
@@ -70,7 +83,6 @@ export default function PageSteps({ NextButton, disabled }: PageStepsProps) {
           Back
         </Button>
       )}
-
       {NextButton ? (
         cloneElement(NextButton, { disabled })
       ) : (
@@ -81,6 +93,26 @@ export default function PageSteps({ NextButton, disabled }: PageStepsProps) {
         >
           Next step
         </Button>
+      )}
+      {finalButtons && (
+        <>
+          <Button
+            className="worldCereal-Button is-secondary is-ghost"
+            variant="outline"
+            onClick={newProcess}
+            leftSection={<IconPlus size={14} />}
+          >
+            Setup new process
+          </Button>
+          <Button
+            className="worldCereal-Button is-secondary is-ghost"
+            variant="outline"
+            onClick={processList}
+            leftSection={<IconArrowRight size={14} />}
+          >
+            Go to the list
+          </Button>
+        </>
       )}
     </Group>
   );

@@ -10,6 +10,8 @@ import PageSteps from "@features/(processes)/_components/PageSteps";
 
 import Details from "@features/(processes)/_components/ProcessesTable/Details";
 import { pages } from "@features/(processes)/_constants/app";
+import { IconPlayerPlayFilled } from "@tabler/icons-react";
+import { TextParagraph } from "@features/(shared)/_layout/_components/Content/TextParagraph";
 
 /**
  * A button component that starts a job process when clicked and navigates to the process list upon success.
@@ -49,9 +51,10 @@ const StartJobButton = ({ jobId }: { jobId?: string }) => {
       className="worldCereal-Button"
       disabled={isLoading}
       onClick={handleClick}
+			leftSection={<IconPlayerPlayFilled size={14} />}
     >
-      {isLoading ? "Starting..." : "Start process and go to the list"}
-    </Button>
+      {isLoading ? "Starting..." : "Start process & go to the list"}
+		</Button>
   );
 };
 
@@ -73,6 +76,7 @@ export default function Page({
 
   return (
     <>
+			<TextParagraph color="var(--textAccentedColor)"><b>You have created the Download official products process with following parameters:</b></TextParagraph>
       {data ? (
         <Details
           bbox={data?.bbox}
@@ -80,6 +84,7 @@ export default function Page({
           endDate={data?.timeRange?.[1]}
           resultFileFormat={data?.resultFileFormat}
           oeoCollection={data?.oeoCollection}
+					model={"Default model"}
         />
       ) : null}
       <PageSteps NextButton={createElement(StartJobButton, { jobId })} />

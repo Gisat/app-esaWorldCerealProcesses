@@ -7,6 +7,9 @@ import { SelectOutput } from "@features/(processes)/_components/SelectOutput";
 import { MapBBox } from "@features/(shared)/_components/map/MapBBox";
 import { useUrlParam } from "@features/(shared)/_hooks/_url/useUrlParam";
 import FormLabel from "@features/(shared)/_layout/_components/Content/FormLabel";
+import { SectionContainer } from "@features/(shared)/_layout/_components/Content/SectionContainer";
+import { TextDescription } from "@features/(shared)/_layout/_components/Content/TextDescription";
+import { TextLink } from "@features/(shared)/_layout/_components/Content/TextLink";
 import TwoColumns, {
   Column,
 } from "@features/(shared)/_layout/_components/Content/TwoColumns";
@@ -112,38 +115,42 @@ export default function Page({
   return (
     <TwoColumns>
       <Column>
-        <Group justify="space-between" w="100%" mb="md">
-          <FormLabel>Draw the extent</FormLabel>
-          <Text fz="14">
-            Current extent: {bbox ? coordinatesToDisplay : "none"}{" "}
-            {areaBbox && bbox ? `(${areaBbox} sqkm)` : ""}
-          </Text>
-        </Group>
-        <MapBBox
-          mapSize={[500, 500]}
-          extentSizeInMeters={[50000, 50000]} // MAX Bbox size set to 2500km2
-          onBboxChange={onBboxChange}
-          bbox={bbox?.map(Number)}
-          setAreaBbox={setAreaBbox}
-          setCoordinatesToDisplay={setCoordinatesToDisplay}
-        />
-        <Text fw="bold" fz="sm" mt="md">
-          Avoid too large areas to prevent excessive credit usage and long
-          processing times!
-        </Text>
-        <Text fz="sm">
+				<SectionContainer>
+					<Group justify="space-between" align="end" w="100%">
+						<FormLabel>Draw the extent</FormLabel>
+						<TextDescription>
+							Current extent: {bbox ? coordinatesToDisplay : "none"}{" "}
+							{areaBbox && bbox ? `(${areaBbox} sqkm)` : ""}
+						</TextDescription>
+					</Group>
+					<MapBBox
+						mapSize={[550, 400]}
+						extentSizeInMeters={[50000, 50000]} // MAX Bbox size set to 2500km2
+						onBboxChange={onBboxChange}
+						bbox={bbox?.map(Number)}
+						setAreaBbox={setAreaBbox}
+						setCoordinatesToDisplay={setCoordinatesToDisplay}
+						coordinatesToDisplay={coordinatesToDisplay}
+					/>
+				</SectionContainer>
+        <TextDescription>
+					<b>
+						Avoid too large areas to prevent excessive credit usage and long
+						processing times!
+					</b>
+        </TextDescription>
+        <TextDescription>
           A run of 250km2 will typically consume 40 credits and last around
           20min.
-        </Text>
-        <Text fz="sm">
+        </TextDescription>
+        <TextDescription>
           A run of 750km2 will typically consume 90 credits and last around
           50min.
-        </Text>
-        <Text fz="sm">
+        </TextDescription>
+        <TextDescription>
           A run of 2500km2 will typically consume 250 credits and last around 1h
           40min.
-        </Text>
-
+        </TextDescription>
         <PageSteps
           NextButton={createElement(CreateJobButton, {
             params,
@@ -159,24 +166,22 @@ export default function Page({
           <div>
             <FormLabel>Select season of interest</FormLabel>
             <div>
-              <Text>
+              <TextDescription>
                 Define the end month of your processing period. The default
                 length of the period is 12 months.
-              </Text>
-              <Text>
+              </TextDescription>
+              <TextDescription>
                 To guide your decision concerning the processing period, you can
                 consult the{" "}
-                <Anchor
-                  href="https://ipad.fas.usda.gov/ogamaps/cropcalendar.aspx"
-                  target="_blank"
-                  underline="always"
+                <TextLink
+                  url="https://ipad.fas.usda.gov/ogamaps/cropcalendar.aspx"
                 >
                   USDA crop calendars
-                </Anchor>
-              </Text>
+                </TextLink>
+              </TextDescription>
             </div>
           </div>
-          <div>
+          <div style={{width: "100%"}}>
             <SelectMonth
               label="Ending month"
               disabled={false}
@@ -187,7 +192,7 @@ export default function Page({
             />
           </div>
 
-          <div>
+          <div style={{width: "100%"}}>
             <FormLabel>Output file format</FormLabel>
             <SelectOutput
               onChange={onOutpoutFormatChange}

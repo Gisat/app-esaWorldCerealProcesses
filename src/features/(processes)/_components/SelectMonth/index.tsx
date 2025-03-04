@@ -103,6 +103,7 @@ const SelectMonth: FC<SelectMonthProps> = ({
         clearable={false}
         disabled={disabled}
         valueFormat="MMMM YYYY"
+				style={{maxWidth: "25rem"}}
       />
 
       {formatStartDate && formatEndDate && (

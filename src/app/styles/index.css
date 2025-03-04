@@ -118,6 +118,7 @@ input {
 /* Select */
 .worldCereal-appContent .worldCereal-Select {
   font-family: var(--titleFontFamily) sans-serif;
+	width: -webkit-fill-available;
 	max-width: 25rem;
 
   .mantine-Select-input {
@@ -154,7 +155,8 @@ input {
 
 /* SegmentedControl */
 .worldCereal-appContent .worldCereal-SegmentedControl {
-	width: 20rem;
+	max-width: 25rem;
+	width: -webkit-fill-available;
   .mantine-SegmentedControl-label:where([data-active]) .mantine-SegmentedControl-innerLabel {
     font-weight: bold;
   }

@@ -1,5 +1,6 @@
 "use client";
 import { useUrlParam } from "@features/(shared)/_hooks/_url/useUrlParam";
+import { ContentContainer } from "@features/(shared)/_layout/_components/Content/ContentContainer";
 import { Stepper } from "@mantine/core";
 import { useSearchParams } from "next/navigation";
 import React, { Suspense, useCallback, useEffect, useState } from "react";
@@ -50,28 +51,30 @@ export default function DownloadLayout({
 
   return (
     <Suspense>
-      <Stepper
-        className="worldCereal-Stepper"
-        size="sm"
-        active={activeStep - 1}
-        onStepClick={(step) => step === 0 && activeStep === 2 && setActive(1)}
-        allowNextStepsSelect={false}
-      >
-        <Stepper.Step
-          label="Select product & model"
-          style={{ cursor: activeStep === 2 ? "pointer" : "default" }}
-        >
-          {children}
-        </Stepper.Step>
+			<ContentContainer>
+				<Stepper
+					className="worldCereal-Stepper"
+					size="sm"
+					active={activeStep - 1}
+					onStepClick={(step) => step === 0 && activeStep === 2 && setActive(1)}
+					allowNextStepsSelect={false}
+				>
+					<Stepper.Step
+						label="Select product & model"
+						style={{ cursor: activeStep === 2 ? "pointer" : "default" }}
+					>
+						{children}
+					</Stepper.Step>
 
-        <Stepper.Step label="Set parameters & create process">
-          {children}
-        </Stepper.Step>
+					<Stepper.Step label="Set parameters & create process" style={{ cursor: "default"}}>
+						{children}
+					</Stepper.Step>
 
-        <Stepper.Step label="Start process">{children}</Stepper.Step>
+					<Stepper.Step label="Start process" style={{ cursor: "default"}}>{children}</Stepper.Step>
 
-        <Stepper.Completed>{children}</Stepper.Completed>
-      </Stepper>
+					<Stepper.Completed>{children}</Stepper.Completed>
+				</Stepper>
+			</ContentContainer>
     </Suspense>
   );
 }

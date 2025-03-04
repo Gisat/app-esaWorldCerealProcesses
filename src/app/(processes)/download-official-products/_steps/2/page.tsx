@@ -10,7 +10,7 @@ import FormLabel from "@features/(shared)/_layout/_components/Content/FormLabel"
 import TwoColumns, {
   Column,
 } from "@features/(shared)/_layout/_components/Content/TwoColumns";
-import { SegmentedControl, Stack, Text } from "@mantine/core";
+import { Flex, Group, SegmentedControl, Stack, Text } from "@mantine/core";
 import { useRouter } from "next/navigation";
 import {
   createElement,
@@ -19,6 +19,8 @@ import {
   useMemo,
   useState,
 } from "react";
+import { TextDescription } from "@features/(shared)/_layout/_components/Content/TextDescription";
+import { SectionContainer } from "@features/(shared)/_layout/_components/Content/SectionContainer";
 
 const defaultOutputFileFormat = "GTiff";
 
@@ -131,21 +133,27 @@ export default function Page({
   return (
     <TwoColumns>
       <Column>
-        <FormLabel>Draw the extent <Text span c={"var(--textSecondaryColor)"}>(maximum 500 x 500 km)</Text></FormLabel>
-        <MapBBox
-          onBboxChange={onBboxChange}
-          bbox={bbox?.map(Number)}
-          setAreaBbox={setAreaBbox}
-          setCoordinatesToDisplay={setCoordinatesToDisplay}
-					coordinatesToDisplay={coordinatesToDisplay}
-        />
-        <TextParagraph>
-          Current extent: {bbox ? coordinatesToDisplay : "none"}{" "}
-          {areaBbox && bbox ? `(${areaBbox} sqkm)` : ""}
-        </TextParagraph>
-				<TextParagraph>
+				<SectionContainer>
+					<Group gap={"0.3rem"} align="baseline">
+						<FormLabel>Draw the extent</FormLabel>
+						<TextDescription color={"var(--textSecondaryColor)"}>(maximum 500 x 500 km)</TextDescription>
+					</Group>
+					<MapBBox
+						mapSize={[550, 400]}
+						onBboxChange={onBboxChange}
+						bbox={bbox?.map(Number)}
+						setAreaBbox={setAreaBbox}
+						setCoordinatesToDisplay={setCoordinatesToDisplay}
+						coordinatesToDisplay={coordinatesToDisplay}
+					/>
+					<TextDescription>
+						Current extent: {bbox ? coordinatesToDisplay : "none"}{" "}
+						{areaBbox && bbox ? `(${areaBbox} sqkm)` : ""}
+					</TextDescription>
+				</SectionContainer>
+				<TextDescription>
 					In case you are interested in larger areas, we recommend to download the AEZ-based products directly from <TextLink url="https://zenodo.org/records/7875105">Zenodo</TextLink>.
-				</TextParagraph>
+				</TextDescription>
         <PageSteps
           NextButton={createElement(CreateJobButton, {
             params,
@@ -156,7 +164,7 @@ export default function Page({
       </Column>
       <Column>
         <Stack gap="lg" w="100%" align="flex-start">
-          <div>
+					<div style={{width: "100%"}}>
             <FormLabel>Choose output file format</FormLabel>
             <SegmentedControl
               onChange={(value) => onOutpoutFormatChange(value)}

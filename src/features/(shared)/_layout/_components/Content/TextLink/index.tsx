@@ -16,7 +16,7 @@ export const TextLink = ({ children, url, color = "var(--textAccentedColor)" }: 
   color?: string;
 }>) => {
   return (
-    <Anchor href={url} target="_blank" c={color} underline="always">
+    <Anchor href={url} target="_blank" c={color} underline="always" fz={"inherit"}>
       {children}
     </Anchor>
   );
