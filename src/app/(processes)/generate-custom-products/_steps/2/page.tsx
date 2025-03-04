@@ -4,6 +4,7 @@ import { CreateJobButton } from "@features/(processes)/_components/CreateJobButt
 import PageSteps from "@features/(processes)/_components/PageSteps";
 import { SelectMonth } from "@features/(processes)/_components/SelectMonth";
 import { SelectOutput } from "@features/(processes)/_components/SelectOutput";
+import { customProductsDateLimits } from "@features/(processes)/_constants/app";
 import { MapBBox } from "@features/(shared)/_components/map/MapBBox";
 import { useUrlParam } from "@features/(shared)/_hooks/_url/useUrlParam";
 import FormLabel from "@features/(shared)/_layout/_components/Content/FormLabel";
@@ -32,19 +33,20 @@ export default function Page({
     step?: string;
     startDate?: string;
     endDate?: string;
-    collection?: string;
+    product?: string;
     bbox?: string;
     width?: string;
     height?: string;
     off?: string;
+    model?: string;
   };
 }) {
   // hooks
-  const { setUrlParam } = useUrlParam();
+  const { setUrlParam, setUrlParams } = useUrlParam();
 
   // constants
-  const minDate = new Date("2018-01-01");
-  const maxDate = new Date("2024-12-31");
+  const minDate = new Date(customProductsDateLimits.min);
+  const maxDate = new Date(customProductsDateLimits.max);
   const defaultOutputValue: "GTiff" | "NETCDF" = "GTiff";
   const defaultOutputValues: object = [
     { label: "NetCDF", value: "NETCDF" },
@@ -63,7 +65,7 @@ export default function Page({
   const [currentExtent, setCurrentExtent] =
     useState<BboxCornerPointsType>(bbox);
 
-  const collection = searchParams?.collection || undefined;
+  const product = searchParams?.product || undefined;
   const off = searchParams?.off || undefined;
   const startDate = searchParams?.startDate || undefined;
   const endDate = searchParams?.endDate || undefined;
@@ -72,7 +74,7 @@ export default function Page({
     bbox: searchParams?.bbox || undefined,
     startDate: startDate,
     endDate: endDate,
-    collection: collection,
+    product: product,
     off: off,
   };
 
@@ -102,15 +104,14 @@ export default function Page({
   };
 
   const handleDateChange = (startDate: string, endDate: string) => {
-    setUrlParam("startDate", startDate);
-    setUrlParam("endDate", endDate);
+    setUrlParams([["startDate", startDate], ["endDate", endDate]]);
   };
 
   useEffect(() => {
     setUrlParam("bbox", currentExtent?.join(","));
   }, [setUrlParam, currentExtent]);
 
-  const isDisabled = !params.bbox || !params.collection || !params.endDate;
+  const isDisabled = !params.bbox || !params.product || !params.endDate || !params.startDate || !params.off;
 
   return (
     <TwoColumns>
@@ -186,7 +187,7 @@ export default function Page({
               label="Ending month"
               disabled={false}
               placeholder="Select month"
-              minDate={minDate} // Min Start Date (1/1/18)
+              minDate={minDate} // Min Start Date (31/12/18)
               maxDate={maxDate} // Max End Date (31/12/24)
               onChange={handleDateChange}
             />

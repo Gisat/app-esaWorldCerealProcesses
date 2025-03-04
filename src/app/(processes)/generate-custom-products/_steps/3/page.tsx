@@ -66,13 +66,13 @@ export default function Page({
     step?: string;
     startDate?: string;
     endDate?: string;
-    jobid?: string;
+    jobKey?: string;
   };
 }) {
-  const jobId = searchParams?.jobid;
+  const jobKey = searchParams?.jobKey;
 
   // TODO: better logic to be implemented
-  const { data } = useSWR(`/api/jobs/get/${jobId}`, apiFetcher);
+  const { data } = useSWR(`/api/jobs/get/${jobKey}`, apiFetcher);
 
   return (
     <>
@@ -87,7 +87,7 @@ export default function Page({
 					model={"Default model"}
         />
       ) : null}
-      <PageSteps NextButton={createElement(StartJobButton, { jobId })} />
+      <PageSteps NextButton={createElement(StartJobButton, { jobId: jobKey })} />
     </>
   );
 }

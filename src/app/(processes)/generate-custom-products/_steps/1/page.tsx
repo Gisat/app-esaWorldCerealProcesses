@@ -2,6 +2,7 @@
 
 import PageSteps from "@features/(processes)/_components/PageSteps";
 import { customProducts } from "@features/(processes)/_constants/app";
+import { useUrlParam } from "@features/(shared)/_hooks/_url/useUrlParam";
 import TwoColumns, {
   Column,
 } from "@features/(shared)/_layout/_components/Content/TwoColumns";
@@ -14,14 +15,14 @@ import { createElement } from "react";
  * NextButton Component
  *
  * @param {Object} props - Component props
- * @param {string | null} props.collection - Selected collection value
+ * @param {string | null} props.product - Selected product value
  * @returns {JSX.Element} A button component to navigate to the next step
  */
-const NextButton = ({ collection }: { collection: string | null }) => {
+const NextButton = ({ product }: { product: string | null }) => {
   const router = useRouter();
   const params = useSearchParams();
   const activeStep = Number.parseInt(params.get("step") || "");
-  const disabled = !collection;
+  const disabled = !product;
 
   /**
    * Updates the step parameter in the URL
@@ -67,25 +68,17 @@ export default function Page({
   searchParams?: {
     query?: string;
     step?: string;
-    collection?: string;
+    product?: string;
   };
 }) {
-  const router = useRouter();
-  const collection = searchParams?.collection || null;
-  const productIsValid = customProducts.some(
-    (p: { value: string }) => p.value === collection
-  );
+  // hooks
+  const { setUrlParam } = useUrlParam();
 
-  /**
-   * Updates the collection parameter in the URL
-   *
-   * @param {string | null} collection - Selected collection value
-   */
-  const setValue = (collection: string | null) => {
-    const url = new URL(window.location.href);
-    url.searchParams.set("collection", collection || "");
-    router.push(url.toString());
-  };
+  const router = useRouter();
+  const product = searchParams?.product || null;
+  const productIsValid = customProducts.some(
+    (p: { value: string }) => p.value === product
+  );
 
   return (
     <TwoColumns>
@@ -98,8 +91,8 @@ export default function Page({
           label="Select your product"
           placeholder="Pick one"
           data={customProducts}
-          value={(productIsValid && collection) || null}
-          onChange={setValue}
+          value={(productIsValid && product) || null}
+          onChange={(value) => value && setUrlParam("product", value)}
           mb="md"
         />
         <Select
@@ -108,11 +101,11 @@ export default function Page({
           allowDeselect={false}
           label="Select model"
           placeholder="Default model"
-          value={(productIsValid && collection) || null}
-          onChange={setValue}
+          value={(productIsValid && product) || null}
+          onChange={(value) => value && setUrlParam("model", value)}
           disabled
         />
-        <PageSteps NextButton={createElement(NextButton, { collection })} />
+        <PageSteps NextButton={createElement(NextButton, { product })} />
       </Column>
     </TwoColumns>
   );

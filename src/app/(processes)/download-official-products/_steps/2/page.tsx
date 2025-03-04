@@ -49,7 +49,7 @@ export default function Page({
 }: {
   searchParams?: searchParamsType;
 }) {
-  const apiUrl = "/api/jobs/create/from-process";
+  const apiUrl = "/api/jobs/create/from-collection";
   const bbox: BboxCornerPointsType = searchParams?.bbox
     ?.split(",")
     .map(Number) as BboxCornerPointsType;
