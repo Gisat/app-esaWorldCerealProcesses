@@ -5,7 +5,6 @@ import { products } from "@features/(processes)/_constants/app";
 import { SectionContainer } from "@features/(shared)/_layout/_components/Content/SectionContainer";
 import { TextDescription } from "@features/(shared)/_layout/_components/Content/TextDescription";
 import { TextLink } from "@features/(shared)/_layout/_components/Content/TextLink";
-import { TextParagraph } from "@features/(shared)/_layout/_components/Content/TextParagraph";
 import TwoColumns, {
   Column,
 } from "@features/(shared)/_layout/_components/Content/TwoColumns";
