@@ -5,12 +5,11 @@ import PageSteps from "@features/(processes)/_components/PageSteps";
 import { transformDate } from "@features/(processes)/_utils/transformDate";
 import { MapBBox } from "@features/(shared)/_components/map/MapBBox";
 import { TextLink } from "@features/(shared)/_layout/_components/Content/TextLink";
-import { TextParagraph } from "@features/(shared)/_layout/_components/Content/TextParagraph";
 import FormLabel from "@features/(shared)/_layout/_components/Content/FormLabel";
 import TwoColumns, {
   Column,
 } from "@features/(shared)/_layout/_components/Content/TwoColumns";
-import { Flex, Group, SegmentedControl, Stack, Text } from "@mantine/core";
+import { Group, SegmentedControl, Stack } from "@mantine/core";
 import { useRouter } from "next/navigation";
 import {
   createElement,

@@ -1,3 +1,7 @@
 .worldCereal-TextParagraph {
   padding-bottom: 1rem;
 }
+
+.worldCereal-TextParagraph:last-child {
+	padding-bottom: 0;
+}
