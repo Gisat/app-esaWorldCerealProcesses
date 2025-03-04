@@ -44,7 +44,27 @@ const useUrlParam = () => {
     [router, pathname]
   );
 
-  return { setUrlParam };
+  const setUrlParams = useCallback(
+    (paramsToSet: [key: string, value: string | null | undefined][]): void => {
+      if (typeof window === "undefined") return; // Prevent SSR issues
+
+      const params = new URLSearchParams(window.location.search); // Always get the latest URL params
+
+      for (const [key, value] of paramsToSet) {
+        if (value && value !== "") {
+          params.set(key, value);
+        } else {
+          params.delete(key);
+        }
+      }
+
+      // Update the URL with the new query params
+      router.push(`${pathname}?${params.toString()}`, { scroll: false });
+    },
+    [router, pathname]
+  );
+
+  return { setUrlParam, setUrlParams };
 };
 
 export { useUrlParam };

@@ -29,18 +29,19 @@ export default function Page({
     step?: string;
     startDate?: string;
     endDate?: string;
-    collection?: string;
+    product?: string;
     bbox?: string;
     width?: string;
     height?: string;
     off?: string;
+    model?: string;
   };
 }) {
   // hooks
-  const { setUrlParam } = useUrlParam();
+  const { setUrlParam, setUrlParams } = useUrlParam();
 
   // constants
-  const minDate = new Date("2018-01-01");
+  const minDate = new Date("2018-12-31");
   const maxDate = new Date("2024-12-31");
   const defaultOutputValue: "GTiff" | "NETCDF" = "GTiff";
   const defaultOutputValues: object = [
@@ -60,7 +61,7 @@ export default function Page({
   const [currentExtent, setCurrentExtent] =
     useState<BboxCornerPointsType>(bbox);
 
-  const collection = searchParams?.collection || undefined;
+  const product = searchParams?.product || undefined;
   const off = searchParams?.off || undefined;
   const startDate = searchParams?.startDate || undefined;
   const endDate = searchParams?.endDate || undefined;
@@ -69,7 +70,7 @@ export default function Page({
     bbox: searchParams?.bbox || undefined,
     startDate: startDate,
     endDate: endDate,
-    collection: collection,
+    product: product,
     off: off,
   };
 
@@ -99,15 +100,14 @@ export default function Page({
   };
 
   const handleDateChange = (startDate: string, endDate: string) => {
-    setUrlParam("startDate", startDate);
-    setUrlParam("endDate", endDate);
+    setUrlParams([["startDate", startDate], ["endDate", endDate]]);
   };
 
   useEffect(() => {
     setUrlParam("bbox", currentExtent?.join(","));
   }, [setUrlParam, currentExtent]);
 
-  const isDisabled = !params.bbox || !params.collection || !params.endDate;
+  const isDisabled = !params.bbox || !params.product || !params.endDate || !params.startDate || !params.off;
 
   return (
     <TwoColumns>
@@ -181,7 +181,7 @@ export default function Page({
               label="Ending month"
               disabled={false}
               placeholder="Select month"
-              minDate={minDate} // Min Start Date (1/1/18)
+              minDate={minDate} // Min Start Date (31/12/18)
               maxDate={maxDate} // Max End Date (31/12/24)
               onChange={handleDateChange}
             />

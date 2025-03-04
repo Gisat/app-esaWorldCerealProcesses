@@ -6,12 +6,12 @@ export const fetchCache = "force-no-store";
 
 export async function GET(
   req: NextRequest,
-  { params: { jobid } }: { params: { jobid: string } }
+  { params: { jobKey } }: { params: { jobKey: string } }
 ) {
   try {
     // validate inputs for safe aggragation
-    if (!jobid) {
-      return NextResponse.json("Missing jobid value", {
+    if (!jobKey) {
+      return NextResponse.json("Missing jobKey value", {
         status: 400,
       });
     }
@@ -21,7 +21,7 @@ export async function GET(
     if(!openeoUrlPrefix)
       throw new Error("Missing openeo URL variable")
 
-    const url = `${openeoUrlPrefix}/openeo/jobs/${jobid}`
+    const url = `${openeoUrlPrefix}/openeo/jobs/${jobKey}`
 
     const {status, backendContent, setCookieHeader} = await fetchWithSessions(
       {

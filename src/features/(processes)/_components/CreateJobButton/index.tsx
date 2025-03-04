@@ -18,6 +18,9 @@ type JobParams = {
   off?: string;
   outputFileFormat?: string;
   collection?: string;
+  srs?: string;
+  model?: string;
+  product?: string;
 };
 
 /**
@@ -32,6 +35,8 @@ type SearchParamsType = {
   width?: string;
   height?: string;
   off?: string;
+  model?: string;
+  product?: string;
 };
 
 // Default values
@@ -89,7 +94,7 @@ const CreateJobButton = ({
         updateUrlParams(
           [
             ["3", "step"],
-            [data.key, "jobid"],
+            [data.key, "jobKey"],
           ],
           router.push
         );
