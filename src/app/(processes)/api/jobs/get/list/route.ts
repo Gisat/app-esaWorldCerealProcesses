@@ -1,5 +1,5 @@
 import { fetchWithSessions } from "@features/(auth)/_ssr/handlers.sessionFetch";
-import { products, processTypes } from "@features/(processes)/_constants/app";
+import { products, customProducts, processTypes } from "@features/(processes)/_constants/app";
 import { getSamples } from "@features/(processes)/_utils/sample.loader";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -21,6 +21,11 @@ const getProcessesWithCorrectProductType = (processes: any[]): any[] => {
     // Check if process collection is one of download products ones
     if (products.map((p: any) => p.value).includes(p.oeoCollection)) {
       processWithCorrectProductType.type = processTypes.download;
+    }
+
+    // Check if processId is one of custom products ones
+    if (customProducts.map((p: any) => p.value).includes(p.oeoProcessId)) {
+      processWithCorrectProductType.type = processTypes.product;
     }
 
     // TODO: Check also for custom products

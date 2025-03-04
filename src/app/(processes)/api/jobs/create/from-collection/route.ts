@@ -40,10 +40,8 @@ export async function GET(req: NextRequest) {
     const data = {
       collection: collection,
       bbox: bbox.split(",").map(Number),
-      crs: "EPSG:4326",
+      crs: "EPSG:4326",   // Make parametrized in the future, if needed
       timeRange: [startDate, endDate],
-      // bands: ["B01", "B02"],
-      // outputFileFormat: "NETCDF",
       outputFileFormat: off,
     };
 
