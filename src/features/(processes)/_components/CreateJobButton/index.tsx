@@ -94,7 +94,7 @@ const CreateJobButton = ({
         updateUrlParams(
           [
             ["3", "step"],
-            [data.key, "jobKey"],
+            [data.key, "key"],
           ],
           router.push
         );

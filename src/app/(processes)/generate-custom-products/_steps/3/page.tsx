@@ -17,16 +17,16 @@ import { TextParagraph } from "@features/(shared)/_layout/_components/Content/Te
  * A button component that starts a job process when clicked and navigates to the process list upon success.
  *
  * @param {Object} props - Component props.
- * @param {string} [props.jobId] - The ID of the job to start. If undefined, no job will be started.
+ * @param {string} [props.key] - The KEY of the job to start. If undefined, no job will be started.
  * @returns {JSX.Element} A button that starts the job and redirects the user to the process list.
  *
  * @example
- * <StartJobButton jobId="12345" />
+ * <StartJobButton key="12345" />
  */
-const StartJobButton = ({ jobId }: { jobId?: string }) => {
+const StartJobButton = ({ key }: { key?: string }) => {
   const router = useRouter();
   const [shouldFetch, setShouldFetch] = useState(false);
-  const url = `/api/jobs/start/${jobId}`;
+  const url = `/api/jobs/start/${key}`;
 
   const { data, isLoading } = useSWR(shouldFetch ? [url] : null, () =>
     apiFetcher(url)
@@ -36,7 +36,7 @@ const StartJobButton = ({ jobId }: { jobId?: string }) => {
     setShouldFetch(false);
   }
 
-  if (data?.result?.jobId) {
+  if (data?.result?.key) {
     setTimeout(() => {
       router.push(`/${pages.processesList.url}`);
     }, 50);
@@ -66,13 +66,13 @@ export default function Page({
     step?: string;
     startDate?: string;
     endDate?: string;
-    jobKey?: string;
+    key?: string;
   };
 }) {
-  const jobKey = searchParams?.jobKey;
+  const key = searchParams?.key;
 
   // TODO: better logic to be implemented
-  const { data } = useSWR(`/api/jobs/get/${jobKey}`, apiFetcher);
+  const { data } = useSWR(`/api/jobs/get/${key}`, apiFetcher);
 
   return (
     <>
@@ -86,7 +86,7 @@ export default function Page({
           oeoCollection={data?.oeoCollection}
         />
       ) : null}
-      <PageSteps NextButton={createElement(StartJobButton, { jobId: jobKey })} />
+      <PageSteps NextButton={createElement(StartJobButton, { key })} />
     </>
   );
 }

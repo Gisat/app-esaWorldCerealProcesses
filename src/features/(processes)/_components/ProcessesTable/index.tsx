@@ -55,7 +55,7 @@ export const ProcessesTable = ({ data, loading, forceReloadList }: Props) => {
       }) => (
         <Record
           key={key}
-          id={key}
+          jobKey={key}
           type={type}
           createdIso={createdIso}
           status={status}

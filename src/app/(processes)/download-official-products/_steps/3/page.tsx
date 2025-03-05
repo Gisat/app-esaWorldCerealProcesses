@@ -16,13 +16,13 @@ import { IconPlayerPlayFilled } from "@tabler/icons-react";
 /**
  * StartJobButton component.
  * @param {Object} props - The component props.
- * @param {string} [props.jobId] - The job ID.
+ * @param {string} [props.jobKey] - The job KEY.
  * @returns {JSX.Element} - The rendered component.
  */
-const StartJobButton = ({ jobId }: { jobId?: string }) => {
+const StartJobButton = ({ jobKey }: { jobKey?: string }) => {
   const router = useRouter();
   const [shouldFetch, setShouldFetch] = useState(false);
-  const url = `/api/jobs/start/${jobId}`;
+  const url = `/api/jobs/start/${jobKey}`;
 
   const { data, isLoading } = useSWR(shouldFetch ? [url] : null, () =>
     fetcher(url)
@@ -32,7 +32,9 @@ const StartJobButton = ({ jobId }: { jobId?: string }) => {
     setShouldFetch(false);
   }
 
-  if (data?.result?.jobId) {
+  console.log(data);
+
+  if (data?.key && data?.status === "created") {
     setTimeout(() => {
       router.push(`/${pages.processesList.url}`);
     }, 50);
@@ -62,7 +64,7 @@ const StartJobButton = ({ jobId }: { jobId?: string }) => {
  * @param {string} [props.searchParams.step] - The step parameter.
  * @param {string} [props.searchParams.startDate] - The start date parameter.
  * @param {string} [props.searchParams.endDate] - The end date parameter.
- * @param {string} [props.searchParams.jobid] - The job ID parameter.
+ * @param {string} [props.searchParams.key] - The job KEY parameter.
  * @returns {JSX.Element} - The rendered component.
  */
 export default function Page({
@@ -73,12 +75,12 @@ export default function Page({
     step?: string;
     startDate?: string;
     endDate?: string;
-    jobid?: string;
+    key?: string;
   };
 }) {
-  const jobId = searchParams?.jobid;
+  const key = searchParams?.key;
 
-  const { data } = useSWR(`/api/jobs/get/${jobId}`, fetcher);
+  const { data } = useSWR(`/api/jobs/get/${key}`, fetcher);
 
   return (
     <>
@@ -90,7 +92,7 @@ export default function Page({
           oeoCollection={data?.oeoCollection}
         />
       ) : null}
-      <PageSteps NextButton={createElement(StartJobButton, { jobId })} />
+      <PageSteps NextButton={createElement(StartJobButton, { jobKey: key })} />
     </>
   );
 }
