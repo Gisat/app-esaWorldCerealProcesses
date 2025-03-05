@@ -29,6 +29,7 @@ interface BoundingBoxProps {
     disabled?: boolean;
     availableAreaConfig?: object;
     bboxConfig?: object;
+		CustomButtonsComponent?: React.ReactElement;
 }
 
 /**
@@ -54,7 +55,8 @@ const BoundingBox: React.FC<BoundingBoxProps> = ({
     bboxPoints = [],
     disabled = false,
     availableAreaConfig = {},
-    bboxConfig = {}
+    bboxConfig = {},
+		CustomButtonsComponent
 }) => {
     const mapRef = useRef<any>(null); // Reference to the map
     const [editModeIsActive, setEditModeIsActive] = useState(false); // Edit mode state
@@ -230,6 +232,7 @@ const BoundingBox: React.FC<BoundingBoxProps> = ({
                     customStyles={buttonsStyles}
                     setEditModeIsActive={setEditModeIsActive}
                     clearPoints={() => clearPoints(setActiveBboxPoints, setPredictedHoveredPoints, onBboxCoordinatesChange)}
+										CustomButtonsComponent={CustomButtonsComponent}
                 /> 
             : null}
         </>
