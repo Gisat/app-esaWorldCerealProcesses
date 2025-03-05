@@ -1,5 +1,7 @@
 "use client";
 
+import { customProducts, pages } from "@features/(processes)/_constants/app";
+import { useStepValidation } from "@features/(processes)/_hooks/_url/useStepValidation";
 import { apiFetcher } from "@features/(shared)/_url/apiFetcher";
 import { Button } from "@mantine/core";
 import { useRouter } from "next/navigation";
@@ -9,9 +11,8 @@ import useSWR from "swr";
 import PageSteps from "@features/(processes)/_components/PageSteps";
 
 import Details from "@features/(processes)/_components/ProcessesTable/Details";
-import { pages } from "@features/(processes)/_constants/app";
-import { IconPlayerPlayFilled } from "@tabler/icons-react";
 import { TextParagraph } from "@features/(shared)/_layout/_components/Content/TextParagraph";
+import { IconPlayerPlayFilled } from "@tabler/icons-react";
 
 /**
  * A button component that starts a job process when clicked and navigates to the process list upon success.
@@ -51,10 +52,10 @@ const StartJobButton = ({ jobId }: { jobId?: string }) => {
       className="worldCereal-Button"
       disabled={isLoading}
       onClick={handleClick}
-			leftSection={<IconPlayerPlayFilled size={14} />}
+      leftSection={<IconPlayerPlayFilled size={14} />}
     >
       {isLoading ? "Starting..." : "Start process & go to the list"}
-		</Button>
+    </Button>
   );
 };
 
@@ -69,6 +70,32 @@ export default function Page({
     jobKey?: string;
   };
 }) {
+  // constants:
+  const requiredParams = {
+    product: true,
+    startDate: true,
+    endDate: true,
+    outputFileFormat: false,
+    bbox: true,
+  };
+  // Define validation functions for each parameter
+  const paramValidations = {
+    product: (value: string) => customProducts.some((p) => p.value === value),
+    startDate: (value: string) => /^\d{4}-\d{2}-\d{2}$/.test(value),
+    endDate: (value: string) => /^\d{4}-\d{2}-\d{2}$/.test(value),
+    outputFileFormat: (value: string) =>
+      value === "NETCDF" || value === "GTiff",
+    bbox: (value: string) => value.split(",").map(Number).length === 4,
+  };
+
+  // security validation
+  useStepValidation(
+    3,
+    requiredParams,
+    paramValidations,
+    "/generate-custom-products?step=2"
+  );
+
   const jobKey = searchParams?.jobKey;
 
   // TODO: better logic to be implemented
@@ -76,7 +103,12 @@ export default function Page({
 
   return (
     <>
-			<TextParagraph color="var(--textAccentedColor)"><b>You have created the Download official products process with following parameters:</b></TextParagraph>
+      <TextParagraph color="var(--textAccentedColor)">
+        <b>
+          You have created the Download official products process with following
+          parameters:
+        </b>
+      </TextParagraph>
       {data ? (
         <Details
           bbox={data?.bbox}
@@ -86,7 +118,9 @@ export default function Page({
           oeoCollection={data?.oeoCollection}
         />
       ) : null}
-      <PageSteps NextButton={createElement(StartJobButton, { jobId: jobKey })} />
+      <PageSteps
+        NextButton={createElement(StartJobButton, { jobId: jobKey })}
+      />
     </>
   );
 }

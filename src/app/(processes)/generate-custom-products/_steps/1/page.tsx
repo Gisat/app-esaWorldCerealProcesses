@@ -74,7 +74,6 @@ export default function Page({
   // hooks
   const { setUrlParam } = useUrlParam();
 
-  const router = useRouter();
   const product = searchParams?.product || null;
   const productIsValid = customProducts.some(
     (p: { value: string }) => p.value === product
