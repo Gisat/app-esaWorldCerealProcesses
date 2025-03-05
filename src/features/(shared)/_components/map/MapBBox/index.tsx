@@ -3,7 +3,7 @@ import BoundingBox from "@features/(map)/_components/mapBBoxDrawing/BoundingBox"
 import { BboxPoints } from "@features/(map)/_components/mapBBoxDrawing/types";
 import RenderingMap from "@features/(map)/_components/mapComponent/RenderingMap";
 import { useCallback, useEffect, useState } from "react";
-import ControlButtons from "./ControlButtons/ControlButtons";
+import ControlButtons from "./ControlButtons";
 
 const defaultMapSize: Array<number> = [500, 500]; // Default map size in pixels
 

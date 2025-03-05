@@ -1,8 +1,14 @@
 .worldCereal-Mapbbox-ControlButtons {
-	top: .5rem; 
-	left: .5rem;
-	gap: 0.7rem;
+	top: .6rem; 
+	left: .4rem;
+	gap: .5rem;
 	position: absolute;
 	display: flex;
 	flex-direction: row;
+	box-shadow: 0 3px 3px 1px #0000000d;
+}
+
+.worldCereal-Mapbbox-ControlButtons .worldCereal-Button span {
+	font-size: .85rem;
+	color: var(--textPrimaryColor);
 }
