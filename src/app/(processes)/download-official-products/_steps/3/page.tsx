@@ -34,7 +34,7 @@ const StartJobButton = ({ jobKey }: { jobKey?: string }) => {
 
   console.log(data);
 
-  if (data?.key && data?.status === "created") {
+  if (data?.key && data?.status) {
     setTimeout(() => {
       router.push(`/${pages.processesList.url}`);
     }, 50);
