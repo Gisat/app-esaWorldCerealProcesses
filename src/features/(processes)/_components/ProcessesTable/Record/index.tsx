@@ -83,6 +83,7 @@ const StartJobButton = ({
 
 type RemoveJobButtonProps = {
   oeoCollection?: string;
+  oeoProcessId: string;
   resultFileFormat?: string;
   timeRange?: Array<Date>;
   bbox?: Array<number>;
@@ -97,6 +98,7 @@ const RemoveJobButton = ({
   timeRange,
   resultFileFormat,
   oeoCollection,
+  oeoProcessId
 }: RemoveJobButtonProps) => {
   const [shouldFetch, setShouldFetch] = useState(false);
   const [opened, { open, close }] = useDisclosure(false);
@@ -139,6 +141,7 @@ const RemoveJobButton = ({
           endDate={timeRange?.[1]}
           resultFileFormat={resultFileFormat}
           oeoCollection={oeoCollection}
+          oeoProcessId={oeoProcessId}
         />
         <Flex
           mih={50}
@@ -224,6 +227,7 @@ Props) => {
             timeRange={timeRange}
             resultFileFormat={resultFileFormat}
             oeoCollection={oeoCollection}
+            oeoProcessId={oeoProcessId || ""}
           />
           {status === "created" ? (
             <StartJobButton jobKey={jobKey} forceReloadList={forceReloadList} />
