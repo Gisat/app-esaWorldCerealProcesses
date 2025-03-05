@@ -27,6 +27,7 @@ type Props = {
   type?: string;
   name?: string;
   oeoCollection?: string;
+  oeoProcessId?: string;
   resultFileFormat?: string;
   results?: Array<{ source_link: string }>;
   status?: string;
@@ -197,6 +198,7 @@ const Record = ({
   timeRange,
   resultFileFormat,
   oeoCollection,
+  oeoProcessId,
   forceReloadList,
 }: // details
 Props) => {
@@ -265,6 +267,7 @@ Props) => {
               endDate={timeRange?.[1]}
               resultFileFormat={resultFileFormat}
               oeoCollection={oeoCollection}
+              oeoProcessId={oeoProcessId}
               results={results}
             />
           </Table.Td>

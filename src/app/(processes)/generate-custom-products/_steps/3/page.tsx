@@ -23,10 +23,10 @@ import { TextParagraph } from "@features/(shared)/_layout/_components/Content/Te
  * @example
  * <StartJobButton key="12345" />
  */
-const StartJobButton = ({ key }: { key?: string }) => {
+const StartJobButton = ({ jobKey }: { jobKey?: string }) => {
   const router = useRouter();
   const [shouldFetch, setShouldFetch] = useState(false);
-  const url = `/api/jobs/start/${key}`;
+  const url = `/api/jobs/start/${jobKey}`;
 
   const { data, isLoading } = useSWR(shouldFetch ? [url] : null, () =>
     apiFetcher(url)
@@ -36,7 +36,7 @@ const StartJobButton = ({ key }: { key?: string }) => {
     setShouldFetch(false);
   }
 
-  if (data?.result?.key) {
+  if (data?.key && data?.status === "created") {
     setTimeout(() => {
       router.push(`/${pages.processesList.url}`);
     }, 50);
@@ -67,6 +67,7 @@ export default function Page({
     startDate?: string;
     endDate?: string;
     key?: string;
+    product?: string;
   };
 }) {
   const key = searchParams?.key;
@@ -84,9 +85,10 @@ export default function Page({
           endDate={data?.timeRange?.[1]}
           resultFileFormat={data?.resultFileFormat}
           oeoCollection={data?.oeoCollection}
+          oeoProcessId={data?.oeoProcessId}
         />
       ) : null}
-      <PageSteps NextButton={createElement(StartJobButton, { key })} />
+      <PageSteps NextButton={createElement(StartJobButton, { jobKey: key })} />
     </>
   );
 }
