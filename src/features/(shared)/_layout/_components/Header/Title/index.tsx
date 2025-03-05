@@ -6,11 +6,8 @@ import "./style.css";
 
 const Title = () => {
   const title = "Processes";
-  const openOverlay = () => {
-    console.log("open overlay");
-  };
   return (
-    <div className="worldCereal-Title" onClick={openOverlay}>
+    <div className="worldCereal-Title">
       <div>
         <img src={`data:image/jpeg;base64,${logoData}`} alt="Celeals Logo" />
       </div>

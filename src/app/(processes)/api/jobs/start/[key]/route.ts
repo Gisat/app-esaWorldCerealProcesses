@@ -1,36 +1,37 @@
 import { fetchWithSessions } from "@features/(auth)/_ssr/handlers.sessionFetch";
 import { NextRequest, NextResponse } from "next/server";
 
-export const dynamic = "force-dynamic";
-export const fetchCache = "force-no-store";
-
 export async function GET(
   req: NextRequest,
-  { params: { jobKey } }: { params: { jobKey: string } }
+  { params: { key } }: { params: { key: string } }
 ) {
   try {
     // validate inputs for safe aggragation
-    if (!jobKey) {
-      return NextResponse.json("Missing jobKey value", {
+    if (!key) {
+      return NextResponse.json("Missing key value", {
         status: 400,
       });
     }
+    const data = {
+      key
+    };
 
     const openeoUrlPrefix = process.env.OEO_URL
 
     if(!openeoUrlPrefix)
       throw new Error("Missing openeo URL variable")
 
-    const url = `${openeoUrlPrefix}/openeo/jobs/${jobKey}`
+    const url = `${openeoUrlPrefix}/openeo/jobs/start`
 
     const {status, backendContent, setCookieHeader} = await fetchWithSessions(
       {
-        method: "GET",
+        method: "POST",
         url,
         browserCookies: req.cookies,
         headers: {
           "Content-Type": "application/json"
         },
+        body: JSON.stringify(data)
       })
 
       if (status === 200) {
@@ -41,7 +42,7 @@ export async function GET(
         }
         return nextResponse
     } else {
-      return NextResponse.json({ error: ["Error getting job"] });
+      return NextResponse.json({ error: ["Error starting job"] });
     }
   } catch (error: any) {
     return NextResponse.json({ error: error["message"] });

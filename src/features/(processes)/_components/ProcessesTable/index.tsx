@@ -14,6 +14,7 @@ type Props = {
     type: string;
     name: string;
     oeoCollection: string;
+    oeoProcessId: string;
     resultFileFormat: string;
     results: Array<{ source_link: string }>;
     status: string;
@@ -51,11 +52,12 @@ export const ProcessesTable = ({ data, loading, forceReloadList }: Props) => {
         bbox,
         timeRange,
         oeoCollection,
+        oeoProcessId,
         type,
       }) => (
         <Record
           key={key}
-          id={key}
+          jobKey={key}
           type={type}
           createdIso={createdIso}
           status={status}
@@ -64,6 +66,7 @@ export const ProcessesTable = ({ data, loading, forceReloadList }: Props) => {
           timeRange={timeRange}
           resultFileFormat={resultFileFormat}
           oeoCollection={oeoCollection}
+          oeoProcessId={oeoProcessId}
           forceReloadList={forceReloadList}
         />
       )

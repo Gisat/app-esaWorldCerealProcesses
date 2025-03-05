@@ -23,10 +23,11 @@ type Props = {
   costs?: number;
   createdIso?: Date;
   duration?: number;
-  id?: string;
+  jobKey?: string;
   type?: string;
   name?: string;
   oeoCollection?: string;
+  oeoProcessId?: string;
   resultFileFormat?: string;
   results?: Array<{ source_link: string }>;
   status?: string;
@@ -36,14 +37,14 @@ type Props = {
 };
 
 const StartJobButton = ({
-  jobId,
+  jobKey,
   forceReloadList,
 }: {
-  jobId?: string;
+  jobKey?: string;
   forceReloadList?: () => void;
 }) => {
   const [shouldFetch, setShouldFetch] = useState(false);
-  const url = `/api/jobs/start/${jobId}`;
+  const url = `/api/jobs/start/${jobKey}`;
 
   const { data, isLoading } = useSWR(shouldFetch ? [url] : null, () =>
     fetcher(url)
@@ -53,7 +54,7 @@ const StartJobButton = ({
     setShouldFetch(false);
   }
 
-  if (data?.result?.jobId && forceReloadList) {
+  if (data?.result?.key && forceReloadList) {
     setTimeout(() => {
       forceReloadList();
     }, 50);
@@ -63,7 +64,7 @@ const StartJobButton = ({
     setShouldFetch(true);
   }
 
-  return data?.result?.jobId ? null : (
+  return data?.result?.key ? null : (
     <Tooltip label="Start process" openDelay={500}>
       <ActionIcon
         size="lg"
@@ -82,24 +83,26 @@ const StartJobButton = ({
 
 type RemoveJobButtonProps = {
   oeoCollection?: string;
+  oeoProcessId: string;
   resultFileFormat?: string;
   timeRange?: Array<Date>;
   bbox?: Array<number>;
-  jobId?: string;
+  jobKey?: string;
   forceReloadList?: () => void;
 };
 
 const RemoveJobButton = ({
-  jobId,
+  jobKey,
   forceReloadList,
   bbox,
   timeRange,
   resultFileFormat,
   oeoCollection,
+  oeoProcessId
 }: RemoveJobButtonProps) => {
   const [shouldFetch, setShouldFetch] = useState(false);
   const [opened, { open, close }] = useDisclosure(false);
-  const url = `/api/jobs/delete/${jobId}`;
+  const url = `/api/jobs/delete/${jobKey}`;
 
   const { data, isLoading } = useSWR(shouldFetch ? [url] : null, () =>
     fetcher(url)
@@ -138,6 +141,7 @@ const RemoveJobButton = ({
           endDate={timeRange?.[1]}
           resultFileFormat={resultFileFormat}
           oeoCollection={oeoCollection}
+          oeoProcessId={oeoProcessId}
         />
         <Flex
           mih={50}
@@ -188,7 +192,7 @@ const RemoveJobButton = ({
 };
 
 const Record = ({
-  id,
+  jobKey,
   type,
   createdIso,
   status,
@@ -197,6 +201,7 @@ const Record = ({
   timeRange,
   resultFileFormat,
   oeoCollection,
+  oeoProcessId,
   forceReloadList,
 }: // details
 Props) => {
@@ -207,8 +212,8 @@ Props) => {
 
   return (
     <>
-      <Table.Tr key={id} className={className}>
-        <Table.Td className="smallTextCell">{id}</Table.Td>
+      <Table.Tr key={jobKey} className={className}>
+        <Table.Td className="smallTextCell">{jobKey}</Table.Td>
         <Table.Td className="highlightedCell">{type}</Table.Td>
         <Table.Td>
           {createdIso && new Date(createdIso).toLocaleString()}
@@ -216,15 +221,16 @@ Props) => {
         <Table.Td>{status ? <ProcessStatus status={status} /> : null}</Table.Td>
         <Table.Td className="shrinkedCell alignRight">
           <RemoveJobButton
-            jobId={id}
+            jobKey={jobKey}
             forceReloadList={forceReloadList}
             bbox={bbox}
             timeRange={timeRange}
             resultFileFormat={resultFileFormat}
             oeoCollection={oeoCollection}
+            oeoProcessId={oeoProcessId || ""}
           />
           {status === "created" ? (
-            <StartJobButton jobId={id} forceReloadList={forceReloadList} />
+            <StartJobButton jobKey={jobKey} forceReloadList={forceReloadList} />
           ) : null}
           {results?.[0] ? (
             <Tooltip label="Go to downloads" openDelay={500}>
@@ -265,6 +271,7 @@ Props) => {
               endDate={timeRange?.[1]}
               resultFileFormat={resultFileFormat}
               oeoCollection={oeoCollection}
+              oeoProcessId={oeoProcessId}
               results={results}
             />
           </Table.Td>
