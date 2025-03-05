@@ -71,7 +71,6 @@ export default function Page({
     product?: string;
   };
 }) {
-<<<<<<< HEAD
   // constants:
   const requiredParams = {
     product: true,
@@ -98,10 +97,7 @@ export default function Page({
     "/generate-custom-products?step=2"
   );
 
-  const jobKey = searchParams?.jobKey;
-=======
   const key = searchParams?.key;
->>>>>>> dev
 
   // TODO: better logic to be implemented
   const { data } = useSWR(`/api/jobs/get/${key}`, apiFetcher);
@@ -124,13 +120,7 @@ export default function Page({
           oeoProcessId={data?.oeoProcessId}
         />
       ) : null}
-<<<<<<< HEAD
-      <PageSteps
-        NextButton={createElement(StartJobButton, { jobId: jobKey })}
-      />
-=======
       <PageSteps NextButton={createElement(StartJobButton, { jobKey: key })} />
->>>>>>> dev
     </>
   );
 }
