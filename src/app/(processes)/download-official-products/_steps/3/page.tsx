@@ -32,8 +32,6 @@ const StartJobButton = ({ jobKey }: { jobKey?: string }) => {
     setShouldFetch(false);
   }
 
-  console.log(data);
-
   if (data?.key && data?.status) {
     setTimeout(() => {
       router.push(`/${pages.processesList.url}`);
