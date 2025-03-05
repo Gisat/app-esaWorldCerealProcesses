@@ -3,6 +3,7 @@ import BoundingBox from "@features/(map)/_components/mapBBoxDrawing/BoundingBox"
 import { BboxPoints } from "@features/(map)/_components/mapBBoxDrawing/types";
 import RenderingMap from "@features/(map)/_components/mapComponent/RenderingMap";
 import { useCallback, useEffect, useState } from "react";
+import ControlButtons from "./ControlButtons/ControlButtons";
 
 const defaultMapSize: Array<number> = [500, 500]; // Default map size in pixels
 
@@ -133,7 +134,7 @@ export const MapBBox = function ({
     [distanceScales, setAreaBbox, setCoordinatesToDisplay]
   );
 
-	//To update description when page 2 is loaded with bbox coordinates already in url
+	// To update description when page 2 is loaded with bbox coordinates already in url
   useEffect(() => {
     if (!coordinatesToDisplay && distanceScales && bboxPoints) {
       setBboxDescription(bboxPoints);
@@ -177,8 +178,10 @@ export const MapBBox = function ({
     >
       <BoundingBox
         onBboxCoordinatesChange={(points) => {
-          if (onBboxChange) onBboxChange(points);
-          setBboxDescription(points);
+					if (points?.length === 4) {
+						if (onBboxChange) onBboxChange(points);
+						if (setBboxDescription) setBboxDescription(points);
+					}
         }}
         minBboxArea={minSize}
         followMapScreen={true}
@@ -186,6 +189,7 @@ export const MapBBox = function ({
         bboxPoints={bboxPoints}
         disabled={disabled}
         availableAreaConfig={availableAreaConfig}
+				CustomButtonsComponent={<ControlButtons />}
       >
         <RenderingMap
           width="100%"

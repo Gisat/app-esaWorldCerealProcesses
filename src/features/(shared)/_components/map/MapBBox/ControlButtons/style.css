@@ -1,0 +1,8 @@
+.worldCereal-Mapbbox-ControlButtons {
+	top: .5rem; 
+	left: .5rem;
+	gap: 0.7rem;
+	position: absolute;
+	display: flex;
+	flex-direction: row;
+}
