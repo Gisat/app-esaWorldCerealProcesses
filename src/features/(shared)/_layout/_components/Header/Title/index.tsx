@@ -6,9 +6,6 @@ import "./style.css";
 
 const Title = () => {
   const title = "Processes";
-  const openOverlay = () => {
-    console.log("open overlay");
-  };
   return (
     <div className="worldCereal-Title" onClick={openOverlay}>
       <div>

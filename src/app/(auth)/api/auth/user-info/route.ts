@@ -10,8 +10,6 @@ export async function GET(req: NextRequest) {
         const identityUrl = process.env.PID_URL as string
         const userInfoUrl = `${identityUrl}/oid/user-info`
         
-        console.log(userInfoUrl)
-
         // build cookie domain of the backend app
         const { backendContent, setCookieHeader } = await fetchWithSessions({
             method: "GET",

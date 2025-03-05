@@ -1,7 +1,7 @@
 import "./style.css";
 import React, { useState } from "react";
 import {MapBBox} from "@features/(shared)/_components/map/MapBBox";
-import { products } from "@features/(processes)/_constants/app";
+import { customProducts, products } from "@features/(processes)/_constants/app";
 import { TextDescription } from "@features/(shared)/_layout/_components/Content/TextDescription";
 
 type DetailsItemProps = {
@@ -24,14 +24,16 @@ type DetailsProps = {
 	costs?: number,
 	duration?: number,
 	oeoCollection?: string,
+	oeoProcessId?: string,
 	resultFileFormat?: string,
 	results?: Array<{ source_link: string }>,
 }
 
-const Details = ({ bbox, startDate, endDate, resultFileFormat, oeoCollection, results }: DetailsProps) => {
+const Details = ({ bbox, startDate, endDate, resultFileFormat, oeoCollection, oeoProcessId, results }: DetailsProps) => {
 	const [areaBbox, setAreaBbox] = useState<number | undefined>(undefined);
 	const [coordinatesToDisplay, setCoordinatesToDisplay] = useState<string | Array<string> | null>(null);
 	const collection = products.find(p => p.value === oeoCollection);
+	const process = customProducts.find(p => p.value === oeoProcessId);
 
 	return <div className="worldCereal-ProcessesTable-Details">
 		<div className="worldCereal-ProcessesTable-Details-column">
@@ -42,7 +44,7 @@ const Details = ({ bbox, startDate, endDate, resultFileFormat, oeoCollection, re
 			<MapBBox bbox={bbox?.map(Number)} disabled mapSize={[300, 300]} setAreaBbox={setAreaBbox} setCoordinatesToDisplay={setCoordinatesToDisplay} coordinatesToDisplay={coordinatesToDisplay}/>
 		</div>
 		<div className="worldCereal-ProcessesTable-Details-column">
-			<DetailsItem label={"Product"}>{collection?.label}</DetailsItem>
+			<DetailsItem label={"Product"}>{collection?.label || process?.label}</DetailsItem>
 			<DetailsItem label={"Start date"}>{startDate ? new Date(startDate).toLocaleDateString() : ''}</DetailsItem>
 			<DetailsItem label={"End date"}>{endDate ? new Date(endDate).toLocaleDateString() : ''}</DetailsItem>
 			<DetailsItem label={"Output file format"}>{resultFileFormat}</DetailsItem>

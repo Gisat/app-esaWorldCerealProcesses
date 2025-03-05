@@ -3,18 +3,18 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
   req: NextRequest,
-  { params: { jobid } }: { params: { jobid: string } }
+  { params: { key } }: { params: { key: string } }
 ) {
   try {
     // validate inputs for safe aggragation
-    if (!jobid) {
-      return NextResponse.json("Missing jobid value", {
+    if (!key) {
+      return NextResponse.json("Missing key value", {
         status: 400,
       });
     }
 
     const data = {
-      keys: [jobid],
+      keys: [key],
     };
 
     const openeoUrlPrefix = process.env.OEO_URL
