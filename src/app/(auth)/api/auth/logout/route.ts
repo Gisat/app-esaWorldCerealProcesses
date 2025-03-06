@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
 
     // url back to FE
     const parsedUrl = new URL(process.env.OID_SELF_REDIRECT_URL as string);
-    const selfUrl = `${parsedUrl.protocol}//${parsedUrl.host}`;
+    const selfUrl = `${parsedUrl.protocol}//${parsedUrl.host}/home`;
 
     // prepare redirect back to FE
     const feRedirect = NextResponse.redirect(selfUrl as string);
