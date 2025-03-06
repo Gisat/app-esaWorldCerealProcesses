@@ -2,12 +2,14 @@
 
 import {string, func} from "prop-types";
 import logoData from "../logo";
+import Link from "next/link";
+import { pages } from "@features/(processes)/_constants/app";
 import "./style.css";
 
 const Title = () => {
   const title = "Processes";
   return (
-    <div className="worldCereal-Title">
+    <Link className="worldCereal-Title" href={`/${pages.home.url}`}>
       <div>
         <img src={`data:image/jpeg;base64,${logoData}`} alt="Celeals Logo" />
       </div>
@@ -15,7 +17,7 @@ const Title = () => {
         <span>WorldCereal</span>
         <span>{title}</span>
       </h1>
-    </div>
+    </Link>
   );
 };
 

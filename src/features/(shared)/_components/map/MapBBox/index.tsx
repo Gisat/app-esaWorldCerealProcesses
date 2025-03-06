@@ -92,8 +92,7 @@ export const MapBBox = function ({
    *
    * @param {Array<Array<number>> | null} points - The points of the bounding box.
    */
-  const setBboxDescription = useCallback(
-    (points?: Array<Array<number>> | null) => {
+  const setBboxDescription = (points?: Array<Array<number>> | null) => {
       const bboxCornerPoints = points?.length
         ? [...points[0], ...points[2]]
         : null;
@@ -130,9 +129,7 @@ export const MapBBox = function ({
           setAreaBbox(undefined);
         }
       }
-    },
-    [distanceScales, setAreaBbox, setCoordinatesToDisplay]
-  );
+    };
 
 	// To update description when page 2 is loaded with bbox coordinates already in url
   useEffect(() => {
@@ -178,7 +175,7 @@ export const MapBBox = function ({
     >
       <BoundingBox
         onBboxCoordinatesChange={(points) => {
-					if (points?.length === 4) {
+					if (points?.length === 4 || !points) {
 						if (onBboxChange) onBboxChange(points);
 						if (setBboxDescription) setBboxDescription(points);
 					}
