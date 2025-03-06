@@ -19,7 +19,6 @@ export async function GET(req: NextRequest) {
     if (!startDate)
       throw new BaseHttpError("Missing startDate value", 400, ErrorBehavior.SSR);
 
-
     if (!endDate)
       throw new BaseHttpError("Missing endDate value", 400, ErrorBehavior.SSR);
 

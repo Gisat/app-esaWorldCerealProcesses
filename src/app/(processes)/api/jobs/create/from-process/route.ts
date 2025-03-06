@@ -2,6 +2,8 @@ import { fetchWithSessions } from "@features/(auth)/_ssr/handlers.sessionFetch";
 import { NextRequest, NextResponse } from "next/server";
 import getNamespaceByProcessId from "@features/(processes)/_utils/namespaceByProcessId";
 import { handleRouteError } from "@features/(shared)/errors/handlers.errorInRoute";
+import { ErrorBehavior } from "@features/(shared)/errors/enums.errorBehavior";
+import { BaseHttpError } from "@features/(shared)/errors/models.error";
 
 export async function GET(req: NextRequest) {
   try {
@@ -15,29 +17,18 @@ export async function GET(req: NextRequest) {
     const processId = searchParams.get("product");
 
     // validate inputs for safe aggragation
-    if (!startDate) {
-      return NextResponse.json("Missing startDate value", {
-        status: 400,
-      });
-    }
+    if (!startDate)
+      throw new BaseHttpError("Missing startDate value", 400, ErrorBehavior.SSR);
 
-    if (!endDate) {
-      return NextResponse.json("Missing endDate value", {
-        status: 400,
-      });
-    }
+    if (!endDate)
+      throw new BaseHttpError("Missing endDate value", 400, ErrorBehavior.SSR);
 
-    if (!bbox) {
-      return NextResponse.json("Missing bbox value", {
-        status: 400,
-      });
-    }
+    if (!bbox)
+      throw new BaseHttpError("Missing bbox value", 400, ErrorBehavior.SSR);
 
-    if (!off) {
-      return NextResponse.json("Missing outputFileFormat value", {
-        status: 400,
-      });
-    }
+    if (!off)
+      throw new BaseHttpError("Missing outputFileFormat value", 400, ErrorBehavior.SSR);
+
 
     const data = {
       processId: processId,
@@ -67,16 +58,13 @@ export async function GET(req: NextRequest) {
         requireSessionId: true
       })
 
-    if (status === 200) {
-      const nextResponse = NextResponse.json(backendContent);
+    const nextResponse = NextResponse.json(backendContent);
 
-      if (setCookieHeader) {
-        nextResponse.headers.set('set-cookie', setCookieHeader);
-      }
-      return nextResponse
-    } else {
-      return NextResponse.json({ error: ["Error creating entity"] });
+    if (setCookieHeader) {
+      nextResponse.headers.set('set-cookie', setCookieHeader);
     }
+    return nextResponse
+
   } catch (error: any) {
     const { message, status } = handleRouteError(error)
     const response = NextResponse.json({ error: message }, { status })
