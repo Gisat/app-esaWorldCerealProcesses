@@ -1,8 +1,3 @@
-import { Nullable } from "../../(shared)/coding/code.types";
-import { ErrorBehavior } from "../../(shared)/errors/enums.errorBehavior";
-import { HttpStatusCode } from "../../(shared)/errors/enums.httpStatusCode";
-import { BaseHttpError } from "../../(shared)/errors/models.error";
-
 interface LogoutFetchProps {
     identityServiceUrl: string,
     browserCookies: any,

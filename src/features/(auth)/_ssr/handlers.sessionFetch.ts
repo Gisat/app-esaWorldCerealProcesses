@@ -1,7 +1,8 @@
-import { Nullable } from "../../(shared)/coding/code.types";
-import { ErrorBehavior } from "../../(shared)/errors/enums.errorBehavior";
-import { HttpStatusCode } from "../../(shared)/errors/enums.httpStatusCode";
-import { BaseHttpError } from "../../(shared)/errors/models.error";
+import { Nullable } from "@features/(shared)/_logic/types.universal";
+import { ErrorBehavior } from "@features/(shared)/errors/enums.errorBehavior";
+import { HttpStatusCode } from "@features/(shared)/errors/enums.httpStatusCode";
+import { BaseHttpError } from "@features/(shared)/errors/models.error";
+
 
 // Define the interface for the properties of the fetchWithSessions function
 interface FetchWithBrowserSessionProps {
