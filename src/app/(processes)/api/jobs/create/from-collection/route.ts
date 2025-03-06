@@ -1,4 +1,5 @@
 import { fetchWithSessions } from "@features/(auth)/_ssr/handlers.sessionFetch";
+import { handleRouteError } from "@features/(shared)/errors/handlers.errorInRoute";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -55,6 +56,7 @@ export async function GET(req: NextRequest) {
     const {status, backendContent, setCookieHeader} = await fetchWithSessions(
       {
         method: "POST",
+        requireSessionId: true,
         url,
         browserCookies: req.cookies,
         headers: {
@@ -74,6 +76,12 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: ["Error creating entity"] });
     }
   } catch (error: any) {
-    return NextResponse.json({ error: error["message"] });
-  }
+      const { message, status } = handleRouteError(error)
+      const response = NextResponse.json({ error: message }, { status })
+      
+      if(status === 401) 
+        response.cookies.delete("sid")
+
+      return response
+      }
 }

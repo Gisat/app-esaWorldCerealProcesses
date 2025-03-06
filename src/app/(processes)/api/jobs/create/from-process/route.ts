@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { customProducts } from "@features/(processes)/_constants/app";
 import getNamespaceByProcessId from "@features/(processes)/_utils/namespaceByProcessId";
+import { handleRouteError } from "@features/(shared)/errors/handlers.errorInRoute";
 
 export async function GET(req: NextRequest) {
   try {
@@ -64,7 +65,8 @@ export async function GET(req: NextRequest) {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify(data)
+        body: JSON.stringify(data),
+        requireSessionId: true
       })
 
     if (status === 200) {
@@ -78,6 +80,12 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: ["Error creating entity"] });
     }
   } catch (error: any) {
-    return NextResponse.json({ error: error["message"] });
+    const { message, status } = handleRouteError(error)
+    const response = NextResponse.json({ error: message }, { status })
+
+    if (status === 401)
+      response.cookies.delete("sid")
+
+    return response
   }
 }

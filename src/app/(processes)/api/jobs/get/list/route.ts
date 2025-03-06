@@ -1,6 +1,7 @@
 import { fetchWithSessions } from "@features/(auth)/_ssr/handlers.sessionFetch";
 import { products, customProducts, processTypes } from "@features/(processes)/_constants/app";
 import { getSamples } from "@features/(processes)/_utils/sample.loader";
+import { handleRouteError } from "@features/(shared)/errors/handlers.errorInRoute";
 import { NextRequest, NextResponse } from "next/server";
 
 
@@ -53,6 +54,7 @@ export async function GET(req: NextRequest) {
         headers: {
           "Content-Type": "application/json"
         },
+        requireSessionId: true
       })
 
     const samples = getSamples();
@@ -73,6 +75,12 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: ["Error getting list of jobs"] });
     }
   } catch (error: any) {
-    return NextResponse.json({ error: error["message"] });
+    const { message, status } = handleRouteError(error)
+    const response = NextResponse.json({ error: message }, { status })
+
+    if (status === 401)
+      response.cookies.delete("sid")
+
+    return response
   }
 }

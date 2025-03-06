@@ -1,4 +1,5 @@
 import { fetchWithSessions } from "@features/(auth)/_ssr/handlers.sessionFetch";
+import { handleRouteError } from "@features/(shared)/errors/handlers.errorInRoute";
 import { NextRequest, NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
@@ -18,12 +19,12 @@ export async function GET(
 
     const openeoUrlPrefix = process.env.OEO_URL
 
-    if(!openeoUrlPrefix)
+    if (!openeoUrlPrefix)
       throw new Error("Missing openeo URL variable")
 
     const url = `${openeoUrlPrefix}/openeo/jobs/${key}`
 
-    const {status, backendContent, setCookieHeader} = await fetchWithSessions(
+    const { status, backendContent, setCookieHeader } = await fetchWithSessions(
       {
         method: "GET",
         url,
@@ -31,19 +32,26 @@ export async function GET(
         headers: {
           "Content-Type": "application/json"
         },
+        requireSessionId: true
       })
 
-      if (status === 200) {
-        const nextResponse = NextResponse.json(backendContent);
+    if (status === 200) {
+      const nextResponse = NextResponse.json(backendContent);
 
-        if (setCookieHeader) {
-          nextResponse.headers.set('set-cookie', setCookieHeader);
-        }
-        return nextResponse
+      if (setCookieHeader) {
+        nextResponse.headers.set('set-cookie', setCookieHeader);
+      }
+      return nextResponse
     } else {
       return NextResponse.json({ error: ["Error getting job"] });
     }
   } catch (error: any) {
-    return NextResponse.json({ error: error["message"] });
+    const { message, status } = handleRouteError(error)
+    const response = NextResponse.json({ error: message }, { status })
+
+    if (status === 401)
+      response.cookies.delete("sid")
+
+    return response
   }
 }
