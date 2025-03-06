@@ -37,6 +37,13 @@ const getProcessesWithCorrectProductType = (processes: any[]): any[] => {
 
 export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
+
+/**
+ * Handles the GET request to list all jobs.
+ *
+ * @param {NextRequest} req - The incoming request object.
+ * @returns {Promise<NextResponse>} - The response object.
+ */
 export async function GET(req: NextRequest) {
   try {
     const openeoUrlPrefix = process.env.OEO_URL
@@ -46,6 +53,7 @@ export async function GET(req: NextRequest) {
 
     const url = `${openeoUrlPrefix}/openeo/jobs/list-all`
 
+    // fetch data with sessions
     const { backendContent, setCookieHeader } = await fetchWithSessions(
       {
         method: "GET",

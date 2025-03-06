@@ -5,12 +5,20 @@ import { NextRequest, NextResponse } from "next/server";
 export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
 
+/**
+ * Handles the GET request to get a job by key.
+ *
+ * @param {NextRequest} req - The incoming request object.
+ * @param {Object} params - The parameters object.
+ * @param {string} params.key - The key of the job to retrieve.
+ * @returns {Promise<NextResponse>} - The response object.
+ */
 export async function GET(
   req: NextRequest,
   { params: { key: key } }: { params: { key: string } }
 ) {
   try {
-    // validate inputs for safe aggragation
+    // validate inputs for safe aggregation
     if (!key) {
       return NextResponse.json("Missing key value", {
         status: 400,
@@ -24,6 +32,7 @@ export async function GET(
 
     const url = `${openeoUrlPrefix}/openeo/jobs/${key}`
 
+    // fetch data with sessions
     const { backendContent, setCookieHeader } = await fetchWithSessions(
       {
         method: "GET",

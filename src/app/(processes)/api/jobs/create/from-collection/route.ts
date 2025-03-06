@@ -4,6 +4,12 @@ import { handleRouteError } from "@features/(shared)/errors/handlers.errorInRout
 import { BaseHttpError } from "@features/(shared)/errors/models.error";
 import { NextRequest, NextResponse } from "next/server";
 
+/**
+ * Handles the GET request to create a job from a collection.
+ *
+ * @param {NextRequest} req - The incoming request object.
+ * @returns {Promise<NextResponse>} - The response object.
+ */
 export async function GET(req: NextRequest) {
   try {
     // read query params from the request URL
@@ -15,7 +21,7 @@ export async function GET(req: NextRequest) {
     const off = searchParams.get("off");
     const collection = searchParams.get("collection");
 
-    // validate inputs for safe aggragation
+    // validate inputs for safe aggregation
     if (!startDate)
       throw new BaseHttpError("Missing startDate value", 400, ErrorBehavior.SSR);
 
@@ -28,7 +34,7 @@ export async function GET(req: NextRequest) {
     if (!off)
       throw new BaseHttpError("Missing outputFileFormat value", 400, ErrorBehavior.SSR);
 
-
+    // prepare data for the request
     const data = {
       collection: collection,
       bbox: bbox.split(",").map(Number),
@@ -44,6 +50,7 @@ export async function GET(req: NextRequest) {
 
     const url = `${openeoUrlPrefix}/openeo/jobs/create/from-collection`;
 
+    // fetch data with sessions
     const { backendContent, setCookieHeader } = await fetchWithSessions(
       {
         method: "POST",
