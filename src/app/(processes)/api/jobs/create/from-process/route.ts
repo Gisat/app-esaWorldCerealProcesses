@@ -1,7 +1,5 @@
 import { fetchWithSessions } from "@features/(auth)/_ssr/handlers.sessionFetch";
 import { NextRequest, NextResponse } from "next/server";
-
-import { customProducts } from "@features/(processes)/_constants/app";
 import getNamespaceByProcessId from "@features/(processes)/_utils/namespaceByProcessId";
 import { handleRouteError } from "@features/(shared)/errors/handlers.errorInRoute";
 
