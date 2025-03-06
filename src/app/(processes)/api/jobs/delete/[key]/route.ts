@@ -1,5 +1,7 @@
 import { fetchWithSessions } from "@features/(auth)/_ssr/handlers.sessionFetch";
+import { ErrorBehavior } from "@features/(shared)/errors/enums.errorBehavior";
 import { handleRouteError } from "@features/(shared)/errors/handlers.errorInRoute";
+import { BaseHttpError } from "@features/(shared)/errors/models.error";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
@@ -8,11 +10,8 @@ export async function GET(
 ) {
   try {
     // validate inputs for safe aggragation
-    if (!key) {
-      return NextResponse.json("Missing key value", {
-        status: 400,
-      });
-    }
+    if (!key) 
+      throw new BaseHttpError("Missing key value", 400, ErrorBehavior.SSR);
 
     const data = {
       keys: [key],
@@ -21,11 +20,11 @@ export async function GET(
     const openeoUrlPrefix = process.env.OEO_URL
 
     if (!openeoUrlPrefix)
-      throw new Error("Missing openeo URL variable")
+      throw new BaseHttpError("Missing openeo URL variable", 400, ErrorBehavior.SSR);
 
     const url = `${openeoUrlPrefix}/openeo/jobs/delete`
 
-    const { status, backendContent, setCookieHeader } = await fetchWithSessions(
+    const { backendContent, setCookieHeader } = await fetchWithSessions(
       {
         method: "POST",
         url,
@@ -37,16 +36,13 @@ export async function GET(
         requireSessionId: true
       })
 
-    if (status === 200) {
-      const nextResponse = NextResponse.json(backendContent);
+    const nextResponse = NextResponse.json(backendContent);
 
-      if (setCookieHeader) {
-        nextResponse.headers.set('set-cookie', setCookieHeader);
-      }
-      return nextResponse
-    } else {
-      return NextResponse.json({ error: ["Error starting job"] });
+    if (setCookieHeader) {
+      nextResponse.headers.set('set-cookie', setCookieHeader);
     }
+    return nextResponse
+
   } catch (error: any) {
     const { message, status } = handleRouteError(error)
     const response = NextResponse.json({ error: message }, { status })
