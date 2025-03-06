@@ -24,7 +24,7 @@ export async function GET(
 
     const url = `${openeoUrlPrefix}/openeo/jobs/${key}`
 
-    const { status, backendContent, setCookieHeader } = await fetchWithSessions(
+    const { backendContent, setCookieHeader } = await fetchWithSessions(
       {
         method: "GET",
         url,
@@ -35,16 +35,13 @@ export async function GET(
         requireSessionId: true
       })
 
-    if (status === 200) {
-      const nextResponse = NextResponse.json(backendContent);
+    const nextResponse = NextResponse.json(backendContent);
 
-      if (setCookieHeader) {
-        nextResponse.headers.set('set-cookie', setCookieHeader);
-      }
-      return nextResponse
-    } else {
-      return NextResponse.json({ error: ["Error getting job"] });
+    if (setCookieHeader) {
+      nextResponse.headers.set('set-cookie', setCookieHeader);
     }
+    return nextResponse
+
   } catch (error: any) {
     const { message, status } = handleRouteError(error)
     const response = NextResponse.json({ error: message }, { status })
