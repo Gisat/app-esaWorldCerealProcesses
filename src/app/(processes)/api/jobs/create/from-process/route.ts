@@ -46,7 +46,7 @@ export async function GET(req: NextRequest) {
 
     const url = `${openeoUrlPrefix}/openeo/jobs/create/from-process`;
 
-    const { status, backendContent, setCookieHeader } = await fetchWithSessions(
+    const { backendContent, setCookieHeader } = await fetchWithSessions(
       {
         method: "POST",
         url,
