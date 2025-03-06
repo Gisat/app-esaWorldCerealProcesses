@@ -1,5 +1,7 @@
 import { fetchWithSessions } from "@features/(auth)/_ssr/handlers.sessionFetch";
+import { ErrorBehavior } from "@features/(shared)/errors/enums.errorBehavior";
 import { handleRouteError } from "@features/(shared)/errors/handlers.errorInRoute";
+import { BaseHttpError } from "@features/(shared)/errors/models.error";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -14,29 +16,19 @@ export async function GET(req: NextRequest) {
     const collection = searchParams.get("collection");
 
     // validate inputs for safe aggragation
-    if (!startDate) {
-      return NextResponse.json("Missing startDate value", {
-        status: 400,
-      });
-    }
+    if (!startDate)
+      throw new BaseHttpError("Missing startDate value", 400, ErrorBehavior.SSR);
 
-    if (!endDate) {
-      return NextResponse.json("Missing endDate value", {
-        status: 400,
-      });
-    }
 
-    if (!bbox) {
-      return NextResponse.json("Missing bbox value", {
-        status: 400,
-      });
-    }
+    if (!endDate)
+      throw new BaseHttpError("Missing endDate value", 400, ErrorBehavior.SSR);
 
-    if (!off) {
-      return NextResponse.json("Missing outputFileFormat value", {
-        status: 400,
-      });
-    } 
+    if (!bbox)
+      throw new BaseHttpError("Missing bbox value", 400, ErrorBehavior.SSR);
+
+    if (!off)
+      throw new BaseHttpError("Missing outputFileFormat value", 400, ErrorBehavior.SSR);
+
 
     const data = {
       collection: collection,
@@ -48,12 +40,12 @@ export async function GET(req: NextRequest) {
 
     const openeoUrlPrefix = process.env.OEO_URL
 
-    if(!openeoUrlPrefix)
+    if (!openeoUrlPrefix)
       throw new Error("Missing openeo URL variable")
 
     const url = `${openeoUrlPrefix}/openeo/jobs/create/from-collection`;
 
-    const {status, backendContent, setCookieHeader} = await fetchWithSessions(
+    const { backendContent, setCookieHeader } = await fetchWithSessions(
       {
         method: "POST",
         requireSessionId: true,
@@ -65,23 +57,21 @@ export async function GET(req: NextRequest) {
         body: JSON.stringify(data)
       })
 
-      if (status === 200) {
-        const nextResponse = NextResponse.json(backendContent);
+    const nextResponse = NextResponse.json(backendContent);
 
-        if (setCookieHeader) {
-          nextResponse.headers.set('set-cookie', setCookieHeader);
-        }
-        return nextResponse
-    } else {
-      return NextResponse.json({ error: ["Error creating entity"] });
+    if (setCookieHeader) {
+      nextResponse.headers.set('set-cookie', setCookieHeader);
     }
-  } catch (error: any) {
-      const { message, status } = handleRouteError(error)
-      const response = NextResponse.json({ error: message }, { status })
-      
-      if(status === 401) 
-        response.cookies.delete("sid")
 
-      return response
-      }
+    return nextResponse
+
+  } catch (error: any) {
+    const { message, status } = handleRouteError(error)
+    const response = NextResponse.json({ error: message }, { status })
+
+    if (status === 401)
+      response.cookies.delete("sid")
+
+    return response
+  }
 }
