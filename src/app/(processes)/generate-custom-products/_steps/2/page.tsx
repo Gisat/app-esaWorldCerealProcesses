@@ -9,6 +9,7 @@ import {
   customProductsDateLimits,
   defaultProductsDates,
 } from "@features/(processes)/_constants/app";
+import { requiredParamsStep2 as requiredParams } from "@features/(processes)/_constants/generate-custom-products/requiredParams";
 import { useStepValidation } from "@features/(processes)/_hooks/_url/useStepValidation";
 import { useUrlParamCheck } from "@features/(processes)/_hooks/_url/useUrlParamCheck";
 import { MapBBox } from "@features/(shared)/_components/map/MapBBox";
@@ -52,15 +53,6 @@ export default function Page({
   const hasEndDate = useUrlParamCheck("endDate");
 
   // constants
-  const requiredParams = {
-    product: true,
-    startDate: false,
-    endDate: false,
-    outputFileFormat: false,
-    bbox: false,
-  };
-
-  // Define validation functions for each parameter
   const paramValidations = {
     product: (value: string) => customProducts.some((p) => p.value === value),
   };

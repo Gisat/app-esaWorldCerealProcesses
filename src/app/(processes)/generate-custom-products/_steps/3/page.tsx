@@ -1,6 +1,7 @@
 "use client";
 
 import { customProducts, pages } from "@features/(processes)/_constants/app";
+import { requiredParamsStep3 as requiredParams } from "@features/(processes)/_constants/generate-custom-products/requiredParams";
 import { useStepValidation } from "@features/(processes)/_hooks/_url/useStepValidation";
 import { apiFetcher } from "@features/(shared)/_url/apiFetcher";
 import { Button } from "@mantine/core";
@@ -72,13 +73,6 @@ export default function Page({
   };
 }) {
   // constants:
-  const requiredParams = {
-    product: true,
-    startDate: true,
-    endDate: true,
-    outputFileFormat: false,
-    bbox: true,
-  };
   // Define validation functions for each parameter
   const paramValidations = {
     product: (value: string) => customProducts.some((p) => p.value === value),

@@ -14,8 +14,6 @@ const Header = () => {
 
   if (isLoading) return null;
 
-  console.log("aa", isLoggedIn());
-
   return (
     <AppShellHeader>
       <div className="worldCereal-Header">
