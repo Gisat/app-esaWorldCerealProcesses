@@ -157,3 +157,8 @@ export const enum customProductsDateLimits {
   min = "2018-12-31",
   max = "2024-12-31",
 }
+
+export const enum defaultProductsDates {
+  startDate = "2024-01-01",
+  endDate = "2024-12-31",
+}

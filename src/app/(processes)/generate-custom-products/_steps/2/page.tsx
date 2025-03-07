@@ -7,6 +7,7 @@ import { SelectOutput } from "@features/(processes)/_components/SelectOutput";
 import {
   customProducts,
   customProductsDateLimits,
+  defaultProductsDates,
 } from "@features/(processes)/_constants/app";
 import { useStepValidation } from "@features/(processes)/_hooks/_url/useStepValidation";
 import { useUrlParamCheck } from "@features/(processes)/_hooks/_url/useUrlParamCheck";
@@ -96,16 +97,16 @@ export default function Page({
   useEffect(() => {
     if (!hasStartDate || !hasEndDate) {
       setUrlParams([
-        ["startDate", "2024-01-01"],
-        ["endDate", "2024-12-31"],
+        ["startDate", defaultProductsDates.startDate],
+        ["endDate", defaultProductsDates.endDate],
       ]);
     }
   }, [setUrlParams, hasEndDate, hasStartDate]);
 
   const product = searchParams?.product || undefined;
   const off = searchParams?.off || undefined;
-  const startDate = searchParams?.startDate || "2024-01-01";
-  const endDate = searchParams?.endDate || "2024-12-31";
+  const startDate = searchParams?.startDate || defaultProductsDates.startDate;
+  const endDate = searchParams?.endDate || defaultProductsDates.endDate;
 
   const params = {
     bbox: searchParams?.bbox || undefined,
