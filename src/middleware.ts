@@ -20,6 +20,10 @@ export async function middleware(request: NextRequest) {
   // Checking login status for request:
   const loggedIn = await isUserLoggedIn(userInfoUrl, cookies);
 
+  if (request.nextUrl.pathname === "/") {
+    return NextResponse.redirect(new URL("/home", request.url));
+  }
+
   if (!loggedIn && !request.nextUrl.pathname.startsWith("/home")) {
     // Redirection to /home
     return NextResponse.redirect(new URL("/home", request.url));
