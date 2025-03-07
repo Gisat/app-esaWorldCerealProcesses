@@ -3,6 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import { FaroConfigProps } from "@features/(grafana)/_logic/models.faro";
 import { parseFaroParameters } from "@features/(grafana)/_logic/parsers.faro";
+import { handleRouteError } from "@features/(shared)/errors/handlers.errorInRoute";
 
 // do not batch into app build
 export const dynamic = 'force-dynamic'
@@ -12,7 +13,7 @@ export const dynamic = 'force-dynamic'
  * @returns 
  */
 export async function GET() {
-    
+
     try {
         // environment parameters
         const env = process.env.NODE_ENV
@@ -31,6 +32,12 @@ export async function GET() {
 
         return NextResponse.json(faroSetup)
     } catch (error: any) {
-        return NextResponse.json({ "error": error["message"] })
+        const { message, status } = handleRouteError(error)
+        const response = NextResponse.json({ error: message }, { status })
+
+        if (status === 401)
+            response.cookies.delete("sid")
+
+        return response
     }
 }

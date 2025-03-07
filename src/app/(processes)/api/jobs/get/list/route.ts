@@ -1,6 +1,7 @@
 import { fetchWithSessions } from "@features/(auth)/_ssr/handlers.sessionFetch";
 import { products, customProducts, processTypes } from "@features/(processes)/_constants/app";
 import { getSamples } from "@features/(processes)/_utils/sample.loader";
+import { handleRouteError } from "@features/(shared)/errors/handlers.errorInRoute";
 import { NextRequest, NextResponse } from "next/server";
 
 
@@ -36,6 +37,13 @@ const getProcessesWithCorrectProductType = (processes: any[]): any[] => {
 
 export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
+
+/**
+ * Handles the GET request to list all jobs.
+ *
+ * @param {NextRequest} req - The incoming request object.
+ * @returns {Promise<NextResponse>} - The response object.
+ */
 export async function GET(req: NextRequest) {
   try {
     const openeoUrlPrefix = process.env.OEO_URL
@@ -45,7 +53,8 @@ export async function GET(req: NextRequest) {
 
     const url = `${openeoUrlPrefix}/openeo/jobs/list-all`
 
-    const { backendContent, setCookieHeader, status } = await fetchWithSessions(
+    // fetch data with sessions
+    const { backendContent, setCookieHeader } = await fetchWithSessions(
       {
         method: "GET",
         url,
@@ -53,26 +62,29 @@ export async function GET(req: NextRequest) {
         headers: {
           "Content-Type": "application/json"
         },
+        requireSessionId: true
       })
 
     const samples = getSamples();
 
-    if (status === 200) {
-      const nextResponse = NextResponse.json(
-        getProcessesWithCorrectProductType(
-          [].concat(samples, backendContent)
-        )
-      );
+    const nextResponse = NextResponse.json(
+      getProcessesWithCorrectProductType(
+        [].concat(samples, backendContent)
+      )
+    );
 
-      if (setCookieHeader) {
-        nextResponse.headers.set('set-cookie', setCookieHeader);
-      }
-      return nextResponse
-
-    } else {
-      return NextResponse.json({ error: ["Error getting list of jobs"] });
+    if (setCookieHeader) {
+      nextResponse.headers.set('set-cookie', setCookieHeader);
     }
+    return nextResponse
+
   } catch (error: any) {
-    return NextResponse.json({ error: error["message"] });
+    const { message, status } = handleRouteError(error)
+    const response = NextResponse.json({ error: message }, { status })
+
+    if (status === 401)
+      response.cookies.delete("sid")
+
+    return response
   }
 }
