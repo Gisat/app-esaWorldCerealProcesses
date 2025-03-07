@@ -78,15 +78,25 @@ const SelectMonth: FC<SelectMonthProps> = ({
    */
   const handleMonthChange = (value: Date | null) => {
     if (!value) return;
+
+    // Immediately calculate the correct start month instead of relying on useEffect
+    const newStartMonth = new Date(value);
+    newStartMonth.setMonth(value.getMonth() - 11);
+    newStartMonth.setDate(1);
+
     setEndMonth(value);
+    setStartMonth(newStartMonth);
 
-    if (formatStartDate && formatEndDate) {
-      const startDate = transformDate(formatStartDate);
-      const endDate = transformDate(formatEndDate);
+    // Calculate formatted dates immediately
+    const startDate = transformDate(
+      new Date(newStartMonth.getFullYear(), newStartMonth.getMonth(), 2)
+    );
+    const endDate = transformDate(
+      new Date(value.getFullYear(), value.getMonth() + 1, 1)
+    );
 
-      if (startDate && endDate) {
-        onChange(startDate, endDate);
-      }
+    if (startDate && endDate) {
+      onChange(startDate, endDate);
     }
   };
 
@@ -103,7 +113,7 @@ const SelectMonth: FC<SelectMonthProps> = ({
         clearable={false}
         disabled={disabled}
         valueFormat="MMMM YYYY"
-				style={{maxWidth: "25rem"}}
+        style={{ maxWidth: "25rem" }}
       />
 
       {formatStartDate && formatEndDate && (

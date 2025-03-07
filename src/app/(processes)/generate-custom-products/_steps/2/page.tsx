@@ -4,7 +4,14 @@ import { CreateJobButton } from "@features/(processes)/_components/CreateJobButt
 import PageSteps from "@features/(processes)/_components/PageSteps";
 import { SelectMonth } from "@features/(processes)/_components/SelectMonth";
 import { SelectOutput } from "@features/(processes)/_components/SelectOutput";
-import { customProductsDateLimits } from "@features/(processes)/_constants/app";
+import {
+  customProducts,
+  customProductsDateLimits,
+  defaultProductsDates,
+} from "@features/(processes)/_constants/app";
+import { requiredParamsStep2 as requiredParams } from "@features/(processes)/_constants/generate-custom-products/requiredParams";
+import { useStepValidation } from "@features/(processes)/_hooks/_url/useStepValidation";
+import { useUrlParamCheck } from "@features/(processes)/_hooks/_url/useUrlParamCheck";
 import { MapBBox } from "@features/(shared)/_components/map/MapBBox";
 import { useUrlParam } from "@features/(shared)/_hooks/_url/useUrlParam";
 import FormLabel from "@features/(shared)/_layout/_components/Content/FormLabel";
@@ -14,7 +21,7 @@ import { TextLink } from "@features/(shared)/_layout/_components/Content/TextLin
 import TwoColumns, {
   Column,
 } from "@features/(shared)/_layout/_components/Content/TwoColumns";
-import { Anchor, Group, Stack, Text } from "@mantine/core";
+import { Group, Stack } from "@mantine/core";
 import { createElement, useEffect, useState } from "react";
 
 type BboxCornerPointsType = [number, number, number, number] | undefined;
@@ -35,16 +42,20 @@ export default function Page({
     endDate?: string;
     product?: string;
     bbox?: string;
-    width?: string;
-    height?: string;
     off?: string;
-    model?: string;
+    // TODO:
+    // model?: string;
   };
 }) {
   // hooks
   const { setUrlParam, setUrlParams } = useUrlParam();
+  const hasStartDate = useUrlParamCheck("startDate");
+  const hasEndDate = useUrlParamCheck("endDate");
 
   // constants
+  const paramValidations = {
+    product: (value: string) => customProducts.some((p) => p.value === value),
+  };
   const minDate = new Date(customProductsDateLimits.min);
   const maxDate = new Date(customProductsDateLimits.max);
   const defaultOutputValue: "GTiff" | "NETCDF" = "GTiff";
@@ -53,6 +64,14 @@ export default function Page({
     { label: "GeoTiff", value: "GTiff" },
   ];
   const apiUrl = "/api/jobs/create/from-process";
+
+  // security validation
+  useStepValidation(
+    2,
+    requiredParams,
+    paramValidations,
+    "/generate-custom-products?step=1"
+  );
 
   const bbox: BboxCornerPointsType = searchParams?.bbox
     ?.split(",")
@@ -65,10 +84,21 @@ export default function Page({
   const [currentExtent, setCurrentExtent] =
     useState<BboxCornerPointsType>(bbox);
 
+  // Get params from components
+
+  useEffect(() => {
+    if (!hasStartDate || !hasEndDate) {
+      setUrlParams([
+        ["startDate", defaultProductsDates.startDate],
+        ["endDate", defaultProductsDates.endDate],
+      ]);
+    }
+  }, [setUrlParams, hasEndDate, hasStartDate]);
+
   const product = searchParams?.product || undefined;
   const off = searchParams?.off || undefined;
-  const startDate = searchParams?.startDate || undefined;
-  const endDate = searchParams?.endDate || undefined;
+  const startDate = searchParams?.startDate || defaultProductsDates.startDate;
+  const endDate = searchParams?.endDate || defaultProductsDates.endDate;
 
   const params = {
     bbox: searchParams?.bbox || undefined,
@@ -104,41 +134,49 @@ export default function Page({
   };
 
   const handleDateChange = (startDate: string, endDate: string) => {
-    setUrlParams([["startDate", startDate], ["endDate", endDate]]);
+    setUrlParams([
+      ["startDate", startDate],
+      ["endDate", endDate],
+    ]);
   };
 
   useEffect(() => {
     setUrlParam("bbox", currentExtent?.join(","));
   }, [setUrlParam, currentExtent]);
 
-  const isDisabled = !params.bbox || !params.product || !params.endDate || !params.startDate || !params.off;
+  const isDisabled =
+    !params.bbox ||
+    !params.product ||
+    !params.endDate ||
+    !params.startDate ||
+    !params.off;
 
   return (
     <TwoColumns>
       <Column>
-				<SectionContainer>
-					<Group justify="space-between" align="end" w="100%">
-						<FormLabel>Draw the extent</FormLabel>
-						<TextDescription>
-							Current extent: {bbox ? coordinatesToDisplay : "none"}{" "}
-							{areaBbox && bbox ? `(${areaBbox} sqkm)` : ""}
-						</TextDescription>
-					</Group>
-					<MapBBox
-						mapSize={[550, 400]}
-						extentSizeInMeters={[50000, 50000]} // MAX Bbox size set to 2500km2
-						onBboxChange={onBboxChange}
-						bbox={bbox?.map(Number)}
-						setAreaBbox={setAreaBbox}
-						setCoordinatesToDisplay={setCoordinatesToDisplay}
-						coordinatesToDisplay={coordinatesToDisplay}
-					/>
-				</SectionContainer>
+        <SectionContainer>
+          <Group justify="space-between" align="end" w="100%">
+            <FormLabel>Draw the extent</FormLabel>
+            <TextDescription>
+              Current extent: {bbox ? coordinatesToDisplay : "none"}{" "}
+              {areaBbox && bbox ? `(${areaBbox} sqkm)` : ""}
+            </TextDescription>
+          </Group>
+          <MapBBox
+            mapSize={[550, 400]}
+            extentSizeInMeters={[50000, 50000]} // MAX Bbox size set to 2500km2
+            onBboxChange={onBboxChange}
+            bbox={bbox?.map(Number)}
+            setAreaBbox={setAreaBbox}
+            setCoordinatesToDisplay={setCoordinatesToDisplay}
+            coordinatesToDisplay={coordinatesToDisplay}
+          />
+        </SectionContainer>
         <TextDescription>
-					<b>
-						Avoid too large areas to prevent excessive credit usage and long
-						processing times!
-					</b>
+          <b>
+            Avoid too large areas to prevent excessive credit usage and long
+            processing times!
+          </b>
         </TextDescription>
         <TextDescription>
           A run of 250km2 will typically consume 40 credits and last around
@@ -174,26 +212,28 @@ export default function Page({
               <TextDescription>
                 To guide your decision concerning the processing period, you can
                 consult the{" "}
-                <TextLink
-                  url="https://ipad.fas.usda.gov/ogamaps/cropcalendar.aspx"
-                >
+                <TextLink url="https://ipad.fas.usda.gov/ogamaps/cropcalendar.aspx">
                   USDA crop calendars
                 </TextLink>
               </TextDescription>
             </div>
           </div>
-          <div style={{width: "100%"}}>
+          <div style={{ width: "100%" }}>
             <SelectMonth
               label="Ending month"
               disabled={false}
               placeholder="Select month"
               minDate={minDate} // Min Start Date (31/12/18)
+              /**
+               * in SelectMonth component the default value is considered
+               * the `maxDate`
+               */
               maxDate={maxDate} // Max End Date (31/12/24)
               onChange={handleDateChange}
             />
           </div>
 
-          <div style={{width: "100%"}}>
+          <div style={{ width: "100%" }}>
             <FormLabel>Output file format</FormLabel>
             <SelectOutput
               onChange={onOutpoutFormatChange}

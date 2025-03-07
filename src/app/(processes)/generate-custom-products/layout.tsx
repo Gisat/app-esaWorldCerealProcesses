@@ -51,30 +51,25 @@ export default function DownloadLayout({
 
   return (
     <Suspense>
-			<ContentContainer>
-				<Stepper
-					className="worldCereal-Stepper"
-					size="sm"
-					active={activeStep - 1}
-					onStepClick={(step) => step === 0 && activeStep === 2 && setActive(1)}
-					allowNextStepsSelect={false}
-				>
-					<Stepper.Step
-						label="Select product & model"
-						style={{ cursor: activeStep === 2 ? "pointer" : "default" }}
-					>
-						{children}
-					</Stepper.Step>
+      <ContentContainer>
+        <Stepper
+          className="worldCereal-Stepper"
+          size="sm"
+          active={activeStep - 1}
+          onStepClick={(step) => step === 0 && activeStep === 2 && setActive(1)}
+          allowNextStepsSelect={false}
+        >
+          <Stepper.Step label="Select product & model">{children}</Stepper.Step>
 
-					<Stepper.Step label="Set parameters & create process" style={{ cursor: "default"}}>
-						{children}
-					</Stepper.Step>
+          <Stepper.Step label="Set parameters & create process">
+            {children}
+          </Stepper.Step>
 
-					<Stepper.Step label="Start process" style={{ cursor: "default"}}>{children}</Stepper.Step>
+          <Stepper.Step label="Start process">{children}</Stepper.Step>
 
-					<Stepper.Completed>{children}</Stepper.Completed>
-				</Stepper>
-			</ContentContainer>
+          <Stepper.Completed>{children}</Stepper.Completed>
+        </Stepper>
+      </ContentContainer>
     </Suspense>
   );
 }
