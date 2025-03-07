@@ -1,45 +1,39 @@
-import { NextResponse } from "next/server";
-import { ResponseCookie } from "next/dist/compiled/@edge-runtime/cookies";
+import { fetchLogoutNotification } from "@features/(auth)/_ssr/handlers.logoutFetch";
+import { handleRouteError } from "@features/(shared)/errors/handlers.errorInRoute";
+import { NextRequest, NextResponse } from "next/server";
 
-export const dynamic = 'force-dynamic'
-export async function GET() {
-    try {
-        // get url origin
-        const parsedUrl = new URL(process.env.OID_SELF_REDIRECT_URL as string)
-        const selfUrl = `${parsedUrl.protocol}//${parsedUrl.host}`
+// NextJS Cache controls
+export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
 
-        // where to make logout
-        const identityUrl = process.env.PID_URL as string
-        const logoutUrl = `${identityUrl}/oid/logout`
+export async function GET(req: NextRequest) {
+  try {
 
-        // build cookie domain of the backend app
-        const feRedirect = NextResponse.redirect(logoutUrl as string)
-        const backendDomain = new URL(process.env.OID_SELF_REDIRECT_URL as string).hostname
+    // fetch logout notification for BE
+    await fetchLogoutNotification({
+      identityServiceUrl: process.env.PID_URL as string,
+      browserCookies: req.cookies,
+    })
 
-        // check production
-        const isProd = process.env.NODE_ENV === "production"
+    // url back to FE
+    const parsedUrl = new URL(process.env.OID_SELF_REDIRECT_URL as string);
+    const selfUrl = `${parsedUrl.protocol}//${parsedUrl.host}/home`;
 
-        // define cookie options (same for all)
-        const cookieOptions: Partial<ResponseCookie> = {
-            httpOnly: true,
-            secure: isProd, // true for production
-            path: '/',
-            sameSite: 'lax', // TODO: check with strinc on subdomains
-            maxAge: isProd ? 8 : 120, // 8 seconds for prod | 120 for dev
-            domain: backendDomain
-        };
+    // prepare redirect back to FE
+    const feRedirect = NextResponse.redirect(selfUrl as string);
 
-        feRedirect.cookies.set('client_redirect', selfUrl, cookieOptions);
-        return feRedirect
+    // delete cookies from logout
+    feRedirect.cookies.delete("sid");
 
-    } catch {
-        const backendDomain = new URL(process.env.OID_SELF_REDIRECT_URL as string).hostname
-        const feRedirect = NextResponse.redirect(backendDomain as string)
+    return feRedirect;
 
-        // delete cookies from logout
-        feRedirect.cookies.delete("client_redirect")
-        feRedirect.cookies.delete("sid")
+  } catch (error: any) {
+      const { message, status } = handleRouteError(error)
+      const response = NextResponse.json({ error: message }, { status })
+      
+      if(status === 401) 
+        response.cookies.delete("sid")
 
-        return feRedirect
-    }
+      return response
+  }
 }

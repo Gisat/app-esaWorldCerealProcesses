@@ -1,9 +1,16 @@
 import { fetchWithSessions } from "@features/(auth)/_ssr/handlers.sessionFetch";
 import { NextRequest, NextResponse } from "next/server";
-
-import { customProducts } from "@features/(processes)/_constants/app";
 import getNamespaceByProcessId from "@features/(processes)/_utils/namespaceByProcessId";
+import { handleRouteError } from "@features/(shared)/errors/handlers.errorInRoute";
+import { ErrorBehavior } from "@features/(shared)/errors/enums.errorBehavior";
+import { BaseHttpError } from "@features/(shared)/errors/models.error";
 
+/**
+ * Handles the GET request to create a job from a process.
+ *
+ * @param {NextRequest} req - The incoming request object.
+ * @returns {Promise<NextResponse>} - The response object.
+ */
 export async function GET(req: NextRequest) {
   try {
     // read query params from the request URL
@@ -15,31 +22,20 @@ export async function GET(req: NextRequest) {
     const off = searchParams.get("off");
     const processId = searchParams.get("product");
 
-    // validate inputs for safe aggragation
-    if (!startDate) {
-      return NextResponse.json("Missing startDate value", {
-        status: 400,
-      });
-    }
+    // validate inputs for safe aggregation
+    if (!startDate)
+      throw new BaseHttpError("Missing startDate value", 400, ErrorBehavior.SSR);
 
-    if (!endDate) {
-      return NextResponse.json("Missing endDate value", {
-        status: 400,
-      });
-    }
+    if (!endDate)
+      throw new BaseHttpError("Missing endDate value", 400, ErrorBehavior.SSR);
 
-    if (!bbox) {
-      return NextResponse.json("Missing bbox value", {
-        status: 400,
-      });
-    }
+    if (!bbox)
+      throw new BaseHttpError("Missing bbox value", 400, ErrorBehavior.SSR);
 
-    if (!off) {
-      return NextResponse.json("Missing outputFileFormat value", {
-        status: 400,
-      });
-    }
+    if (!off)
+      throw new BaseHttpError("Missing outputFileFormat value", 400, ErrorBehavior.SSR);
 
+    // prepare data for the request
     const data = {
       processId: processId,
       namespace: getNamespaceByProcessId(processId),
@@ -56,7 +52,8 @@ export async function GET(req: NextRequest) {
 
     const url = `${openeoUrlPrefix}/openeo/jobs/create/from-process`;
 
-    const { status, backendContent, setCookieHeader } = await fetchWithSessions(
+    // fetch data with sessions
+    const { backendContent, setCookieHeader } = await fetchWithSessions(
       {
         method: "POST",
         url,
@@ -64,20 +61,24 @@ export async function GET(req: NextRequest) {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify(data)
+        body: JSON.stringify(data),
+        requireSessionId: true
       })
 
-    if (status === 200) {
-      const nextResponse = NextResponse.json(backendContent);
+    const nextResponse = NextResponse.json(backendContent);
 
-      if (setCookieHeader) {
-        nextResponse.headers.set('set-cookie', setCookieHeader);
-      }
-      return nextResponse
-    } else {
-      return NextResponse.json({ error: ["Error creating entity"] });
+    if (setCookieHeader) {
+      nextResponse.headers.set('set-cookie', setCookieHeader);
     }
+    return nextResponse
+
   } catch (error: any) {
-    return NextResponse.json({ error: error["message"] });
+    const { message, status } = handleRouteError(error)
+    const response = NextResponse.json({ error: message }, { status })
+
+    if (status === 401)
+      response.cookies.delete("sid")
+
+    return response
   }
 }
