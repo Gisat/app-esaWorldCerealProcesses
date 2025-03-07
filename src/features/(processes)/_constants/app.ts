@@ -158,6 +158,13 @@ export const enum customProductsDateLimits {
   max = "2024-12-31",
 }
 
+/**
+ * Enum representing the default product dates.
+ *
+ * @enum {string}
+ * @property {string} startDate - The default start date for products (2024-01-01).
+ * @property {string} endDate - The default end date for products (2024-12-31).
+ */
 export const enum defaultProductsDates {
   startDate = "2024-01-01",
   endDate = "2024-12-31",
