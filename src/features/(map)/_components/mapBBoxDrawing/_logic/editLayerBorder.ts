@@ -16,7 +16,7 @@ interface EditLayerBorderProps {
     /** Updated available longitude area. */
     updatedAvailableAreaLong: Coordinate | undefined;
     /** Minimum area allowed for the bounding box. */
-    minBboxArea: number;
+    minBorderRange: number;
     /** Updated available area coordinates. */
     updatedAvailableArea: BboxEnclosedPoints | null;
     /** Function to update active bounding box points. */
@@ -38,7 +38,7 @@ export const editLayerBorder = ({
     originLinePointCoordinates,
     updatedAvailableAreaLat,
     updatedAvailableAreaLong,
-    minBboxArea,
+    minBorderRange,
     updatedAvailableArea,
     setActiveBboxPoints,
     setOriginalBboxBorderCoordinates
@@ -64,7 +64,7 @@ export const editLayerBorder = ({
         const difference = sharedCoordinatePart - oppositeCoordinatePart;
 
         // Check if the bbox can be made smaller
-        const bboxCanBeSmaller = difference > 0 ? newSharedCoordinatePart > oppositeCoordinatePart + minBboxArea : newSharedCoordinatePart < oppositeCoordinatePart - minBboxArea;
+        const bboxCanBeSmaller = difference > 0 ? newSharedCoordinatePart > oppositeCoordinatePart + minBorderRange : newSharedCoordinatePart < oppositeCoordinatePart - minBorderRange;
 
         // Update the bounding box points based on the drag
         const newPoints = activeBboxPoints.map((point: Coordinate) => {

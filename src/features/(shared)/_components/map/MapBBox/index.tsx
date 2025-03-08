@@ -2,21 +2,16 @@ import { WebMercatorViewport } from "@deck.gl/core";
 import BoundingBox from "@features/(map)/_components/mapBBoxDrawing/BoundingBox";
 import { BboxPoints } from "@features/(map)/_components/mapBBoxDrawing/types";
 import RenderingMap from "@features/(map)/_components/mapComponent/RenderingMap";
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 import ControlButtons from "./ControlButtons";
+import { area as turfArea } from '@turf/area';
+import { polygon as turfPolygon } from '@turf/helpers';
+
+type BboxExtentType = [number, number, number, number] | undefined;
 
 const defaultMapSize: Array<number> = [500, 500]; // Default map size in pixels
 
-const minSize = 0.1; // Minimum size for the bounding box
-
 const defaultMapView = { latitude: 50, longitude: 15, zoom: 7 }; // Default map view settings
-
-const availableAreaConfig = {
-  lineWidthMinPixels: 0.8,
-  lineWidthMaxPixels: 2,
-  getLineWidth: 500,
-  getDashArray: [20, 10],
-};
 
 /**
  * Rounds the coordinates to two decimal places.
@@ -39,41 +34,34 @@ const roundCoordinates = (coordinatesToRound: Array<Array<number>>) =>
  * @param {Array<number>} [props.mapSize=defaultMapSize] - The size of the map.
  * @param {boolean} [props.disabled] - Whether the bounding box is disabled.
  * @param {Array<number>} [props.bbox] - The bounding box coordinates.
- * @param {Function} [props.onBboxChange] - Callback function for when the bounding box changes.
- * @param {Function} [props.setAreaBbox] - Callback function for setting the area of the bounding box.
- * @param {Function} [props.setCoordinatesToDisplay] - Callback function for setting the coordinates to display.
- * @param {string | string[] | null} [props.coordinatesToDisplay] - Coordinates to display.
+ * @param {Function} [props.setBboxDescription] - Callback function for setting the description of the bounding box.
+ * @param {Function} [props.setBboxExtent] - Callback function for setting the extent of the bounding box.
+ * @param {Function} [props.setBboxIsInBounds] - Callback function for setting whether the bounding box is within bounds.
  * @returns {JSX.Element} The rendered map with bounding box component.
  */
 export const MapBBox = function ({
-  extentSizeInMeters = [
-    Math.sqrt(2500 * 1_000_000),
-    Math.sqrt(2500 * 1_000_000),
-  ], // Default 2500 km²
-  onBboxChange,
   bbox,
   disabled,
   mapSize = defaultMapSize,
-  setAreaBbox,
-  setCoordinatesToDisplay,
-  coordinatesToDisplay,
+  minBboxArea = 1,
+  maxBboxArea = 10000,
+  setBboxDescription,
+  setBboxExtent,
+  setBboxIsInBounds,
 }: {
   extentSizeInMeters?: [number, number];
   mapSize?: Array<number>;
   disabled?: boolean;
   bbox?: Array<number>;
-  onBboxChange?: (extent?: Array<Array<number>> | null) => void;
-  setAreaBbox?: (area: number | undefined) => void;
-  setCoordinatesToDisplay?: React.Dispatch<
+	minBboxArea?: number;
+  maxBboxArea?: number;
+  setBboxDescription?: React.Dispatch<
     React.SetStateAction<string | string[] | null>
   >;
-  coordinatesToDisplay: string | string[] | null;
+  setBboxExtent: (extent: BboxExtentType) => void;
+  setBboxIsInBounds: (isInBounds: boolean) => void;
 }) {
   const [initialView, setInitialView] = useState<object | null>(null); // State for the initial view of the map
-  const [distanceScales, setDistanceScales] = useState<{
-    unitsPerDegree?: Array<number>;
-    metersPerUnit: Array<number>;
-  } | null>(null); // State for the distance scales
 
   let bboxPoints: BboxPoints | undefined;
 
@@ -91,55 +79,43 @@ export const MapBBox = function ({
    * Sets the description of the bounding box.
    *
    * @param {Array<Array<number>> | null} points - The points of the bounding box.
+   * @param {number} area - The area of the bounding box.
    */
-  const setBboxDescription = (points?: Array<Array<number>> | null) => {
-      const bboxCornerPoints = points?.length
-        ? [...points[0], ...points[2]]
-        : null;
-      if (
-        bboxCornerPoints &&
-        distanceScales?.unitsPerDegree &&
-        distanceScales?.metersPerUnit
-      ) {
-        const latLength =
-          (bboxCornerPoints[2] - bboxCornerPoints[0]) *
-          distanceScales.unitsPerDegree[0] *
-          distanceScales.metersPerUnit[0];
-        const lonLength =
-          (bboxCornerPoints[3] - bboxCornerPoints[1]) *
-          distanceScales.unitsPerDegree[1] *
-          distanceScales.metersPerUnit[1];
-        const area = ((latLength / 1000) * lonLength) / 1000;
-        if (setCoordinatesToDisplay) {
-          setCoordinatesToDisplay(
-            roundCoordinates([
-              [bboxCornerPoints[0], bboxCornerPoints[1]],
-              [bboxCornerPoints[2], bboxCornerPoints[3]],
-            ])
-          );
-        }
-        if (setAreaBbox) {
-          setAreaBbox(Math.round(area));
-        }
-      } else {
-        if (setCoordinatesToDisplay) {
-          setCoordinatesToDisplay("none");
-        }
-        if (setAreaBbox) {
-          setAreaBbox(undefined);
-        }
-      }
-    };
-
-	// To update description when page 2 is loaded with bbox coordinates already in url
-  useEffect(() => {
-    if (!coordinatesToDisplay && distanceScales && bboxPoints) {
-      setBboxDescription(bboxPoints);
+  const onBboxDescriptionChange = (points: Array<Array<number>> | null, area: number |null) => {
+    if (points?.length === 4 && area && setBboxDescription) {
+      const bboxExtentPoints = [points[0], points[2]];
+      const bboxRoundedCoordinates = roundCoordinates(bboxExtentPoints).map(coordinate => coordinate.replace(",", ", "));
+      setBboxDescription(
+        `${bboxRoundedCoordinates[0]} ${bboxRoundedCoordinates[1]} (${Math.round(area)} sqkm)`
+      );
+    } else {
+      setBboxDescription?.(null);
     }
-  }, [distanceScales, bboxPoints, setBboxDescription, coordinatesToDisplay]);
+  };
+
+  /**
+   * Sets the description of the bounding box and updates its extent and bounds status.
+   *
+   * @param {Array<Array<number>> | null} points - The points of the bounding box.
+   * @param {number} area - The area of the bounding box.
+   */
+  const onBboxChange = (points: Array<Array<number>> | null, area: number | null) => {
+    onBboxDescriptionChange(points, area);
+    if (points?.length === 4 && area) {
+      const bboxExtent = [...points[0], ...points[2]] as BboxExtentType;
+      setBboxExtent(bboxExtent);
+      if (area > minBboxArea && area < maxBboxArea) {
+        setBboxIsInBounds(true);
+      } else {
+        setBboxIsInBounds(false);
+      }
+    } else {
+      setBboxExtent(undefined);
+    }
+  };
 
   // Set the initial view and distance scales if bbox is provided
-  if (!initialView && bbox) {
+  if (!initialView && bbox && bboxPoints) {
     const bboxView = {
       longitude: (bbox[0] + bbox[2]) / 2,
       latitude: (bbox[1] + bbox[3]) / 2,
@@ -158,10 +134,12 @@ export const MapBBox = function ({
       }
     );
     setInitialView(fitView);
-    setDistanceScales(viewport.distanceScales);
-  } else if (!initialView && !bbox && setCoordinatesToDisplay) {
+
+    const polygon = turfPolygon([[...bboxPoints, bboxPoints[0]]], { name: "polygon" });
+    const area = turfArea(polygon) / 1000000;
+    onBboxDescriptionChange(bboxPoints, area);
+  } else if (!initialView && !bbox) {
     setInitialView(defaultMapView);
-    setCoordinatesToDisplay("none");
   }
 
   return (
@@ -170,29 +148,21 @@ export const MapBBox = function ({
         width: `${mapSize[0]}px`,
         height: `${mapSize[1]}px`,
         position: "relative",
-				padding: "0.2rem 0"
+        padding: "0.2rem 0",
       }}
     >
       <BoundingBox
-        onBboxCoordinatesChange={(points) => {
-					if (points?.length === 4 || !points) {
-						if (onBboxChange) onBboxChange(points);
-						if (setBboxDescription) setBboxDescription(points);
-					}
-        }}
-        minBboxArea={minSize}
-        followMapScreen={true}
-        availableArea={[extentSizeInMeters]}
+        onBboxChange={onBboxChange}
+        minBboxArea={minBboxArea}
+        maxBboxArea={maxBboxArea}
         bboxPoints={bboxPoints}
         disabled={disabled}
-        availableAreaConfig={availableAreaConfig}
-				CustomButtonsComponent={<ControlButtons />}
+        CustomButtonsComponent={<ControlButtons />}
       >
         <RenderingMap
           width="100%"
           height="100%"
           initialView={initialView}
-          setDistanceScales={setDistanceScales}
         />
       </BoundingBox>
     </div>

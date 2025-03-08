@@ -37,5 +37,8 @@ export const DRAG_LAYER = "dragLayer";
 // Layer ID for editing the border of the layer
 export const DRAG_LAYER_BORDER = "editLayerBorder";
 
+// Constant representing the start of a drag action
+export const DRAG_START = "dragStart";
+
 // Layer ID for a generic hover layer
 export const HOVER_LAYER = "layer";

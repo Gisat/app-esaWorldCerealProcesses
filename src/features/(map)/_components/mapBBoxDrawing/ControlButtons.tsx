@@ -1,8 +1,8 @@
 import { ActionIcon, Stack, Tooltip } from "@mantine/core";
 import React, { cloneElement, isValidElement } from "react";
 import { IconCircleDashedPlus, IconEditOff, IconEdit, IconTrash } from '@tabler/icons-react';
-import styles from './style.module.css';
 import { BboxPoint, BboxPoints } from "./types";
+import "./style.css";
 
 // Default color for active icons used in control buttons
 export const DEFAULT_ICON_ACTIVE_COLOR = "#007FFF";
@@ -13,7 +13,7 @@ interface ControlButtonsProps {
     setEditModeIsActive: (editModeIsActive: boolean) => void; // Function to set the edit mode state.
     clearPoints: () => void; // Function to clear the selected points.
     customStyles?: React.CSSProperties; // CSS properties for styles the component.
-    CustomButtonsComponent?: React.ReactElement<{ handleEditToggle: () => void; clearPoints: () => void, isActive: boolean }>; // Custom component for control buttons.
+		CustomButtonsComponent?: React.ReactElement<{ handleEditToggle: () => void; clearPoints: () => void, isActive: boolean }>; // Custom component for control buttons.
 }
 
 /**
@@ -61,46 +61,46 @@ const ControlButtons: React.FC<ControlButtonsProps> = ({
     const getEditIcon = () => {
         if (activeBboxPoints.length > 1) {
             if (isActive) {
-                return <IconEditOff className={styles["mapBBoxDrawing-buttons-icons"]} />;
+                return <IconEditOff className="ptr-MapBBoxDrawing-ControlButtons-icons" />;
             } else {
-                return <IconEdit className={styles["mapBBoxDrawing-buttons-icons"]} />;
+                return <IconEdit className="ptr-MapBBoxDrawing-ControlButtons-icons" />;
             }
         } else {
-            return <IconCircleDashedPlus className={styles["mapBBoxDrawing-buttons-icons"]} color={isActive ? DEFAULT_ICON_ACTIVE_COLOR : undefined} />;
+            return <IconCircleDashedPlus className="ptr-MapBBoxDrawing-ControlButtons-icons" color={isActive ? DEFAULT_ICON_ACTIVE_COLOR : undefined} />;
         }
     };
 
     return (
-        <>
-            {CustomButtonsComponent && isValidElement(CustomButtonsComponent) 
-                ? cloneElement(CustomButtonsComponent, { handleEditToggle, clearPoints, isActive }) 
-                : (
-                    <Stack
-                        className={styles["mapBBoxDrawing-buttons"]}
-                        style={customStyles}
-                    >
-                        <Tooltip label={getTooltipLabel()}>
-                            <ActionIcon 
-                                className={styles["mapBBoxDrawing-addBtn"]} 
-                                variant="default" 
-                                onClick={handleEditToggle}
-                            >
-                                {getEditIcon()}
-                            </ActionIcon>
-                        </Tooltip>
-                        <Tooltip label={"Clear selection"}>
-                            <ActionIcon 
-                                className={styles["mapBBoxDrawing-addBtn"]} 
-                                variant="default" 
-                                onClick={clearPoints}
-                            >
-                                <IconTrash className={styles["mapBBoxDrawing-buttons-icons"]} />
-                            </ActionIcon>
-                        </Tooltip>
-                    </Stack>
-                )
-            }
-        </>
+			<>
+				{CustomButtonsComponent && isValidElement(CustomButtonsComponent) 
+						? cloneElement(CustomButtonsComponent, { handleEditToggle, clearPoints, isActive }) 
+						: (
+								<Stack
+										className="mapBBoxDrawing-buttons"
+										style={customStyles}
+								>
+										<Tooltip label={getTooltipLabel()}>
+												<ActionIcon 
+														className="mapBBoxDrawing-addBtn"
+														variant="default" 
+														onClick={handleEditToggle}
+												>
+														{getEditIcon()}
+												</ActionIcon>
+										</Tooltip>
+										<Tooltip label={"Clear selection"}>
+												<ActionIcon 
+														className="mapBBoxDrawing-addBtn"
+														variant="default" 
+														onClick={clearPoints}
+												>
+														<IconTrash className="mapBBoxDrawing-buttons-icons" />
+												</ActionIcon>
+										</Tooltip>
+								</Stack>
+						)
+				}
+			</>
     );
 };
 

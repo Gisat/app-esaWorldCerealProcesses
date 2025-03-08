@@ -20,6 +20,7 @@
     "@mantine/dates": "^7.13.2",
     "@mantine/hooks": "^7.13.2",
     "@tabler/icons-react": "^3.11.0",
+    "@turf/area": "^7.2.0",
     "@turf/distance": "^7.1.0",
     "@turf/helpers": "^7.1.0",
     "classnames": "^2.5.1",

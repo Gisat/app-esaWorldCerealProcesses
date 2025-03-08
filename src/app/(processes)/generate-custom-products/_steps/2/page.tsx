@@ -24,7 +24,7 @@ import TwoColumns, {
 import { Group, Stack } from "@mantine/core";
 import { createElement, useEffect, useState } from "react";
 
-type BboxCornerPointsType = [number, number, number, number] | undefined;
+type BboxExtentType = [number, number, number, number] | undefined;
 
 /**
  * Page Component
@@ -73,16 +73,16 @@ export default function Page({
     "/generate-custom-products?step=1"
   );
 
-  const bbox: BboxCornerPointsType = searchParams?.bbox
+  const bbox: BboxExtentType = searchParams?.bbox
     ?.split(",")
-    .map(Number) as BboxCornerPointsType;
+    .map(Number) as BboxExtentType;
 
-  const [areaBbox, setAreaBbox] = useState<number | undefined>(undefined);
-  const [coordinatesToDisplay, setCoordinatesToDisplay] = useState<
-    string | string[] | null
-  >(null);
-  const [currentExtent, setCurrentExtent] =
-    useState<BboxCornerPointsType>(bbox);
+	const [bboxDescription, setBboxDescription] = useState<
+		string | string[] | null
+	>(null);
+	const [bboxExtent, setBboxExtent] =
+		useState<BboxExtentType>(bbox);
+	const [bboxIsInBounds, setBboxIsInBounds] = useState<boolean | null>(null);
 
   // Get params from components
 
@@ -109,24 +109,6 @@ export default function Page({
   };
 
   /**
-   * Handles the change of the bounding box.
-   * @param {Array<Array<number>> | null} extent - The new bounding box extent.
-   */
-  const onBboxChange = (extent?: Array<Array<number>> | null) => {
-    if (extent?.length === 4) {
-      const cornerPoints: BboxCornerPointsType = [
-        extent?.[2][0],
-        extent?.[2][1],
-        extent?.[0][0],
-        extent?.[0][1],
-      ];
-      setCurrentExtent(cornerPoints);
-    } else {
-      setCurrentExtent(undefined);
-    }
-  };
-
-  /**
    *  Pushing params to URL
    */
   const onOutpoutFormatChange = (value: "GTiff" | "NETCDF") => {
@@ -141,10 +123,11 @@ export default function Page({
   };
 
   useEffect(() => {
-    setUrlParam("bbox", currentExtent?.join(","));
-  }, [setUrlParam, currentExtent]);
+    setUrlParam("bbox", bboxExtent?.join(","));
+  }, [setUrlParam, bboxExtent]);
 
   const isDisabled =
+		!bboxIsInBounds ||
     !params.bbox ||
     !params.product ||
     !params.endDate ||
@@ -158,18 +141,16 @@ export default function Page({
           <Group justify="space-between" align="end" w="100%">
             <FormLabel>Draw the extent</FormLabel>
             <TextDescription>
-              Current extent: {bbox ? coordinatesToDisplay : "none"}{" "}
-              {areaBbox && bbox ? `(${areaBbox} sqkm)` : ""}
+              Current extent: {bboxDescription || "No extent selected"}
             </TextDescription>
           </Group>
           <MapBBox
-            mapSize={[550, 400]}
-            extentSizeInMeters={[50000, 50000]} // MAX Bbox size set to 2500km2
-            onBboxChange={onBboxChange}
-            bbox={bbox?.map(Number)}
-            setAreaBbox={setAreaBbox}
-            setCoordinatesToDisplay={setCoordinatesToDisplay}
-            coordinatesToDisplay={coordinatesToDisplay}
+						minBboxArea={0.9}
+						maxBboxArea={2500}
+						bbox={bbox?.map(Number)}
+						setBboxDescription={setBboxDescription}
+						setBboxExtent={setBboxExtent}
+						setBboxIsInBounds={setBboxIsInBounds}
           />
         </SectionContainer>
         <TextDescription>

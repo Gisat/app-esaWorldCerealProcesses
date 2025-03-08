@@ -23,7 +23,7 @@ import { SectionContainer } from "@features/(shared)/_layout/_components/Content
 
 const defaultOutputFileFormat = "GTiff";
 
-type BboxCornerPointsType = [number, number, number, number] | undefined;
+type BboxExtentType = [number, number, number, number] | undefined;
 type OutputFileFormatType = string | undefined;
 
 type searchParamsType = {
@@ -49,16 +49,16 @@ export default function Page({
   searchParams?: searchParamsType;
 }) {
   const apiUrl = "/api/jobs/create/from-collection";
-  const bbox: BboxCornerPointsType = searchParams?.bbox
+  const bbox: BboxExtentType = searchParams?.bbox
     ?.split(",")
-    .map(Number) as BboxCornerPointsType;
+    .map(Number) as BboxExtentType;
 
-  const [areaBbox, setAreaBbox] = useState<number | undefined>(undefined);
-  const [coordinatesToDisplay, setCoordinatesToDisplay] = useState<
+  const [bboxDescription, setBboxDescription] = useState<
     string | string[] | null
   >(null);
-  const [currentExtent, setCurrentExtent] =
-    useState<BboxCornerPointsType>(bbox);
+  const [bboxExtent, setBboxExtent] =
+    useState<BboxExtentType>(bbox);
+	const [bboxIsInBounds, setBboxIsInBounds] = useState<boolean | null>(null);
 
   const router = useRouter();
   const startDate = searchParams?.startDate || "2021-01-01";
@@ -98,24 +98,6 @@ export default function Page({
   );
 
   /**
-   * Handles the change of the bounding box.
-   * @param {Array<Array<number>> | null} extent - The new bounding box extent.
-   */
-  const onBboxChange = (extent?: Array<Array<number>> | null) => {
-    if (extent?.length === 4) {
-      const cornerPoints: BboxCornerPointsType = [
-        extent?.[2][0],
-        extent?.[2][1],
-        extent?.[0][0],
-        extent?.[0][1],
-      ];
-      setCurrentExtent(cornerPoints);
-    } else {
-      setCurrentExtent(undefined);
-    }
-  };
-
-  /**
    * Handles the change of the output file format.
    * @param {OutputFileFormatType} off - The new output file format.
    */
@@ -126,11 +108,10 @@ export default function Page({
   useEffect(() => {
     setValue(transformDate(endDateDate), "endDate");
     setValue(transformDate(startDateDate), "startDate");
-    setValue(currentExtent?.join(","), "bbox");
-  }, [setValue, endDateDate, startDateDate, currentExtent]);
+    setValue(bboxExtent?.join(","), "bbox");
+  }, [setValue, endDateDate, startDateDate, bboxExtent]);
 
-	const isDisabled = !params.bbox || !params.endDate || !params.startDate || !params.off;
-
+	const isDisabled = !bboxIsInBounds || !params.bbox || !params.endDate || !params.startDate || !params.off;
 
   return (
     <TwoColumns>
@@ -141,16 +122,15 @@ export default function Page({
 						<TextDescription color={"var(--textSecondaryColor)"}>(maximum 500 x 500 km)</TextDescription>
 					</Group>
 					<MapBBox
-						mapSize={[550, 400]}
-						onBboxChange={onBboxChange}
+						minBboxArea={0.9}
+						maxBboxArea={100000}
 						bbox={bbox?.map(Number)}
-						setAreaBbox={setAreaBbox}
-						setCoordinatesToDisplay={setCoordinatesToDisplay}
-						coordinatesToDisplay={coordinatesToDisplay}
+						setBboxDescription={setBboxDescription}
+						setBboxExtent={setBboxExtent}
+						setBboxIsInBounds={setBboxIsInBounds}
 					/>
 					<TextDescription>
-						Current extent: {bbox ? coordinatesToDisplay : "none"}{" "}
-						{areaBbox && bbox ? `(${areaBbox} sqkm)` : ""}
+						Current extent: {bboxDescription || "No extent selected"}
 					</TextDescription>
 				</SectionContainer>
 				<TextDescription>

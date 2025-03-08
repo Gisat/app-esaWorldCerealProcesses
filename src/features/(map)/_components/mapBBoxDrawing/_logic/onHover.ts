@@ -21,7 +21,7 @@ interface OnHoverProps {
 	/** Current coordinates of the active bounding box. */
 	activeBboxPoints: BboxPoints | BboxPoint | [];
 	/** Minimum area required for the bounding box. */
-	minBboxArea: number;
+	minBorderRange: number;
 	/** Indicates if the edit mode is active. */
 	editModeIsActive: boolean;
 	/** Function to set the bounding box hover state. */
@@ -43,7 +43,7 @@ export const onHover = ({
 	info,
 	updatedAvailableArea,
 	activeBboxPoints,
-	minBboxArea,
+	minBorderRange,
 	editModeIsActive,
 	setBboxIsHovered,
 	setActiveBboxPoints,
@@ -61,8 +61,8 @@ export const onHover = ({
 			const currentPoint = info.coordinate;
 			const latDiff = activeBboxPoints[0][0] - currentPoint[0];
 			const longDiff = activeBboxPoints[0][1] - currentPoint[1];
-			isLargeEnough = (latDiff > minBboxArea || latDiff < -minBboxArea) && 
-											(longDiff > minBboxArea || longDiff < -minBboxArea);
+			isLargeEnough = (latDiff > minBorderRange || latDiff < -minBorderRange) && 
+											(longDiff > minBorderRange || longDiff < -minBorderRange);
 			addPointToMap({
 					coordinates: currentPoint,
 					activeBboxPoints,
