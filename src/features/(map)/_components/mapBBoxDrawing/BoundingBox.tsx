@@ -202,11 +202,11 @@ const BoundingBox: React.FC<BoundingBoxProps> = ({
             editModeIsActive,
             bboxDragInfo,
             updateBboxDragInfo,
-            setOriginalBboxBorderCoordinates,
+            setOriginalBboxBorderCoordinates
         });
         const startDragHandler = isDisabled ? null : (info: DragStartInfo) => onStartDragging(
             info,
-            setBboxDragInfo,
+            updateBboxDragInfo,
             setOriginalBboxBorderCoordinates
         );
         const stopDragHandler = isDisabled ? null : () => onStopDragging({
@@ -248,7 +248,7 @@ const BoundingBox: React.FC<BoundingBoxProps> = ({
             onStartDragging: startDragHandler,
             onStopDragging: stopDragHandler,
             onViewStateChange: viewStateChangeHandler,
-            disableControls: isDisabled || (editModeIsActive && bboxIsHovered && bboxDragInfo?.dragType)
+						disableControls: isDisabled || (editModeIsActive && activeBboxPoints.length !== 4) || (editModeIsActive && bboxIsHovered && bboxDragInfo?.dragType)
         });
     });
 
