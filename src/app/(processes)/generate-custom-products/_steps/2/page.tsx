@@ -12,6 +12,7 @@ import {
 import { requiredParamsStep2 as requiredParams } from "@features/(processes)/_constants/generate-custom-products/requiredParams";
 import { useStepValidation } from "@features/(processes)/_hooks/_url/useStepValidation";
 import { useUrlParamCheck } from "@features/(processes)/_hooks/_url/useUrlParamCheck";
+import { BoundingBoxExtent } from "@features/(processes)/_types/boundingBoxExtent";
 import { MapBBox } from "@features/(shared)/_components/map/MapBBox";
 import { useUrlParam } from "@features/(shared)/_hooks/_url/useUrlParam";
 import FormLabel from "@features/(shared)/_layout/_components/Content/FormLabel";
@@ -23,8 +24,6 @@ import TwoColumns, {
 } from "@features/(shared)/_layout/_components/Content/TwoColumns";
 import { Group, Stack } from "@mantine/core";
 import { createElement, useEffect, useState } from "react";
-
-type BboxExtentType = [number, number, number, number] | undefined;
 
 /**
  * Page Component
@@ -73,15 +72,15 @@ export default function Page({
     "/generate-custom-products?step=1"
   );
 
-  const bbox: BboxExtentType = searchParams?.bbox
+  const bbox: BoundingBoxExtent = searchParams?.bbox
     ?.split(",")
-    .map(Number) as BboxExtentType;
+    .map(Number) as BoundingBoxExtent;
 
 	const [bboxDescription, setBboxDescription] = useState<
 		string | string[] | null
 	>(null);
 	const [bboxExtent, setBboxExtent] =
-		useState<BboxExtentType>(bbox);
+		useState<BoundingBoxExtent | null>(bbox);
 	const [bboxIsInBounds, setBboxIsInBounds] = useState<boolean | null>(null);
 
   // Get params from components

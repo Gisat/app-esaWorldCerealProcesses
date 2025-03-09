@@ -239,7 +239,7 @@ const BoundingBox: React.FC<BoundingBoxProps> = ({
                     editModeIsActive,
                     predictedHoveredPoints,
                     config: bboxConfig,
-                    bboxIsInBounds: (bboxArea && bboxArea >= minBboxArea && bboxArea <= maxBboxArea) || false
+                    bboxIsInBounds: (bboxArea && bboxArea >= minBboxArea && bboxArea <= maxBboxArea) || !bboxArea
                 })
             ],
             getCursor: cursorHandler,

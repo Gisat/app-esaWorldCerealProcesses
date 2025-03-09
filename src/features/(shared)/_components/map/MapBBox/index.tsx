@@ -6,8 +6,7 @@ import { useState } from "react";
 import ControlButtons from "./ControlButtons";
 import { area as turfArea } from '@turf/area';
 import { polygon as turfPolygon } from '@turf/helpers';
-
-type BboxExtentType = [number, number, number, number] | undefined;
+import { BoundingBoxExtent } from "@features/(processes)/_types/boundingBoxExtent";
 
 const defaultMapSize: Array<number> = [500, 500]; // Default map size in pixels
 
@@ -58,7 +57,7 @@ export const MapBBox = function ({
   setBboxDescription?: React.Dispatch<
     React.SetStateAction<string | string[] | null>
   >;
-  setBboxExtent?: (extent: BboxExtentType) => void;
+  setBboxExtent?: (extent: BoundingBoxExtent | null) => void;
   setBboxIsInBounds?: (isInBounds: boolean) => void;
 }) {
   const [initialView, setInitialView] = useState<object | null>(null); // State for the initial view of the map
@@ -103,7 +102,7 @@ export const MapBBox = function ({
   const onBboxChange = (points: Array<Array<number>> | null, area: number | null) => {
     onBboxDescriptionChange(points, area);
     if (points?.length === 4 && area) {
-      const bboxExtent = [...points[0], ...points[2]] as BboxExtentType;
+      const bboxExtent = [...points[0], ...points[2]] as BoundingBoxExtent;
       setBboxExtent?.(bboxExtent);
       if (area > minBboxArea && area < maxBboxArea) {
         setBboxIsInBounds?.(true);
@@ -111,11 +110,12 @@ export const MapBBox = function ({
         setBboxIsInBounds?.(false);
       }
     } else {
-      setBboxExtent?.(undefined);
+      setBboxExtent?.(null);
     }
   };
 
-  // Set the initial view and distance scales if bbox is provided
+	// If there is no initial view and bounding box data is available, calculate the view to fit the bounding box and set it as the initial view. 
+	// Also, create a polygon from the bounding box points, calculate its area, and update the bounding box description.
   if (!initialView && bbox && bboxPoints) {
     const bboxView = {
       longitude: (bbox[0] + bbox[2]) / 2,

@@ -20,10 +20,10 @@ import {
 } from "react";
 import { TextDescription } from "@features/(shared)/_layout/_components/Content/TextDescription";
 import { SectionContainer } from "@features/(shared)/_layout/_components/Content/SectionContainer";
+import { BoundingBoxExtent } from "@features/(processes)/_types/boundingBoxExtent";
 
 const defaultOutputFileFormat = "GTiff";
 
-type BboxExtentType = [number, number, number, number] | undefined;
 type OutputFileFormatType = string | undefined;
 
 type searchParamsType = {
@@ -49,15 +49,15 @@ export default function Page({
   searchParams?: searchParamsType;
 }) {
   const apiUrl = "/api/jobs/create/from-collection";
-  const bbox: BboxExtentType = searchParams?.bbox
+  const bbox: BoundingBoxExtent = searchParams?.bbox
     ?.split(",")
-    .map(Number) as BboxExtentType;
+    .map(Number) as BoundingBoxExtent;
 
   const [bboxDescription, setBboxDescription] = useState<
     string | string[] | null
   >(null);
   const [bboxExtent, setBboxExtent] =
-    useState<BboxExtentType>(bbox);
+    useState<BoundingBoxExtent | null>(bbox);
 	const [bboxIsInBounds, setBboxIsInBounds] = useState<boolean | null>(null);
 
   const router = useRouter();
