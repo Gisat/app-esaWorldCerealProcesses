@@ -122,6 +122,7 @@ export default function Page({
 						<TextDescription color={"var(--textSecondaryColor)"}>(MIN: 900 sqm, MAX: 100 000 sqkm)</TextDescription>
 					</Group>
 					<MapBBox
+						mapSize={[550, 400]}
 						minBboxArea={0.9}
 						maxBboxArea={100000}
 						bbox={bbox?.map(Number)}
