@@ -39,8 +39,6 @@ export interface RenderMapProps {
     disableControls?: boolean;
     /** Initial view state of the map. */
     initialView: object | null;
-    /** Function to set distance scales. */
-    setDistanceScales?: (distanceScales: { unitsPerDegree?: Array<number>; metersPerUnit: Array<number>; }) => void;
 }
 
 /**
