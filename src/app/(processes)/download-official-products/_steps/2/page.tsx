@@ -119,7 +119,7 @@ export default function Page({
 				<SectionContainer>
 					<Group gap={"0.3rem"} align="baseline">
 						<FormLabel>Draw the extent</FormLabel>
-						<TextDescription color={"var(--textSecondaryColor)"}>(maximum 500 x 500 km)</TextDescription>
+						<TextDescription color={"var(--textSecondaryColor)"}>(MIN: 900 sqm, MAX: 100 000 sqkm)</TextDescription>
 					</Group>
 					<MapBBox
 						minBboxArea={0.9}

@@ -139,7 +139,7 @@ export default function Page({
       <Column>
         <SectionContainer>
           <Group justify="space-between" align="end" w="100%">
-            <FormLabel>Draw the extent</FormLabel>
+            <FormLabel>Draw the extent (MIN: 900 sqm, MAX: 2 500 sqkm)</FormLabel>
             <TextDescription>
               Current extent: {bboxDescription || "No extent selected"}
             </TextDescription>

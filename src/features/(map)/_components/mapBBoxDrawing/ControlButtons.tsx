@@ -13,7 +13,7 @@ interface ControlButtonsProps {
     setEditModeIsActive: (editModeIsActive: boolean) => void; // Function to set the edit mode state.
     clearPoints: () => void; // Function to clear the selected points.
     customStyles?: React.CSSProperties; // CSS properties for styles the component.
-		CustomButtonsComponent?: React.ReactElement<{ handleEditToggle: () => void; clearPoints: () => void, isActive: boolean }>; // Custom component for control buttons.
+		CustomButtonsComponent?: React.ReactElement<{ handleEditToggle: () => void; clearPoints: () => void, isActive: boolean, activePoints: BboxPoints | BboxPoint | []}>; // Custom component for control buttons.
 }
 
 /**
@@ -73,7 +73,7 @@ const ControlButtons: React.FC<ControlButtonsProps> = ({
     return (
 			<>
 				{CustomButtonsComponent && isValidElement(CustomButtonsComponent) 
-						? cloneElement(CustomButtonsComponent, { handleEditToggle, clearPoints, isActive }) 
+						? cloneElement(CustomButtonsComponent, { handleEditToggle, clearPoints, isActive, activePoints: activeBboxPoints }) 
 						: (
 								<Stack
 										className="mapBBoxDrawing-buttons"

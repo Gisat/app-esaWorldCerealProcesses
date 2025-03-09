@@ -85,8 +85,9 @@ export const MapBBox = function ({
     if (points?.length === 4 && area && setBboxDescription) {
       const bboxExtentPoints = [points[0], points[2]];
       const bboxRoundedCoordinates = roundCoordinates(bboxExtentPoints).map(coordinate => coordinate.replace(",", ", "));
+			const bboxRoundedArea = Math.round(area).toLocaleString().replace(",", " ");
       setBboxDescription(
-        `${bboxRoundedCoordinates[0]} ${bboxRoundedCoordinates[1]} (${Math.round(area)} sqkm)`
+        `${bboxRoundedCoordinates[0]} ${bboxRoundedCoordinates[1]} (${bboxRoundedArea} sqkm)`
       );
     } else {
       setBboxDescription?.(null);
