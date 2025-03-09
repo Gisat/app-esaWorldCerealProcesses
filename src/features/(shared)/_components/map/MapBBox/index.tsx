@@ -30,10 +30,11 @@ const roundCoordinates = (coordinatesToRound: Array<Array<number>>) =>
  * Component that renders a map with a bounding box.
  *
  * @param {Object} props - The props for the component.
- * @param {Array<number>} [props.extentSizeInMeters] - The extent size in meters.
  * @param {Array<number>} [props.mapSize=defaultMapSize] - The size of the map.
  * @param {boolean} [props.disabled] - Whether the bounding box is disabled.
  * @param {Array<number>} [props.bbox] - The bounding box coordinates.
+ * @param {number} [props.minBboxArea=1] - The minimum area of the bounding box.
+ * @param {number} [props.maxBboxArea=10000] - The maximum area of the bounding box.
  * @param {Function} [props.setBboxDescription] - Callback function for setting the description of the bounding box.
  * @param {Function} [props.setBboxExtent] - Callback function for setting the extent of the bounding box.
  * @param {Function} [props.setBboxIsInBounds] - Callback function for setting whether the bounding box is within bounds.
@@ -49,17 +50,16 @@ export const MapBBox = function ({
   setBboxExtent,
   setBboxIsInBounds,
 }: {
-  extentSizeInMeters?: [number, number];
   mapSize?: Array<number>;
   disabled?: boolean;
   bbox?: Array<number>;
-	minBboxArea?: number;
+  minBboxArea?: number;
   maxBboxArea?: number;
   setBboxDescription?: React.Dispatch<
     React.SetStateAction<string | string[] | null>
   >;
-  setBboxExtent: (extent: BboxExtentType) => void;
-  setBboxIsInBounds: (isInBounds: boolean) => void;
+  setBboxExtent?: (extent: BboxExtentType) => void;
+  setBboxIsInBounds?: (isInBounds: boolean) => void;
 }) {
   const [initialView, setInitialView] = useState<object | null>(null); // State for the initial view of the map
 
@@ -81,11 +81,11 @@ export const MapBBox = function ({
    * @param {Array<Array<number>> | null} points - The points of the bounding box.
    * @param {number} area - The area of the bounding box.
    */
-  const onBboxDescriptionChange = (points: Array<Array<number>> | null, area: number |null) => {
+  const onBboxDescriptionChange = (points: Array<Array<number>> | null, area: number | null) => {
     if (points?.length === 4 && area && setBboxDescription) {
       const bboxExtentPoints = [points[0], points[2]];
       const bboxRoundedCoordinates = roundCoordinates(bboxExtentPoints).map(coordinate => coordinate.replace(",", ", "));
-			const bboxRoundedArea = Math.round(area).toLocaleString().replace(",", " ");
+      const bboxRoundedArea = Math.round(area).toLocaleString().replace(",", " ");
       setBboxDescription(
         `${bboxRoundedCoordinates[0]} ${bboxRoundedCoordinates[1]} (${bboxRoundedArea} sqkm)`
       );
@@ -104,14 +104,14 @@ export const MapBBox = function ({
     onBboxDescriptionChange(points, area);
     if (points?.length === 4 && area) {
       const bboxExtent = [...points[0], ...points[2]] as BboxExtentType;
-      setBboxExtent(bboxExtent);
+      setBboxExtent?.(bboxExtent);
       if (area > minBboxArea && area < maxBboxArea) {
-        setBboxIsInBounds(true);
+        setBboxIsInBounds?.(true);
       } else {
-        setBboxIsInBounds(false);
+        setBboxIsInBounds?.(false);
       }
     } else {
-      setBboxExtent(undefined);
+      setBboxExtent?.(undefined);
     }
   };
 

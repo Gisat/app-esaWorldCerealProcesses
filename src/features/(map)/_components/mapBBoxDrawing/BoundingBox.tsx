@@ -43,9 +43,9 @@ interface BoundingBoxProps {
  * @property {Array<Array<number>>} availableArea - Can be specified by coordinates (BL, TL, TR, BR) or by meters (width, height) in center of the screen.
  * @property {React.ReactNode} children - Map component.
  * @property {(bboxCoordinates: Array<Array<number>> | null, bboxArea: number) => void} onBboxChange - Callback when bbox coordinates change.
- * @property {number} minBorderRange - Minimum border range for the bounding box.
- * @property {number} minBboxArea - Minimum area for the bounding box.
- * @property {number} maxBboxArea - Maximum area for the bounding box.
+ * @property {number} minBorderRange - Minimum border range for the bounding box (degrees).
+ * @property {number} minBboxArea - Minimum area for the bounding box (km2).
+ * @property {number} maxBboxArea - Maximum area for the bounding box (km2).
  * @property {boolean} followMapScreen - Whether the layers move with the map.
  * @property {Object} buttonsStyles - Styles of the control buttons.
  * @property {Array<Array<number>>} bboxPoints - Initial points of the bounding box.
