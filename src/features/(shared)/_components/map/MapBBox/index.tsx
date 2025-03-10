@@ -131,7 +131,7 @@ export const MapBBox = function ({
       {
         width: mapSize[0],
         height: mapSize[1],
-        padding: 20,
+        padding: 50,
       }
     );
     setInitialView(fitView);
