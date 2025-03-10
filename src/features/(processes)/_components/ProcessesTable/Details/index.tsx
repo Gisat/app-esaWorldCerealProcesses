@@ -1,6 +1,6 @@
 import "./style.css";
 import React, { useState } from "react";
-import {MapBBox} from "@features/(shared)/_components/map/MapBBox";
+import { MapBBox } from "@features/(shared)/_components/map/MapBBox";
 import { customProducts, products } from "@features/(processes)/_constants/app";
 import { TextDescription } from "@features/(shared)/_layout/_components/Content/TextDescription";
 
@@ -36,6 +36,19 @@ const Details = ({ bbox, startDate, endDate, resultFileFormat, oeoCollection, oe
 	const collection = products.find(p => p.value === oeoCollection);
 	const process = customProducts.find(p => p.value === oeoProcessId);
 
+	/**
+	 * Extracts the filename from a given result object containing a source link.
+	 *
+	 * @param result - An object containing a `source_link` property which is a URL string.
+	 * @returns The filename extracted from the URL's pathname, with the "openEO_" prefix removed if present.
+	 */
+	const getFilenameFromResult = (result: { source_link: string }) => {
+		const url = new URL(result.source_link);
+		const pathname = url.pathname;
+		const filename = pathname.substring(pathname.lastIndexOf('/') + 1);
+		return filename.replace(/^openEO_/, '');
+	};
+
 	return <div className="worldCereal-ProcessesTable-Details">
 		<div className="worldCereal-ProcessesTable-Details-column">
 			<TextDescription>
@@ -51,7 +64,7 @@ const Details = ({ bbox, startDate, endDate, resultFileFormat, oeoCollection, oe
 		</div>
 		{results?.[0] && <div className="worldCereal-ProcessesTable-Details-column">
 			<DetailsItem label={"Download results"}>
-				{results.map((result, index) => <div key={result.source_link} className="worldCereal-ProcessesTable-DetailItem-result"><a href={result.source_link}>Product {index + 1}</a></div>)}
+				{results.map((result) => <div key={result.source_link} className="worldCereal-ProcessesTable-DetailItem-result"><a href={result.source_link} target="_blank">{getFilenameFromResult(result)}</a></div>)}
 			</DetailsItem>
 		</div>}
 	</div>
