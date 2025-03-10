@@ -145,7 +145,7 @@ export default function Page({
           </Group>
           <MapBBox
 						mapSize={[550, 400]}
-						minBboxArea={0.9}
+						minBboxArea={0.0009}
 						maxBboxArea={2500}
 						bbox={bbox?.map(Number)}
 						setBboxDescription={setBboxDescription}

@@ -32,8 +32,8 @@ const roundCoordinates = (coordinatesToRound: Array<Array<number>>) =>
  * @param {Array<number>} [props.mapSize=defaultMapSize] - The size of the map.
  * @param {boolean} [props.disabled] - Whether the bounding box is disabled.
  * @param {Array<number>} [props.bbox] - The bounding box coordinates.
- * @param {number} [props.minBboxArea=1] - The minimum area of the bounding box.
- * @param {number} [props.maxBboxArea=10000] - The maximum area of the bounding box.
+ * @param {number} [props.minBboxArea=0.0009] - The minimum area of the bounding box.
+ * @param {number} [props.maxBboxArea=100000] - The maximum area of the bounding box.
  * @param {Function} [props.setBboxDescription] - Callback function for setting the description of the bounding box.
  * @param {Function} [props.setBboxExtent] - Callback function for setting the extent of the bounding box.
  * @param {Function} [props.setBboxIsInBounds] - Callback function for setting whether the bounding box is within bounds.
@@ -43,7 +43,7 @@ export const MapBBox = function ({
   bbox,
   disabled,
   mapSize = defaultMapSize,
-  minBboxArea = 0.9,
+  minBboxArea = 0.0009,
   maxBboxArea = 100000,
   setBboxDescription,
   setBboxExtent,
