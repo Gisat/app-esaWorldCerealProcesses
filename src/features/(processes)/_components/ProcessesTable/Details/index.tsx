@@ -1,6 +1,6 @@
 import "./style.css";
 import React, { useState } from "react";
-import {MapBBox} from "@features/(shared)/_components/map/MapBBox";
+import { MapBBox } from "@features/(shared)/_components/map/MapBBox";
 import { customProducts, products } from "@features/(processes)/_constants/app";
 import { TextDescription } from "@features/(shared)/_layout/_components/Content/TextDescription";
 
@@ -41,7 +41,7 @@ const Details = ({ bbox, startDate, endDate, resultFileFormat, oeoCollection, oe
 				Extent: {bbox ? coordinatesToDisplay : "none"}{" "}
 				{areaBbox && bbox ? `(${areaBbox} sqkm)` : ""}
 			</TextDescription>
-			<MapBBox bbox={bbox?.map(Number)} disabled mapSize={[300, 300]} setAreaBbox={setAreaBbox} setCoordinatesToDisplay={setCoordinatesToDisplay} coordinatesToDisplay={coordinatesToDisplay}/>
+			<MapBBox bbox={bbox?.map(Number)} disabled mapSize={[300, 300]} setAreaBbox={setAreaBbox} setCoordinatesToDisplay={setCoordinatesToDisplay} coordinatesToDisplay={coordinatesToDisplay} />
 		</div>
 		<div className="worldCereal-ProcessesTable-Details-column">
 			<DetailsItem label={"Product"}>{collection?.label || process?.label}</DetailsItem>
