@@ -3,6 +3,8 @@ import React, { useState } from "react";
 import { MapBBox } from "@features/(shared)/_components/map/MapBBox";
 import { customProducts, products } from "@features/(processes)/_constants/app";
 import { TextDescription } from "@features/(shared)/_layout/_components/Content/TextDescription";
+import ProductValuesInfo
+	from "@features/(processes)/_components/ProcessesTable/ProductValuesInfo";
 
 type DetailsItemProps = {
 	children: React.ReactNode,
@@ -23,13 +25,14 @@ type DetailsProps = {
 	bbox?: number[],
 	costs?: number,
 	duration?: number,
+	showValuesInfo?: boolean,
 	oeoCollection?: string,
 	oeoProcessId?: string,
 	resultFileFormat?: string,
 	results?: Array<{ source_link: string }>,
 }
 
-const Details = ({ bbox, startDate, endDate, resultFileFormat, oeoCollection, oeoProcessId, results }: DetailsProps) => {
+const Details = ({ bbox, startDate, endDate, resultFileFormat, oeoCollection, oeoProcessId, results, showValuesInfo }: DetailsProps) => {
 	const [areaBbox, setAreaBbox] = useState<number | undefined>(undefined);
 	const [coordinatesToDisplay, setCoordinatesToDisplay] = useState<string | Array<string> | null>(null);
 	const collection = products.find(p => p.value === oeoCollection);
@@ -62,11 +65,12 @@ const Details = ({ bbox, startDate, endDate, resultFileFormat, oeoCollection, oe
 			<DetailsItem label={"End date"}>{endDate ? new Date(endDate).toLocaleDateString() : ''}</DetailsItem>
 			<DetailsItem label={"Output file format"}>{resultFileFormat}</DetailsItem>
 		</div>
-		{results?.[0] && <div className="worldCereal-ProcessesTable-Details-column">
-			<DetailsItem label={"Download results"}>
+		<div className="worldCereal-ProcessesTable-Details-column">
+			{results?.[0] && <DetailsItem label={"Download results"}>
 				{results.map((result) => <div key={result.source_link} className="worldCereal-ProcessesTable-DetailItem-result"><a href={result.source_link} target="_blank">{getFilenameFromResult(result)}</a></div>)}
-			</DetailsItem>
-		</div>}
+			</DetailsItem>}
+			{showValuesInfo && <DetailsItem label="Values description"><ProductValuesInfo/></DetailsItem>}
+		</div>
 	</div>
 }
 
