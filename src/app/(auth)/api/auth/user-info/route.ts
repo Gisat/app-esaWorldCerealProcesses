@@ -7,26 +7,25 @@ export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
 
 export async function GET(req: NextRequest) {
-    try {
+  try {
+    // user info auth URL
+    const identityUrl = process.env.PID_URL as string;
+    const userInfoUrl = `${identityUrl}/oid/user-info`;
 
-        // user info auth URL
-        const identityUrl = process.env.PID_URL as string
-        const userInfoUrl = `${identityUrl}/oid/user-info`
-        
-        // build cookie domain of the backend app
-        const { backendContent, setCookieHeader } = await fetchWithSessions({
-            method: "GET",
-            url: userInfoUrl,
-            browserCookies: req.cookies,
-            requireSessionId: true
-        })
+    // build cookie domain of the backend app
+    const { backendContent, setCookieHeader } = await fetchWithSessions({
+      method: "GET",
+      url: userInfoUrl,
+      browserCookies: req.cookies,
+      requireSessionId: true,
+    });
 
-        // check fetch result
-        if (!backendContent)
-            throw new Error("Fetch response data missing in session fetch");
+    // check fetch result
+    if (!backendContent)
+      throw new Error("Fetch response data missing in session fetch");
 
-        if (!setCookieHeader)
-            throw new Error("Fetch response with new session cookie missing");
+    if (!setCookieHeader)
+      throw new Error("Fetch response with new session cookie missing");
 
     // prepare NextJS response with recived cookies including new SID
     const nextResponse = NextResponse.json(backendContent);
@@ -37,12 +36,11 @@ export async function GET(req: NextRequest) {
     }
     return nextResponse;
   } catch (error: any) {
-      const { message, status } = handleRouteError(error)
-      const response = NextResponse.json({ error: message }, { status })
-      
-      if(status === 401) 
-        response.cookies.delete("sid")
+    const { message, status } = handleRouteError(error);
+    const response = NextResponse.json({ error: message }, { status });
 
-      return response
+    if (status === 401) response.cookies.delete("sid");
+
+    return response;
   }
 }
