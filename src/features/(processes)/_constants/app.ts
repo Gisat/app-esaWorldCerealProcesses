@@ -130,6 +130,7 @@ export const customProducts: {
     label: "Cropland",
     namespace:
       "https://raw.githubusercontent.com/WorldCereal/worldcereal-classification/refs/tags/worldcereal_crop_extent_v1.0.1/src/worldcereal/udp/worldcereal_crop_extent.json",
+    disabled: false,
   },
   {
     value: "worldcereal_crop_type",

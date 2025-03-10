@@ -26,7 +26,7 @@ export async function middleware(request: NextRequest) {
   }
 
   if (loggedIn && request.nextUrl.pathname == "/") {
-    // Redirection to root page /
+    // Redirection to home page
     return NextResponse.redirect(new URL("/home", request.url));
   }
 

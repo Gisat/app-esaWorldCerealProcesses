@@ -76,7 +76,8 @@ export default function Page({
 
   const product = searchParams?.product || null;
   const productIsValid = customProducts.some(
-    (p: { value: string }) => p.value === product
+    (p: { value: string; disabled?: boolean }) =>
+      p.value === product && !p.disabled
   );
 
   return (
@@ -104,7 +105,11 @@ export default function Page({
           onChange={(value) => value && setUrlParam("model", value)}
           disabled
         />
-        <PageSteps NextButton={createElement(NextButton, { product })} />
+        <PageSteps
+          NextButton={createElement(NextButton, {
+            product: productIsValid ? product : null,
+          })}
+        />
       </Column>
     </TwoColumns>
   );
