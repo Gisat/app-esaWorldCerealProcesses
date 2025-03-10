@@ -118,7 +118,7 @@ const handleClickWithoutPredictedPoints = ({
     setPredictedHoveredPoints,
     onBboxCoordinatesChange
 }: HandleClickWithoutPredictedPointsProps) => {
-    if (info && info.layer && info.layer.id === LAYER_ID_BBOX) {
+    if (info?.layer?.id === LAYER_ID_BBOX) {
         // Toggle edit mode if clicking on the bounding box layer
         setEditModeIsActive((prev: boolean) => !prev);
     } else if (activeBboxPoints.length < 2) {
