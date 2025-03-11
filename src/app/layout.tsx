@@ -11,6 +11,7 @@ import "./styles/index.css";
 
 import Header from "@features/(shared)/_layout/_components/Header";
 import FaroFrontendMonitoring from "../features/(grafana)/_components/FaroFrontendMonitoring";
+import InstanceWarning from "@features/(shared)/_components/InstanceWarning";
 
 export const metadata: Metadata = {
   title: "WorldCereals Processes",
@@ -31,6 +32,7 @@ export default function RootLayout({
         ></link>
       </head>
       <body className={`esaWorldCerealProcesses`}>
+        <InstanceWarning/>
         <FaroFrontendMonitoring envUrl="/api/faro" />
         <MantineProvider>
           <AppShell

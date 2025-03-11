@@ -4,3 +4,6 @@ OID_SELF_REDIRECT_URL="http://localhost:3000/api/auth/callback"
 PID_URL=http://localhost:6111
 OEO_URL=http://localhost:6100
 FARO_URL=https://collector.example.com/collect/your-collector-id
+INSTANCE_WARNING_HIDDEN=false
+INSTANCE_WARNING_COLOR=#00ff00
+INSTANCE_WARNING_TEXT=I am a testing instance
