@@ -48,8 +48,21 @@ export default function Page({
 }) {
   // hooks
   const { setUrlParam, setUrlParams } = useUrlParam();
-  const [searchParams, setSearchParams] = useState(initialSearchParams);
+  const [searchParams, setSearchParams] = useState(initialSearchParams || {});
   const mounted = useRef(false);
+
+  // Initialize bbox from URL params first
+  const initialBbox = initialSearchParams?.bbox
+    ?.split(",")
+    .map(Number) as BoundingBoxExtent;
+
+  const [bboxDescription, setBboxDescription] = useState<
+    string | string[] | null
+  >(null);
+  const [bboxExtent, setBboxExtent] = useState<BoundingBoxExtent | null>(
+    initialBbox || null
+  );
+  const [bboxIsInBounds, setBboxIsInBounds] = useState<boolean | null>(null);
 
   // constants
   const paramValidations = {
@@ -71,16 +84,6 @@ export default function Page({
     paramValidations,
     "/generate-custom-products?step=1"
   );
-
-  const bbox: BoundingBoxExtent = searchParams?.bbox
-    ?.split(",")
-    .map(Number) as BoundingBoxExtent;
-
-  const [bboxDescription, setBboxDescription] = useState<
-    string | string[] | null
-  >(null);
-  const [bboxExtent, setBboxExtent] = useState<BoundingBoxExtent | null>(bbox);
-  const [bboxIsInBounds, setBboxIsInBounds] = useState<boolean | null>(null);
 
   // Single consolidated initialization effect
   useEffect(() => {
@@ -125,13 +128,23 @@ export default function Page({
     }
   }, [setUrlParam, bboxExtent, bboxIsInBounds]);
 
+  // Update searchParams when bbox changes
+  useEffect(() => {
+    if (bboxExtent && bboxIsInBounds) {
+      setSearchParams((prev) => ({
+        ...prev,
+        bbox: bboxExtent.join(","),
+      }));
+    }
+  }, [bboxExtent, bboxIsInBounds]);
+
   const product = searchParams?.product || undefined;
   const startDate = searchParams?.startDate || defaultProductsDates.startDate;
   const endDate = searchParams?.endDate || defaultProductsDates.endDate;
   const outputFormat = searchParams?.off || defaultOutputValue;
 
   const params = {
-    bbox: searchParams?.bbox || undefined,
+    bbox: searchParams?.bbox,
     startDate: startDate,
     endDate: endDate,
     product: product,
@@ -150,7 +163,6 @@ export default function Page({
   };
 
   const isDisabled =
-    !bboxIsInBounds ||
     !params.bbox ||
     !params.product ||
     !params.endDate ||
@@ -173,7 +185,7 @@ export default function Page({
             mapSize={[550, 400]}
             minBboxArea={0.0009}
             maxBboxArea={2500}
-            bbox={bbox?.map(Number)}
+            bbox={bboxExtent || undefined}
             setBboxDescription={setBboxDescription}
             setBboxExtent={setBboxExtent}
             setBboxIsInBounds={setBboxIsInBounds}
