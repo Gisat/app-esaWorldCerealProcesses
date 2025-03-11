@@ -11,7 +11,7 @@ import {
 } from "@features/(processes)/_constants/app";
 import { requiredParamsStep2 as requiredParams } from "@features/(processes)/_constants/generate-custom-products/requiredParams";
 import { useStepValidation } from "@features/(processes)/_hooks/_url/useStepValidation";
-import { useUrlParamCheck } from "@features/(processes)/_hooks/_url/useUrlParamCheck";
+import { useOutputFormat } from "@features/(processes)/_hooks/useOutputFormat";
 import { MapBBox } from "@features/(shared)/_components/map/MapBBox";
 import { useUrlParam } from "@features/(shared)/_hooks/_url/useUrlParam";
 import FormLabel from "@features/(shared)/_layout/_components/Content/FormLabel";
@@ -22,7 +22,7 @@ import TwoColumns, {
   Column,
 } from "@features/(shared)/_layout/_components/Content/TwoColumns";
 import { Group, Stack } from "@mantine/core";
-import { createElement, useEffect, useState } from "react";
+import { createElement, useEffect, useRef, useState } from "react";
 
 type BboxCornerPointsType = [number, number, number, number] | undefined;
 
@@ -34,7 +34,7 @@ type BboxCornerPointsType = [number, number, number, number] | undefined;
  * @returns {JSX.Element} Page component rendering the job creation process.
  */
 export default function Page({
-  searchParams,
+  searchParams: initialSearchParams,
 }: {
   searchParams?: {
     step?: string;
@@ -49,8 +49,8 @@ export default function Page({
 }) {
   // hooks
   const { setUrlParam, setUrlParams } = useUrlParam();
-  const hasStartDate = useUrlParamCheck("startDate");
-  const hasEndDate = useUrlParamCheck("endDate");
+  const [searchParams, setSearchParams] = useState(initialSearchParams);
+  const mounted = useRef(false);
 
   // constants
   const paramValidations = {
@@ -59,7 +59,7 @@ export default function Page({
   const minDate = new Date(customProductsDateLimits.min);
   const maxDate = new Date(customProductsDateLimits.max);
   const defaultOutputValue: "GTiff" | "NETCDF" = "GTiff";
-  const defaultOutputValues: object = [
+  const defaultOutputValues: { label: string; value: "GTiff" | "NETCDF" }[] = [
     { label: "NetCDF", value: "NETCDF" },
     { label: "GeoTiff", value: "GTiff" },
   ];
@@ -84,19 +84,49 @@ export default function Page({
   const [currentExtent, setCurrentExtent] =
     useState<BboxCornerPointsType>(bbox);
 
-  // Get params from components
+  const { value: outputFormat, setValue: setOutputFormat } =
+    useOutputFormat(defaultOutputValue);
 
+  // Set initial URL params only once
   useEffect(() => {
-    if (!hasStartDate || !hasEndDate) {
-      setUrlParams([
-        ["startDate", defaultProductsDates.startDate],
-        ["endDate", defaultProductsDates.endDate],
-      ]);
+    if (!mounted.current) {
+      mounted.current = true;
+
+      // Collect all missing parameters that need to be set
+      const missingParams: [string, string][] = [];
+
+      if (!initialSearchParams?.startDate || !initialSearchParams?.endDate) {
+        missingParams.push(
+          ["startDate", defaultProductsDates.startDate],
+          ["endDate", defaultProductsDates.endDate]
+        );
+      }
+
+      // Ensure 'off' parameter is set
+      if (!initialSearchParams?.off) {
+        missingParams.push(["off", defaultOutputValue]);
+      }
+
+      // Set all missing parameters at once if any exist
+      if (missingParams.length > 0) {
+        console.log("Setting initial params:", missingParams);
+        setUrlParams(missingParams);
+
+        // Update local state
+        setSearchParams((prev) => ({
+          ...prev,
+          ...Object.fromEntries(missingParams),
+        }));
+      }
     }
-  }, [setUrlParams, hasEndDate, hasStartDate]);
+  }, [initialSearchParams, setUrlParams]);
+
+  // Update local state whenever URL params change
+  useEffect(() => {
+    setSearchParams(initialSearchParams);
+  }, [initialSearchParams]);
 
   const product = searchParams?.product || undefined;
-  const off = searchParams?.off || undefined;
   const startDate = searchParams?.startDate || defaultProductsDates.startDate;
   const endDate = searchParams?.endDate || defaultProductsDates.endDate;
 
@@ -105,7 +135,7 @@ export default function Page({
     startDate: startDate,
     endDate: endDate,
     product: product,
-    off: off,
+    off: outputFormat, // Use outputFormat instead of off
   };
 
   /**
@@ -127,10 +157,10 @@ export default function Page({
   };
 
   /**
-   *  Pushing params to URL
+   *  Update output format using the hook
    */
   const onOutpoutFormatChange = (value: "GTiff" | "NETCDF") => {
-    setUrlParam("off", value);
+    setOutputFormat(value);
   };
 
   const handleDateChange = (startDate: string, endDate: string) => {
@@ -229,6 +259,8 @@ export default function Page({
                * the `maxDate`
                */
               maxDate={maxDate} // Max End Date (31/12/24)
+              startDate={searchParams?.startDate}
+              endDate={searchParams?.endDate}
               onChange={handleDateChange}
             />
           </div>
@@ -238,6 +270,7 @@ export default function Page({
             <SelectOutput
               onChange={onOutpoutFormatChange}
               defaultValue={defaultOutputValue}
+              value={outputFormat}
               data={defaultOutputValues}
             />
           </div>

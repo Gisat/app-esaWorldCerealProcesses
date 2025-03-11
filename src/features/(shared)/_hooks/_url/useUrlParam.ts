@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback } from "react";
 
 /**
@@ -11,6 +11,7 @@ import { useCallback } from "react";
 const useUrlParam = () => {
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
 
   /**
    * Updates or removes a query parameter in the URL.
@@ -30,26 +31,33 @@ const useUrlParam = () => {
     (key: string, value: string | null | undefined): void => {
       if (typeof window === "undefined") return; // Prevent SSR issues
 
-      const params = new URLSearchParams(window.location.search); // Always get the latest URL params
+      // Create new URLSearchParams with all existing parameters
+      const params = new URLSearchParams(searchParams.toString());
 
+      // Update or delete the specified parameter
       if (value && value !== "") {
         params.set(key, value);
       } else {
         params.delete(key);
       }
 
-      // Update the URL with the new query params
-      router.push(`${pathname}?${params.toString()}`, { scroll: false });
+      console.log(`Updating URL with param: ${key}=${value}`);
+      console.log("All params:", params.toString());
+
+      // Update URL while preserving other parameters
+      router.replace(`${pathname}?${params.toString()}`, { scroll: false });
     },
-    [router, pathname]
+    [router, pathname, searchParams]
   );
 
   const setUrlParams = useCallback(
     (paramsToSet: [key: string, value: string | null | undefined][]): void => {
       if (typeof window === "undefined") return; // Prevent SSR issues
 
-      const params = new URLSearchParams(window.location.search); // Always get the latest URL params
+      // Create new URLSearchParams with all existing parameters
+      const params = new URLSearchParams(searchParams.toString());
 
+      // Update or delete the specified parameters
       for (const [key, value] of paramsToSet) {
         if (value && value !== "") {
           params.set(key, value);
@@ -58,10 +66,12 @@ const useUrlParam = () => {
         }
       }
 
-      // Update the URL with the new query params
-      router.push(`${pathname}?${params.toString()}`, { scroll: false });
+      console.log("Updated URL params:", params.toString());
+
+      // Update URL while preserving other parameters
+      router.replace(`${pathname}?${params.toString()}`, { scroll: false });
     },
-    [router, pathname]
+    [router, pathname, searchParams]
   );
 
   return { setUrlParam, setUrlParams };

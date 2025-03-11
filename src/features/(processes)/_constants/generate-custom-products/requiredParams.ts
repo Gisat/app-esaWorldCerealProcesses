@@ -1,9 +1,9 @@
 export const requiredParamsStep1 = {
-  product: true,
-  startDate: true,
-  endDate: true,
+  product: false,
+  startDate: false,
+  endDate: false,
   outputFileFormat: false,
-  bbox: true,
+  bbox: false,
 };
 
 export const requiredParamsStep2 = {
@@ -18,6 +18,6 @@ export const requiredParamsStep3 = {
   product: true,
   startDate: true,
   endDate: true,
-  outputFileFormat: false,
+  outputFileFormat: true,
   bbox: true,
 };
