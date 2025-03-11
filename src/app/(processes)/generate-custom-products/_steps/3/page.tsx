@@ -100,7 +100,7 @@ export default function Page({
     <>
       <TextParagraph color="var(--textAccentedColor)">
         <b>
-          You have created the Download official products process with following
+          You have created the Custom product process with following
           parameters:
         </b>
       </TextParagraph>

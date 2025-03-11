@@ -173,23 +173,24 @@ export default function Page({
     <TwoColumns>
       <Column>
         <SectionContainer>
-          <Group justify="space-between" align="end" w="100%">
-            <FormLabel>
-              Draw the extent (MIN: 900 sqm, MAX: 2 500 sqkm)
-            </FormLabel>
-            <TextDescription>
-              Current extent: {bboxDescription || "No extent selected"}
+          <Group gap={"0.3rem"} align="baseline">
+            <FormLabel>Draw the extent</FormLabel>
+            <TextDescription color={"var(--textSecondaryColor)"}>
+              (MIN: 900 sqm, MAX: 100 000 sqkm)
             </TextDescription>
           </Group>
           <MapBBox
             mapSize={[550, 400]}
             minBboxArea={0.0009}
             maxBboxArea={2500}
-            bbox={bboxExtent || undefined}
+            bbox={initialBbox?.map(Number) || undefined}
             setBboxDescription={setBboxDescription}
             setBboxExtent={setBboxExtent}
             setBboxIsInBounds={setBboxIsInBounds}
           />
+          <TextDescription>
+            Current extent: {bboxDescription || "No extent selected"}
+          </TextDescription>
         </SectionContainer>
         <TextDescription>
           <b>
@@ -237,7 +238,7 @@ export default function Page({
               </TextDescription>
             </div>
           </div>
-          <div style={{ width: "100%" }}>
+          <div style={{ width: "20rem" }}>
             <SelectMonth
               label="Ending month"
               disabled={false}
@@ -254,7 +255,7 @@ export default function Page({
             />
           </div>
 
-          <div style={{ width: "100%" }}>
+          <div style={{ width: "20rem" }}>
             <FormLabel>Output file format</FormLabel>
             <SelectOutput
               onChange={handleOutputFormatChange}

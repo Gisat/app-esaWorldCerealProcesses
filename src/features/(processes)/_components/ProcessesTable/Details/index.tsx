@@ -57,7 +57,7 @@ const Details = ({ bbox, startDate, endDate, resultFileFormat, oeoCollection, oe
 			<TextDescription>
 				Extent: {bboxDescription}
 			</TextDescription>
-			<MapBBox bbox={bbox?.map(Number)} disabled mapSize={[300, 300]} setBboxDescription={setBboxDescription}/>
+			<MapBBox bbox={bbox?.map(Number)} disabled mapSize={[400, 300]} setBboxDescription={setBboxDescription}/>
 		</div>
 		<div className="worldCereal-ProcessesTable-Details-column">
 			<DetailsItem label={"Product"}>{collection?.label || process?.label}</DetailsItem>
