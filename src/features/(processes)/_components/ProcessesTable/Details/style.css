@@ -9,11 +9,12 @@
   flex-direction: column;
 
   &:not(:first-child) {
-    margin-left: 5rem;
+    margin-left: 3rem;
   }
 }
 
 .worldCereal-ProcessesTable-DetailItem {
+  margin-bottom: .5rem;
   span {
     color: var(--textSecondaryColor);
     font-size: var(--a0);

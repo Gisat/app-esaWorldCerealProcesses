@@ -3,7 +3,7 @@ import ControlButtons from "./ControlButtons";
 import { dragLayer } from "./_logic/dragLayer";
 import { editLayerBorder } from "./_logic/editLayerBorder";
 import { availableAreaLayer } from "./_layers/availableAreaLayer";
-import { bboxLayer } from "./_layers/bBoxLayer";
+import { bboxLayer } from "./_layers/boundingBoxLayer";
 import {
     DRAG_LAYER,
     DRAG_LAYER_BORDER,
@@ -17,19 +17,23 @@ import { onViewStateChange } from "./_logic/onViewStateChange";
 import { clearPoints } from "./_logic/clearPoints";
 import { onHover } from "./_logic/onHover";
 import { bboxDragInfo, BboxEnclosedPoints, BboxPoint, BboxPoints, ClickInfo, Coordinate, DragInfo, DragStartInfo, GetCursorInfo, HoverInfo, ViewStateChangeInfo } from "./types";
+import { area as turfArea } from '@turf/area';
+import { polygon as turfPolygon } from '@turf/helpers';
 
 interface BoundingBoxProps {
     availableArea?: Array<Array<number>>;
     children: React.ReactNode;
-    onBboxCoordinatesChange: (bbox: BboxPoints | BboxPoint | null) => void;
+    onBboxChange: (bboxCoordinates: BboxPoints | BboxPoint | null, bboxArea: number | null) => void;
+    minBorderRange?: number;
     minBboxArea?: number;
+    maxBboxArea?: number;
     followMapScreen?: boolean;
     buttonsStyles?: object;
     bboxPoints?: BboxPoints;
     disabled?: boolean;
     availableAreaConfig?: object;
     bboxConfig?: object;
-		CustomButtonsComponent?: React.ReactElement;
+    CustomButtonsComponent?: React.ReactElement;
 }
 
 /**
@@ -38,25 +42,34 @@ interface BoundingBoxProps {
  * @typedef {Object} BoundingBoxProps
  * @property {Array<Array<number>>} availableArea - Can be specified by coordinates (BL, TL, TR, BR) or by meters (width, height) in center of the screen.
  * @property {React.ReactNode} children - Map component.
- * @property {(bbox: Array<Array<number>> | null) => void} onBboxCoordinatesChange - Callback when bbox coordinates change.
- * @property {number} minBboxArea - Minimum area for the bounding box.
+ * @property {(bboxCoordinates: Array<Array<number>> | null, bboxArea: number) => void} onBboxChange - Callback when bbox coordinates change.
+ * @property {number} minBorderRange - Minimum border range for the bounding box (degrees).
+ * @property {number} minBboxArea - Minimum area for the bounding box (km2).
+ * @property {number} maxBboxArea - Maximum area for the bounding box (km2).
  * @property {boolean} followMapScreen - Whether the layers move with the map.
  * @property {Object} buttonsStyles - Styles of the control buttons.
+ * @property {Array<Array<number>>} bboxPoints - Initial points of the bounding box.
+ * @property {boolean} disabled - Whether the bounding box is disabled.
+ * @property {Object} availableAreaConfig - Configuration for the available area layer.
+ * @property {Object} bboxConfig - Configuration for the bounding box layer.
+ * @property {React.ReactElement} CustomButtonsComponent - Custom buttons component.
  * @returns {JSX.Element} The rendered BoundingBox component.
  */
 
 const BoundingBox: React.FC<BoundingBoxProps> = ({
-    availableArea = [],
+    availableArea = null,
     children,
-    onBboxCoordinatesChange,
-    minBboxArea = 1,
+    onBboxChange,
+    minBorderRange = 0,
+    minBboxArea = 0.9,
+    maxBboxArea = 100000,
     followMapScreen = false,
     buttonsStyles = {},
     bboxPoints = [],
     disabled = false,
     availableAreaConfig = {},
     bboxConfig = {},
-		CustomButtonsComponent
+    CustomButtonsComponent
 }) => {
     const mapRef = useRef<any>(null); // Reference to the map
     const [editModeIsActive, setEditModeIsActive] = useState(false); // Edit mode state
@@ -67,6 +80,13 @@ const BoundingBox: React.FC<BoundingBoxProps> = ({
     const [previousDraggedPoint, setPreviousDraggedPoint] = useState<Coordinate | []>([]); // Previous dragged point
     const [updatedAvailableArea, setUpdatedAvailableArea] = useState<BboxEnclosedPoints | null>(null); // Updated available area
     const [predictedHoveredPoints, setPredictedHoveredPoints] = useState<BboxPoints | null>(null); // Predicted hovered points
+    const [bboxArea, setBboxArea] = useState<number | null>(null); // Area of the bounding box
+
+    const viewport = mapRef?.current?.deck?.viewManager?._viewports?.[0];
+
+    const onBboxCoordinatesChange = (bboxCoordinates: BboxPoints | BboxPoint | null) => {
+        onBboxChange(bboxCoordinates, bboxArea);
+    }
 
     // Effect to handle dragging of the bounding box
     const updateBboxDragInfo = (updatedDragInfo: bboxDragInfo | null) => {
@@ -88,7 +108,7 @@ const BoundingBox: React.FC<BoundingBoxProps> = ({
                         activeBboxPoints,
                         updatedAvailableAreaLat,
                         updatedAvailableAreaLong,
-                        minBboxArea,
+                        minBorderRange,
                         updatedAvailableArea,
                         setActiveBboxPoints
                     });
@@ -100,7 +120,7 @@ const BoundingBox: React.FC<BoundingBoxProps> = ({
                         originLinePointCoordinates: originalBboxBorderCoordinates,
                         updatedAvailableAreaLat,
                         updatedAvailableAreaLong,
-                        minBboxArea,
+                        minBorderRange,
                         updatedAvailableArea,
                         setActiveBboxPoints,
                         setOriginalBboxBorderCoordinates
@@ -114,8 +134,7 @@ const BoundingBox: React.FC<BoundingBoxProps> = ({
 
     // Effect to update available area based on the provided coordinates
     useEffect(() => {
-        const viewport = mapRef?.current?.deck?.viewManager?._viewports?.[0];
-        if (viewport) {
+        if (viewport && availableArea) {
             switch (availableArea.length) {
                 case 1: {
                     const topRight = viewport.addMetersToLngLat([viewport.longitude, viewport.latitude], [availableArea[0][0] / 2, availableArea[0][1] / 2]);
@@ -130,8 +149,18 @@ const BoundingBox: React.FC<BoundingBoxProps> = ({
                 default:
                     break;
             }
+        } else {
+            setUpdatedAvailableArea(null)
         }
-    }, [availableArea, mapRef]);
+
+        const currentPoints = predictedHoveredPoints || activeBboxPoints;
+
+        if (currentPoints?.length === 4) {
+            const polygon = turfPolygon([[...currentPoints, currentPoints[0]]], { name: "polygon" });
+            const area = turfArea(polygon) / 1000000;
+            setBboxArea(area)
+        }
+    }, [availableArea, activeBboxPoints, predictedHoveredPoints, viewport]);
 
     const mappedChildren = Children.map(children, child => {
         // Destructure props for better readability
@@ -160,7 +189,7 @@ const BoundingBox: React.FC<BoundingBoxProps> = ({
             info,
             updatedAvailableArea,
             activeBboxPoints,
-            minBboxArea,
+            minBorderRange,
             editModeIsActive,
             setBboxIsHovered,
             setActiveBboxPoints,
@@ -209,7 +238,8 @@ const BoundingBox: React.FC<BoundingBoxProps> = ({
                     bboxIsHovered,
                     editModeIsActive,
                     predictedHoveredPoints,
-                    config: bboxConfig
+                    config: bboxConfig,
+                    bboxIsInBounds: (bboxArea && bboxArea >= minBboxArea && bboxArea <= maxBboxArea) || !bboxArea
                 })
             ],
             getCursor: cursorHandler,
@@ -218,23 +248,23 @@ const BoundingBox: React.FC<BoundingBoxProps> = ({
             onStartDragging: startDragHandler,
             onStopDragging: stopDragHandler,
             onViewStateChange: viewStateChangeHandler,
-            disableControls: editModeIsActive || isDisabled
+						disableControls: isDisabled || (editModeIsActive && activeBboxPoints.length !== 4) || (editModeIsActive && bboxIsHovered && bboxDragInfo?.dragType)
         });
     });
 
     return (
         <>
             {mappedChildren}
-            {!disabled ? 
+            {!disabled ?
                 <ControlButtons
                     isActive={editModeIsActive}
                     activeBboxPoints={activeBboxPoints}
                     customStyles={buttonsStyles}
                     setEditModeIsActive={setEditModeIsActive}
                     clearPoints={() => clearPoints(setActiveBboxPoints, setPredictedHoveredPoints, onBboxCoordinatesChange)}
-										CustomButtonsComponent={CustomButtonsComponent}
-                /> 
-            : null}
+                    CustomButtonsComponent={CustomButtonsComponent}
+                />
+                : null}
         </>
     );
 };

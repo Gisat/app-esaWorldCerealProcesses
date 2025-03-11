@@ -12,6 +12,7 @@ import {
 import { requiredParamsStep2 as requiredParams } from "@features/(processes)/_constants/generate-custom-products/requiredParams";
 import { useStepValidation } from "@features/(processes)/_hooks/_url/useStepValidation";
 import { useOutputFormat } from "@features/(processes)/_hooks/useOutputFormat";
+import { BoundingBoxExtent } from "@features/(processes)/_types/boundingBoxExtent";
 import { MapBBox } from "@features/(shared)/_components/map/MapBBox";
 import { useUrlParam } from "@features/(shared)/_hooks/_url/useUrlParam";
 import FormLabel from "@features/(shared)/_layout/_components/Content/FormLabel";
@@ -23,8 +24,6 @@ import TwoColumns, {
 } from "@features/(shared)/_layout/_components/Content/TwoColumns";
 import { Group, Stack } from "@mantine/core";
 import { createElement, useEffect, useRef, useState } from "react";
-
-type BboxCornerPointsType = [number, number, number, number] | undefined;
 
 /**
  * Page Component
@@ -73,16 +72,15 @@ export default function Page({
     "/generate-custom-products?step=1"
   );
 
-  const bbox: BboxCornerPointsType = searchParams?.bbox
+  const bbox: BoundingBoxExtent = searchParams?.bbox
     ?.split(",")
-    .map(Number) as BboxCornerPointsType;
+    .map(Number) as BoundingBoxExtent;
 
-  const [areaBbox, setAreaBbox] = useState<number | undefined>(undefined);
-  const [coordinatesToDisplay, setCoordinatesToDisplay] = useState<
+  const [bboxDescription, setBboxDescription] = useState<
     string | string[] | null
   >(null);
-  const [currentExtent, setCurrentExtent] =
-    useState<BboxCornerPointsType>(bbox);
+  const [bboxExtent, setBboxExtent] = useState<BoundingBoxExtent | null>(bbox);
+  const [bboxIsInBounds, setBboxIsInBounds] = useState<boolean | null>(null);
 
   const { value: outputFormat, setValue: setOutputFormat } =
     useOutputFormat(defaultOutputValue);
@@ -139,24 +137,6 @@ export default function Page({
   };
 
   /**
-   * Handles the change of the bounding box.
-   * @param {Array<Array<number>> | null} extent - The new bounding box extent.
-   */
-  const onBboxChange = (extent?: Array<Array<number>> | null) => {
-    if (extent?.length === 4) {
-      const cornerPoints: BboxCornerPointsType = [
-        extent?.[2][0],
-        extent?.[2][1],
-        extent?.[0][0],
-        extent?.[0][1],
-      ];
-      setCurrentExtent(cornerPoints);
-    } else {
-      setCurrentExtent(undefined);
-    }
-  };
-
-  /**
    *  Update output format using the hook
    */
   const onOutpoutFormatChange = (value: "GTiff" | "NETCDF") => {
@@ -171,10 +151,11 @@ export default function Page({
   };
 
   useEffect(() => {
-    setUrlParam("bbox", currentExtent?.join(","));
-  }, [setUrlParam, currentExtent]);
+    setUrlParam("bbox", bboxExtent?.join(","));
+  }, [setUrlParam, bboxExtent]);
 
   const isDisabled =
+    !bboxIsInBounds ||
     !params.bbox ||
     !params.product ||
     !params.endDate ||
@@ -186,20 +167,21 @@ export default function Page({
       <Column>
         <SectionContainer>
           <Group justify="space-between" align="end" w="100%">
-            <FormLabel>Draw the extent</FormLabel>
+            <FormLabel>
+              Draw the extent (MIN: 900 sqm, MAX: 2 500 sqkm)
+            </FormLabel>
             <TextDescription>
-              Current extent: {bbox ? coordinatesToDisplay : "none"}{" "}
-              {areaBbox && bbox ? `(${areaBbox} sqkm)` : ""}
+              Current extent: {bboxDescription || "No extent selected"}
             </TextDescription>
           </Group>
           <MapBBox
             mapSize={[550, 400]}
-            extentSizeInMeters={[50000, 50000]} // MAX Bbox size set to 2500km2
-            onBboxChange={onBboxChange}
+            minBboxArea={0.0009}
+            maxBboxArea={2500}
             bbox={bbox?.map(Number)}
-            setAreaBbox={setAreaBbox}
-            setCoordinatesToDisplay={setCoordinatesToDisplay}
-            coordinatesToDisplay={coordinatesToDisplay}
+            setBboxDescription={setBboxDescription}
+            setBboxExtent={setBboxExtent}
+            setBboxIsInBounds={setBboxIsInBounds}
           />
         </SectionContainer>
         <TextDescription>

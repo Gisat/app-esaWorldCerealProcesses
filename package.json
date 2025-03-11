@@ -1,6 +1,6 @@
 {
   "name": "app-esaworldcerealprocesses",
-  "version": "0.0.1-dev.63",
+  "version": "0.0.1-dev.67",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -20,12 +20,13 @@
     "@mantine/dates": "^7.13.2",
     "@mantine/hooks": "^7.13.2",
     "@tabler/icons-react": "^3.11.0",
+    "@turf/area": "^7.2.0",
     "@turf/distance": "^7.1.0",
     "@turf/helpers": "^7.1.0",
     "classnames": "^2.5.1",
     "js-cookie": "^3.0.5",
     "jsonwebtoken": "^9.0.2",
-    "next": "14.2.13",
+    "next": "^14.2.24",
     "openid-client": "^5.7.0",
     "prop-types": "^15.8.1",
     "react": "^18",

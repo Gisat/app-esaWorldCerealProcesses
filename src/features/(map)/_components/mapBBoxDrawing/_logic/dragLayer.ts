@@ -14,7 +14,7 @@ interface DragLayerProps {
     /** Updated longitude bounds of the available area. */
     updatedAvailableAreaLong?: Coordinate;
     /** Minimum area required for the bounding box. */
-    minBboxArea: number;
+    minBorderRange: number;
     /** Updated available area as an array of coordinates. */
     updatedAvailableArea: BboxEnclosedPoints | null;
     /** Function to update the active bounding box points. */
@@ -32,7 +32,7 @@ export const dragLayer = ({
     activeBboxPoints,
     updatedAvailableAreaLat,
     updatedAvailableAreaLong,
-    minBboxArea,
+    minBorderRange,
     updatedAvailableArea,
     setActiveBboxPoints
 }: DragLayerProps) => {
@@ -61,10 +61,10 @@ export const dragLayer = ({
             ) {
                 // Adjust latitude based on the updated available area and minimum bbox area
                 if (diffLat > 0 && (index === 2 || index === 3)) {
-                    newLat = updatedAvailableAreaLat[1] - minBboxArea < newLat ? updatedAvailableAreaLat[1] - minBboxArea : newLat; 
+                    newLat = updatedAvailableAreaLat[1] - minBorderRange < newLat ? updatedAvailableAreaLat[1] - minBorderRange : newLat; 
                 }
                 if (diffLat < 0 && (index === 0 || index === 1)) {
-                    newLat = updatedAvailableAreaLat[0] + minBboxArea > newLat ? updatedAvailableAreaLat[0] + minBboxArea : newLat; 
+                    newLat = updatedAvailableAreaLat[0] + minBorderRange > newLat ? updatedAvailableAreaLat[0] + minBorderRange : newLat; 
                 }
 
                 // Ensure new latitude is within the updated available area
@@ -74,10 +74,10 @@ export const dragLayer = ({
 
                 // Adjust longitude based on the updated available area and minimum bbox area
                 if (diffLong > 0 && (index === 1 || index === 2)) {
-                    newLong = updatedAvailableAreaLong[1] - minBboxArea < newLong ? updatedAvailableAreaLong[1] - minBboxArea : newLong; 
+                    newLong = updatedAvailableAreaLong[1] - minBorderRange < newLong ? updatedAvailableAreaLong[1] - minBorderRange : newLong; 
                 }
                 if (diffLong < 0 && (index === 3 || index === 0)) {
-                    newLong = updatedAvailableAreaLong[0] + minBboxArea > newLong ? updatedAvailableAreaLong[0] + minBboxArea : newLong; 
+                    newLong = updatedAvailableAreaLong[0] + minBorderRange > newLong ? updatedAvailableAreaLong[0] + minBorderRange : newLong; 
                 }
 
                 // Ensure new longitude is within the updated available area

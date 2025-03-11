@@ -11,6 +11,7 @@ import { useState } from "react";
 import "./style.css";
 
 import ProcessStatus from "@features/(processes)/_components/ProcessStatus";
+import { processTypes } from "@features/(processes)/_constants/app";
 import useSWR from "swr";
 import Details from "../Details";
 
@@ -273,6 +274,7 @@ Props) => {
               oeoCollection={oeoCollection}
               oeoProcessId={oeoProcessId}
               results={results}
+              showValuesInfo={type === processTypes.download}
             />
           </Table.Td>
         </Table.Tr>
