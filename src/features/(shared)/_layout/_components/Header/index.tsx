@@ -41,7 +41,6 @@ const Header = () => {
                 className="worldCereal-Button is-secondary is-ghost"
                 size="sm"
                 component="a"
-                target="_blank"
                 variant="outline"
                 href="api/auth/logout"
               >
