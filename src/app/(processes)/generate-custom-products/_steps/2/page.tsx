@@ -11,8 +11,8 @@ import {
 } from "@features/(processes)/_constants/app";
 import { requiredParamsStep2 as requiredParams } from "@features/(processes)/_constants/generate-custom-products/requiredParams";
 import { useStepValidation } from "@features/(processes)/_hooks/_url/useStepValidation";
-import { useOutputFormat } from "@features/(processes)/_hooks/useOutputFormat";
 import { BoundingBoxExtent } from "@features/(processes)/_types/boundingBoxExtent";
+import { OutputFileFormat } from "@features/(processes)/_types/outputFormats";
 import { MapBBox } from "@features/(shared)/_components/map/MapBBox";
 import { useUrlParam } from "@features/(shared)/_hooks/_url/useUrlParam";
 import FormLabel from "@features/(shared)/_layout/_components/Content/FormLabel";
@@ -82,65 +82,60 @@ export default function Page({
   const [bboxExtent, setBboxExtent] = useState<BoundingBoxExtent | null>(bbox);
   const [bboxIsInBounds, setBboxIsInBounds] = useState<boolean | null>(null);
 
-  const { value: outputFormat, setValue: setOutputFormat } =
-    useOutputFormat(defaultOutputValue);
-
-  // Set initial URL params only once
+  // Single consolidated initialization effect
   useEffect(() => {
     if (!mounted.current) {
       mounted.current = true;
 
-      // Collect all missing parameters that need to be set
-      const missingParams: [string, string][] = [];
+      const requiredParams: [string, string][] = [];
+      const currentParams = new URLSearchParams(window.location.search);
 
-      if (!initialSearchParams?.startDate || !initialSearchParams?.endDate) {
-        missingParams.push(
-          ["startDate", defaultProductsDates.startDate],
-          ["endDate", defaultProductsDates.endDate]
-        );
+      // Check all required parameters at once
+      if (!currentParams.has("startDate")) {
+        requiredParams.push(["startDate", defaultProductsDates.startDate]);
       }
 
-      // Ensure 'off' parameter is set
-      if (!initialSearchParams?.off) {
-        missingParams.push(["off", defaultOutputValue]);
+      if (!currentParams.has("endDate")) {
+        requiredParams.push(["endDate", defaultProductsDates.endDate]);
       }
 
-      // Set all missing parameters at once if any exist
-      if (missingParams.length > 0) {
-        console.log("Setting initial params:", missingParams);
-        setUrlParams(missingParams);
+      if (!currentParams.has("off")) {
+        requiredParams.push(["off", defaultOutputValue]);
+      }
 
-        // Update local state
+      if (bboxExtent && !currentParams.has("bbox")) {
+        requiredParams.push(["bbox", bboxExtent.join(",")]);
+      }
+
+      // Only update if we have missing parameters
+      if (requiredParams.length > 0) {
+        setUrlParams(requiredParams);
         setSearchParams((prev) => ({
           ...prev,
-          ...Object.fromEntries(missingParams),
+          ...Object.fromEntries(requiredParams),
         }));
       }
     }
-  }, [initialSearchParams, setUrlParams]);
+  }, [bboxExtent, setUrlParams]);
 
-  // Update local state whenever URL params change
+  // Update bbox only when it actually changes and is valid
   useEffect(() => {
-    setSearchParams(initialSearchParams);
-  }, [initialSearchParams]);
+    if (bboxExtent && bboxIsInBounds && mounted.current) {
+      setUrlParam("bbox", bboxExtent.join(","));
+    }
+  }, [setUrlParam, bboxExtent, bboxIsInBounds]);
 
   const product = searchParams?.product || undefined;
   const startDate = searchParams?.startDate || defaultProductsDates.startDate;
   const endDate = searchParams?.endDate || defaultProductsDates.endDate;
+  const outputFormat = searchParams?.off || defaultOutputValue;
 
   const params = {
     bbox: searchParams?.bbox || undefined,
     startDate: startDate,
     endDate: endDate,
     product: product,
-    off: outputFormat, // Use outputFormat instead of off
-  };
-
-  /**
-   *  Update output format using the hook
-   */
-  const onOutpoutFormatChange = (value: "GTiff" | "NETCDF") => {
-    setOutputFormat(value);
+    off: outputFormat,
   };
 
   const handleDateChange = (startDate: string, endDate: string) => {
@@ -150,9 +145,9 @@ export default function Page({
     ]);
   };
 
-  useEffect(() => {
-    setUrlParam("bbox", bboxExtent?.join(","));
-  }, [setUrlParam, bboxExtent]);
+  const handleOutputFormatChange = (value: "GTiff" | "NETCDF") => {
+    setUrlParam("off", value);
+  };
 
   const isDisabled =
     !bboxIsInBounds ||
@@ -250,9 +245,9 @@ export default function Page({
           <div style={{ width: "100%" }}>
             <FormLabel>Output file format</FormLabel>
             <SelectOutput
-              onChange={onOutpoutFormatChange}
+              onChange={handleOutputFormatChange}
               defaultValue={defaultOutputValue}
-              value={outputFormat}
+              value={outputFormat as OutputFileFormat}
               data={defaultOutputValues}
             />
           </div>
