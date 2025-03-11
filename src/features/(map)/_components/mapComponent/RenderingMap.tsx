@@ -54,6 +54,7 @@ const RenderingMap: React.FC<RenderMapProps> = (props: RenderMapProps) => {
         data: 'https://c.tile.openstreetmap.org/{z}/{x}/{y}.png',
         maxZoom: 19,
         minZoom: 0,
+        tileSize: 256,
 
         renderSubLayers: (props: any) => {
             const { boundingBox } = props.tile;

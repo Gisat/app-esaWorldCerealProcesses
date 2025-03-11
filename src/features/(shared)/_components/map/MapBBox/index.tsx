@@ -10,7 +10,7 @@ import { BoundingBoxExtent } from "@features/(processes)/_types/boundingBoxExten
 
 const defaultMapSize: Array<number> = [500, 500]; // Default map size in pixels
 
-const defaultMapView = { latitude: 50, longitude: 15, zoom: 7 }; // Default map view settings
+const defaultMapView = { latitude: 30, longitude: 0, zoom: 1 }; // Default map view settings
 
 /**
  * Rounds the coordinates to two decimal places.
