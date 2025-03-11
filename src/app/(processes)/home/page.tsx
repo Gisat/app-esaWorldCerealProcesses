@@ -56,23 +56,6 @@ const Home: React.FC = () => {
 							<TextLink url=''>WorldCereal forum</TextLink>
 						</TextParagraph>
 					</SectionContainer>
-					<SectionContainer>
-            <SectionHeader>WorldCereal offical products values description</SectionHeader>
-						<List>
-							<List.Item>
-								value 0 represents the &quot;negative class&quot; (e.g. no-cropland in temporarycrops product, not maize in maize product).
-							</List.Item>
-							<List.Item>
-								value 100 represents the &quot;positive class&quot;. (e.g. active in activecropland product, irrigated in irrigation product).
-							</List.Item>
-							<List.Item>
-								value 254 represents &quot;no cropland&quot; class in seasonal products
-							</List.Item>
-							<List.Item>
-								value 255 is the no-data value
-							</List.Item>
-						</List>
-					</SectionContainer>
         </ContentContainer>
     );
 };
