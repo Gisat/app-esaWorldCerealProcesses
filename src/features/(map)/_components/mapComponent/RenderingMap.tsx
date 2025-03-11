@@ -39,8 +39,6 @@ export interface RenderMapProps {
     disableControls?: boolean;
     /** Initial view state of the map. */
     initialView: object | null;
-    /** Function to set distance scales. */
-    setDistanceScales?: (distanceScales: { unitsPerDegree?: Array<number>; metersPerUnit: Array<number>; }) => void;
 }
 
 /**
@@ -51,13 +49,6 @@ export interface RenderMapProps {
  */
 const RenderingMap: React.FC<RenderMapProps> = (props: RenderMapProps) => {
 
-    // Retrieve distanceScales from the mapRef if available - otherwise don't show any distance calculations
-    const distanceScales = props?.mapRef?.current?.deck?.viewManager?._viewports?.[0]?.distanceScales;
-
-    if (props.setDistanceScales && distanceScales) {
-        props.setDistanceScales(distanceScales);
-    }
-    
     const tileLayer = new TileLayer({
         id: 'TileLayer',
         data: 'https://c.tile.openstreetmap.org/{z}/{x}/{y}.png',

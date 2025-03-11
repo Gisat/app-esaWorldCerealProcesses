@@ -1,3 +1,4 @@
+import { DRAG_START } from "../constants";
 import { DragStartInfo, Coordinate, bboxDragInfo } from "../types";
 
 /**
@@ -14,7 +15,7 @@ export const onStartDragging = (
 ) => {
     if (info.object) {
         // Set the bounding box drag information with the current coordinate
-        updateBboxDragInfo({ dragType: undefined, coordinates: [[0, 0], info.coordinate], originCoordinates: undefined });
+        updateBboxDragInfo({ dragType: DRAG_START, coordinates: [[0, 0], info.coordinate], originCoordinates: undefined });
         
         // Set the original bounding box border coordinates from the dragged object
         setOriginalBboxBorderCoordinates(info.object.geometry.coordinates[0]);

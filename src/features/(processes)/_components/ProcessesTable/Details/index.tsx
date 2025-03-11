@@ -33,8 +33,9 @@ type DetailsProps = {
 }
 
 const Details = ({ bbox, startDate, endDate, resultFileFormat, oeoCollection, oeoProcessId, results, showValuesInfo }: DetailsProps) => {
-	const [areaBbox, setAreaBbox] = useState<number | undefined>(undefined);
-	const [coordinatesToDisplay, setCoordinatesToDisplay] = useState<string | Array<string> | null>(null);
+	const [bboxDescription, setBboxDescription] = useState<
+		string | string[] | null
+	>(null);
 	const collection = products.find(p => p.value === oeoCollection);
 	const process = customProducts.find(p => p.value === oeoProcessId);
 
@@ -54,10 +55,9 @@ const Details = ({ bbox, startDate, endDate, resultFileFormat, oeoCollection, oe
 	return <div className="worldCereal-ProcessesTable-Details">
 		<div className="worldCereal-ProcessesTable-Details-column">
 			<TextDescription>
-				Extent: {bbox ? coordinatesToDisplay : "none"}{" "}
-				{areaBbox && bbox ? `(${areaBbox} sqkm)` : ""}
+				Extent: {bboxDescription}
 			</TextDescription>
-			<MapBBox bbox={bbox?.map(Number)} disabled mapSize={[300, 300]} setAreaBbox={setAreaBbox} setCoordinatesToDisplay={setCoordinatesToDisplay} coordinatesToDisplay={coordinatesToDisplay} />
+			<MapBBox bbox={bbox?.map(Number)} disabled mapSize={[300, 300]} setBboxDescription={setBboxDescription}/>
 		</div>
 		<div className="worldCereal-ProcessesTable-Details-column">
 			<DetailsItem label={"Product"}>{collection?.label || process?.label}</DetailsItem>
