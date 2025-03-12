@@ -14,6 +14,7 @@ import ProcessStatus from "@features/(processes)/_components/ProcessStatus";
 import { processTypes } from "@features/(processes)/_constants/app";
 import useSWR from "swr";
 import Details from "../Details";
+import {Statuses} from "@features/(shared)/_logic/models.statuses";
 
 const fetcher = (url: string) => {
   return fetch(`${url}`).then((r) => r.json());
@@ -230,7 +231,7 @@ Props) => {
             oeoCollection={oeoCollection}
             oeoProcessId={oeoProcessId || ""}
           />
-          {status === "created" ? (
+          {status === Statuses.created ? (
             <StartJobButton jobKey={jobKey} forceReloadList={forceReloadList} />
           ) : null}
           {results?.[0] ? (
@@ -274,6 +275,7 @@ Props) => {
               oeoCollection={oeoCollection}
               oeoProcessId={oeoProcessId}
               results={results}
+              status={status}
               showValuesInfo={type === processTypes.download}
             />
           </Table.Td>

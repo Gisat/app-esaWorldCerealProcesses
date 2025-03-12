@@ -5,6 +5,7 @@ import { customProducts, products } from "@features/(processes)/_constants/app";
 import { TextDescription } from "@features/(shared)/_layout/_components/Content/TextDescription";
 import ProductValuesInfo
 	from "@features/(processes)/_components/ProcessesTable/ProductValuesInfo";
+import {Statuses} from "@features/(shared)/_logic/models.statuses";
 
 type DetailsItemProps = {
 	children: React.ReactNode,
@@ -30,9 +31,10 @@ type DetailsProps = {
 	oeoProcessId?: string,
 	resultFileFormat?: string,
 	results?: Array<{ source_link: string }>,
+	status?: string,
 }
 
-const Details = ({ bbox, startDate, endDate, resultFileFormat, oeoCollection, oeoProcessId, results, showValuesInfo }: DetailsProps) => {
+const Details = ({ bbox, startDate, endDate, resultFileFormat, oeoCollection, oeoProcessId, results, showValuesInfo, status }: DetailsProps) => {
 	const [bboxDescription, setBboxDescription] = useState<
 		string | string[] | null
 	>(null);
@@ -65,6 +67,13 @@ const Details = ({ bbox, startDate, endDate, resultFileFormat, oeoCollection, oe
 			<DetailsItem label={"End date"}>{endDate ? new Date(endDate).toLocaleDateString() : ''}</DetailsItem>
 			<DetailsItem label={"Output file format"}>{resultFileFormat}</DetailsItem>
 		</div>
+		{status === Statuses.error ? (
+			<div className="worldCereal-ProcessesTable-Details-column">
+				<div className="worldCereal-ProcessesTable-Details-error">
+					The process could not be completed. Please try again.
+				</div>
+			</div>
+		) : null}
 		<div className="worldCereal-ProcessesTable-Details-column">
 			{results?.[0] && <DetailsItem label={"Download results"}>
 				{results.map((result) => <div key={result.source_link} className="worldCereal-ProcessesTable-DetailItem-result"><a href={result.source_link} target="_blank">{getFilenameFromResult(result)}</a></div>)}
