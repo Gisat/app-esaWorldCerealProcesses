@@ -8,6 +8,8 @@ import { TextParagraph } from '@features/(shared)/_layout/_components/Content/Te
 import { TextHighlight } from '@features/(shared)/_layout/_components/Content/TextHighlight';
 import { SectionContainer } from '@features/(shared)/_layout/_components/Content/SectionContainer';
 import { TextLink } from '@features/(shared)/_layout/_components/Content/TextLink';
+import { pages } from "@features/(processes)/_constants/app";
+import Link from "next/link";
 
 const Home: React.FC = () => {
     return (
@@ -18,19 +20,25 @@ const Home: React.FC = () => {
 						<List>
 							<List.Item>
 								<TextParagraph>
-									<TextHighlight bold>Download official products:</TextHighlight>
+									<Link href={pages.downloadOfficialProducts.url}>
+										<TextHighlight bold>Download official products:</TextHighlight>
+									</Link>
 									{" "}WorldCereal publishes several official, <TextLink url='https://esa-worldcereal.org/en/products/global-maps'>global products</TextLink>. Here you can easily download one or multiple of these products for your area of interest.
 								</TextParagraph>	
 							</List.Item>
 							<List.Item>
 								<TextParagraph>
-									<TextHighlight bold>Generate custom products:</TextHighlight>
+									<Link href={pages.generateCustomProducts.url}>
+										<TextHighlight bold>Generate custom products:</TextHighlight>
+									</Link>
 									{" "}Generate a cropland mask for your area and season of interest using the default WorldCereal cropland model.
 								</TextParagraph>	
 							</List.Item>
 							<List.Item>
 								<TextParagraph>
-									<TextHighlight bold>Your processes:</TextHighlight>
+									<Link href={pages.processesList.url}>
+										<TextHighlight bold>Your processes:</TextHighlight>
+									</Link>
 									{" "}Get an overview of the status of all your OpenEO processing jobs and download the resulting maps here.
 								</TextParagraph>	
 							</List.Item>

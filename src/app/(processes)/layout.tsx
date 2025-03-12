@@ -13,7 +13,6 @@ export default function ProcessesLayout({
 }>) {
   const currentPath = usePathname();
   const segment = useSelectedLayoutSegment() || navbarItems[0].key;
-
   const basePath = currentPath.split(`/${segment}`)[0];
 
   return (

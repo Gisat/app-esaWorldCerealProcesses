@@ -23,7 +23,7 @@ export const products: Array<{ value: string; label: string }> = [
   },
   {
     value: "ESA_WORLDCEREAL_IRRIGATION",
-    label: "Irigation",
+    label: "Irrigation",
   },
   {
     value: "ESA_WORLDCEREAL_TEMPORARYCROPS",
