@@ -59,7 +59,7 @@ const Details = ({ bbox, startDate, endDate, resultFileFormat, oeoCollection, oe
 			<TextDescription>
 				Extent: {bboxDescription}
 			</TextDescription>
-			<MapBBox bbox={bbox?.map(Number)} disabled mapSize={[400, 300]} setBboxDescription={setBboxDescription}/>
+			<MapBBox bbox={bbox?.map(Number)} disabled mapSize={[500, 300]} setBboxDescription={setBboxDescription}/>
 		</div>
 		<div className="worldCereal-ProcessesTable-Details-column">
 			<DetailsItem label={"Product"}>{collection?.label || process?.label}</DetailsItem>
@@ -67,14 +67,12 @@ const Details = ({ bbox, startDate, endDate, resultFileFormat, oeoCollection, oe
 			<DetailsItem label={"End date"}>{endDate ? new Date(endDate).toLocaleDateString() : ''}</DetailsItem>
 			<DetailsItem label={"Output file format"}>{resultFileFormat}</DetailsItem>
 		</div>
-		{status === Statuses.error ? (
-			<div className="worldCereal-ProcessesTable-Details-column">
+		<div className="worldCereal-ProcessesTable-Details-column">
+			{status === Statuses.error ? (
 				<div className="worldCereal-ProcessesTable-Details-error">
 					Your processing job resulted in an error. Please reach out to us on the <a href="https://forum.dataspace.copernicus.eu/c/openeo/28" target="_blank">CDSE – OpenEO forum</a>, clearly mentioning the processing job ID as displayed in the first column of this table.
 				</div>
-			</div>
-		) : null}
-		<div className="worldCereal-ProcessesTable-Details-column">
+			) : null}
 			{results?.[0] && <DetailsItem label={"Download results"}>
 				{results.map((result) => <div key={result.source_link} className="worldCereal-ProcessesTable-DetailItem-result"><a href={result.source_link} target="_blank">{getFilenameFromResult(result)}</a></div>)}
 			</DetailsItem>}
