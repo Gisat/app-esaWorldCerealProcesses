@@ -32,8 +32,8 @@ export async function GET(): Promise<NextResponse> {
 
         // Prepare backend content
         const backendContent = {
-            hidden: instanceWarningHidden === "true",
-            color: instanceWarningColor ? `#${instanceWarningColor}` : undefined,
+            hidden: instanceWarningHidden === 'true',
+            color: instanceWarningColor,
             text: instanceWarningText
         };
 

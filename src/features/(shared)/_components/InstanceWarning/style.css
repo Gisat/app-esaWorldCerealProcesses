@@ -1,0 +1,21 @@
+.crl-instance-warn-wrap {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    color: white;
+    width: 100vw;
+    z-index: 9999;
+
+    & .crl-instance-warn-text {
+        display: inline-flex;
+        width: 100%;
+        align-items: flex-end;
+        justify-content: space-between;
+        padding: .5rem 1rem;
+        
+        & .crl-instance-warn-close {
+        }
+    }
+}
