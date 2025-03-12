@@ -10,7 +10,7 @@ import "@mantine/dates/styles.css";
 import "./styles/index.css";
 
 import Header from "@features/(shared)/_layout/_components/Header";
-import FaroFrontendMonitoring from "../features/(grafana)/_components/FaroFrontendMonitoring";
+import FaroFrontendMonitoring from "@features/(grafana)/_components/FaroFrontendMonitoring";
 import { InstanceWarn } from "@features/(shared)/_components/InstanceWarning/InstanceWarn";
 
 export const metadata: Metadata = {
