@@ -30,5 +30,6 @@ export default function Page() {
     mutate();
   }
 
-  return <ProcessesTable data={data || []} forceReloadList={forceReloadList} />;
+  // TODO for now, there is a loader even if user haven't created single process yet
+  return <ProcessesTable loading={!data?.length} data={data || []} forceReloadList={forceReloadList} />;
 }
