@@ -70,7 +70,7 @@ const Details = ({ bbox, startDate, endDate, resultFileFormat, oeoCollection, oe
 		{status === Statuses.error ? (
 			<div className="worldCereal-ProcessesTable-Details-column">
 				<div className="worldCereal-ProcessesTable-Details-error">
-					The process could not be completed. Please try again.
+					Your processing job resulted in an error. Please reach out to us on the <a href="https://forum.dataspace.copernicus.eu/c/openeo/28" target="_blank">CDSE – OpenEO forum</a>, clearly mentioning the processing job ID as displayed in the first column of this table.
 				</div>
 			</div>
 		) : null}
