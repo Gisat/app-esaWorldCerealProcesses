@@ -82,7 +82,7 @@ export const MapBBox = function ({
    */
   const onBboxDescriptionChange = (points: Array<Array<number>> | null, area: number | null) => {
     if (points?.length === 4 && area && setBboxDescription) {
-      const bboxExtentPoints = [points[0], points[2]];
+      const bboxExtentPoints = [points[2], points[0]];
       const bboxRoundedCoordinates = roundCoordinates(bboxExtentPoints).map(coordinate => coordinate.replace(",", ", "));
       const bboxRoundedArea = Math.round(area).toLocaleString().replace(",", " ");
       setBboxDescription(
@@ -102,7 +102,7 @@ export const MapBBox = function ({
   const onBboxChange = (points: Array<Array<number>> | null, area: number | null) => {
     onBboxDescriptionChange(points, area);
     if (points?.length === 4 && area) {
-      const bboxExtent = [...points[0], ...points[2]] as BoundingBoxExtent;
+      const bboxExtent = [...points[2], ...points[0]] as BoundingBoxExtent;
       setBboxExtent?.(bboxExtent);
       if (area > minBboxArea && area < maxBboxArea) {
         setBboxIsInBounds?.(true);
