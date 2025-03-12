@@ -59,9 +59,9 @@ const Home: React.FC = () => {
 						</TextParagraph>
 						<TextParagraph>
 							Need more information or help? Consult the following resources: <br />
-							<TextLink url='https://worldcereal.github.io/worldcereal-documentation/processing/usage_cloud.html'>WorldCereal documentation portal</TextLink><br />
-							<TextLink url='https://openeo.org/'>OpenEO documentation on CDSE</TextLink> <br />
-							<TextLink url=''>WorldCereal forum</TextLink>
+							<TextLink url='https://worldcereal.github.io/worldcereal-documentation/vdm/launch.html'>WorldCereal documentation portal</TextLink><br />
+							<TextLink url='https://documentation.dataspace.copernicus.eu/APIs/openEO/openEO.html'>OpenEO documentation on CDSE</TextLink> <br />
+							<TextLink url='https://forum.esa-worldcereal.org/t/worldcereal-processing-hub/63'>WorldCereal forum</TextLink>
 						</TextParagraph>
 					</SectionContainer>
         </ContentContainer>
