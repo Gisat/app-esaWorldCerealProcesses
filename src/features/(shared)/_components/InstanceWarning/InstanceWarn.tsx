@@ -43,7 +43,6 @@ export const InstanceWarn: React.FC = () => {
                 {data.text || 'DEV version'}
                 <button
                     onClick={() => setClosed(true)}
-                    className='crl-instance-warn-close'
                 >
                     I understand
                 </button>
