@@ -13,6 +13,14 @@
   }
 }
 
+.worldCereal-ProcessesTable-Details-error {
+  background: rgba(145, 40, 22, 0.5);
+  color: var(--textPrimaryColor);
+  padding: .25rem .5rem;
+  margin-top: .25rem;
+  font-size: var(--a0);
+}
+
 .worldCereal-ProcessesTable-DetailItem {
   margin-bottom: .5rem;
   span {
