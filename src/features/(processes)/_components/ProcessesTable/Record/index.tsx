@@ -215,7 +215,12 @@ Props) => {
   const className = `worldCereal-ProcessesTable-row${
     isExpanded ? " is-expanded" : ""
   }`;
-
+	
+  /**
+   * Returns the details component based on the process type.
+   *
+   * @returns {JSX.Element | null} The details component or null if the type is unknown.
+   */
 	const getDetails = () => {
 		switch (type) {
 			case processTypes.download:
