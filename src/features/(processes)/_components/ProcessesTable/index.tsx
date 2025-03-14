@@ -68,6 +68,8 @@ export const ProcessesTable = ({ data, loading, forceReloadList }: Props) => {
           oeoCollection={oeoCollection}
           oeoProcessId={oeoProcessId}
           forceReloadList={forceReloadList}
+					collectionName="2021" // data.collection
+					model="Default model" // data.model
         />
       )
     )

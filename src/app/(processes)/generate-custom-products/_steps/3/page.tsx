@@ -112,6 +112,7 @@ export default function Page({
           resultFileFormat={data?.resultFileFormat}
           oeoCollection={data?.oeoCollection}
           oeoProcessId={data?.oeoProcessId}
+					model="Default model" // data.model
         />
       ) : null}
       <PageSteps NextButton={createElement(StartJobButton, { jobKey: key })} />

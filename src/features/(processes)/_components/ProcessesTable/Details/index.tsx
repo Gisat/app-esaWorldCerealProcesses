@@ -33,9 +33,10 @@ type DetailsProps = {
 	results?: Array<{ source_link: string }>,
 	status?: string,
 	collectionName?: string,
+	model?: string,
 }
 
-const Details = ({ bbox, startDate, endDate, resultFileFormat, oeoCollection, oeoProcessId, results, showValuesInfo, status, collectionName }: DetailsProps) => {
+const Details = ({ bbox, startDate, endDate, resultFileFormat, oeoCollection, oeoProcessId, results, showValuesInfo, status, collectionName, model }: DetailsProps) => {
 	const [bboxDescription, setBboxDescription] = useState<
 		string | string[] | null
 	>(null);
@@ -65,6 +66,7 @@ const Details = ({ bbox, startDate, endDate, resultFileFormat, oeoCollection, oe
 		<div className="worldCereal-ProcessesTable-Details-column">
 			<DetailsItem label={"Product collection"}>{collectionName}</DetailsItem>
 			<DetailsItem label={"Product"}>{collection?.label || process?.label}</DetailsItem>
+			<DetailsItem label={"Model"}>{model}</DetailsItem>
 			<DetailsItem label={"Start date"}>{startDate ? new Date(startDate).toLocaleDateString() : null}</DetailsItem>
 			<DetailsItem label={"End date"}>{endDate ? new Date(endDate).toLocaleDateString() : null}</DetailsItem>
 			<DetailsItem label={"Output file format"}>{resultFileFormat}</DetailsItem>

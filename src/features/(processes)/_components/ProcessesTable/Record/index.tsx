@@ -35,6 +35,8 @@ type Props = {
   status?: string;
   timeRange?: Array<Date>;
   updatedIso?: Date;
+	collectionName?: string;
+	model?: string;
   forceReloadList?: () => void;
 };
 
@@ -204,6 +206,8 @@ const Record = ({
   resultFileFormat,
   oeoCollection,
   oeoProcessId,
+	collectionName,
+	model,
   forceReloadList,
 }: // details
 Props) => {
@@ -211,6 +215,38 @@ Props) => {
   const className = `worldCereal-ProcessesTable-row${
     isExpanded ? " is-expanded" : ""
   }`;
+
+	const getDetails = () => {
+		switch (type) {
+			case processTypes.download:
+				return (
+					<Details
+						bbox={bbox}
+						resultFileFormat={resultFileFormat}
+						oeoCollection={oeoCollection}
+						results={results}
+						status={status}
+						showValuesInfo
+						collectionName={collectionName}
+					/>
+				);
+			case processTypes.product:
+				return (
+					<Details
+						bbox={bbox}
+						startDate={timeRange?.[0]}
+						endDate={timeRange?.[1]}
+						model={model}
+						resultFileFormat={resultFileFormat}
+						oeoProcessId={oeoProcessId}
+						results={results}
+						status={status}
+					/>
+				)
+			default:
+				return null;
+		}
+	}
 
   return (
     <>
@@ -267,17 +303,7 @@ Props) => {
       {isExpanded && (
         <Table.Tr className={className}>
           <Table.Td colSpan={7}>
-            <Details
-              bbox={bbox}
-              startDate={timeRange?.[0]}
-              endDate={timeRange?.[1]}
-              resultFileFormat={resultFileFormat}
-              oeoCollection={oeoCollection}
-              oeoProcessId={oeoProcessId}
-              results={results}
-              status={status}
-              showValuesInfo={type === processTypes.download}
-            />
+            {getDetails()}
           </Table.Td>
         </Table.Tr>
       )}
