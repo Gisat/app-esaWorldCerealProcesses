@@ -88,6 +88,7 @@ export default function Page({
           bbox={data?.bbox}
           resultFileFormat={data?.resultFileFormat}
           oeoCollection={data?.oeoCollection}
+					collectionName={"2021"} // data?.collection
         />
       ) : null}
       <PageSteps NextButton={createElement(StartJobButton, { jobKey: key })} />
