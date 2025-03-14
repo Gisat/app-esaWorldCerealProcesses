@@ -169,3 +169,24 @@ export const enum defaultProductsDates {
   startDate = "2024-01-01",
   endDate = "2024-12-31",
 }
+
+/**
+ * Bounding box size limits for different product types.
+ *
+ * @property {Object} downloadProducts - Size limits for download products.
+ * @property {number} downloadProducts.min - Minimum size for download products (in square kilometers).
+ * @property {number} downloadProducts.max - Maximum size for download products (in square kilometers).
+ * @property {Object} customProducts - Size limits for custom products.
+ * @property {number} customProducts.min - Minimum size for custom products (in square kilometers).
+ * @property {number} customProducts.max - Maximum size for custom products (in square kilometers).
+ */
+export const bboxSizeLimits = {
+  downloadProducts: {
+    min: 0.0009,
+    max: 100000,
+  },
+  customProducts: {
+    min: 0.0001,
+    max: 2500,
+  },
+};
