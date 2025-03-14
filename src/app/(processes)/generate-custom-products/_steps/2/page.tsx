@@ -5,6 +5,7 @@ import PageSteps from "@features/(processes)/_components/PageSteps";
 import { SelectMonth } from "@features/(processes)/_components/SelectMonth";
 import { SelectOutput } from "@features/(processes)/_components/SelectOutput";
 import {
+	bboxSizeLimits,
   customProducts,
   customProductsDateLimits,
   defaultProductsDates,
@@ -143,8 +144,8 @@ export default function Page({
           </Group>
           <MapBBox
 						mapSize={[650, 400]}
-						minBboxArea={0.0009}
-						maxBboxArea={2500}
+						minBboxArea={bboxSizeLimits.downloadProducts.min}
+						maxBboxArea={bboxSizeLimits.downloadProducts.max}
 						bbox={bbox?.map(Number)}
 						setBboxDescription={setBboxDescription}
 						setBboxExtent={setBboxExtent}

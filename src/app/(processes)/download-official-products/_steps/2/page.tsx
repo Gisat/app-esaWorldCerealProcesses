@@ -21,6 +21,7 @@ import {
 import { TextDescription } from "@features/(shared)/_layout/_components/Content/TextDescription";
 import { SectionContainer } from "@features/(shared)/_layout/_components/Content/SectionContainer";
 import { BoundingBoxExtent } from "@features/(processes)/_types/boundingBoxExtent";
+import { bboxSizeLimits } from "@features/(processes)/_constants/app";
 
 const defaultOutputFileFormat = "GTiff";
 
@@ -123,8 +124,8 @@ export default function Page({
 					</Group>
 					<MapBBox
 						mapSize={[650, 400]}
-						minBboxArea={0.0009}
-						maxBboxArea={100000}
+						minBboxArea={bboxSizeLimits.downloadProducts.min}
+						maxBboxArea={bboxSizeLimits.downloadProducts.max}
 						bbox={bbox?.map(Number)}
 						setBboxDescription={setBboxDescription}
 						setBboxExtent={setBboxExtent}
