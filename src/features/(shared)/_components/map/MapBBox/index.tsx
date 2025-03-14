@@ -75,6 +75,21 @@ export const MapBBox = function ({
   }
 
   /**
+   * Determines the validity of a bounding box (bbox) based on its area and updates the state accordingly.
+   *
+   * @param area - The area of the bounding box to validate.
+   *               The bbox is considered valid if its area is greater than `minBboxArea` 
+   *               and less than `maxBboxArea`.
+   */
+  const setBboxValidity = (area: number) => {
+    if (area > minBboxArea && area < maxBboxArea) {
+      setBboxIsInBounds?.(true);
+    } else {
+      setBboxIsInBounds?.(false);
+    }
+  }
+
+  /**
    * Sets the description of the bounding box.
    *
    * @param {Array<Array<number>> | null} points - The points of the bounding box.
@@ -104,18 +119,14 @@ export const MapBBox = function ({
     if (points?.length === 4 && area) {
       const bboxExtent = [...points[2], ...points[0]] as BoundingBoxExtent;
       setBboxExtent?.(bboxExtent);
-      if (area > minBboxArea && area < maxBboxArea) {
-        setBboxIsInBounds?.(true);
-      } else {
-        setBboxIsInBounds?.(false);
-      }
+      setBboxValidity(area);
     } else {
       setBboxExtent?.(null);
     }
   };
 
-	// If there is no initial view and bounding box data is available, calculate the view to fit the bounding box and set it as the initial view. 
-	// Also, create a polygon from the bounding box points, calculate its area, and update the bounding box description.
+  // If there is no initial view and bounding box data is available, calculate the view to fit the bounding box and set it as the initial view. 
+  // Also, create a polygon from the bounding box points, calculate its area, and update the bounding box description.
   if (!initialView && bbox && bboxPoints) {
     const bboxView = {
       longitude: (bbox[0] + bbox[2]) / 2,
@@ -139,9 +150,10 @@ export const MapBBox = function ({
     const polygon = turfPolygon([[...bboxPoints, bboxPoints[0]]], { name: "polygon" });
     const area = turfArea(polygon) / 1000000;
     onBboxDescriptionChange(bboxPoints, area);
+    setBboxValidity(area);
   } else if (!initialView && !bbox) {
     setInitialView(defaultMapView);
-  }
+  }  
 
   return (
     <div

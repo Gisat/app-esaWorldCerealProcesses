@@ -2,7 +2,6 @@
 
 import { CreateJobButton } from "@features/(processes)/_components/CreateJobButton";
 import PageSteps from "@features/(processes)/_components/PageSteps";
-import { transformDate } from "@features/(processes)/_utils/transformDate";
 import { MapBBox } from "@features/(shared)/_components/map/MapBBox";
 import { TextLink } from "@features/(shared)/_layout/_components/Content/TextLink";
 import FormLabel from "@features/(shared)/_layout/_components/Content/FormLabel";
@@ -15,7 +14,6 @@ import {
   createElement,
   useCallback,
   useEffect,
-  useMemo,
   useState,
 } from "react";
 import { TextDescription } from "@features/(shared)/_layout/_components/Content/TextDescription";
@@ -23,19 +21,16 @@ import { SectionContainer } from "@features/(shared)/_layout/_components/Content
 import { BoundingBoxExtent } from "@features/(processes)/_types/boundingBoxExtent";
 import { bboxSizeLimits } from "@features/(processes)/_constants/app";
 
-const defaultOutputFileFormat = "GTiff";
-
-type OutputFileFormatType = string | undefined;
+import formParams from "@features/(processes)/_constants/download-official-products/formParams";
 
 type searchParamsType = {
   step?: string;
-  startDate?: string;
-  endDate?: string;
   collection?: string;
+  product?: string;
   bbox?: string;
   width?: string;
   height?: string;
-  off?: string;
+  outputFileFormat?: string;
 };
 
 /**
@@ -50,32 +45,37 @@ export default function Page({
   searchParams?: searchParamsType;
 }) {
   const apiUrl = "/api/jobs/create/from-collection";
+  
   const bbox: BoundingBoxExtent = searchParams?.bbox
     ?.split(",")
     .map(Number) as BoundingBoxExtent;
-
   const [bboxDescription, setBboxDescription] = useState<
     string | string[] | null
   >(null);
   const [bboxExtent, setBboxExtent] =
     useState<BoundingBoxExtent | null>(bbox);
-	const [bboxIsInBounds, setBboxIsInBounds] = useState<boolean | null>(null);
+  const [bboxIsInBounds, setBboxIsInBounds] = useState<boolean | null>(null);
+  const [outputFileFormatState, setOutputFileFormatState] = useState<string | null>(null);
 
   const router = useRouter();
-  const startDate = searchParams?.startDate || "2021-01-01";
-  const startDateDate = useMemo(() => new Date(startDate), [startDate]);
 
-  const endDate = searchParams?.endDate || "2021-12-30";
-  const endDateDate = useMemo(() => new Date(endDate), [endDate]);
+  useEffect(() => {
+    if (bboxExtent) setValue(bboxExtent.join(","), "bbox");
+  }, [bboxExtent]);
+
+  useEffect(() => {
+    if (outputFileFormatState) setValue(outputFileFormatState, "outputFileFormat");
+  }, [outputFileFormatState]);
 
   const collection = searchParams?.collection || undefined;
+  const product = searchParams?.product || undefined;
+  const outputFileFormat = searchParams?.outputFileFormat || undefined;
 
   const params = {
-    bbox: searchParams?.bbox || undefined,
-    startDate: startDate,
-    endDate: endDate,
-    collection: collection,
-    off: searchParams?.off || defaultOutputFileFormat,
+    bbox: searchParams?.bbox,
+    outputFileFormat,
+    collection,
+    product
   };
 
   /**
@@ -98,21 +98,7 @@ export default function Page({
     [router]
   );
 
-  /**
-   * Handles the change of the output file format.
-   * @param {OutputFileFormatType} off - The new output file format.
-   */
-  const onOutpoutFormatChange = (off?: OutputFileFormatType) => {
-    setValue(off, "off");
-  };
-
-  useEffect(() => {
-    setValue(transformDate(endDateDate), "endDate");
-    setValue(transformDate(startDateDate), "startDate");
-    setValue(bboxExtent?.join(","), "bbox");
-  }, [setValue, endDateDate, startDateDate, bboxExtent]);
-
-	const isDisabled = !bboxIsInBounds || !params.bbox || !params.endDate || !params.startDate || !params.off;
+  const isDisabled = !bboxIsInBounds || !bbox || !collection || !product || !outputFileFormat;
 
   return (
     <TwoColumns>
@@ -143,24 +129,22 @@ export default function Page({
             params,
             searchParams,
             apiUrl,
-						disabled: isDisabled
+            disabled: isDisabled
           })}
-					disabled={isDisabled}
+          disabled={isDisabled}
         />
       </Column>
       <Column>
         <Stack gap="lg" w="100%" align="flex-start">
-					<div style={{width: "100%"}}>
+          <div style={{ width: "100%" }}>
             <FormLabel>Choose output file format</FormLabel>
             <SegmentedControl
-              onChange={(value) => onOutpoutFormatChange(value)}
+              onChange={setOutputFileFormatState}
               className="worldCereal-SegmentedControl"
               size="md"
-              defaultValue={defaultOutputFileFormat}
-              data={[
-                { label: "NetCDF", value: "NETCDF" },
-                { label: "GeoTiff", value: "GTiff" },
-              ]}
+              value={outputFileFormat}
+              defaultValue={formParams.outputFileFormat.options.find((option) => option.default)?.value}
+              data={formParams.outputFileFormat.options}
             />
           </div>
         </Stack>

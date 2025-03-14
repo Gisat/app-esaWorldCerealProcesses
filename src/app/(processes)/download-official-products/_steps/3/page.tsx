@@ -13,6 +13,8 @@ import { fetcher } from "@features/(shared)/_logic/utils";
 import { TextParagraph } from "@features/(shared)/_layout/_components/Content/TextParagraph";
 import { IconPlayerPlayFilled } from "@tabler/icons-react";
 
+import formParams from "@features/(processes)/_constants/download-official-products/formParams";
+
 /**
  * StartJobButton component.
  * @param {Object} props - The component props.
@@ -47,7 +49,7 @@ const StartJobButton = ({ jobKey }: { jobKey?: string }) => {
       className="worldCereal-Button"
       disabled={isLoading}
       onClick={handleClick}
-			leftSection={<IconPlayerPlayFilled size={14} />}
+      leftSection={<IconPlayerPlayFilled size={14} />}
     >
       {isLoading ? "Starting..." : "Start process & go to the list"}
     </Button>
@@ -71,24 +73,32 @@ export default function Page({
   searchParams?: {
     query?: string;
     step?: string;
-    startDate?: string;
-    endDate?: string;
     key?: string;
+    bbox?: string;
+    outputFileFormat?: string;
+    collection?: string;
+    product?: string;
   };
 }) {
   const key = searchParams?.key;
+  const bbox = searchParams?.bbox?.split(",").map(Number);
+  const outputFileFormat = formParams.outputFileFormat.options.find(
+    (option) => option.value === searchParams?.outputFileFormat
+  )?.label;
+  const collection = searchParams?.collection;
+  const product = searchParams?.product;
 
   const { data } = useSWR(`/api/jobs/get/${key}`, fetcher);
 
   return (
     <>
-			<TextParagraph color="var(--textAccentedColor)"><b>You have created the Download official products process with following parameters:</b></TextParagraph>
-      {data ? (
+      <TextParagraph color="var(--textAccentedColor)"><b>You have created the Download official products process with following parameters:</b></TextParagraph>
+      {data && data.key === key ? (
         <Details
-          bbox={data?.bbox}
-          resultFileFormat={data?.resultFileFormat}
-          oeoCollection={data?.oeoCollection}
-					collectionName={defaultParameterValues.collection} // data?.collection
+          bbox={bbox}
+          resultFileFormat={outputFileFormat}
+          oeoCollection={product}
+          collectionName={collection}
         />
       ) : null}
       <PageSteps NextButton={createElement(StartJobButton, { jobKey: key })} />

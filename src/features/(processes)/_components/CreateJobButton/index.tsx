@@ -15,7 +15,6 @@ type JobParams = {
   startDate?: string;
   endDate?: string;
   bbox?: string;
-  off?: string;
   outputFileFormat?: string;
   collection?: string;
   srs?: string;
@@ -34,7 +33,7 @@ type SearchParamsType = {
   bbox?: string;
   width?: string;
   height?: string;
-  off?: string;
+  outputFileFormat?: string;
   model?: string;
   product?: string;
 };

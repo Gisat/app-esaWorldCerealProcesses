@@ -19,6 +19,7 @@ const DetailsItem = ({ children, label }: DetailsItemProps) => {
 	</div> : null
 }
 
+// todo: this needs to be refactored, some of the props are obsolete or was renamed
 type DetailsProps = {
 	startDate?: Date,
 	endDate?: Date,
