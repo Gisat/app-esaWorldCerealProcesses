@@ -1,6 +1,6 @@
 "use client";
 
-import { customProducts, pages } from "@features/(processes)/_constants/app";
+import { customProducts, defaultParameterValues, pages } from "@features/(processes)/_constants/app";
 import { requiredParamsStep3 as requiredParams } from "@features/(processes)/_constants/generate-custom-products/requiredParams";
 import { useStepValidation } from "@features/(processes)/_hooks/_url/useStepValidation";
 import { apiFetcher } from "@features/(shared)/_url/apiFetcher";
@@ -112,7 +112,7 @@ export default function Page({
           resultFileFormat={data?.resultFileFormat}
           oeoCollection={data?.oeoCollection}
           oeoProcessId={data?.oeoProcessId}
-					model="Default model" // data.model
+					model={defaultParameterValues.model} // data.model
         />
       ) : null}
       <PageSteps NextButton={createElement(StartJobButton, { jobKey: key })} />

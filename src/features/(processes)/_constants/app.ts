@@ -171,6 +171,18 @@ export const enum defaultProductsDates {
 }
 
 /**
+ * Enum representing the default parameter values.
+ *
+ * @enum {string}
+ * @property {string} collection - The default collection value ("2021").
+ * @property {string} model - The default model value ("Default model").
+ */
+export const enum defaultParameterValues {
+  collection = "2021",
+  model = "Default model",
+}
+
+/**
  * Bounding box size limits for different product types.
  *
  * @property {Object} downloadProducts - Size limits for download products.
