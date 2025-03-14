@@ -13,10 +13,10 @@ type DetailsItemProps = {
 }
 
 const DetailsItem = ({ children, label }: DetailsItemProps) => {
-	return <div className="worldCereal-ProcessesTable-DetailItem">
+	return children ? <div className="worldCereal-ProcessesTable-DetailItem">
 		<span>{label}</span>
 		<div>{children}</div>
-	</div>
+	</div> : null
 }
 
 type DetailsProps = {
@@ -32,9 +32,11 @@ type DetailsProps = {
 	resultFileFormat?: string,
 	results?: Array<{ source_link: string }>,
 	status?: string,
+	collectionName?: string,
+	model?: string,
 }
 
-const Details = ({ bbox, startDate, endDate, resultFileFormat, oeoCollection, oeoProcessId, results, showValuesInfo, status }: DetailsProps) => {
+const Details = ({ bbox, startDate, endDate, resultFileFormat, oeoCollection, oeoProcessId, results, showValuesInfo, status, collectionName, model }: DetailsProps) => {
 	const [bboxDescription, setBboxDescription] = useState<
 		string | string[] | null
 	>(null);
@@ -62,9 +64,11 @@ const Details = ({ bbox, startDate, endDate, resultFileFormat, oeoCollection, oe
 			<MapBBox bbox={bbox?.map(Number)} disabled mapSize={[500, 300]} setBboxDescription={setBboxDescription}/>
 		</div>
 		<div className="worldCereal-ProcessesTable-Details-column">
+			<DetailsItem label={"Product collection"}>{collectionName}</DetailsItem>
 			<DetailsItem label={"Product"}>{collection?.label || process?.label}</DetailsItem>
-			<DetailsItem label={"Start date"}>{startDate ? new Date(startDate).toLocaleDateString() : ''}</DetailsItem>
-			<DetailsItem label={"End date"}>{endDate ? new Date(endDate).toLocaleDateString() : ''}</DetailsItem>
+			<DetailsItem label={"Model"}>{model}</DetailsItem>
+			<DetailsItem label={"Start date"}>{startDate ? new Date(startDate).toLocaleDateString() : null}</DetailsItem>
+			<DetailsItem label={"End date"}>{endDate ? new Date(endDate).toLocaleDateString() : null}</DetailsItem>
 			<DetailsItem label={"Output file format"}>{resultFileFormat}</DetailsItem>
 		</div>
 		<div className="worldCereal-ProcessesTable-Details-column">

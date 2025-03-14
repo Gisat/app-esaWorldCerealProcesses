@@ -8,7 +8,7 @@ import useSWR from "swr";
 import PageSteps from "@features/(processes)/_components/PageSteps";
 
 import Details from "@features/(processes)/_components/ProcessesTable/Details";
-import { pages } from "@features/(processes)/_constants/app";
+import { defaultParameterValues, pages } from "@features/(processes)/_constants/app";
 import { fetcher } from "@features/(shared)/_logic/utils";
 import { TextParagraph } from "@features/(shared)/_layout/_components/Content/TextParagraph";
 import { IconPlayerPlayFilled } from "@tabler/icons-react";
@@ -88,6 +88,7 @@ export default function Page({
           bbox={data?.bbox}
           resultFileFormat={data?.resultFileFormat}
           oeoCollection={data?.oeoCollection}
+					collectionName={defaultParameterValues.collection} // data?.collection
         />
       ) : null}
       <PageSteps NextButton={createElement(StartJobButton, { jobKey: key })} />
