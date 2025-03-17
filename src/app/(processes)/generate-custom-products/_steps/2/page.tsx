@@ -3,19 +3,13 @@
 import { CreateJobButton } from "@features/(processes)/_components/CreateJobButton";
 import PageSteps from "@features/(processes)/_components/PageSteps";
 import { SelectMonth } from "@features/(processes)/_components/SelectMonth";
-import { SelectOutput } from "@features/(processes)/_components/SelectOutput";
 import {
-	bboxSizeLimits,
-  customProducts,
+  bboxSizeLimits,
   customProductsDateLimits,
   defaultProductsDates,
 } from "@features/(processes)/_constants/app";
-import { requiredParamsStep2 as requiredParams } from "@features/(processes)/_constants/generate-custom-products/requiredParams";
-import { useStepValidation } from "@features/(processes)/_hooks/_url/useStepValidation";
-import { useUrlParamCheck } from "@features/(processes)/_hooks/_url/useUrlParamCheck";
 import { BoundingBoxExtent } from "@features/(processes)/_types/boundingBoxExtent";
 import { MapBBox } from "@features/(shared)/_components/map/MapBBox";
-import { useUrlParam } from "@features/(shared)/_hooks/_url/useUrlParam";
 import FormLabel from "@features/(shared)/_layout/_components/Content/FormLabel";
 import { SectionContainer } from "@features/(shared)/_layout/_components/Content/SectionContainer";
 import { TextDescription } from "@features/(shared)/_layout/_components/Content/TextDescription";
@@ -23,8 +17,12 @@ import { TextLink } from "@features/(shared)/_layout/_components/Content/TextLin
 import TwoColumns, {
   Column,
 } from "@features/(shared)/_layout/_components/Content/TwoColumns";
-import { Group, Stack } from "@mantine/core";
-import { createElement, useEffect, useState } from "react";
+import { Group, Stack, SegmentedControl } from "@mantine/core";
+import { useRouter } from "next/navigation";
+import { createElement, useState, useEffect, useCallback } from "react";
+
+import formParams from "@features/(processes)/_constants/generate-custom-products/formParams";
+import { set } from "lodash";
 
 /**
  * Page Component
@@ -38,101 +36,77 @@ export default function Page({
 }: {
   searchParams?: {
     step?: string;
-    startDate?: string;
     endDate?: string;
     product?: string;
     bbox?: string;
-    off?: string;
-    // TODO:
-    // model?: string;
+    outputFileFormat?: string;
+    model?: string;
   };
 }) {
-  // hooks
-  const { setUrlParam, setUrlParams } = useUrlParam();
-  const hasStartDate = useUrlParamCheck("startDate");
-  const hasEndDate = useUrlParamCheck("endDate");
-
-  // constants
-  const paramValidations = {
-    product: (value: string) => customProducts.some((p) => p.value === value),
-  };
-  const minDate = new Date(customProductsDateLimits.min);
-  const maxDate = new Date(customProductsDateLimits.max);
-  const defaultOutputValue: "GTiff" | "NETCDF" = "GTiff";
-  const defaultOutputValues: object = [
-    { label: "NetCDF", value: "NETCDF" },
-    { label: "GeoTiff", value: "GTiff" },
-  ];
+  const router = useRouter();
   const apiUrl = "/api/jobs/create/from-process";
-
-  // security validation
-  useStepValidation(
-    2,
-    requiredParams,
-    paramValidations,
-    "/generate-custom-products?step=1"
-  );
 
   const bbox: BoundingBoxExtent = searchParams?.bbox
     ?.split(",")
     .map(Number) as BoundingBoxExtent;
 
-	const [bboxDescription, setBboxDescription] = useState<
-		string | string[] | null
-	>(null);
-	const [bboxExtent, setBboxExtent] =
-		useState<BoundingBoxExtent | null>(bbox);
-	const [bboxIsInBounds, setBboxIsInBounds] = useState<boolean | null>(null);
-
-  // Get params from components
+  const [bboxDescription, setBboxDescription] = useState<
+    string | string[] | null
+  >(null);
+  const [bboxExtent, setBboxExtent] =
+    useState<BoundingBoxExtent | null>(bbox);
+  const [bboxIsInBounds, setBboxIsInBounds] = useState<boolean | null>(null);
+  const [outputFileFormatState, setOutputFileFormatState] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!hasStartDate || !hasEndDate) {
-      setUrlParams([
-        ["startDate", defaultProductsDates.startDate],
-        ["endDate", defaultProductsDates.endDate],
-      ]);
-    }
-  }, [setUrlParams, hasEndDate, hasStartDate]);
+    if (bboxExtent) setValue(bboxExtent.join(","), "bbox");
+  }, [bboxExtent]);
+
+  useEffect(() => {
+    if (outputFileFormatState) setValue(outputFileFormatState, "outputFileFormat");
+  }, [outputFileFormatState]);
 
   const product = searchParams?.product || undefined;
-  const off = searchParams?.off || undefined;
-  const startDate = searchParams?.startDate || defaultProductsDates.startDate;
   const endDate = searchParams?.endDate || defaultProductsDates.endDate;
+  const outputFileFormat = searchParams?.outputFileFormat || undefined;
+  const model = searchParams?.model || undefined;
 
   const params = {
-    bbox: searchParams?.bbox || undefined,
-    startDate: startDate,
-    endDate: endDate,
-    product: product,
-    off: off,
+    bbox: searchParams?.bbox,
+    endDate,
+    product,
+    outputFileFormat,
+    model
   };
-
-  /**
-   *  Pushing params to URL
-   */
-  const onOutpoutFormatChange = (value: "GTiff" | "NETCDF") => {
-    setUrlParam("off", value);
-  };
-
-  const handleDateChange = (startDate: string, endDate: string) => {
-    setUrlParams([
-      ["startDate", startDate],
-      ["endDate", endDate],
-    ]);
-  };
-
-  useEffect(() => {
-    setUrlParam("bbox", bboxExtent?.join(","));
-  }, [setUrlParam, bboxExtent]);
 
   const isDisabled =
-		!bboxIsInBounds ||
+    !bboxIsInBounds ||
     !params.bbox ||
     !params.product ||
     !params.endDate ||
-    !params.startDate ||
-    !params.off;
+    !params.outputFileFormat ||
+    !params.model;
+
+
+  /**
+     * Sets a value in the URL search parameters.
+     * @param {string | null | undefined} value - The value to set.
+     * @param {string} key - The key to set the value for.
+     */
+  const setValue = useCallback(
+    (value: string | null | undefined, key: string) => {
+      const url = new URL(window.location.href);
+
+      if (value) {
+        url.searchParams.set(key, value);
+      } else {
+        url.searchParams.delete(key);
+      }
+      // @ts-expect-error 'shallow' does not exist in type 'NavigateOptions'
+      router.push(url.toString(), { shallow: true, scroll: false });
+    },
+    [router]
+  );
 
   return (
     <TwoColumns>
@@ -143,13 +117,13 @@ export default function Page({
             <TextDescription color={"var(--textSecondaryColor)"}>(MIN: 900 sqm, MAX: 2 500 sqkm)</TextDescription>
           </Group>
           <MapBBox
-						mapSize={[650, 400]}
-						minBboxArea={bboxSizeLimits.downloadProducts.min}
-						maxBboxArea={bboxSizeLimits.downloadProducts.max}
-						bbox={bbox?.map(Number)}
-						setBboxDescription={setBboxDescription}
-						setBboxExtent={setBboxExtent}
-						setBboxIsInBounds={setBboxIsInBounds}
+            mapSize={[650, 400]}
+            minBboxArea={bboxSizeLimits.customProducts.min}
+            maxBboxArea={bboxSizeLimits.customProducts.max}
+            bbox={bbox?.map(Number)}
+            setBboxDescription={setBboxDescription}
+            setBboxExtent={setBboxExtent}
+            setBboxIsInBounds={setBboxIsInBounds}
           />
           <TextDescription>
             Current extent: {bboxDescription || "No extent selected"}
@@ -205,23 +179,22 @@ export default function Page({
             <SelectMonth
               label="Ending month"
               disabled={false}
-              placeholder="Select month"
-              minDate={minDate} // Min Start Date (31/12/18)
-              /**
-               * in SelectMonth component the default value is considered
-               * the `maxDate`
-               */
-              maxDate={maxDate} // Max End Date (31/12/24)
-              onChange={handleDateChange}
+              value={endDate}
+              minDate={new Date(customProductsDateLimits.min)}
+              maxDate={new Date(customProductsDateLimits.max)}
+              onChange={(value) => { setValue(value, "endDate") }}
             />
           </div>
 
           <div style={{ width: "20rem" }}>
             <FormLabel>Output file format</FormLabel>
-            <SelectOutput
-              onChange={onOutpoutFormatChange}
-              defaultValue={defaultOutputValue}
-              data={defaultOutputValues}
+            <SegmentedControl
+              onChange={setOutputFileFormatState}
+              className="worldCereal-SegmentedControl"
+              size="md"
+              value={outputFileFormat}
+              defaultValue={formParams.outputFileFormat.options.find((option) => option.default)?.value}
+              data={formParams.outputFileFormat.options}
             />
           </div>
         </Stack>

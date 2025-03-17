@@ -4,6 +4,8 @@ import getNamespaceByProcessId from "@features/(processes)/_utils/namespaceByPro
 import { handleRouteError } from "@features/(shared)/errors/handlers.errorInRoute";
 import { ErrorBehavior } from "@features/(shared)/errors/enums.errorBehavior";
 import { BaseHttpError } from "@features/(shared)/errors/models.error";
+import getBoundaryDates from "@features/(processes)/_utils/boundaryDates";
+import { transformDate } from "@features/(processes)/_utils/transformDate";
 
 /**
  * Handles the GET request to create a job from a process.
@@ -16,34 +18,40 @@ export async function GET(req: NextRequest) {
     // read query params from the request URL
     const { searchParams } = req.nextUrl;
 
-    const startDate = searchParams.get("startDate");
-    const endDate = searchParams.get("endDate");
     const bbox = searchParams.get("bbox");
-    const off = searchParams.get("off");
+    const outputFileFormat = searchParams.get("outputFileFormat");
+    const endDate = searchParams.get("endDate");
     const processId = searchParams.get("product");
+    const model = searchParams.get("model");
 
     // validate inputs for safe aggregation
-    if (!startDate)
-      throw new BaseHttpError("Missing startDate value", 400, ErrorBehavior.SSR);
-
     if (!endDate)
       throw new BaseHttpError("Missing endDate value", 400, ErrorBehavior.SSR);
 
     if (!bbox)
       throw new BaseHttpError("Missing bbox value", 400, ErrorBehavior.SSR);
 
-    if (!off)
+    if (!outputFileFormat)
       throw new BaseHttpError("Missing outputFileFormat value", 400, ErrorBehavior.SSR);
 
+    if (!model) 
+      throw new BaseHttpError("Missing model value", 400, ErrorBehavior.SSR);
+
     // prepare data for the request
+    const boundaryDates = getBoundaryDates(new Date(endDate));
+    const startDate = transformDate(boundaryDates.startDate);
+
     const data = {
-      processId: processId,
+      processId,
       namespace: getNamespaceByProcessId(processId),
       bbox: bbox.split(",").map(Number),
       crs: "EPSG:4326",
       timeRange: [startDate, endDate],
-      outputFileFormat: off,
+      outputFileFormat,
+      model
     };
+
+    console.log("data", data);
 
     const openeoUrlPrefix = process.env.OEO_URL
 
