@@ -1,15 +1,15 @@
 "use client";
 
 import PageSteps from "@features/(processes)/_components/PageSteps";
-import { customProducts } from "@features/(processes)/_constants/app";
-import { useUrlParam } from "@features/(shared)/_hooks/_url/useUrlParam";
 import TwoColumns, {
   Column,
 } from "@features/(shared)/_layout/_components/Content/TwoColumns";
 import { Button, Select } from "@mantine/core";
 import { IconArrowRight } from "@tabler/icons-react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { createElement } from "react";
+import { useRouter, useSearchParams} from "next/navigation";
+import { createElement, useEffect } from "react";
+
+import formParams from "@features/(processes)/_constants/generate-custom-products/formParams";
 
 /**
  * NextButton Component
@@ -18,11 +18,11 @@ import { createElement } from "react";
  * @param {string | null} props.product - Selected product value
  * @returns {JSX.Element} A button component to navigate to the next step
  */
-const NextButton = ({ product }: { product: string | null }) => {
+const NextButton = ({ product, model }: { product: string | null; model: string | null }) => {
   const router = useRouter();
   const params = useSearchParams();
   const activeStep = Number.parseInt(params.get("step") || "");
-  const disabled = !product;
+  const disabled = !product || !model;
 
   /**
    * Updates the step parameter in the URL
@@ -69,15 +69,44 @@ export default function Page({
     query?: string;
     step?: string;
     product?: string;
+    model?: string
   };
 }) {
-  // hooks
-  const { setUrlParam } = useUrlParam();
-
+  const router = useRouter();
   const product = searchParams?.product || null;
-  const productIsValid = customProducts.some(
-    (p: { value: string }) => p.value === product
+  const productIsValid = formParams.product.options.some(
+    (p) => p.value === product
   );
+  const model = searchParams?.model || null;
+  const modelIsValid = formParams.model.options.some(
+    (m) => m.value === model
+  );
+
+
+  useEffect(() => {
+    setDefaults();
+  }, [searchParams]);
+
+  const setDefaults = () => {
+    Object.entries(formParams).forEach(([key, value]) => {
+      const defaultOption = value.options.find(
+        (option) => option.default
+      );
+      if (defaultOption && !searchParams?.hasOwnProperty(key)) setValue(key, defaultOption.value);
+    });
+  };
+
+  /**
+   * Updates the specified query parameter in the current URL and navigates to the updated URL.
+   *
+   * @param param - The name of the query parameter to update.
+   * @param value - The new value for the query parameter. If `null`, the parameter will be set to an empty string.
+   */
+  const setValue = (param: string, value: string | null) => {
+    const url = new URL(window.location.href);
+    url.searchParams.set(param, value || "");
+    router.push(url.toString());
+  };
 
   return (
     <TwoColumns>
@@ -89,9 +118,9 @@ export default function Page({
           allowDeselect={false}
           label="Select your product"
           placeholder="Pick one"
-          data={customProducts}
+          data={formParams.product.options}
           value={(productIsValid && product) || null}
-          onChange={(value) => value && setUrlParam("product", value)}
+          onChange={(value) => value && setValue("product", value)}
           mb="md"
         />
         <Select
@@ -99,12 +128,12 @@ export default function Page({
           size="md"
           allowDeselect={false}
           label="Select model"
-          placeholder="Default model"
-          value={(productIsValid && product) || null}
-          onChange={(value) => value && setUrlParam("model", value)}
-          disabled
+          placeholder="Pick one"
+          data={formParams.model.options}
+          value={(modelIsValid && model) || null}
+          onChange={(value) => value && setValue("model", value)}
         />
-        <PageSteps NextButton={createElement(NextButton, { product })} />
+        <PageSteps NextButton={createElement(NextButton, { product, model })} />
       </Column>
     </TwoColumns>
   );

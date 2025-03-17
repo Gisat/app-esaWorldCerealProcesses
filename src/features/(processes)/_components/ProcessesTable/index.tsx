@@ -1,6 +1,5 @@
 import { Center, Loader, Table } from "@mantine/core";
 import Record from "./Record";
-import { defaultParameterValues } from "@features/(processes)/_constants/app";
 import "./style.css";
 
 type Props = {
@@ -21,6 +20,8 @@ type Props = {
     status: string;
     timeRange: Array<Date>;
     updatedIso: Date;
+    collectionName: string;
+    model: string;
   }[];
 };
 
@@ -55,6 +56,8 @@ export const ProcessesTable = ({ data, loading, forceReloadList }: Props) => {
         oeoCollection,
         oeoProcessId,
         type,
+        collectionName,
+        model
       }) => (
         <Record
           key={key}
@@ -69,8 +72,8 @@ export const ProcessesTable = ({ data, loading, forceReloadList }: Props) => {
           oeoCollection={oeoCollection}
           oeoProcessId={oeoProcessId}
           forceReloadList={forceReloadList}
-					collectionName={defaultParameterValues.collection}// data.collection
-					model={defaultParameterValues.model} // data.model
+					collectionName={collectionName}
+					model={model}
         />
       )
     )

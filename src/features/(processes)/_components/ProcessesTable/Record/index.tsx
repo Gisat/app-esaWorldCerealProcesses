@@ -17,7 +17,10 @@ import {
 } from "@features/(processes)/_constants/app";
 import useSWR from "swr";
 import Details from "../Details";
-import {Statuses} from "@features/(shared)/_logic/models.statuses";
+import { Statuses } from "@features/(shared)/_logic/models.statuses";
+
+import downloadFormParams from "@features/(processes)/_constants/download-official-products/formParams";
+import customProductFormParams from "@features/(processes)/_constants/generate-custom-products/formParams";
 
 const fetcher = (url: string) => {
   return fetch(`${url}`).then((r) => r.json());
@@ -38,8 +41,8 @@ type Props = {
   status?: string;
   timeRange?: Array<Date>;
   updatedIso?: Date;
-	collectionName?: string;
-	model?: string;
+  collectionName?: string;
+  model?: string;
   forceReloadList?: () => void;
 };
 
@@ -90,7 +93,7 @@ const StartJobButton = ({
 
 type RemoveJobButtonProps = {
   oeoCollection?: string;
-  oeoProcessId: string;
+  oeoProcessId?: string;
   resultFileFormat?: string;
   timeRange?: Array<Date>;
   bbox?: Array<number>;
@@ -215,48 +218,53 @@ const Record = ({
 	model,
   forceReloadList,
 }: // details
-Props) => {
+  Props) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const className = `worldCereal-ProcessesTable-row${
-    isExpanded ? " is-expanded" : ""
-  }`;
-	
+  const className = `worldCereal-ProcessesTable-row${isExpanded ? " is-expanded" : ""
+    }`;
+
   /**
    * Returns the details component based on the process type.
    *
    * @returns {JSX.Element | null} The details component or null if the type is unknown.
    */
-	const getDetails = () => {
-		switch (type) {
-			case processTypes.download:
-				return (
-					<Details
-						bbox={bbox}
-						resultFileFormat={resultFileFormat}
-						oeoCollection={oeoCollection}
-						results={results}
-						status={status}
-						showValuesInfo
-						collectionName={collectionName}
-					/>
-				);
-			case processTypes.product:
-				return (
-					<Details
-						bbox={bbox}
-						startDate={timeRange?.[0]}
-						endDate={timeRange?.[1]}
-						model={model}
-						resultFileFormat={resultFileFormat}
-						oeoProcessId={oeoProcessId}
-						results={results}
-						status={status}
-					/>
-				)
-			default:
-				return null;
-		}
-	}
+  const getDetails = () => {
+    switch (type) {
+      case processTypes.download:
+        return (
+          <Details
+            bbox={bbox}
+            resultFileFormat={resultFileFormat}
+            oeoCollection={downloadFormParams.product.options.find(
+              (option) => option.value === oeoCollection
+            )?.label}
+            results={results}
+            status={status}
+            showValuesInfo
+            collectionName={downloadFormParams.collection.options.find(
+              (option) => option.start === `${timeRange?.[0]}` && option.end === `${timeRange?.[1]}`
+            )?.label}
+          />
+        );
+      case processTypes.product:
+        return (
+          <Details
+            bbox={bbox}
+            startDate={timeRange?.[0]}
+            endDate={timeRange?.[1]}
+            model={model}
+            resultFileFormat={resultFileFormat}
+            oeoProcessId={customProductFormParams.product.options.find(
+              (option) => option.value === oeoProcessId
+            )?.label}
+            results={results}
+            status={status}
+          />
+        )
+      default:
+        return null;
+    }
+  }
 
   return (
     <>
@@ -274,8 +282,12 @@ Props) => {
             bbox={bbox}
             timeRange={timeRange}
             resultFileFormat={resultFileFormat}
-            oeoCollection={oeoCollection}
-            oeoProcessId={oeoProcessId || ""}
+            oeoCollection={downloadFormParams.product.options.find(
+              (option) => option.value === oeoCollection
+            )?.label}
+            oeoProcessId={customProductFormParams.product.options.find(
+              (option) => option.value === oeoProcessId
+            )?.label || ''}
 			type={type}
           />
           {status === Statuses.created ? (
