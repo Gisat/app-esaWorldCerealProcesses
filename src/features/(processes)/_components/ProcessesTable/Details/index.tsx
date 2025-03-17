@@ -1,7 +1,6 @@
 import "./style.css";
 import React, { useState } from "react";
 import { MapBBox } from "@features/(shared)/_components/map/MapBBox";
-import { customProducts, products } from "@features/(processes)/_constants/app";
 import { TextDescription } from "@features/(shared)/_layout/_components/Content/TextDescription";
 import ProductValuesInfo
 	from "@features/(processes)/_components/ProcessesTable/ProductValuesInfo";
@@ -41,8 +40,8 @@ const Details = ({ bbox, startDate, endDate, resultFileFormat, oeoCollection, oe
 	const [bboxDescription, setBboxDescription] = useState<
 		string | string[] | null
 	>(null);
-	const collection = products.find(p => p.value === oeoCollection);
-	const process = customProducts.find(p => p.value === oeoProcessId);
+	const collection = oeoCollection;
+	const process = oeoProcessId;
 
 	/**
 	 * Extracts the filename from a given result object containing a source link.
@@ -66,7 +65,7 @@ const Details = ({ bbox, startDate, endDate, resultFileFormat, oeoCollection, oe
 		</div>
 		<div className="worldCereal-ProcessesTable-Details-column">
 			<DetailsItem label={"Product collection"}>{collectionName}</DetailsItem>
-			<DetailsItem label={"Product"}>{collection?.label || process?.label}</DetailsItem>
+			<DetailsItem label={"Product"}>{collection || process}</DetailsItem>
 			<DetailsItem label={"Model"}>{model}</DetailsItem>
 			<DetailsItem label={"Start date"}>{startDate ? new Date(startDate).toLocaleDateString() : null}</DetailsItem>
 			<DetailsItem label={"End date"}>{endDate ? new Date(endDate).toLocaleDateString() : null}</DetailsItem>

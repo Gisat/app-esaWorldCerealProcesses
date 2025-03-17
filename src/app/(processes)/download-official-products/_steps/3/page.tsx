@@ -8,7 +8,7 @@ import useSWR from "swr";
 import PageSteps from "@features/(processes)/_components/PageSteps";
 
 import Details from "@features/(processes)/_components/ProcessesTable/Details";
-import { defaultParameterValues, pages } from "@features/(processes)/_constants/app";
+import { pages } from "@features/(processes)/_constants/app";
 import { fetcher } from "@features/(shared)/_logic/utils";
 import { TextParagraph } from "@features/(shared)/_layout/_components/Content/TextParagraph";
 import { IconPlayerPlayFilled } from "@tabler/icons-react";
@@ -86,7 +86,9 @@ export default function Page({
     (option) => option.value === searchParams?.outputFileFormat
   )?.label;
   const collection = searchParams?.collection;
-  const product = searchParams?.product;
+  const product = formParams.product.options.find(
+    (option) => option.value === searchParams?.product
+  )?.label;
 
   const { data } = useSWR(`/api/jobs/get/${key}`, fetcher);
 

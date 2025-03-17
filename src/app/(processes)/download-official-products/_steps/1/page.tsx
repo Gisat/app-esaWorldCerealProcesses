@@ -75,10 +75,10 @@ export default function Page({
 
   const router = useRouter();
   const product = searchParams?.product || null;
-  const collection = searchParams?.collection || null;
-  const productIsValid = formParams.products.options.some(
+  const productIsValid = formParams.product.options.some(
     (option: { value: string }) => option.value === product
   );
+  const collection = searchParams?.collection || null;
   const collectionIsValid = formParams.collection.options.some(
     (option: { value: string }) => option.value === collection
   );
@@ -137,7 +137,7 @@ export default function Page({
           allowDeselect={false}
           label="Select your product"
           placeholder="Pick one"
-          data={formParams.products.options}
+          data={formParams.product.options}
           value={(productIsValid && product) || null}
           onChange={(value) => setValue("product", value)}
         />

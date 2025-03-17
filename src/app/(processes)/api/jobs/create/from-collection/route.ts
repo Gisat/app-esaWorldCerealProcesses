@@ -44,7 +44,7 @@ export async function GET(req: NextRequest) {
     if (!formParams.collection.options.some((option) => option.value === collection))
       throw new BaseHttpError("Invalid collection value", 400, ErrorBehavior.SSR);
 
-    if (!formParams.products.options.some((option) => option.value === product))
+    if (!formParams.product.options.some((option) => option.value === product))
       throw new BaseHttpError("Invalid product value", 400, ErrorBehavior.SSR);
 
     if (!formParams.outputFileFormat.options.some((option) => option.value === outputFileFormat)) 

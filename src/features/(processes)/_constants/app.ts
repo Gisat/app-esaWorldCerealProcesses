@@ -6,44 +6,6 @@ import {
 } from "@tabler/icons-react";
 
 /**
- * Represents a product available for selection.
- * @typedef {Object} Product
- * @property {string} value - The unique identifier for the product.
- * @property {string} label - The display name of the product.
- */
-
-/**
- * List of available products for selection.
- * @type {Array<Product>}
- */
-export const products: Array<{ value: string; label: string }> = [
-  {
-    value: "ESA_WORLDCEREAL_ACTIVECROPLAND",
-    label: "Active cropland",
-  },
-  {
-    value: "ESA_WORLDCEREAL_IRRIGATION",
-    label: "Irrigation",
-  },
-  {
-    value: "ESA_WORLDCEREAL_TEMPORARYCROPS",
-    label: "Temporary crops",
-  },
-  {
-    value: "ESA_WORLDCEREAL_WINTERCEREALS",
-    label: "Winter cereals",
-  },
-  {
-    value: "ESA_WORLDCEREAL_MAIZE",
-    label: "Maize",
-  },
-  {
-    value: "ESA_WORLDCEREAL_SPRINGCEREALS",
-    label: "Spring cereals",
-  },
-];
-
-/**
  * URL path mappings for application process pages.
  *
  * @property {object} processesList - Configuration for the processes list page.
@@ -108,44 +70,6 @@ export const enum processTypes {
 }
 
 /**
- * List of custom product configurations for the WorldCereal application.
- *
- * @remarks
- * Each product is represented as an object with a unique identifier, display label,
- * and optional properties like namespace URL and disabled status.
- *
- * @property {string} value - Unique identifier for the product
- * @property {string} label - Human-readable display name for the product
- * @property {string} [namespace] - Optional URL to the product's JSON definition file
- * @property {boolean} [disabled] - When true, indicates the product is currently unavailable
- */
-export const customProducts: {
-  value: string;
-  label: string;
-  namespace?: string;
-  disabled?: boolean;
-}[] = [
-  {
-    value: "worldcereal_crop_extent",
-    label: "Cropland",
-    namespace:
-      "https://raw.githubusercontent.com/WorldCereal/worldcereal-classification/refs/tags/worldcereal_crop_extent_v1.0.1/src/worldcereal/udp/worldcereal_crop_extent.json",
-  },
-  {
-    value: "worldcereal_crop_type",
-    label: "Crop type",
-    namespace:
-      "https://raw.githubusercontent.com/WorldCereal/worldcereal-classification/refs/tags/worldcereal_crop_type_v1.0.0/src/worldcereal/udp/worldcereal_crop_type.json",
-    disabled: true,
-  },
-  {
-    value: "worldcereal_active_cropland",
-    label: "Active cropland",
-    disabled: true,
-  },
-];
-
-/**
  * Date range limitations for custom products in the application.
  *
  * @enum {string}
@@ -168,18 +92,6 @@ export const enum customProductsDateLimits {
 export const enum defaultProductsDates {
   startDate = "2024-01-01",
   endDate = "2024-12-31",
-}
-
-/**
- * Enum representing the default parameter values.
- *
- * @enum {string}
- * @property {string} collection - The default collection value ("2021").
- * @property {string} model - The default model value ("Default model").
- */
-export const enum defaultParameterValues {
-  collection = "2021",
-  model = "Default model",
 }
 
 /**

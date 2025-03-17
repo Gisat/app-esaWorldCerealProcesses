@@ -1,8 +1,6 @@
 "use client";
 
-import { customProducts, defaultParameterValues, pages } from "@features/(processes)/_constants/app";
-import { requiredParamsStep3 as requiredParams } from "@features/(processes)/_constants/generate-custom-products/requiredParams";
-import { useStepValidation } from "@features/(processes)/_hooks/_url/useStepValidation";
+import { pages } from "@features/(processes)/_constants/app";
 import { apiFetcher } from "@features/(shared)/_url/apiFetcher";
 import { Button } from "@mantine/core";
 import { useRouter } from "next/navigation";
@@ -14,6 +12,7 @@ import PageSteps from "@features/(processes)/_components/PageSteps";
 import Details from "@features/(processes)/_components/ProcessesTable/Details";
 import { TextParagraph } from "@features/(shared)/_layout/_components/Content/TextParagraph";
 import { IconPlayerPlayFilled } from "@tabler/icons-react";
+import formParams from "@features/(processes)/_constants/generate-custom-products/formParams";
 
 /**
  * A button component that starts a job process when clicked and navigates to the process list upon success.
@@ -66,35 +65,25 @@ export default function Page({
   searchParams?: {
     query?: string;
     step?: string;
-    startDate?: string;
     endDate?: string;
     key?: string;
     product?: string;
+    bbox?: string;
+    outputFileFormat?: string;
+    model?: string;
   };
 }) {
-  // constants:
-  // Define validation functions for each parameter
-  const paramValidations = {
-    product: (value: string) => customProducts.some((p) => p.value === value),
-    startDate: (value: string) => /^\d{4}-\d{2}-\d{2}$/.test(value),
-    endDate: (value: string) => /^\d{4}-\d{2}-\d{2}$/.test(value),
-    outputFileFormat: (value: string) =>
-      value === "NETCDF" || value === "GTiff",
-    bbox: (value: string) => value.split(",").map(Number).length === 4,
-  };
-
-  // security validation
-  useStepValidation(
-    3,
-    requiredParams,
-    paramValidations,
-    "/generate-custom-products?step=2"
-  );
-
   const key = searchParams?.key;
 
   // TODO: better logic to be implemented
   const { data } = useSWR(`/api/jobs/get/${key}`, apiFetcher);
+
+  const model = formParams.model.options.find(
+    (option) => option.value === searchParams?.model
+  )?.label;
+  const process = formParams.product.options.find(
+    (option) => option.value === searchParams?.product
+  )?.label;
 
   return (
     <>
@@ -104,15 +93,14 @@ export default function Page({
           parameters:
         </b>
       </TextParagraph>
-      {data ? (
+      {data && data.key === searchParams?.key ? (
         <Details
           bbox={data?.bbox}
           startDate={data?.timeRange?.[0]}
           endDate={data?.timeRange?.[1]}
           resultFileFormat={data?.resultFileFormat}
-          oeoCollection={data?.oeoCollection}
-          oeoProcessId={data?.oeoProcessId}
-					model={defaultParameterValues.model} // data.model
+          oeoProcessId={process}
+					model={model}
         />
       ) : null}
       <PageSteps NextButton={createElement(StartJobButton, { jobKey: key })} />

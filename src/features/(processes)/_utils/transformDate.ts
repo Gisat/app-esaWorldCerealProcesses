@@ -1,8 +1,13 @@
+
 /**
- * Transforms a Date object to a string in the format YYYY-MM-DD.
- * @param {Date | null} value - The date to transform.
- * @returns {string | null} - The transformed date string.
+ * Transforms a given Date object into a string formatted as "YYYY-MM-DD".
+ * 
+ * The function uses the "sv" (Swedish) locale to format the date in ISO-like format.
+ * 
+ * @param date - The Date object to be transformed.
+ * @returns A string representing the date in "YYYY-MM-DD" format.
  */
-export const transformDate = (value: Date | null): string | null => {
-  return value ? new Date(value).toISOString().split("T")[0] : null;
+export const transformDate = (date: Date): string => {
+  const transformedDate = date.toLocaleDateString("sv");
+  return transformedDate;
 };
