@@ -11,7 +11,10 @@ import { useState } from "react";
 import "./style.css";
 
 import ProcessStatus from "@features/(processes)/_components/ProcessStatus";
-import { processTypes } from "@features/(processes)/_constants/app";
+import {
+	defaultParameterValues,
+	processTypes
+} from "@features/(processes)/_constants/app";
 import useSWR from "swr";
 import Details from "../Details";
 import {Statuses} from "@features/(shared)/_logic/models.statuses";
@@ -92,6 +95,7 @@ type RemoveJobButtonProps = {
   timeRange?: Array<Date>;
   bbox?: Array<number>;
   jobKey?: string;
+  type: string | undefined;
   forceReloadList?: () => void;
 };
 
@@ -102,7 +106,8 @@ const RemoveJobButton = ({
   timeRange,
   resultFileFormat,
   oeoCollection,
-  oeoProcessId
+  oeoProcessId,
+	type,
 }: RemoveJobButtonProps) => {
   const [shouldFetch, setShouldFetch] = useState(false);
   const [opened, { open, close }] = useDisclosure(false);
@@ -145,7 +150,7 @@ const RemoveJobButton = ({
           endDate={timeRange?.[1]}
           resultFileFormat={resultFileFormat}
           oeoCollection={oeoCollection}
-          oeoProcessId={oeoProcessId}
+          oeoProcessId={oeoProcessId} collectionName={oeoCollection ? defaultParameterValues.collection : ''} model={processTypes.product === type ? defaultParameterValues.model : ''}
         />
         <Flex
           mih={50}
@@ -271,6 +276,7 @@ Props) => {
             resultFileFormat={resultFileFormat}
             oeoCollection={oeoCollection}
             oeoProcessId={oeoProcessId || ""}
+			type={type}
           />
           {status === Statuses.created ? (
             <StartJobButton jobKey={jobKey} forceReloadList={forceReloadList} />
