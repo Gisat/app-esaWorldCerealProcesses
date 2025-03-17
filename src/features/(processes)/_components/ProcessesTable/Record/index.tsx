@@ -11,10 +11,7 @@ import { useState } from "react";
 import "./style.css";
 
 import ProcessStatus from "@features/(processes)/_components/ProcessStatus";
-import {
-	defaultParameterValues,
-	processTypes
-} from "@features/(processes)/_constants/app";
+import {processTypes} from "@features/(processes)/_constants/app";
 import useSWR from "swr";
 import Details from "../Details";
 import { Statuses } from "@features/(shared)/_logic/models.statuses";
@@ -100,6 +97,8 @@ type RemoveJobButtonProps = {
   jobKey?: string;
   type: string | undefined;
   forceReloadList?: () => void;
+  collectionName?: string;
+    model?: string;
 };
 
 const RemoveJobButton = ({
@@ -110,6 +109,8 @@ const RemoveJobButton = ({
   resultFileFormat,
   oeoCollection,
   oeoProcessId,
+    collectionName,
+    model,
 	type,
 }: RemoveJobButtonProps) => {
   const [shouldFetch, setShouldFetch] = useState(false);
@@ -153,7 +154,7 @@ const RemoveJobButton = ({
           endDate={timeRange?.[1]}
           resultFileFormat={resultFileFormat}
           oeoCollection={oeoCollection}
-          oeoProcessId={oeoProcessId} collectionName={oeoCollection ? defaultParameterValues.collection : ''} model={processTypes.product === type ? defaultParameterValues.model : ''}
+          oeoProcessId={oeoProcessId} collectionName={collectionName} model={processTypes.product === type ? model : ''}
         />
         <Flex
           mih={50}
@@ -214,7 +215,6 @@ const Record = ({
   resultFileFormat,
   oeoCollection,
   oeoProcessId,
-	collectionName,
 	model,
   forceReloadList,
 }: // details
@@ -288,7 +288,11 @@ const Record = ({
             oeoProcessId={customProductFormParams.product.options.find(
               (option) => option.value === oeoProcessId
             )?.label || ''}
+            collectionName={downloadFormParams.collection.options.find(
+                (option) => option.start === `${timeRange?.[0]}` && option.end === `${timeRange?.[1]}`
+            )?.label || ''}
 			type={type}
+            model={model}
           />
           {status === Statuses.created ? (
             <StartJobButton jobKey={jobKey} forceReloadList={forceReloadList} />
