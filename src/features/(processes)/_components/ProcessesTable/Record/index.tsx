@@ -150,8 +150,8 @@ const RemoveJobButton = ({
         <Flex
           mih={50}
           gap="lg"
-          justify="flex-end"
-          align="flex-start"
+          justify="flex-start"
+          align="flex-end"
           direction="row"
           wrap="wrap"
         >

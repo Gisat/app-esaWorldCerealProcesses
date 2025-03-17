@@ -12,6 +12,10 @@
     margin-left: 2rem;
     min-width: 8rem;
   }
+
+  &:empty {
+    display: none;
+  }
 }
 
 .worldCereal-ProcessesTable-Details-error {
