@@ -59,7 +59,7 @@ const Details = ({ bbox, startDate, endDate, resultFileFormat, oeoCollection, oe
 	return <div className="worldCereal-ProcessesTable-Details">
 		<div className="worldCereal-ProcessesTable-Details-column">
 			<TextDescription>
-				Extent: {bboxDescription}
+				Extent: {bboxDescription} km<sup>2</sup>
 			</TextDescription>
 			<MapBBox bbox={bbox?.map(Number)} disabled mapSize={[500, 300]} setBboxDescription={setBboxDescription}/>
 		</div>

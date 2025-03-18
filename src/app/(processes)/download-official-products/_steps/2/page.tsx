@@ -106,7 +106,7 @@ export default function Page({
 				<SectionContainer>
 					<Group gap={"0.3rem"} align="baseline">
 						<FormLabel>Draw the extent</FormLabel>
-						<TextDescription color={"var(--textSecondaryColor)"}>(MIN: 900 sqm, MAX: 100 000 sqkm)</TextDescription>
+						<TextDescription color={"var(--textSecondaryColor)"}>(MIN: 900 m<sup>2</sup>, MAX: 100 000 km<sup>2</sup>)</TextDescription>
 					</Group>
 					<MapBBox
 						mapSize={[650, 400]}
@@ -118,7 +118,7 @@ export default function Page({
 						setBboxIsInBounds={setBboxIsInBounds}
 					/>
 					<TextDescription>
-						Current extent: {bboxDescription || "No extent selected"}
+						Current extent: {bboxDescription ? <>{bboxDescription} km<sup>2</sup></> : "No extent selected"}
 					</TextDescription>
 				</SectionContainer>
 				<TextDescription>
