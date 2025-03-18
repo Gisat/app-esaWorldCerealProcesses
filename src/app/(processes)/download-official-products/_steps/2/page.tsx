@@ -45,7 +45,7 @@ export default function Page({
   searchParams?: searchParamsType;
 }) {
   const apiUrl = "/api/jobs/create/from-collection";
-  
+
   const bbox: BoundingBoxExtent = searchParams?.bbox
     ?.split(",")
     .map(Number) as BoundingBoxExtent;
@@ -58,14 +58,6 @@ export default function Page({
   const [outputFileFormatState, setOutputFileFormatState] = useState<string | null>(null);
 
   const router = useRouter();
-
-  useEffect(() => {
-    if (bboxExtent) setValue(bboxExtent.join(","), "bbox");
-  }, [bboxExtent]);
-
-  useEffect(() => {
-    if (outputFileFormatState) setValue(outputFileFormatState, "outputFileFormat");
-  }, [outputFileFormatState]);
 
   const collection = searchParams?.collection || undefined;
   const product = searchParams?.product || undefined;
@@ -98,32 +90,40 @@ export default function Page({
     [router]
   );
 
+  useEffect(() => {
+    if (bboxExtent) setValue(bboxExtent.join(","), "bbox");
+  }, [bboxExtent, setValue]);
+
+  useEffect(() => {
+    if (outputFileFormatState) setValue(outputFileFormatState, "outputFileFormat");
+  }, [outputFileFormatState, setValue]);
+
   const isDisabled = !bboxIsInBounds || !bbox || !collection || !product || !outputFileFormat;
 
   return (
     <TwoColumns>
       <Column>
-				<SectionContainer>
-					<Group gap={"0.3rem"} align="baseline">
-						<FormLabel>Draw the extent</FormLabel>
-						<TextDescription color={"var(--textSecondaryColor)"}>(MIN: 900 sqm, MAX: 100 000 sqkm)</TextDescription>
-					</Group>
-					<MapBBox
-						mapSize={[650, 400]}
-						minBboxArea={bboxSizeLimits.downloadProducts.min}
-						maxBboxArea={bboxSizeLimits.downloadProducts.max}
-						bbox={bbox?.map(Number)}
-						setBboxDescription={setBboxDescription}
-						setBboxExtent={setBboxExtent}
-						setBboxIsInBounds={setBboxIsInBounds}
-					/>
-					<TextDescription>
-						Current extent: {bboxDescription || "No extent selected"}
-					</TextDescription>
-				</SectionContainer>
-				<TextDescription>
-					In case you are interested in larger areas, we recommend to download the AEZ-based products directly from <TextLink url="https://zenodo.org/records/7875105">Zenodo</TextLink>.
-				</TextDescription>
+        <SectionContainer>
+          <Group gap={"0.3rem"} align="baseline">
+            <FormLabel>Draw the extent</FormLabel>
+            <TextDescription color={"var(--textSecondaryColor)"}>(MIN: 900 sqm, MAX: 100 000 sqkm)</TextDescription>
+          </Group>
+          <MapBBox
+            mapSize={[650, 400]}
+            minBboxArea={bboxSizeLimits.downloadProducts.min}
+            maxBboxArea={bboxSizeLimits.downloadProducts.max}
+            bbox={bbox?.map(Number)}
+            setBboxDescription={setBboxDescription}
+            setBboxExtent={setBboxExtent}
+            setBboxIsInBounds={setBboxIsInBounds}
+          />
+          <TextDescription>
+            Current extent: {bboxDescription || "No extent selected"}
+          </TextDescription>
+        </SectionContainer>
+        <TextDescription>
+          In case you are interested in larger areas, we recommend to download the AEZ-based products directly from <TextLink url="https://zenodo.org/records/7875105">Zenodo</TextLink>.
+        </TextDescription>
         <PageSteps
           NextButton={createElement(CreateJobButton, {
             params,

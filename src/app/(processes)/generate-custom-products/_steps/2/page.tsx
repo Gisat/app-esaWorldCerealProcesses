@@ -22,7 +22,6 @@ import { useRouter } from "next/navigation";
 import { createElement, useState, useEffect, useCallback } from "react";
 
 import formParams from "@features/(processes)/_constants/generate-custom-products/formParams";
-import { set } from "lodash";
 
 /**
  * Page Component
@@ -57,14 +56,6 @@ export default function Page({
     useState<BoundingBoxExtent | null>(bbox);
   const [bboxIsInBounds, setBboxIsInBounds] = useState<boolean | null>(null);
   const [outputFileFormatState, setOutputFileFormatState] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (bboxExtent) setValue(bboxExtent.join(","), "bbox");
-  }, [bboxExtent]);
-
-  useEffect(() => {
-    if (outputFileFormatState) setValue(outputFileFormatState, "outputFileFormat");
-  }, [outputFileFormatState]);
 
   const product = searchParams?.product || undefined;
   const endDate = searchParams?.endDate || defaultProductsDates.endDate;
@@ -107,6 +98,14 @@ export default function Page({
     },
     [router]
   );
+
+  useEffect(() => {
+    if (bboxExtent) setValue(bboxExtent.join(","), "bbox");
+  }, [bboxExtent, setValue]);
+
+  useEffect(() => {
+    if (outputFileFormatState) setValue(outputFileFormatState, "outputFileFormat");
+  }, [outputFileFormatState, setValue]);
 
   return (
     <TwoColumns>
