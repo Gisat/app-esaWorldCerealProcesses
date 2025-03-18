@@ -11,7 +11,7 @@ import { useState } from "react";
 import "./style.css";
 
 import ProcessStatus from "@features/(processes)/_components/ProcessStatus";
-import { processTypes } from "@features/(processes)/_constants/app";
+import {processTypes} from "@features/(processes)/_constants/app";
 import useSWR from "swr";
 import Details from "../Details";
 import { Statuses } from "@features/(shared)/_logic/models.statuses";
@@ -96,6 +96,8 @@ type RemoveJobButtonProps = {
   bbox?: Array<number>;
   jobKey?: string;
   forceReloadList?: () => void;
+  collectionName?: string;
+    model?: string;
 };
 
 const RemoveJobButton = ({
@@ -105,7 +107,9 @@ const RemoveJobButton = ({
   timeRange,
   resultFileFormat,
   oeoCollection,
-  oeoProcessId
+  oeoProcessId,
+    collectionName,
+    model,
 }: RemoveJobButtonProps) => {
   const [shouldFetch, setShouldFetch] = useState(false);
   const [opened, { open, close }] = useDisclosure(false);
@@ -148,14 +152,13 @@ const RemoveJobButton = ({
           endDate={timeRange?.[1]}
           resultFileFormat={resultFileFormat}
           oeoCollection={oeoCollection}
-          oeoProcessId={oeoProcessId}
-          collectionName=""
+          oeoProcessId={oeoProcessId} collectionName={collectionName} model={model}
         />
         <Flex
           mih={50}
           gap="lg"
-          justify="flex-end"
-          align="flex-start"
+          justify="flex-start"
+          align="flex-end"
           direction="row"
           wrap="wrap"
         >
@@ -210,7 +213,7 @@ const Record = ({
   resultFileFormat,
   oeoCollection,
   oeoProcessId,
-  model,
+	model,
   forceReloadList,
 }: // details
   Props) => {
@@ -282,7 +285,11 @@ const Record = ({
             )?.label}
             oeoProcessId={customProductFormParams.product.options.find(
               (option) => option.value === oeoProcessId
-            )?.label}
+            )?.label || ''}
+            collectionName={downloadFormParams.collection.options.find(
+                (option) => option.start === `${timeRange?.[0]}` && option.end === `${timeRange?.[1]}`
+            )?.label || ''}
+            model={model}
           />
           {status === Statuses.created ? (
             <StartJobButton jobKey={jobKey} forceReloadList={forceReloadList} />
