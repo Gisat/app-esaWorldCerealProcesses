@@ -95,7 +95,6 @@ type RemoveJobButtonProps = {
   timeRange?: Array<Date>;
   bbox?: Array<number>;
   jobKey?: string;
-  type: string | undefined;
   forceReloadList?: () => void;
   collectionName?: string;
     model?: string;
@@ -111,7 +110,6 @@ const RemoveJobButton = ({
   oeoProcessId,
     collectionName,
     model,
-	type,
 }: RemoveJobButtonProps) => {
   const [shouldFetch, setShouldFetch] = useState(false);
   const [opened, { open, close }] = useDisclosure(false);
@@ -154,7 +152,7 @@ const RemoveJobButton = ({
           endDate={timeRange?.[1]}
           resultFileFormat={resultFileFormat}
           oeoCollection={oeoCollection}
-          oeoProcessId={oeoProcessId} collectionName={collectionName} model={processTypes.product === type ? model : ''}
+          oeoProcessId={oeoProcessId} collectionName={collectionName} model={model}
         />
         <Flex
           mih={50}
@@ -291,7 +289,6 @@ const Record = ({
             collectionName={downloadFormParams.collection.options.find(
                 (option) => option.start === `${timeRange?.[0]}` && option.end === `${timeRange?.[1]}`
             )?.label || ''}
-			type={type}
             model={model}
           />
           {status === Statuses.created ? (
