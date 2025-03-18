@@ -75,7 +75,7 @@ export default function Introduction() {
                 </TextLink>
               </List.Item>
               <List.Item>
-                <TextLink url="">WorldCereal forum</TextLink>
+                <TextLink url="https://forum.esa-worldcereal.org/t/worldcereal-processing-hub/63">WorldCereal forum</TextLink>
               </List.Item>
             </List>
           </SectionContainer>
