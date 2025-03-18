@@ -43,19 +43,20 @@ const formParams: {
                     value: "worldcereal_crop_extent",
                     label: "Cropland",
                     namespace:
-                      "https://raw.githubusercontent.com/WorldCereal/worldcereal-classification/refs/tags/worldcereal_crop_extent_v1.0.1/src/worldcereal/udp/worldcereal_crop_extent.json"
-                  },
-                  {
+                        "https://raw.githubusercontent.com/WorldCereal/worldcereal-classification/refs/tags/worldcereal_crop_extent_v1.0.1/src/worldcereal/udp/worldcereal_crop_extent.json"
+                },
+                {
                     value: "worldcereal_crop_type",
                     label: "Crop type",
                     namespace:
-                      "https://raw.githubusercontent.com/WorldCereal/worldcereal-classification/refs/tags/worldcereal_crop_type_v1.0.0/src/worldcereal/udp/worldcereal_crop_type.json"
-                  },
-                  {
+                        "https://raw.githubusercontent.com/WorldCereal/worldcereal-classification/refs/tags/worldcereal_crop_type_v1.0.0/src/worldcereal/udp/worldcereal_crop_type.json",
+                    disabled: true
+                },
+                {
                     value: "worldcereal_active_cropland",
                     label: "Active cropland",
                     disabled: true
-                  }
+                }
             ]
     },
     model: {
