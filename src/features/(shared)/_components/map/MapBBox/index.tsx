@@ -101,7 +101,7 @@ export const MapBBox = function ({
       const bboxRoundedCoordinates = roundCoordinates(bboxExtentPoints).map(coordinate => coordinate.replace(",", ", "));
       const bboxRoundedArea = Math.round(area).toLocaleString().replace(",", " ");
       setBboxDescription(
-        `${bboxRoundedCoordinates[0]} ${bboxRoundedCoordinates[1]} (${bboxRoundedArea} sqkm)`
+        `${bboxRoundedCoordinates[0]} ${bboxRoundedCoordinates[1]} - ${bboxRoundedArea}`
       );
     } else {
       setBboxDescription?.(null);
