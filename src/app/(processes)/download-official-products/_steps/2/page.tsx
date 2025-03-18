@@ -60,7 +60,7 @@ export default function Page({
   const router = useRouter();
 
   useEffect(() => {
-    if (bboxExtent) setValue(bboxExtent.join(","), "bbox");
+    setValue(bboxExtent ? bboxExtent.join(",") : null, "bbox");
   }, [bboxExtent]);
 
   useEffect(() => {

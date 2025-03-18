@@ -59,7 +59,7 @@ export default function Page({
   const [outputFileFormatState, setOutputFileFormatState] = useState<string | null>(null);
 
   useEffect(() => {
-    if (bboxExtent) setValue(bboxExtent.join(","), "bbox");
+    setValue(bboxExtent ? bboxExtent.join(",") : null, "bbox");
   }, [bboxExtent]);
 
   useEffect(() => {
