@@ -1,6 +1,9 @@
 import { Center, Loader, Table } from "@mantine/core";
 import Record from "./Record";
 import "./style.css";
+import {processTypes} from "@features/(processes)/_constants/app";
+import formParams
+    from "@features/(processes)/_constants/generate-custom-products/formParams";
 
 type Props = {
   loading?: boolean;
@@ -43,7 +46,7 @@ type Props = {
  * />
  */
 export const ProcessesTable = ({ data, loading, forceReloadList }: Props) => {
-  const rows = Array.isArray(data) ? (
+    const rows = Array.isArray(data) ? (
     data.map(
       ({
         resultFileFormat,
@@ -72,8 +75,8 @@ export const ProcessesTable = ({ data, loading, forceReloadList }: Props) => {
           oeoCollection={oeoCollection}
           oeoProcessId={oeoProcessId}
           forceReloadList={forceReloadList}
-					collectionName={collectionName}
-					model={model}
+          collectionName={collectionName}
+          model={type === processTypes.product ? model || formParams.model.options.find((option) => option.default)?.label : undefined}
         />
       )
     )
