@@ -1,0 +1,8 @@
+.worldCereal-ProcessesTable {
+
+}
+
+.worldCereal-ProcessesTable .mantine-Table-th {
+    font-size: var(--a0);
+    color: var(--textSecondaryColor);
+}

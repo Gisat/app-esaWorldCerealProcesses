@@ -1,0 +1,13 @@
+.worldCereal-esaLogo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.worldCereal-esaLogo svg > path {
+  fill: var(--base100);
+}
+
+.worldCereal-esaLogo:hover svg > path {
+  fill: var(--accent500);
+}

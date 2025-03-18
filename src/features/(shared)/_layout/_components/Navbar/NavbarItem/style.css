@@ -1,0 +1,22 @@
+a:has(.worldCereal-NavbarItem) {
+  text-decoration: none;
+}
+
+.worldCereal-NavbarItem {
+  font-size: var(--a1);
+  text-decoration: none;
+  color: var(--textPrimaryColor);
+  font-family: var(--titleFontFamily), sans-serif;
+
+  &:hover {
+    background: var(--hoverBackgroundColor);
+  }
+
+  &:where([data-active]) {
+    border-bottom-width: 3px;
+
+    > span {
+      font-weight: bold;
+    }
+  }
+}

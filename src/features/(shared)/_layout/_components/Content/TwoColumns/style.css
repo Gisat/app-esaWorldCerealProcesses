@@ -1,0 +1,12 @@
+.worldCereal-TwoColumns {
+  display: flex;
+  grid-gap: 2rem;
+  width: 100%;
+}
+
+.worldCereal-Column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}

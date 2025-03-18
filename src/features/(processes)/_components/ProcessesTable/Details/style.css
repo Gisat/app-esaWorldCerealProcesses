@@ -1,0 +1,49 @@
+.worldCereal-ProcessesTable-Details {
+  display: flex;
+  width: 100%;
+  justify-content: start;
+}
+
+.worldCereal-ProcessesTable-Details-column {
+  display: flex;
+  flex-direction: column;
+
+  &:not(:first-child) {
+    margin-left: 2rem;
+    min-width: 8rem;
+  }
+
+  &:empty {
+    display: none;
+  }
+}
+
+.worldCereal-ProcessesTable-Details-error {
+  background: rgba(145, 40, 22, 0.5);
+  color: var(--textPrimaryColor);
+  padding: .25rem .5rem;
+  margin: .25rem 0 .5rem;
+  font-size: var(--a0);
+}
+
+.worldCereal-ProcessesTable-DetailItem {
+  margin-bottom: .5rem;
+  span {
+    color: var(--textSecondaryColor);
+    font-size: var(--a0);
+  }
+  div {
+    color: var(--textPrimaryColor);
+    font-size: var(--a1);
+  }
+}
+
+.worldCereal-ProcessesTable-DetailItem-result {
+  display: inline;
+  margin-right: 0.5rem;
+}
+
+.worldCereal-MapDetails-coordinates {
+  color: var(--textSecondaryColor);
+  font-size: 0.7497857755rem;
+}

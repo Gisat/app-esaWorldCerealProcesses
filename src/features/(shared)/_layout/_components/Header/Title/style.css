@@ -1,0 +1,33 @@
+.worldCereal-Title {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+	text-decoration: none;
+}
+
+.worldCereal-Title > div {
+  display: flex;
+  align-items: center;
+}
+
+.worldCereal-Title img {
+  height: 1.75rem;
+}
+
+.worldCereal-Title h1 {
+  margin: 0.2rem 0 0;
+  color: var(--textAccentedColor);
+  font-size: var(--a2);
+  letter-spacing: 0;
+}
+
+.worldCereal-Title h1 span {
+  padding: 0 0.5rem;
+  font-weight: 800;
+  font-family: "Sen", "Roboto", sans-serif;
+}
+
+.worldCereal-Title h1 span:first-child {
+  border-right: 2px solid var(--borderPrimaryColor);
+  color: var(--textPrimaryColor);
+}

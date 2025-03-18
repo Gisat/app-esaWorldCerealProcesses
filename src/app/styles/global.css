@@ -1,0 +1,56 @@
+/*
+CSS variables intended to be exported together with features from fe-core as default values.
+
+TO-DO: Decide what variables are global
+TO-DO: Bundle & export this file with /features
+*/
+
+:root {
+    /* Color scales */
+    --accent25: #FDF6E5;
+    --accent50: #FBEFCE;
+    --accent100: #F8E7B7;
+    --accent200: #F6DFA0;
+    --accent300: #F4D889;
+    --accent400: #F0C85B;
+    --accent500: #EBB92D;
+    --accent600: #D2A014;
+    --accent700: #A47D0F;
+    --accent800: #775A0B;
+    --accent900: #493707;
+    --accent950: #1B1402;
+
+    --base0: #FFFEFC;
+    --base25: #F8F7F5;
+    --base50: #F3F2F0;
+    --base100: #EDECEA;
+    --base200: #E5E4E2;
+    --base300: #CCCBC9;
+    --base400: #ABAAA8;
+    --base500: #868684;
+    --base600: #666563;
+    --base700: #4E4D4B;
+    --base800: #353432;
+    --base900: #2B2A28;
+    --base950: #1D1D1B;
+
+    /* Text sizes */
+    --textSizeRatio: 1.2;
+    --a1: 0.875rem;
+
+    --a0: calc(var(--a1) / var(--textSizeRatio));
+    --a00: calc(var(--a0) / var(--textSizeRatio));
+
+    --a2: calc(var(--a1) * var(--textSizeRatio));
+    --a3: calc(var(--a2) * var(--textSizeRatio));
+    --a4: calc(var(--a3) * var(--textSizeRatio));
+    --a5: calc(var(--a4) * var(--textSizeRatio));
+
+    /* Default font */
+    --defaultFontFamily: "Roboto";
+
+}
+
+.mantine-MonthPickerInput-calendarHeader {
+    color: var(--mantine-color-gray-7);
+}

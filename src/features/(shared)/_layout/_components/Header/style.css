@@ -1,0 +1,36 @@
+.mantine-AppShell-header {
+  background: var(--base950);
+}
+
+.worldCereal-Header {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0;
+  border-bottom: 1px solid var(--borderSecondaryColor);
+  min-height: 3.5rem;
+  max-width: var(--pageWidth);
+  width: 100%;
+  margin: 0 auto;
+}
+
+.worldCereal-Header-esaLogo {
+  margin-right: 0.5rem;
+}
+
+.worldCereal-Header-esaLogo > svg {
+  width: 3rem;
+}
+
+.worldCereal-Header-tools {
+  display: flex;
+  grid-gap: 1rem;
+  align-items: center;
+}
+
+.worldCereal-Header-email {
+  font-size: var(--a1);
+  font-family: var(--labelFontFamily), sans-serif;
+}

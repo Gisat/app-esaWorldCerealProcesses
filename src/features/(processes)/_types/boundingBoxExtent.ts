@@ -1,0 +1,1 @@
+export type BoundingBoxExtent = [number, number, number, number];

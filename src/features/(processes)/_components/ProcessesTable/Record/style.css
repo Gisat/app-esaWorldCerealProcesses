@@ -1,0 +1,32 @@
+.worldCereal-ProcessesTable .worldCereal-ProcessesTable-row {
+  border-bottom: 1px solid var(--borderPrimaryColor);
+
+  &.is-expanded {
+    background: var(--highlightedBackgroundColor);
+  }
+}
+
+.worldCereal-ProcessesTable .mantine-Table-td {
+  font-size: var(--a1);
+  color: var(--textPrimaryColor);
+  vertical-align: middle;
+
+  &.highlightedCell {
+    font-weight: bold;
+  }
+
+  &.shrinkedCell {
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  &.alignRight {
+    text-align: right;
+  }
+
+  &.smallTextCell {
+    font-size: var(--a0);
+  }
+}

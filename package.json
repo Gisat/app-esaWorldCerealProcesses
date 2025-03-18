@@ -1,0 +1,50 @@
+{
+  "name": "app-esaworldcerealprocesses",
+  "version": "0.0.1-dev.87",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build_prod": "NODE_ENV=production next build",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@deck.gl/core": "^9.0.32",
+    "@deck.gl/geo-layers": "^9.0.32",
+    "@deck.gl/layers": "^9.0.32",
+    "@deck.gl/react": "^9.0.32",
+    "@grafana/faro-web-sdk": "^1.12.2",
+    "@grafana/faro-web-tracing": "^1.12.2",
+    "@mantine/core": "^7.17.2",
+    "@mantine/dates": "^7.17.2",
+    "@mantine/hooks": "^7.17.2",
+    "@tabler/icons-react": "^3.11.0",
+    "@turf/area": "^7.2.0",
+    "@turf/distance": "^7.1.0",
+    "@turf/helpers": "^7.1.0",
+    "classnames": "^2.5.1",
+    "js-cookie": "^3.0.5",
+    "jsonwebtoken": "^9.0.2",
+    "next": "14.2.13",
+    "openid-client": "^5.7.0",
+    "prop-types": "^15.8.1",
+    "react": "^18",
+    "react-dom": "^18",
+    "swr": "^2.2.5"
+  },
+  "devDependencies": {
+    "@types/js-cookie": "^3.0.6",
+    "@types/jsonwebtoken": "^9.0.7",
+    "@types/lodash": "^4.17.10",
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "@typescript-eslint/eslint-plugin": "^8.19.1",
+    "@typescript-eslint/parser": "^8.19.1",
+    "eslint": "^8.0.0",
+    "eslint-config-next": "14.2.13",
+    "eslint-plugin-import": "^2.31.0",
+    "typescript": "^5"
+  }
+}
