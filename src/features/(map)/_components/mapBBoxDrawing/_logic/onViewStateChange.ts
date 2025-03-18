@@ -44,10 +44,10 @@ export const onViewStateChange = ({
     setActiveBboxPoints,
     onBboxCoordinatesChange
 }: OnViewStateChangeProps) => {
-    if (followMapScreen && viewInfo && activeBboxPoints && previousDraggedPoint && 
-        !editModeIsActive && 
+    if (followMapScreen && viewInfo && activeBboxPoints && previousDraggedPoint &&
+        !editModeIsActive &&
         (viewInfo.interactionState.isDragging || viewInfo.interactionState.isZooming || viewInfo.interactionState.isPanning)) {
-        
+
         const originViewLat = viewInfo.oldViewState.latitude;
         const originViewLong = viewInfo.oldViewState.longitude;
         const newViewLat = viewInfo.viewState.latitude;
@@ -61,12 +61,12 @@ export const onViewStateChange = ({
             return [point[0] + longDif, point[1] + latDif];
         });
 
-				if (updatedAvailableArea) {
-					const movedBounds = updatedAvailableArea.map(point => {
-            return [point[0] + longDif, point[1] + latDif];
-       	 });
-					setUpdatedAvailableArea(movedBounds as BboxEnclosedPoints);
-				}
+        if (updatedAvailableArea) {
+            const movedBounds = updatedAvailableArea.map(point => {
+                return [point[0] + longDif, point[1] + latDif];
+            });
+            setUpdatedAvailableArea(movedBounds as BboxEnclosedPoints);
+        }
 
         setPreviousDraggedPoint([newViewLat, newViewLong]);
         setActiveBboxPoints(movedPoints as BboxPoints);

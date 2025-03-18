@@ -2,7 +2,6 @@ import getBoundaryDates from "@features/(processes)/_utils/boundaryDates";
 import { transformDate } from "@features/(processes)/_utils/transformDate";
 import { Stack, Text } from "@mantine/core";
 import { MonthPickerInput } from "@mantine/dates";
-import { set } from "lodash";
 import { FC, useEffect, useState } from "react";
 
 /**
@@ -56,7 +55,7 @@ const SelectMonth: FC<SelectMonthProps> = ({
       setEndDateString(transformDate(boundaryDates.endDate));
       onChange(transformDate(boundaryDates.endDate));
     }
-  }, [selectedDate]);
+  }, [selectedDate, onChange]);
 
   return (
     <div>

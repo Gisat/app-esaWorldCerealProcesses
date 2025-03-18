@@ -10,7 +10,7 @@ import TwoColumns, {
 import { Button, Select, Space } from "@mantine/core";
 import { IconArrowRight } from "@tabler/icons-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { createElement, useEffect } from "react";
+import { createElement, useCallback, useEffect } from "react";
 
 import formParams from "@features/(processes)/_constants/download-official-products/formParams";
 
@@ -83,30 +83,30 @@ export default function Page({
     (option: { value: string }) => option.value === collection
   );
 
-  useEffect(() => {
-    setDefaults();
-  }, [searchParams]);
-
-  const setDefaults = () => {
-    Object.entries(formParams).forEach(([key, value]) => {
-      const defaultOption = value.options.find(
-        (option) => option.default
-      );
-      if (defaultOption && !searchParams?.hasOwnProperty(key)) setValue(key, defaultOption.value);
-    });
-  };
-
   /**
    * Updates the specified query parameter in the current URL and navigates to the updated URL.
    *
    * @param param - The name of the query parameter to update.
    * @param value - The new value for the query parameter. If `null`, the parameter will be set to an empty string.
    */
-  const setValue = (param: string, value: string | null) => {
+  const setValue = useCallback((param: string, value: string | null) => {
     const url = new URL(window.location.href);
     url.searchParams.set(param, value || "");
     router.push(url.toString());
-  };
+  }, [router]);
+
+  const setDefaults = useCallback(() => {
+    Object.entries(formParams).forEach(([key, value]) => {
+      const defaultOption = value.options.find(
+        (option) => option.default
+      );
+      if (defaultOption && searchParams && !Object.prototype.hasOwnProperty.call(searchParams, key)) setValue(key, defaultOption.value);
+    });
+  }, [searchParams, setValue]);
+
+  useEffect(() => {
+    setDefaults();
+  }, [setDefaults]);
 
   return (
     <TwoColumns>

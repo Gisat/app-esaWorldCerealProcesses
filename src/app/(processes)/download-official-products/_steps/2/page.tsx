@@ -45,7 +45,7 @@ export default function Page({
   searchParams?: searchParamsType;
 }) {
   const apiUrl = "/api/jobs/create/from-collection";
-  
+
   const bbox: BoundingBoxExtent = searchParams?.bbox
     ?.split(",")
     .map(Number) as BoundingBoxExtent;
@@ -58,14 +58,6 @@ export default function Page({
   const [outputFileFormatState, setOutputFileFormatState] = useState<string | null>(null);
 
   const router = useRouter();
-
-  useEffect(() => {
-    setValue(bboxExtent ? bboxExtent.join(",") : null, "bbox");
-  }, [bboxExtent]);
-
-  useEffect(() => {
-    if (outputFileFormatState) setValue(outputFileFormatState, "outputFileFormat");
-  }, [outputFileFormatState]);
 
   const collection = searchParams?.collection || undefined;
   const product = searchParams?.product || undefined;
@@ -97,6 +89,14 @@ export default function Page({
     },
     [router]
   );
+
+  useEffect(() => {
+    if (bboxExtent) setValue(bboxExtent.join(","), "bbox");
+  }, [bboxExtent, setValue]);
+
+  useEffect(() => {
+    if (outputFileFormatState) setValue(outputFileFormatState, "outputFileFormat");
+  }, [outputFileFormatState, setValue]);
 
   const isDisabled = !bboxIsInBounds || !bbox || !collection || !product || !outputFileFormat;
 
