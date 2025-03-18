@@ -51,8 +51,8 @@ const RenderingMap: React.FC<RenderMapProps> = (props: RenderMapProps) => {
 
     const tileLayer = new TileLayer({
         id: 'TileLayer',
-        data: 'https://c.tile.openstreetmap.org/{z}/{x}/{y}.png',
-        maxZoom: 19,
+        data: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+        maxZoom: 17,
         minZoom: 0,
         tileSize: 256,
 

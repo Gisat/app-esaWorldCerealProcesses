@@ -103,27 +103,27 @@ export default function Page({
   return (
     <TwoColumns>
       <Column>
-        <SectionContainer>
-          <Group gap={"0.3rem"} align="baseline">
-            <FormLabel>Draw the extent</FormLabel>
-            <TextDescription color={"var(--textSecondaryColor)"}>(MIN: 900 sqm, MAX: 100 000 sqkm)</TextDescription>
-          </Group>
-          <MapBBox
-            mapSize={[650, 400]}
-            minBboxArea={bboxSizeLimits.downloadProducts.min}
-            maxBboxArea={bboxSizeLimits.downloadProducts.max}
-            bbox={bbox?.map(Number)}
-            setBboxDescription={setBboxDescription}
-            setBboxExtent={setBboxExtent}
-            setBboxIsInBounds={setBboxIsInBounds}
-          />
-          <TextDescription>
-            Current extent: {bboxDescription || "No extent selected"}
-          </TextDescription>
-        </SectionContainer>
-        <TextDescription>
-          In case you are interested in larger areas, we recommend to download the AEZ-based products directly from <TextLink url="https://zenodo.org/records/7875105">Zenodo</TextLink>.
-        </TextDescription>
+				<SectionContainer>
+					<Group gap={"0.3rem"} align="baseline">
+						<FormLabel>Draw the extent</FormLabel>
+						<TextDescription color={"var(--textSecondaryColor)"}>(MIN: 900 m<sup>2</sup>, MAX: 100 000 km<sup>2</sup>)</TextDescription>
+					</Group>
+					<MapBBox
+						mapSize={[650, 400]}
+						minBboxArea={bboxSizeLimits.downloadProducts.min}
+						maxBboxArea={bboxSizeLimits.downloadProducts.max}
+						bbox={bbox?.map(Number)}
+						setBboxDescription={setBboxDescription}
+						setBboxExtent={setBboxExtent}
+						setBboxIsInBounds={setBboxIsInBounds}
+					/>
+					<TextDescription>
+						Current extent: {bboxDescription ? <>{bboxDescription} km<sup>2</sup></> : "No extent selected"}
+					</TextDescription>
+				</SectionContainer>
+				<TextDescription>
+					In case you are interested in larger areas, we recommend to download the AEZ-based products directly from <TextLink url="https://zenodo.org/records/7875105">Zenodo</TextLink>.
+				</TextDescription>
         <PageSteps
           NextButton={createElement(CreateJobButton, {
             params,

@@ -92,7 +92,7 @@ type RemoveJobButtonProps = {
   oeoCollection?: string;
   oeoProcessId?: string;
   resultFileFormat?: string;
-  timeRange?: Array<Date>;
+  timeRange?: Array<Date> | null;
   bbox?: Array<number>;
   jobKey?: string;
   forceReloadList?: () => void;
@@ -278,7 +278,7 @@ const Record = ({
             jobKey={jobKey}
             forceReloadList={forceReloadList}
             bbox={bbox}
-            timeRange={timeRange}
+            timeRange={type === processTypes.product ? timeRange : null}
             resultFileFormat={resultFileFormat}
             oeoCollection={downloadFormParams.product.options.find(
               (option) => option.value === oeoCollection
