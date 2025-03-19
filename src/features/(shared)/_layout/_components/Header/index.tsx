@@ -6,10 +6,11 @@ import Link from "next/link";
 import { bool } from "prop-types";
 import "./style.css";
 import Title from "./Title";
-import { useUserInfoFromIdentity } from "@features/(shared)/_hooks/user.useUserInfoFromIdentity";
+import useSWR from "swr";
+import { swrFetcher } from "@features/(shared)/_logic/utils";
 
 const Header = () => {
-  const { isLoading, userInfoValue, error } = useUserInfoFromIdentity("/api/auth/user-info");
+  const { data: userInfoValue, error, isLoading } = useSWR("/api/auth/user-info", swrFetcher);
   
   if (isLoading) return null;
 
