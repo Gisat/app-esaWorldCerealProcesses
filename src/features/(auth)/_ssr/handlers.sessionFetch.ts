@@ -5,7 +5,7 @@ import { BaseHttpError } from "../../(shared)/errors/models.error";
 
 // Define the interface for the properties of the fetchWithSessions function
 interface FetchWithBrowserSessionProps {
-  method: "GET" | "POST",
+  method: "GET" | "POST" | "HEAD" | "PUT" | "DELETE" | "PATCH",
   url: string,
   browserCookies: any,
   body?: any,
