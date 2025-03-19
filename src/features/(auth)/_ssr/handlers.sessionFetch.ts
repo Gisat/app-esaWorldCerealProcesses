@@ -1,16 +1,16 @@
 import { Nullable } from "@features/(shared)/_logic/types.universal";
-import { ErrorBehavior } from "@features/(shared)/errors/enums.errorBehavior";
-import { HttpStatusCode } from "@features/(shared)/errors/enums.httpStatusCode";
-import { BaseHttpError } from "@features/(shared)/errors/models.error";
+import { ErrorBehavior } from "../../(shared)/errors/enums.errorBehavior";
+import { HttpStatusCode } from "../../(shared)/errors/enums.httpStatusCode";
+import { BaseHttpError } from "../../(shared)/errors/models.error";
 
 // Define the interface for the properties of the fetchWithSessions function
 interface FetchWithBrowserSessionProps {
-  method: "GET" | "POST";
-  url: string;
-  browserCookies: any;
-  body?: any;
-  headers?: any;
-  requireSessionId: boolean;
+  method: "GET" | "POST",
+  url: string,
+  browserCookies: any,
+  body?: any,
+  headers?: any
+  requireSessionId: boolean
 }
 
 // Define the interface for the response of the fetchWithSessions function
@@ -52,65 +52,40 @@ export const fetchWithSessions = async (
     );
 
   // Add the session cookie to the headers if it exists
-  const headersWithCookies = sessionCookie
-    ? { ...headers, Cookie: `${sessionCookie.name}=${sessionCookie.value}` }
-    : { ...headers };
+  const headersWithCookies = sessionCookie ? { ...headers, 'Cookie': `${sessionCookie.name}=${sessionCookie.value}` } : { ...headers }
 
-  try {
-    // Make the fetch request to the backend
-    const response = await fetch(url, {
+  // Make the fetch request to the backend
+  const response = await fetch(
+    url,
+    {
       method,
       body,
-      headers: headersWithCookies,
-    });
-
-    const contentType = response.headers.get("content-type");
-    const text = await response.text();
-    let backendContent;
-
-    if (contentType && contentType.includes("application/json")) {
-      try {
-        backendContent = JSON.parse(text);
-      } catch (error) {
-        console.error("Failed to parse JSON:", text, error);
-        throw new Error("Invalid JSON response");
-      }
-    } else {
-      console.error("Non-JSON response:", text);
-      backendContent = { error: text };
+      headers: headersWithCookies
     }
+  )
 
+  // Parse the response from the backend
+  const backendContent = await response.json();
+
+  // Check if the response is successful
+  if (response.ok) {
     const setCookieHeader = response.headers.get("set-cookie");
 
-    // Check if the response is successful
-    if (response.ok) {
-      // Check if the set-cookie header is missing when a session ID is required
-      if (!setCookieHeader && props.requireSessionId) {
-        console.error("Sessions Fetch: Missing cookies with SID");
+    // Check if the set-cookie header is missing when a session ID is required
+    if (!setCookieHeader && props.requireSessionId) {
+      console.error("Sessions Fetch: Missing cookies with SID");
 
-        throw new BaseHttpError(
-          "Fetch response with new session cookie missing",
-          HttpStatusCode.INTERNAL_SERVER_ERROR,
-          ErrorBehavior.BE
-        );
-      }
-
-      // Return the response status, content, and set-cookie header
-      return { status: response.status, backendContent, setCookieHeader };
-    } else {
-      console.error(
-        "Error in fetchWithSessions",
-        response.status,
-        backendContent
-      );
       throw new BaseHttpError(
-        backendContent.error || "Unknown error",
-        response.status,
+        "Fetch response with new session cookie missing",
+        HttpStatusCode.INTERNAL_SERVER_ERROR,
         ErrorBehavior.BE
       );
     }
-  } catch (error) {
-    console.error("Fetch with sessions error:", error);
-    throw error;
+
+    // Return the response status, content, and set-cookie header
+    return { status: response.status, backendContent, setCookieHeader };
+  } else {
+    console.error("Error in fetchWithSessions", response.status, backendContent);
+    throw new BaseHttpError(backendContent, response.status, ErrorBehavior.BE);
   }
 };
