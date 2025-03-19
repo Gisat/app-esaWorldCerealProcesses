@@ -14,23 +14,12 @@ export const config = {
 };
 
 /**
- * Middleware function for handling authentication session refresh in Next.js.
- * 
- * This middleware attempts to refresh the user's session by:
- * 1. Making a request to the identity provider's session refresh endpoint
- * 2. Retrieving a new session ID (SID) from the response
- * 3. Setting the new session cookie in the response headers
- * 
- * If the session refresh fails for any reason (invalid session, missing environment variables, 
- * network errors, etc.), the user is redirected to the logout endpoint and their
- * existing session cookie is deleted.
- * 
+ * Next.js middleware function for session validation and authentication.
+ * This middleware checks for session cookies, validates them, and refreshes them as needed.
+ *
  * @param request - The incoming Next.js request object
- * @returns A NextResponse object with either:
- *   - The original response with updated session cookies if refresh was successful
- *   - A redirect to the logout endpoint if refresh failed
- * 
- * @throws No exceptions are thrown externally as they're caught internally and handled by redirecting to logout
+ * @returns A Next.js response object with appropriate authentication handling
+ * @throws Error if PID_URL environment variable is missing or session refresh fails
  */
 export async function middleware(request: NextRequest) {
   try {
@@ -91,36 +80,3 @@ export async function middleware(request: NextRequest) {
     return redirect;
   }
 }
-
-
-// TODO: Old version
-// /**
-//  * Middleware function to check the login status of a user.
-//  *
-//  * This function intercepts incoming requests and verifies if the user is logged in
-//  * by making a request to the `/api/auth/user-info` endpoint. If the user is not logged in
-//  * and the request is not for the `/` page, the user is redirected to the `/` page.
-//  *
-//  * @param {NextRequest} request - The incoming request object.
-//  * @returns {Promise<NextResponse>} - The response object, either allowing the request to proceed
-//  *                                    or redirecting the user to the `/` page.
-//  */
-// export async function middleware(request: NextRequest) {
-//   const userInfoUrl = `${request.nextUrl.origin}/api/auth/user-info`;
-//   const cookies = request.headers.get("cookie") || "";
-
-//   // Checking login status for request:
-//   const loggedIn = await isUserLoggedIn(userInfoUrl, cookies);
-
-//   if (!loggedIn && request.nextUrl.pathname !== "/") {
-//     // Redirection to root page /
-//     return NextResponse.redirect(new URL("/", request.url));
-//   }
-
-//   if (loggedIn && request.nextUrl.pathname == "/") {
-//     // Redirection to root page /
-//     return NextResponse.redirect(new URL("/home", request.url));
-//   }
-
-//   return NextResponse.next();
-// }
