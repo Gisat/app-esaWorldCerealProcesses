@@ -2,6 +2,11 @@ import { fetchWithSessions } from "@features/(auth)/_ssr/handlers.sessionFetch";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
+
+// NextJS Cache controls
+export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
+
 /**
  * Middleware function for handling authentication session refresh in Next.js.
  * 
@@ -23,6 +28,13 @@ import { NextResponse } from "next/server";
  */
 export async function middleware(request: NextRequest) {
   try {
+
+    const sid = request.cookies.get("sid");
+
+    if (!sid) {
+      return NextResponse.next();
+    }
+
     // session refresh auth URL
     const identityUrl = process.env.PID_URL;
 
