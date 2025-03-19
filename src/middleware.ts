@@ -7,6 +7,12 @@ import { NextResponse } from "next/server";
 export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
 
+// Middleware configuration
+// This middleware will run on all paths except for the ones listed below
+export const config = {
+  matcher: "/((?!api|_next|static|favicon.ico).*)",
+};
+
 /**
  * Middleware function for handling authentication session refresh in Next.js.
  * 
@@ -29,10 +35,20 @@ export const fetchCache = "force-no-store";
 export async function middleware(request: NextRequest) {
   try {
 
+    // get the session ID from the request cookies
     const sid = request.cookies.get("sid");
 
+    // allowed paths without session
+    const allowedPaths = ["/"];
+
+    // if no session ID is found, check if the current path is allowed
     if (!sid) {
+      
+      if (!allowedPaths.includes(request.nextUrl.pathname))
+        return NextResponse.rewrite(new URL("/", request.nextUrl));
+
       return NextResponse.next();
+
     }
 
     // session refresh auth URL
@@ -68,7 +84,9 @@ export async function middleware(request: NextRequest) {
     console.warn("Error in middleware", error);
 
     // Redirect to the logout endpoint if the session is invalid or refresh failed
-    const redirect = NextResponse.redirect(new URL("/api/auth/logout", request.url));
+    const logoutUrl = new URL("/api/auth/logout", request.nextUrl);
+    console.log("logoutUrl", logoutUrl.href);
+    const redirect = NextResponse.rewrite(logoutUrl);
     redirect.cookies.delete("sid");
 
     return redirect;
@@ -107,7 +125,3 @@ export async function middleware(request: NextRequest) {
 
 //   return NextResponse.next();
 // }
-
-// export const config = {
-//   matcher: "/((?!api|_next|static|favicon.ico).*)",
-// };
