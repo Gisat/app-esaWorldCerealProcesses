@@ -64,8 +64,8 @@ export const fetchWithSessions = async (
     }
   )
 
-  // Parse the response from the backend
-  const backendContent = await response.json();
+  // Parse the response from the backend, no content for HEAD requests
+  const backendContent = method !== "HEAD" ? await response.json() : {};
 
   // Check if the response is successful
   if (response.ok) {
