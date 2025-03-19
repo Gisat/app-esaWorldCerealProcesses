@@ -44,11 +44,11 @@ export async function middleware(request: NextRequest) {
     // if no session ID is found, check if the current path is allowed
     if (!sid) {
       
-      if (!allowedPaths.includes(request.nextUrl.pathname))
+      if (!allowedPaths.includes(request.nextUrl.pathname)){
         return NextResponse.rewrite(new URL("/", request.nextUrl));
+      }
 
       return NextResponse.next();
-
     }
 
     // session refresh auth URL
@@ -85,7 +85,6 @@ export async function middleware(request: NextRequest) {
 
     // Redirect to the logout endpoint if the session is invalid or refresh failed
     const logoutUrl = new URL("/api/auth/logout", request.nextUrl);
-    console.log("logoutUrl", logoutUrl.href);
     const redirect = NextResponse.rewrite(logoutUrl);
     redirect.cookies.delete("sid");
 

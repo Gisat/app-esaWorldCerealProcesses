@@ -10,24 +10,7 @@ import useSWR from "swr";
  * @returns User Info information for client components
  */
 export const useUserInfoFromIdentity = (userInfoUrl: string) => {
-  const [userInfoValue, setUserInfo] = useState<Unsure<UserInfo>>(undefined);
   const { data, error, isLoading } = useSWR(userInfoUrl, swrFetcher);
 
-  useEffect(() => {
-    if (error) {
-      console.dir("User Info Error:");
-      console.dir(error);
-      return;
-    }
-
-    if (data) {
-      if (!data.email) return;
-
-      setUserInfo({
-        email: data.email,
-      });
-    }
-  }, [data, error]);
-
-  return { isLoading, userInfoValue, error };
+  return { isLoading, userInfoValue: data, error };
 };

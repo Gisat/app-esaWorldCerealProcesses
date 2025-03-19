@@ -1,26 +1,27 @@
 "use client";
 import EsaLogo from "@features/(processes)/_components/EsaLogo";
-import { useIsLoggedIn } from "@features/(shared)/_hooks/user.isLogged";
 import { AppShellHeader, Button } from "@mantine/core";
 import { IconLogout, IconUser } from "@tabler/icons-react";
 import Link from "next/link";
 import { bool } from "prop-types";
 import "./style.css";
 import Title from "./Title";
+import { useUserInfoFromIdentity } from "@features/(shared)/_hooks/user.useUserInfoFromIdentity";
 
 const Header = () => {
-  const { isLoading, isLoggedIn, userInfoValue } =
-    useIsLoggedIn("api/auth/user-info");
-
+  const { isLoading, userInfoValue, error } = useUserInfoFromIdentity("/api/auth/user-info");
+  
   if (isLoading) return null;
 
+  if (error) console.error("Error fetching user info", error);
+  
   return (
     <AppShellHeader>
       <div className="worldCereal-Header">
         <Title />
         <div className="worldCereal-Header-tools">
           <EsaLogo className="worldCereal-Header-esaLogo" />
-          {!isLoggedIn() ? (
+          {!userInfoValue?.email ? (
             <Link href="/api/auth/iam">
               <Button
                 className="worldCereal-Button"
@@ -34,7 +35,7 @@ const Header = () => {
           ) : (
             <>
               <span className="worldCereal-Header-email">
-                {userInfoValue?.email}{" "}
+                {userInfoValue?.email ?? "unknown"}
               </span>
               <Button
                 leftSection={<IconLogout size={14} />}
