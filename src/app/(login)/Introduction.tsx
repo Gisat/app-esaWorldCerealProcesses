@@ -1,19 +1,38 @@
 "use client";
 
 import PageLoader from "@features/(shared)/_components/PageLoader";
-import { useUserInfoFromIdentity } from "@features/(shared)/_hooks/user.useUserInfoFromIdentity";
 import { ContentContainer } from "@features/(shared)/_layout/_components/Content/ContentContainer";
 import { SectionContainer } from "@features/(shared)/_layout/_components/Content/SectionContainer";
 import { SectionHeader } from "@features/(shared)/_layout/_components/Content/SectionHeader";
 import { TextLink } from "@features/(shared)/_layout/_components/Content/TextLink";
 import { TextParagraph } from "@features/(shared)/_layout/_components/Content/TextParagraph";
+import { swrFetcher } from "@features/(shared)/_logic/utils";
 import { Button, Flex, List, Text } from "@mantine/core";
 import { IconUser } from "@tabler/icons-react";
 import Link from "next/link";
+import useSWR from "swr";
 
+/**
+ * Introduction component for the WorldCereal Processing Hub.
+ * 
+ * This component renders the welcome page for the application. It displays information
+ * about the WorldCereal Processing Hub, its capabilities, and resources for users.
+ * 
+ * The component uses SWR to fetch user information and conditionally renders content:
+ * - Shows a loading indicator while fetching user data
+ * - If user is not logged in (no email), shows the welcome content with information about:
+ *   - The application's purpose for launching and monitoring WorldCereal processing jobs
+ *   - Types of processes supported
+ *   - Information about using openEO as processing standard
+ *   - Links to additional resources
+ *   - CDSE login instructions
+ * - If user is logged in, renders nothing (empty flex container)
+ * 
+ * @returns {JSX.Element} The Introduction component
+ */
 export default function Introduction() {
-  const { isLoading, userInfoValue } =
-    useUserInfoFromIdentity("api/auth/user-info");
+
+  const { data: userInfoValue, isLoading } = useSWR("/api/auth/user-info", swrFetcher);
 
   if (isLoading) return <PageLoader />;
 
