@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
 
     // url back to FE
     const parsedUrl = new URL(process.env.OID_SELF_REDIRECT_URL as string);
-    const selfUrl = `${parsedUrl.protocol}//${parsedUrl.host}/home`;
+    const selfUrl = `${parsedUrl.protocol}//${parsedUrl.host}/`;
 
     // prepare redirect back to FE
     const feRedirect = NextResponse.redirect(selfUrl as string);
@@ -25,6 +25,7 @@ export async function GET(req: NextRequest) {
     // delete cookies from logout
     feRedirect.cookies.delete("sid");
 
+    console.log("Logout successful");
     return feRedirect;
 
   } catch (error: any) {
@@ -33,6 +34,8 @@ export async function GET(req: NextRequest) {
       
       if(status === 401) 
         response.cookies.delete("sid")
+
+      console.log("Logout error", error);
 
       return response
   }
