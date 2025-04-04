@@ -70,7 +70,9 @@ export async function middleware(request: NextRequest) {
     return response;
   } catch (error: any) {
 
-    console.warn("Error in middleware", error);
+    // Log the error message
+    const messagefromError = error.message || "Unknown error";
+    console.warn("Error in middleware", messagefromError);
 
     // Redirect to the logout endpoint if the session is invalid or refresh failed
     const logoutUrl = new URL("/api/auth/logout", request.nextUrl);
