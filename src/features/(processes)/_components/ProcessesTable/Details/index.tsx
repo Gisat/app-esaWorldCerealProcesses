@@ -10,6 +10,14 @@ type DetailsItemProps = {
   label: string;
 };
 
+/**
+ * Renders a labeled detail item for the process details table.
+ *
+ * @param {DetailsItemProps} props - The props for the DetailsItem component.
+ * @param {React.ReactNode} props.children - The content to display.
+ * @param {string} props.label - The label for the detail item.
+ * @returns {JSX.Element|null} The rendered detail item or null if no children.
+ */
 const DetailsItem = ({ children, label }: DetailsItemProps) => {
   return children ? (
     <div className="worldCereal-ProcessesTable-DetailItem">
@@ -19,6 +27,25 @@ const DetailsItem = ({ children, label }: DetailsItemProps) => {
   ) : null;
 };
 
+/**
+ * Props for the Details component.
+ * @typedef {Object} DetailsProps
+ * @property {Date} [startDate] - The start date of the process.
+ * @property {Date} [endDate] - The end date of the process.
+ * @property {number[]} [extent] - The extent coordinates.
+ * @property {number[]} [bbox] - The bounding box coordinates.
+ * @property {number} [costs] - The costs associated with the process.
+ * @property {number} [duration] - The duration of the process.
+ * @property {boolean} [showValuesInfo] - Whether to show the values info section.
+ * @property {string} [oeoCollection] - The openEO collection name.
+ * @property {string} [oeoProcessId] - The openEO process ID.
+ * @property {string} [resultFileFormat] - The output file format.
+ * @property {Array<{ source_link: string }>} [results] - Array of result objects with download links.
+ * @property {string} [status] - The status of the process.
+ * @property {string} [collectionName] - The name of the product collection.
+ * @property {string} [model] - The model used for the process.
+ * @property {string} [backgroundLayer] - The key of the background layer to display in the map.
+ */
 // todo: this needs to be refactored, some of the props are obsolete or was renamed
 type DetailsProps = {
   startDate?: Date;
@@ -38,6 +65,12 @@ type DetailsProps = {
   backgroundLayer?: string;
 };
 
+/**
+ * Displays detailed information about a process, including map, metadata, and download links.
+ *
+ * @param {DetailsProps} props - The props for the Details component.
+ * @returns {JSX.Element} The rendered details view for a process.
+ */
 const Details = ({
   bbox,
   startDate,
