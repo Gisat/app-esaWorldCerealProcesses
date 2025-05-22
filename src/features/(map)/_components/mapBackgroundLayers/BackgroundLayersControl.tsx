@@ -13,9 +13,6 @@ import openStreetMap_Mapnik from "./img/openStreetMap_Mapnik.png";
 
 import "./style.css";
 
-// Default color for active icons used in control buttons
-export const DEFAULT_ICON_ACTIVE_COLOR = "#007FFF";
-
 /**
  * Mapping of background layer keys to their image sources.
  * @type {Record<string, string>}
