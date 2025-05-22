@@ -10,12 +10,7 @@ import TwoColumns, {
 } from "@features/(shared)/_layout/_components/Content/TwoColumns";
 import { Group, SegmentedControl, Stack } from "@mantine/core";
 import { useRouter } from "next/navigation";
-import {
-  createElement,
-  useCallback,
-  useEffect,
-  useState,
-} from "react";
+import { createElement, useCallback, useEffect, useState } from "react";
 import { TextDescription } from "@features/(shared)/_layout/_components/Content/TextDescription";
 import { SectionContainer } from "@features/(shared)/_layout/_components/Content/SectionContainer";
 import { BoundingBoxExtent } from "@features/(processes)/_types/boundingBoxExtent";
@@ -31,6 +26,7 @@ type searchParamsType = {
   width?: string;
   height?: string;
   outputFileFormat?: string;
+  backgroundLayer?: string;
 };
 
 /**
@@ -49,13 +45,19 @@ export default function Page({
   const bbox: BoundingBoxExtent = searchParams?.bbox
     ?.split(",")
     .map(Number) as BoundingBoxExtent;
+  const bgLayer = searchParams?.backgroundLayer || "esri_WorldImagery";
+
   const [bboxDescription, setBboxDescription] = useState<
     string | string[] | null
   >(null);
-  const [bboxExtent, setBboxExtent] =
-    useState<BoundingBoxExtent | null>(bbox);
+  const [bboxExtent, setBboxExtent] = useState<BoundingBoxExtent | null>(bbox);
   const [bboxIsInBounds, setBboxIsInBounds] = useState<boolean | null>(null);
-  const [outputFileFormatState, setOutputFileFormatState] = useState<string | null>(null);
+  const [outputFileFormatState, setOutputFileFormatState] = useState<
+    string | null
+  >(null);
+  const [backgroundLayer, setBackgroundLayer] = useState<string | null>(
+    bgLayer
+  );
 
   const router = useRouter();
 
@@ -67,7 +69,7 @@ export default function Page({
     bbox: searchParams?.bbox,
     outputFileFormat,
     collection,
-    product
+    product,
   };
 
   /**
@@ -95,41 +97,60 @@ export default function Page({
   }, [bboxExtent, setValue]);
 
   useEffect(() => {
-    if (outputFileFormatState) setValue(outputFileFormatState, "outputFileFormat");
+    if (outputFileFormatState)
+      setValue(outputFileFormatState, "outputFileFormat");
   }, [outputFileFormatState, setValue]);
 
-  const isDisabled = !bboxIsInBounds || !bbox || !collection || !product || !outputFileFormat;
+  useEffect(() => {
+    setValue(backgroundLayer, "backgroundLayer");
+  }, [backgroundLayer, setValue]);
+
+  const isDisabled =
+    !bboxIsInBounds || !bbox || !collection || !product || !outputFileFormat;
 
   return (
     <TwoColumns>
       <Column>
-				<SectionContainer>
-					<Group gap={"0.3rem"} align="baseline">
-						<FormLabel>Draw the extent</FormLabel>
-						<TextDescription color={"var(--textSecondaryColor)"}>(MIN: 900 m<sup>2</sup>, MAX: 100 000 km<sup>2</sup>)</TextDescription>
-					</Group>
-					<MapBBox
-						mapSize={[650, 400]}
-						minBboxArea={bboxSizeLimits.downloadProducts.min}
-						maxBboxArea={bboxSizeLimits.downloadProducts.max}
-						bbox={bbox?.map(Number)}
-						setBboxDescription={setBboxDescription}
-						setBboxExtent={setBboxExtent}
-						setBboxIsInBounds={setBboxIsInBounds}
-					/>
-					<TextDescription>
-						Current extent: {bboxDescription ? <>{bboxDescription} km<sup>2</sup></> : "No extent selected"}
-					</TextDescription>
-				</SectionContainer>
-				<TextDescription>
-					In case you are interested in larger areas, we recommend to download the AEZ-based products directly from <TextLink url="https://zenodo.org/records/7875105">Zenodo</TextLink>.
-				</TextDescription>
+        <SectionContainer>
+          <Group gap={"0.3rem"} align="baseline">
+            <FormLabel>Draw the extent</FormLabel>
+            <TextDescription color={"var(--textSecondaryColor)"}>
+              (MIN: 900 m<sup>2</sup>, MAX: 100 000 km<sup>2</sup>)
+            </TextDescription>
+          </Group>
+          <MapBBox
+            mapSize={[650, 400]}
+            minBboxArea={bboxSizeLimits.downloadProducts.min}
+            maxBboxArea={bboxSizeLimits.downloadProducts.max}
+            bbox={bbox?.map(Number)}
+            setBboxDescription={setBboxDescription}
+            setBboxExtent={setBboxExtent}
+            setBboxIsInBounds={setBboxIsInBounds}
+            backgroundLayer={backgroundLayer}
+            setBackgroundLayer={setBackgroundLayer}
+          />
+          <TextDescription>
+            Current extent:{" "}
+            {bboxDescription ? (
+              <>
+                {bboxDescription} km<sup>2</sup>
+              </>
+            ) : (
+              "No extent selected"
+            )}
+          </TextDescription>
+        </SectionContainer>
+        <TextDescription>
+          In case you are interested in larger areas, we recommend to download
+          the AEZ-based products directly from{" "}
+          <TextLink url="https://zenodo.org/records/7875105">Zenodo</TextLink>.
+        </TextDescription>
         <PageSteps
           NextButton={createElement(CreateJobButton, {
             params,
             searchParams,
             apiUrl,
-            disabled: isDisabled
+            disabled: isDisabled,
           })}
           disabled={isDisabled}
         />
@@ -143,7 +164,11 @@ export default function Page({
               className="worldCereal-SegmentedControl"
               size="md"
               value={outputFileFormat}
-              defaultValue={formParams.outputFileFormat.options.find((option) => option.default)?.value}
+              defaultValue={
+                formParams.outputFileFormat.options.find(
+                  (option) => option.default
+                )?.value
+              }
               data={formParams.outputFileFormat.options}
             />
           </div>

@@ -71,6 +71,7 @@ export default function Page({
     bbox?: string;
     outputFileFormat?: string;
     model?: string;
+    backgroundLayer?: string;
   };
 }) {
   const key = searchParams?.key;
@@ -84,13 +85,13 @@ export default function Page({
   const process = formParams.product.options.find(
     (option) => option.value === searchParams?.product
   )?.label;
+  const backgroundLayer = searchParams?.backgroundLayer || "esri_WorldImagery";
 
   return (
     <>
       <TextParagraph color="var(--textAccentedColor)">
         <b>
-          You have created the Custom product process with following
-          parameters:
+          You have created the Custom product process with following parameters:
         </b>
       </TextParagraph>
       {data && data.key === searchParams?.key ? (
@@ -100,7 +101,8 @@ export default function Page({
           endDate={data?.timeRange?.[1]}
           resultFileFormat={data?.resultFileFormat}
           oeoProcessId={process}
-					model={model}
+          model={model}
+          backgroundLayer={backgroundLayer}
         />
       ) : null}
       <PageSteps NextButton={createElement(StartJobButton, { jobKey: key })} />

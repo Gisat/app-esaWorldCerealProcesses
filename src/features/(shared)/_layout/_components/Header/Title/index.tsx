@@ -1,6 +1,6 @@
 "use client";
 
-import {string, func} from "prop-types";
+import { string, func } from "prop-types";
 import logoData from "../logo";
 import Link from "next/link";
 import { pages } from "@features/(processes)/_constants/app";

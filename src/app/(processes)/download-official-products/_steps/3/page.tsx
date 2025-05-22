@@ -24,6 +24,7 @@ import formParams from "@features/(processes)/_constants/download-official-produ
 const StartJobButton = ({ jobKey }: { jobKey?: string }) => {
   const router = useRouter();
   const [shouldFetch, setShouldFetch] = useState(false);
+
   const url = `/api/jobs/start/${jobKey}`;
 
   const { data, isLoading } = useSWR(shouldFetch ? [url] : null, () =>
@@ -78,6 +79,7 @@ export default function Page({
     outputFileFormat?: string;
     collection?: string;
     product?: string;
+    backgroundLayer?: string;
   };
 }) {
   const key = searchParams?.key;
@@ -89,18 +91,25 @@ export default function Page({
   const product = formParams.product.options.find(
     (option) => option.value === searchParams?.product
   )?.label;
+  const backgroundLayer = searchParams?.backgroundLayer || "esri_WorldImagery";
 
   const { data } = useSWR(`/api/jobs/get/${key}`, fetcher);
 
   return (
     <>
-      <TextParagraph color="var(--textAccentedColor)"><b>You have created the Download official products process with following parameters:</b></TextParagraph>
+      <TextParagraph color="var(--textAccentedColor)">
+        <b>
+          You have created the Download official products process with following
+          parameters:
+        </b>
+      </TextParagraph>
       {data && data.key === key ? (
         <Details
           bbox={bbox}
           resultFileFormat={outputFileFormat}
           oeoCollection={product}
           collectionName={collection}
+          backgroundLayer={backgroundLayer}
         />
       ) : null}
       <PageSteps NextButton={createElement(StartJobButton, { jobKey: key })} />
