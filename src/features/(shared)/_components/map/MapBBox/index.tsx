@@ -4,8 +4,8 @@ import { BboxPoints } from "@features/(map)/_components/mapBBoxDrawing/types";
 import RenderingMap from "@features/(map)/_components/mapComponent/RenderingMap";
 import { useState } from "react";
 import ControlButtons from "./ControlButtons";
-import { area as turfArea } from '@turf/area';
-import { polygon as turfPolygon } from '@turf/helpers';
+import { area as turfArea } from "@turf/area";
+import { polygon as turfPolygon } from "@turf/helpers";
 import { BoundingBoxExtent } from "@features/(processes)/_types/boundingBoxExtent";
 
 const defaultMapSize: Array<number> = [500, 500]; // Default map size in pixels
@@ -29,14 +29,16 @@ const roundCoordinates = (coordinatesToRound: Array<Array<number>>) =>
  * Component that renders a map with a bounding box.
  *
  * @param {Object} props - The props for the component.
- * @param {Array<number>} [props.mapSize=defaultMapSize] - The size of the map.
+ * @param {Array<number>} [props.mapSize=defaultMapSize] - The size of the map in pixels as [width, height].
  * @param {boolean} [props.disabled] - Whether the bounding box is disabled.
- * @param {Array<number>} [props.bbox] - The bounding box coordinates.
+ * @param {Array<number>} [props.bbox] - The bounding box coordinates as [minLng, minLat, maxLng, maxLat].
  * @param {number} [props.minBboxArea=0.0009] - The minimum area of the bounding box.
  * @param {number} [props.maxBboxArea=100000] - The maximum area of the bounding box.
- * @param {Function} [props.setBboxDescription] - Callback function for setting the description of the bounding box.
- * @param {Function} [props.setBboxExtent] - Callback function for setting the extent of the bounding box.
- * @param {Function} [props.setBboxIsInBounds] - Callback function for setting whether the bounding box is within bounds.
+ * @param {Function} [props.setBboxDescription] - Callback for setting the description of the bounding box.
+ * @param {Function} [props.setBboxExtent] - Callback for setting the extent of the bounding box.
+ * @param {Function} [props.setBboxIsInBounds] - Callback for setting whether the bounding box is within bounds.
+ * @param {string|null} [props.backgroundLayer] - The key of the currently selected background layer.
+ * @param {Function} [props.setBackgroundLayer] - Function to set the background layer.
  * @returns {JSX.Element} The rendered map with bounding box component.
  */
 export const MapBBox = function ({
@@ -48,6 +50,8 @@ export const MapBBox = function ({
   setBboxDescription,
   setBboxExtent,
   setBboxIsInBounds,
+  backgroundLayer,
+  setBackgroundLayer,
 }: {
   mapSize?: Array<number>;
   disabled?: boolean;
@@ -59,6 +63,8 @@ export const MapBBox = function ({
   >;
   setBboxExtent?: (extent: BoundingBoxExtent | null) => void;
   setBboxIsInBounds?: (isInBounds: boolean) => void;
+  backgroundLayer?: string | null;
+  setBackgroundLayer?: React.Dispatch<React.SetStateAction<string | null>>;
 }) {
   const [initialView, setInitialView] = useState<object | null>(null); // State for the initial view of the map
 
@@ -77,9 +83,7 @@ export const MapBBox = function ({
   /**
    * Determines the validity of a bounding box (bbox) based on its area and updates the state accordingly.
    *
-   * @param area - The area of the bounding box to validate.
-   *               The bbox is considered valid if its area is greater than `minBboxArea` 
-   *               and less than `maxBboxArea`.
+   * @param {number} area - The area of the bounding box to validate.
    */
   const setBboxValidity = (area: number) => {
     if (area > minBboxArea && area < maxBboxArea) {
@@ -87,7 +91,7 @@ export const MapBBox = function ({
     } else {
       setBboxIsInBounds?.(false);
     }
-  }
+  };
 
   /**
    * Sets the description of the bounding box.
@@ -95,11 +99,18 @@ export const MapBBox = function ({
    * @param {Array<Array<number>> | null} points - The points of the bounding box.
    * @param {number} area - The area of the bounding box.
    */
-  const onBboxDescriptionChange = (points: Array<Array<number>> | null, area: number | null) => {
+  const onBboxDescriptionChange = (
+    points: Array<Array<number>> | null,
+    area: number | null
+  ) => {
     if (points?.length === 4 && area && setBboxDescription) {
       const bboxExtentPoints = [points[2], points[0]];
-      const bboxRoundedCoordinates = roundCoordinates(bboxExtentPoints).map(coordinate => coordinate.replace(",", ", "));
-      const bboxRoundedArea = Math.round(area).toLocaleString().replace(",", " ");
+      const bboxRoundedCoordinates = roundCoordinates(bboxExtentPoints).map(
+        (coordinate) => coordinate.replace(",", ", ")
+      );
+      const bboxRoundedArea = Math.round(area)
+        .toLocaleString()
+        .replace(",", " ");
       setBboxDescription(
         `${bboxRoundedCoordinates[0]} ${bboxRoundedCoordinates[1]} - ${bboxRoundedArea}`
       );
@@ -114,7 +125,10 @@ export const MapBBox = function ({
    * @param {Array<Array<number>> | null} points - The points of the bounding box.
    * @param {number} area - The area of the bounding box.
    */
-  const onBboxChange = (points: Array<Array<number>> | null, area: number | null) => {
+  const onBboxChange = (
+    points: Array<Array<number>> | null,
+    area: number | null
+  ) => {
     onBboxDescriptionChange(points, area);
     if (points?.length === 4 && area) {
       const bboxExtent = [...points[2], ...points[0]] as BoundingBoxExtent;
@@ -125,7 +139,7 @@ export const MapBBox = function ({
     }
   };
 
-  // If there is no initial view and bounding box data is available, calculate the view to fit the bounding box and set it as the initial view. 
+  // If there is no initial view and bounding box data is available, calculate the view to fit the bounding box and set it as the initial view.
   // Also, create a polygon from the bounding box points, calculate its area, and update the bounding box description.
   if (!initialView && bbox && bboxPoints) {
     const bboxView = {
@@ -147,13 +161,15 @@ export const MapBBox = function ({
     );
     setInitialView(fitView);
 
-    const polygon = turfPolygon([[...bboxPoints, bboxPoints[0]]], { name: "polygon" });
+    const polygon = turfPolygon([[...bboxPoints, bboxPoints[0]]], {
+      name: "polygon",
+    });
     const area = turfArea(polygon) / 1000000;
     onBboxDescriptionChange(bboxPoints, area);
     setBboxValidity(area);
   } else if (!initialView && !bbox) {
     setInitialView(defaultMapView);
-  }  
+  }
 
   return (
     <div
@@ -176,6 +192,8 @@ export const MapBBox = function ({
           width="100%"
           height="100%"
           initialView={initialView}
+          backgroundLayer={backgroundLayer}
+          setBackgroundLayer={setBackgroundLayer}
         />
       </BoundingBox>
     </div>

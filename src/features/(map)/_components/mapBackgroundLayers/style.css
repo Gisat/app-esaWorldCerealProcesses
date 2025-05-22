@@ -1,0 +1,68 @@
+.mapBackgroundLayers {
+	bottom: .6rem; 
+	right: .4rem;
+	position: absolute;
+	display: flex;
+	flex-direction: row;
+	align-items: end;
+}
+
+.mapBackgroundLayers-controlBtn {
+	width: 2.2rem;
+	height: 2.2rem;
+	border-radius: 50%;
+	background-color: var(--base700);
+	color: var(--base0);
+	border: none;
+}
+
+.mapBackgroundLayers-controlBtn:hover {
+	background-color: var(--base700);
+	color: var(--base0);
+}
+
+.mapBackgroundLayers-container {
+	background-color: var(--base0);
+	padding: 1rem;
+	border-radius: .25rem .25rem 0 .25rem;
+}
+
+.mapBackgroundLayers-connector {
+	margin-right: .4rem;
+	width: 0;
+	height: 0;
+	border-top: 17px solid transparent;
+	border-left: 20px solid var(--base0);
+	border-bottom: 17px solid transparent;
+}
+
+.mapBackgroundLayers-layerControl {
+	gap: .25rem;
+	color: var(--base500);
+	font-size: 1rem;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+}
+
+.mapBackgroundLayers-layerControl.is-active p {
+	color: var(--accent500);
+	font-weight: 600;
+}
+
+.mapBackgroundLayers-bgLayerImage {
+	width: 105px;
+	height: 60px;
+	object-fit: cover;
+	object-position: center;
+	background-repeat: no-repeat;
+	background-size: cover;
+	outline: 1px solid var(--base950);
+	border-radius: .25rem;
+}
+
+.mapBackgroundLayers-layerControl.is-active .mapBackgroundLayers-bgLayerImage {
+	outline: 3px solid var(--accent500);
+}

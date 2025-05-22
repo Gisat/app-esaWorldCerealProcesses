@@ -40,6 +40,7 @@ export default function Page({
     bbox?: string;
     outputFileFormat?: string;
     model?: string;
+    backgroundLayer?: string;
   };
 }) {
   const router = useRouter();
@@ -48,14 +49,19 @@ export default function Page({
   const bbox: BoundingBoxExtent = searchParams?.bbox
     ?.split(",")
     .map(Number) as BoundingBoxExtent;
+  const bgLayer = searchParams?.backgroundLayer || "esri_WorldImagery";
 
   const [bboxDescription, setBboxDescription] = useState<
     string | string[] | null
   >(null);
-  const [bboxExtent, setBboxExtent] =
-    useState<BoundingBoxExtent | null>(bbox);
+  const [bboxExtent, setBboxExtent] = useState<BoundingBoxExtent | null>(bbox);
   const [bboxIsInBounds, setBboxIsInBounds] = useState<boolean | null>(null);
-  const [outputFileFormatState, setOutputFileFormatState] = useState<string | null>(null);
+  const [outputFileFormatState, setOutputFileFormatState] = useState<
+    string | null
+  >(null);
+  const [backgroundLayer, setBackgroundLayer] = useState<string | null>(
+    bgLayer
+  );
 
   const product = searchParams?.product || undefined;
   const endDate = searchParams?.endDate || defaultProductsDates.endDate;
@@ -67,7 +73,7 @@ export default function Page({
     endDate,
     product,
     outputFileFormat,
-    model
+    model,
   };
 
   const isDisabled =
@@ -78,12 +84,11 @@ export default function Page({
     !params.outputFileFormat ||
     !params.model;
 
-
   /**
-     * Sets a value in the URL search parameters.
-     * @param {string | null | undefined} value - The value to set.
-     * @param {string} key - The key to set the value for.
-     */
+   * Sets a value in the URL search parameters.
+   * @param {string | null | undefined} value - The value to set.
+   * @param {string} key - The key to set the value for.
+   */
   const setValue = useCallback(
     (value: string | null | undefined, key: string) => {
       const url = new URL(window.location.href);
@@ -104,8 +109,13 @@ export default function Page({
   }, [bboxExtent, setValue]);
 
   useEffect(() => {
-    if (outputFileFormatState) setValue(outputFileFormatState, "outputFileFormat");
+    if (outputFileFormatState)
+      setValue(outputFileFormatState, "outputFileFormat");
   }, [outputFileFormatState, setValue]);
+
+  useEffect(() => {
+    setValue(backgroundLayer, "backgroundLayer");
+  }, [backgroundLayer, setValue]);
 
   return (
     <TwoColumns>
@@ -113,7 +123,9 @@ export default function Page({
         <SectionContainer>
           <Group gap={"0.3rem"} align="baseline">
             <FormLabel>Draw the extent</FormLabel>
-            <TextDescription color={"var(--textSecondaryColor)"}>(MIN: 900 m<sup>2</sup>, MAX: 2 500 km<sup>2</sup>)</TextDescription>
+            <TextDescription color={"var(--textSecondaryColor)"}>
+              (MIN: 900 m<sup>2</sup>, MAX: 2 500 km<sup>2</sup>)
+            </TextDescription>
           </Group>
           <MapBBox
             mapSize={[650, 400]}
@@ -123,9 +135,18 @@ export default function Page({
             setBboxDescription={setBboxDescription}
             setBboxExtent={setBboxExtent}
             setBboxIsInBounds={setBboxIsInBounds}
+            backgroundLayer={backgroundLayer}
+            setBackgroundLayer={setBackgroundLayer}
           />
           <TextDescription>
-            Current extent: {bboxDescription ? <>{bboxDescription} km<sup>2</sup></> : "No extent selected"}
+            Current extent:{" "}
+            {bboxDescription ? (
+              <>
+                {bboxDescription} km<sup>2</sup>
+              </>
+            ) : (
+              "No extent selected"
+            )}
           </TextDescription>
         </SectionContainer>
         <TextDescription>
@@ -135,16 +156,16 @@ export default function Page({
           </b>
         </TextDescription>
         <TextDescription>
-          A run of 250 km<sup>2</sup> will typically consume 40 credits and last around
-          20min.
+          A run of 250 km<sup>2</sup> will typically consume 40 credits and last
+          around 20min.
         </TextDescription>
         <TextDescription>
-          A run of 750 km<sup>2</sup>  will typically consume 90 credits and last around
-          50min.
+          A run of 750 km<sup>2</sup> will typically consume 90 credits and last
+          around 50min.
         </TextDescription>
         <TextDescription>
-          A run of 2500 km<sup>2</sup>  will typically consume 250 credits and last around 1h
-          40min.
+          A run of 2500 km<sup>2</sup> will typically consume 250 credits and
+          last around 1h 40min.
         </TextDescription>
         <PageSteps
           NextButton={createElement(CreateJobButton, {
@@ -181,7 +202,9 @@ export default function Page({
               value={endDate}
               minDate={new Date(customProductsDateLimits.min)}
               maxDate={new Date(customProductsDateLimits.max)}
-              onChange={(value) => { setValue(value, "endDate") }}
+              onChange={(value) => {
+                setValue(value, "endDate");
+              }}
             />
           </div>
 
@@ -192,7 +215,11 @@ export default function Page({
               className="worldCereal-SegmentedControl"
               size="md"
               value={outputFileFormat}
-              defaultValue={formParams.outputFileFormat.options.find((option) => option.default)?.value}
+              defaultValue={
+                formParams.outputFileFormat.options.find(
+                  (option) => option.default
+                )?.value
+              }
               data={formParams.outputFileFormat.options}
             />
           </div>
