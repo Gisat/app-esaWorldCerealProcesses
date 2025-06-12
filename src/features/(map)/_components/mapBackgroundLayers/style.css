@@ -11,13 +11,13 @@
 	width: 2.2rem;
 	height: 2.2rem;
 	border-radius: 50%;
-	background-color: var(--base700);
+	background-color: var(--accent500);
 	color: var(--base0);
 	border: none;
 }
 
 .mapBackgroundLayers-controlBtn:hover {
-	background-color: var(--base700);
+	background-color: var(--accent600);
 	color: var(--base0);
 }
 
