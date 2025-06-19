@@ -17,7 +17,7 @@ export default function Table() {
   const url = `/api/jobs/get/list`;
 
   const { data, mutate, error } = useSWR(url, apiFetcher, {
-    refreshInterval: 1000,
+    refreshInterval: 15000,
   });
 
   // Handle error state
