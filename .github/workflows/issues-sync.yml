@@ -2,6 +2,7 @@ name: Sync GitHub Issues to Notion
 
 on:
   issues:
+    types: [opened, edited, closed, reopened, labeled, unlabeled]
   workflow_dispatch:
 
 jobs:
