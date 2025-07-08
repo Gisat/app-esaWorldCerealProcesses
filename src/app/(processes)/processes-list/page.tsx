@@ -1,12 +1,16 @@
-export const dynamic = 'force-dynamic';
+/**
+ * ProcessesList Component
+ *
+ * This component serves as a wrapper for the `ProcessesListClient` component.
+ * It is responsible for rendering the client-side implementation of the processes list.
+ *
+ * @component
+ * @returns {JSX.Element} The rendered `ProcessesListClient` component.
+ */
 
-import React from 'react';
-import Table from './_components/Table';
+import { ProcessesListClient } from '@features/pages/processes/ProcessesListClient';
 
-const Processes: React.FC = () => {
-    return (
-			<Table />
-    );
-};
-
-export default Processes;
+export default function ProcessesList() {
+	// Render the ProcessesListClient component
+	return <ProcessesListClient />;
+}

@@ -1,5 +1,3 @@
-'useClient';
-
 import { MantineProvider } from '@features/(shared)/_components/providers/MantineProvider/MantineProvider';
 import { AppShell, AppShellMain, rem } from '@mantine/core';
 import type { Metadata } from 'next';

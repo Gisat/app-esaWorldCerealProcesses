@@ -1,38 +1,15 @@
-"use client";
-import { navbarItems } from "@features/(processes)/_constants/app";
-import { ContentWrapper as Content } from "@features/(shared)/_layout/_components/Content/ContentWrapper";
-import Navbar from "@features/(shared)/_layout/_components/Navbar";
-import NavbarItem from "@features/(shared)/_layout/_components/Navbar/NavbarItem";
-import { usePathname, useSelectedLayoutSegment } from "next/navigation";
-import { Suspense } from "react";
+import { ContentWrapper as Content } from '@features/(shared)/_layout/_components/Content/ContentWrapper';
+import { Navigation } from '@features/(processes)/_components/Navigation';
 
 export default function ProcessesLayout({
-  children,
+	children,
 }: Readonly<{
-  children: React.ReactNode;
+	children: React.ReactNode;
 }>) {
-  const currentPath = usePathname();
-  const segment = useSelectedLayoutSegment() || navbarItems[0].key;
-  const basePath = currentPath.split(`/${segment}`)[0];
-
-  return (
-    <Suspense>
-      <Navbar activeValue={segment}>
-        {navbarItems.map((item) => {
-          return (
-            <NavbarItem
-              key={item.key}
-              active={segment === item.key}
-              disabled={false}
-              value={item.key}
-              title={item.title}
-              icon={item.icon}
-              href={`${basePath}/${item.key}`}
-            />
-          );
-        })}
-      </Navbar>
-      <Content>{children}</Content>
-    </Suspense>
-  );
+	return (
+		<>
+			<Navigation />
+			<Content>{children}</Content>
+		</>
+	);
 }
