@@ -1,8 +1,8 @@
 name: Sync GitHub Issues to Notion
 
 on:
-  issues:
-    types: [opened, edited, closed, reopened, labeled, unlabeled]
+  schedule:
+    - cron: '*/30 * * * *' # Every 30 minutes
   workflow_dispatch:
 
 jobs:
