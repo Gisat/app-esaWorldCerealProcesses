@@ -1,6 +1,6 @@
 .label {
-    font-family: var(--titleFontFamily) sans-serif;
-    font-size: var(--a1);
+    font-family: var(--headingsFontFamily) sans-serif;
+    font-size: var(--font-size-md);
 }
 
 .formItem {

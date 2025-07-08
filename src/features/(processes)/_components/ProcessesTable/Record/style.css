@@ -7,7 +7,7 @@
 }
 
 .worldCereal-ProcessesTable .mantine-Table-td {
-  font-size: var(--a1);
+  font-size: var(--font-size-md);
   color: var(--textPrimaryColor);
   vertical-align: middle;
 
@@ -27,6 +27,6 @@
   }
 
   &.smallTextCell {
-    font-size: var(--a0);
+    font-size: var(--font-size-sm);
   }
 }
