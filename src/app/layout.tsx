@@ -11,8 +11,9 @@ import '@features/styles/index.css';
 import './index.css';
 
 import Header from '@features/(shared)/_layout/_components/Header';
-import FaroFrontendMonitoring from '../features/(grafana)/_components/FaroFrontendMonitoring';
+// import FaroFrontendMonitoring from '../features/(grafana)/_components/FaroFrontendMonitoring';
 import InstanceWarning from '@features/(shared)/_components/InstanceWarning';
+import { PersistentStateWrapper } from '@features/wrappers/PersistentStateWrapper';
 
 export const metadata: Metadata = {
 	title: 'WorldCereals Processes',
@@ -34,12 +35,14 @@ export default function RootLayout({
 			</head>
 			<body className={`esaWorldCerealProcesses`}>
 				<InstanceWarning />
-				<FaroFrontendMonitoring envUrl="/api/faro" />
+				{/*<FaroFrontendMonitoring envUrl="/api/faro" />*/}
 				<MantineProvider>
-					<AppShell withBorder={false} padding={0} className={'worldCereal-appContent'}>
-						<Header />
-						<AppShellMain pt={`calc(${rem(64)})`}>{children}</AppShellMain>
-					</AppShell>
+					<PersistentStateWrapper>
+						<AppShell withBorder={false} padding={0} className={'worldCereal-appContent'}>
+							<Header />
+							<AppShellMain pt={`calc(${rem(64)})`}>{children}</AppShellMain>
+						</AppShell>
+					</PersistentStateWrapper>
 				</MantineProvider>
 			</body>
 		</html>
