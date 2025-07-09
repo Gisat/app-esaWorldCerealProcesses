@@ -16,12 +16,43 @@ import { IconArrowRight } from '@tabler/icons-react';
 import Link from 'next/link';
 import { useEffect } from 'react';
 
+/**
+ * Component representing the first step in the "Download Official Products" process.
+ *
+ * This step allows users to select a product collection and a specific product.
+ *
+ * @component
+ * @returns {JSX.Element} The rendered component for step 1 of the process.
+ */
 export default function DownloadStep1() {
+	/**
+	 * Shared state hook for accessing and dispatching application state.
+	 * @type {[WorldCerealState, React.Dispatch<OneOfWorldCerealActions>]}
+	 */
 	const [state, dispatch] = useSharedState<WorldCerealState, OneOfWorldCerealActions>();
+
+	/**
+	 * Selector to retrieve the selected product collection from the state.
+	 * @type {string | undefined}
+	 */
 	const collection = getCollection(state);
+
+	/**
+	 * Selector to retrieve the selected product from the state.
+	 * @type {string | undefined}
+	 */
 	const product = getProduct(state);
+
+	/**
+	 * Determines whether the next step is disabled based on the current state.
+	 * @type {boolean}
+	 */
 	const nextStepDisabled = !collection || !product;
 
+	/**
+	 * Updates the selected product collection in the state.
+	 * @param {string | null} value - The selected product collection.
+	 */
 	const setCollection = (value: string | null) => {
 		if (value) {
 			dispatch({
@@ -31,6 +62,10 @@ export default function DownloadStep1() {
 		}
 	};
 
+	/**
+	 * Updates the selected product in the state.
+	 * @param {string | null} value - The selected product.
+	 */
 	const setProduct = (value: string | null) => {
 		if (value) {
 			dispatch({
@@ -40,6 +75,9 @@ export default function DownloadStep1() {
 		}
 	};
 
+	/**
+	 * Effect to initialize the active step in the state when the component mounts.
+	 */
 	useEffect(() => {
 		dispatch({
 			type: WorldCerealStateActionType.DOWNLOAD_OFFICIAL_PRODUCT_SET_ACTIVE_STEP,

@@ -8,6 +8,7 @@ import { setProductHandler } from '@features/state/reducers/downloadOfficialProd
 import { setOutputFileFormatHandler } from '@features/state/reducers/downloadOfficialProduct/handler.setOutputFileFormat';
 import { setBBoxHandler } from '@features/state/reducers/downloadOfficialProduct/handler.setBBox';
 import { setBackgroundLayerHandler } from '@features/state/reducers/downloadOfficialProduct/handler.setBackgroundLayer';
+import { setCurrentJobKeyHandler } from '@features/state/reducers/downloadOfficialProduct/handler.setCurrentJobKey';
 
 /**
  * Creates and returns a map of reducer functions specific to the WorldCereal application state management.
@@ -44,6 +45,7 @@ export const stateReducerMapForWorldCerealApplication = (): AppSpecificReducerMa
 		WorldCerealStateActionType.DOWNLOAD_OFFICIAL_PRODUCT_SET_BACKGROUND_LAYER as string,
 		setBackgroundLayerHandler
 	);
+	map.set(WorldCerealStateActionType.DOWNLOAD_OFFICIAL_PRODUCT_SET_CURRENT_JOB_KEY as string, setCurrentJobKeyHandler);
 
 	// Return the map to be merged with the default reducer map in the ptr-fe-core package.
 	return map;

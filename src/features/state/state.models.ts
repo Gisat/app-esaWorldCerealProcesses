@@ -25,6 +25,7 @@ export type DownloadOfficialProductsOutputFileFormatModel = 'GTiff' | 'NETCDF';
 
 export type DownloadOfficialProductsBackgroundLayerModel = string;
 export type DownloadOfficialProductsBBoxModel = [number, number, number, number];
+export type DownloadOfficialProductsCurrentJobKeyModel = string | undefined;
 
 /**
  * Interface representing the `downloadOfficialProducts` section of the application state.
@@ -44,6 +45,7 @@ export interface DownloadOfficialProductsModel {
 	outputFileFormat: DownloadOfficialProductsOutputFileFormatModel;
 	backgroundLayer?: DownloadOfficialProductsBackgroundLayerModel;
 	bbox?: DownloadOfficialProductsBBoxModel;
+	currentJobKey?: DownloadOfficialProductsCurrentJobKeyModel;
 }
 
 /**

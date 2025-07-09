@@ -8,5 +8,6 @@ export enum WorldCerealStateActionType {
 	DOWNLOAD_OFFICIAL_PRODUCT_SET_OUTPUT_FILE_FORMAT = 'downloadOfficialProductSetOutputFileFormat',
 	DOWNLOAD_OFFICIAL_PRODUCT_SET_BACKGROUND_LAYER = 'downloadOfficialProductSetBackgroundLayer',
 	DOWNLOAD_OFFICIAL_PRODUCT_SET_BBOX = 'downloadOfficialProductSetBBox',
+	DOWNLOAD_OFFICIAL_PRODUCT_SET_CURRENT_JOB_KEY = 'downloadOfficialProductSetCurrentJobKey',
 	// ...add more action types as needed
 }
