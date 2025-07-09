@@ -1,33 +1,50 @@
 import { AppSpecficReducerFunc, AppSpecificReducerMap } from '@gisatcz/ptr-fe-core/client';
 import { WorldCerealState } from './state.models';
-import { WorldCerealStateActionType, OneOfCoreActions } from './state.actions';
-import { worldCerealCustomReduceHandler } from './state.handlers';
+import { OneOfWorldCerealActions } from './state.actions';
+import { WorldCerealStateActionType } from './state.actionTypes';
+import { setActiveStepHandler } from './reducers/downloadOfficialProduct/handler.setActiveStep';
+import { setCollectionHandler } from '@features/state/reducers/downloadOfficialProduct/handler.setCollection';
+import { setProductHandler } from '@features/state/reducers/downloadOfficialProduct/handler.setProduct';
+import { setOutputFileFormatHandler } from '@features/state/reducers/downloadOfficialProduct/handler.setOutputFileFormat';
+import { setBBoxHandler } from '@features/state/reducers/downloadOfficialProduct/handler.setBBox';
+import { setBackgroundLayerHandler } from '@features/state/reducers/downloadOfficialProduct/handler.setBackgroundLayer';
 
 /**
- * Creates and returns a JS Map of reducer functions specific to the core application state management.
- * This map is used to extend or override the default reducer behavior from the NPM package.
- * Key is always the action type as a string, and value is a reducer function that handles the state transformation.
+ * Creates and returns a map of reducer functions specific to the WorldCereal application state management.
  *
- * @returns {AppSpecificReducerMap<WorldCerealState>} A map where keys are action types and values are reducer functions
- *                                               that handle specific state transformations for the core application.
+ * This map is used to extend or override the default reducer behavior provided by the NPM package.
+ * Each key in the map corresponds to an action type, and the value is a reducer function that handles
+ * the state transformation for that action type.
+ *
+ * @returns {AppSpecificReducerMap<WorldCerealState, OneOfWorldCerealActions>} A map where keys are action types
+ *                                                                             and values are reducer functions
+ *                                                                             for specific state transformations.
  *
  * @example
- * const reducerMap = stateReducerMapForCoreApplication();
- * // reducerMap contains custom reducer handlers for core state actions
+ * const reducerMap = stateReducerMapForWorldCerealApplication();
+ * // reducerMap contains custom reducer handlers for WorldCereal state actions
  */
 export const stateReducerMapForWorldCerealApplication = (): AppSpecificReducerMap<
 	WorldCerealState,
-	OneOfCoreActions
+	OneOfWorldCerealActions
 > => {
-	// instead of switch we have a map that will be merged with the default map in NPM package
-	// this allows us to extend the default behavior without modifying the original code
-	// and also to override the default behavior if needed
-	// the map is used to map action types to reducer functions
-	const map = new Map<string, AppSpecficReducerFunc<WorldCerealState, OneOfCoreActions>>();
+	// Create a map to associate action types with their corresponding reducer functions.
+	const map = new Map<string, AppSpecficReducerFunc<WorldCerealState, OneOfWorldCerealActions>>();
 
-	// each action type is mapped to a handler function
-	map.set(WorldCerealStateActionType.WORLD_CEREAL__CUSTOM_ACTION_TYPE as string, worldCerealCustomReduceHandler);
+	// Map each action type to its handler function.
+	map.set(WorldCerealStateActionType.DOWNLOAD_OFFICIAL_PRODUCT_SET_ACTIVE_STEP as string, setActiveStepHandler);
+	map.set(WorldCerealStateActionType.DOWNLOAD_OFFICIAL_PRODUCT_SET_COLLECTION as string, setCollectionHandler);
+	map.set(WorldCerealStateActionType.DOWNLOAD_OFFICIAL_PRODUCT_SET_PRODUCT as string, setProductHandler);
+	map.set(
+		WorldCerealStateActionType.DOWNLOAD_OFFICIAL_PRODUCT_SET_OUTPUT_FILE_FORMAT as string,
+		setOutputFileFormatHandler
+	);
+	map.set(WorldCerealStateActionType.DOWNLOAD_OFFICIAL_PRODUCT_SET_BBOX as string, setBBoxHandler);
+	map.set(
+		WorldCerealStateActionType.DOWNLOAD_OFFICIAL_PRODUCT_SET_BACKGROUND_LAYER as string,
+		setBackgroundLayerHandler
+	);
 
-	// return the map for the reducer inside the ptr-fe-core
+	// Return the map to be merged with the default reducer map in the ptr-fe-core package.
 	return map;
 };
