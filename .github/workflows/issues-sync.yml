@@ -2,7 +2,7 @@ name: Sync GitHub Issues to Notion
 
 on:
   schedule:
-    - cron: '*/30 * * * *' # Every 30 minutes
+    - cron: '7 */8 * * *' # Every 8 hours at minute 7
   workflow_dispatch:
 
 jobs:
