@@ -1,0 +1,122 @@
+a {
+    color: var(--textAccentedColor);
+}
+
+body.esaWorldCerealProcesses {
+  font-family: var(--headingsFontFamily), sans-serif;
+  color: var(--textPrimaryColor);
+  background: var(--base950);
+}
+
+input {
+  accent-color: var(--accent400);
+}
+
+/* Home */
+.worldCereal-Home {
+  padding-top: 1rem;
+}
+
+
+/* width */
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: var(--base600);
+  border-radius: 5px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: var(--base500);
+}
+
+/* Content */
+.worldCereal-appContent {
+  max-width: var(--pageWidth);
+  margin: 0 auto;
+}
+
+/* Buttons */
+.esaWorldCerealProcesses .worldCereal-Button {
+  height: 2rem;
+
+  span {
+    color: var(--textInvertedColor);
+    font-size: var(--font-size-md);
+    font-family: var(--labelsFontFamily), sans-serif;
+    font-weight: 600;
+  }
+
+  &.is-disabled {
+    background: var(--disabledBackgroundColor);
+
+    span {
+      color: var(--textDisabledColor);
+    }
+  }
+
+  &.is-ghost {
+    border: 1px solid var(--borderLightColor);
+  }
+
+  &.is-secondary{
+    span {
+      color: var(--textPrimaryColor);
+    }
+  }
+}
+
+/* Select */
+.worldCereal-appContent .worldCereal-Select {
+  font-family: var(--headingsFontFamily) sans-serif;
+	width: 20rem;
+	max-width: 25rem;
+
+  .mantine-Select-input {
+    font-family: var(--headingsFontFamily) sans-serif;
+  }
+
+  .mantine-Select-label {
+    font-weight: bold;
+  }
+}
+
+.esaWorldCerealProcesses .mantine-Select-option {
+  color: var(--textInvertedColor);
+}
+
+/* Modals */
+.esaWorldCerealProcesses .worldCereal-Modal .mantine-Modal-content {
+  background: var(--lightBackgroundColor);
+  border: 1px solid var(--borderPrimaryColor);
+  padding: 1rem;
+}
+
+/* Stepper */
+.worldCereal-appContent .worldCereal-Stepper {
+  .mantine-Stepper-stepLabel {
+    font-weight: bold;
+    font-size: var(--font-size-md);
+  }
+
+  .mantine-Stepper-content {
+    padding-top: 2rem;
+  }
+}
+
+/* SegmentedControl */
+.worldCereal-appContent .worldCereal-SegmentedControl {
+    width: 20rem;
+  .mantine-SegmentedControl-label:where([data-active]) .mantine-SegmentedControl-innerLabel {
+    font-weight: bold;
+  }
+}

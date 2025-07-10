@@ -5,5 +5,5 @@
 }
 
 .worldCereal-ProductValuesInfo ul li {
-    font-size: var(--a0);
+    font-size: var(--font-size-sm);
 }
