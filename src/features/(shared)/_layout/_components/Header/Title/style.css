@@ -10,10 +10,6 @@
   align-items: center;
 }
 
-.worldCereal-Title img {
-  height: 1.75rem;
-}
-
 .worldCereal-Title h1 {
   margin: 0.2rem 0 0;
   font-size: var(--font-size-lg);

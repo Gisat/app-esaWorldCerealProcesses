@@ -24,7 +24,7 @@ export type DownloadOfficialProductsProductModel = string | undefined;
 export type DownloadOfficialProductsOutputFileFormatModel = 'GTiff' | 'NETCDF';
 
 export type DownloadOfficialProductsBackgroundLayerModel = string;
-export type DownloadOfficialProductsBBoxModel = [number, number, number, number];
+export type DownloadOfficialProductsBBoxModel = [number, number, number, number] | undefined;
 export type DownloadOfficialProductsCurrentJobKeyModel = string | undefined;
 
 /**

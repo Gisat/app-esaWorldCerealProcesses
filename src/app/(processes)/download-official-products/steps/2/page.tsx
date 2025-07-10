@@ -154,12 +154,10 @@ export default function DownloadStep2() {
 	 * @param {DownloadOfficialProductsBBoxModel | null} extent - The bounding box extent.
 	 */
 	const setBBoxExtent = (extent: DownloadOfficialProductsBBoxModel | null) => {
-		if (extent) {
-			dispatch({
-				type: WorldCerealStateActionType.DOWNLOAD_OFFICIAL_PRODUCT_SET_BBOX,
-				payload: extent,
-			});
-		}
+		dispatch({
+			type: WorldCerealStateActionType.DOWNLOAD_OFFICIAL_PRODUCT_SET_BBOX,
+			payload: extent ?? undefined,
+		});
 	};
 
 	/**

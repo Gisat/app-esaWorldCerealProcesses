@@ -32,6 +32,7 @@ export default function RootLayout({
 					href="https://fonts.googleapis.com/css2?family=Sen:wght@400;700&family=Roboto:wght@300;400;500;700&display=swap"
 					rel="stylesheet"
 				></link>
+				<title>WorldCereal Processes</title>
 			</head>
 			<body className={`esaWorldCerealProcesses`}>
 				<InstanceWarning />
