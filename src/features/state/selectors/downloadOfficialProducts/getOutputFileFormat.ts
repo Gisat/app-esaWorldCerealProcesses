@@ -9,6 +9,8 @@ import { WorldCerealState, DownloadOfficialProductsOutputFileFormatModel } from 
  * @param {WorldCerealState} state - The current state of the application.
  * @returns {DownloadOfficialProductsOutputFileFormatModel | undefined} The `outputFileFormat` value or `undefined` if not defined.
  */
-export const getOutputFileFormat = (state: WorldCerealState): DownloadOfficialProductsOutputFileFormatModel => {
+export const getOutputFileFormat = (
+	state: WorldCerealState
+): DownloadOfficialProductsOutputFileFormatModel | undefined => {
 	return state.downloadOfficialProducts?.outputFileFormat;
 };

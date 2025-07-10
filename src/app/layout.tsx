@@ -10,7 +10,7 @@ import '@gisatcz/ptr-fe-core/client/styles';
 import '@features/styles/index.css';
 import './index.css';
 
-import Header from '@features/(shared)/_layout/_components/Header';
+import { Header } from '@features/(shared)/_layout/_components/Header';
 // import FaroFrontendMonitoring from '../features/(grafana)/_components/FaroFrontendMonitoring';
 import InstanceWarning from '@features/(shared)/_components/InstanceWarning';
 import { PersistentStateWrapper } from '@features/wrappers/PersistentStateWrapper';

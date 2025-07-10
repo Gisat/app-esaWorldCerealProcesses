@@ -39,10 +39,10 @@ export type DownloadOfficialProductsCurrentJobKeyModel = string | undefined;
  * @property {DownloadOfficialProductsProductModel} [product] - The current product, if defined.
  */
 export interface DownloadOfficialProductsModel {
-	activeStep: DownloadOfficialProductsActiveStepModel;
+	activeStep?: DownloadOfficialProductsActiveStepModel;
 	collection?: DownloadOfficialProductsCollectionModel;
 	product?: DownloadOfficialProductsProductModel;
-	outputFileFormat: DownloadOfficialProductsOutputFileFormatModel;
+	outputFileFormat?: DownloadOfficialProductsOutputFileFormatModel;
 	backgroundLayer?: DownloadOfficialProductsBackgroundLayerModel;
 	bbox?: DownloadOfficialProductsBBoxModel;
 	currentJobKey?: DownloadOfficialProductsCurrentJobKeyModel;
@@ -58,5 +58,5 @@ export interface DownloadOfficialProductsModel {
  * @property {DownloadOfficialProductsModel} downloadOfficialProducts - The state related to downloading official products.
  */
 export interface WorldCerealState extends AppSharedState {
-	downloadOfficialProducts: DownloadOfficialProductsModel;
+	downloadOfficialProducts?: DownloadOfficialProductsModel;
 }

@@ -8,6 +8,7 @@ export const resetSettingsHandler: AppSpecficReducerFunc<WorldCerealState> = (
 		...state,
 		downloadOfficialProducts: {
 			...state.downloadOfficialProducts,
+			activeStep: state.downloadOfficialProducts?.activeStep || 1,
 			backgroundLayer: undefined,
 			bbox: undefined,
 			collection: undefined,

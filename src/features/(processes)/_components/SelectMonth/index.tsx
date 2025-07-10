@@ -1,8 +1,8 @@
-import getBoundaryDates from "@features/(processes)/_utils/boundaryDates";
-import { transformDate } from "@features/(processes)/_utils/transformDate";
-import { Stack, Text } from "@mantine/core";
-import { MonthPickerInput } from "@mantine/dates";
-import { FC, useEffect, useState } from "react";
+import getBoundaryDates from '@features/(processes)/_utils/boundaryDates';
+import { transformDate } from '@features/(processes)/_utils/transformDate';
+import { Stack, Text } from '@mantine/core';
+import { MonthPickerInput } from '@mantine/dates';
+import { FC, useEffect, useState } from 'react';
 
 /**
  * Props for the SelectMonth component.
@@ -16,13 +16,13 @@ import { FC, useEffect, useState } from "react";
  * @property {(startDate: string, endDate: string) => void} onChange - Callback function called when a month is selected.
  */
 interface SelectMonthProps {
-  label?: string;
-  disabled?: boolean;
-  placeholder?: string;
-  minDate: Date | undefined;
-  maxDate: Date | undefined;
-  value?: string;
-  onChange: (endDate: string) => void;
+	label?: string;
+	disabled?: boolean;
+	placeholder?: string;
+	minDate: Date | undefined;
+	maxDate: Date | undefined;
+	value?: string;
+	onChange: (endDate: string) => void;
 }
 
 /**
@@ -36,51 +36,51 @@ interface SelectMonthProps {
  * @returns {JSX.Element} A month picker input with auto-calculated start and end dates.
  */
 const SelectMonth: FC<SelectMonthProps> = ({
-  label = "Default label",
-  disabled = false,
-  placeholder = "Default placeholder",
-  minDate,
-  maxDate,
-  value,
-  onChange,
+	label = 'Default label',
+	disabled = false,
+	placeholder = 'Default placeholder',
+	minDate,
+	maxDate,
+	value,
+	onChange,
 }) => {
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [startDateString, setStartDateString] = useState<string>("");
-  const [endDateString, setEndDateString] = useState<string>("");
+	const [selectedDate, setSelectedDate] = useState<any>(null); // Don't know how to fix type for MonthPickerInput value
+	const [startDateString, setStartDateString] = useState<string>('');
+	const [endDateString, setEndDateString] = useState<string>('');
 
-  useEffect(() => {
-    if (selectedDate) {
-      const boundaryDates = getBoundaryDates(selectedDate);
-      setStartDateString(transformDate(boundaryDates.startDate));
-      setEndDateString(transformDate(boundaryDates.endDate));
-      onChange(transformDate(boundaryDates.endDate));
-    }
-  }, [selectedDate, onChange]);
+	useEffect(() => {
+		if (selectedDate) {
+			const boundaryDates = getBoundaryDates(selectedDate);
+			setStartDateString(transformDate(boundaryDates.startDate));
+			setEndDateString(transformDate(boundaryDates.endDate));
+			onChange(transformDate(boundaryDates.endDate));
+		}
+	}, [selectedDate, onChange]);
 
-  return (
-    <div>
-      <MonthPickerInput
-        label={label}
-        size="md"
-        placeholder={placeholder}
-        value={selectedDate || (value && new Date(value)) || null}
-        minDate={minDate}
-        maxDate={maxDate}
-        onChange={setSelectedDate}
-        clearable={false}
-        disabled={disabled}
-        valueFormat="MMMM YYYY"
-        style={{ maxWidth: "25rem" }}
-      />
+	return (
+		<div>
+			<MonthPickerInput
+				label={label}
+				size="md"
+				placeholder={placeholder}
+				value={selectedDate || (value && new Date(value)) || null}
+				minDate={minDate}
+				maxDate={maxDate}
+				onChange={(value) => setSelectedDate(value)}
+				clearable={false}
+				disabled={disabled}
+				valueFormat="MMMM YYYY"
+				style={{ maxWidth: '25rem' }}
+			/>
 
-      {startDateString && endDateString && (
-        <Stack mt="xs" gap={0}>
-          <Text fz="sm">Start date: {startDateString}</Text>
-          <Text fz="sm">End date: {endDateString}</Text>
-        </Stack>
-      )}
-    </div>
-  );
+			{startDateString && endDateString && (
+				<Stack mt="xs" gap={0}>
+					<Text fz="sm">Start date: {startDateString}</Text>
+					<Text fz="sm">End date: {endDateString}</Text>
+				</Stack>
+			)}
+		</div>
+	);
 };
 
 export { SelectMonth };
