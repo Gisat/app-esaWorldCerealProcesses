@@ -13,11 +13,7 @@ import { fetcher } from '@features/(shared)/_logic/utils';
 import { TextParagraph } from '@features/(shared)/_layout/_components/Content/TextParagraph';
 import Details from '@features/(processes)/_components/ProcessesTable/Details';
 import { getCurrentJobKey } from '@features/state/selectors/downloadOfficialProducts/getCurrentJobKey';
-import { getOutputFileFormat } from '@features/state/selectors/downloadOfficialProducts/getOutputFileFormat';
-import { getBBox } from '@features/state/selectors/downloadOfficialProducts/getBBox';
 import { getBackgroundLayer } from '@features/state/selectors/downloadOfficialProducts/getBackgroundLayer';
-import { getCollection } from '@features/state/selectors/downloadOfficialProducts/getCollection';
-import { getProduct } from '@features/state/selectors/downloadOfficialProducts/getProduct';
 import formParams from '@features/(processes)/_constants/download-official-products/formParams';
 
 /**
@@ -28,12 +24,14 @@ import formParams from '@features/(processes)/_constants/download-official-produ
  * @component
  * @returns {JSX.Element} The rendered component for step 2 of the process.
  */
-export default function DownloadStep2() {
+export default function DownloadStep3() {
 	/**
 	 * Shared state hook for accessing and dispatching application state.
 	 * @type {[WorldCerealState, React.Dispatch<OneOfWorldCerealActions>]}
 	 */
 	const [state, dispatch] = useSharedState<WorldCerealState, OneOfWorldCerealActions>();
+	const [backgroundLayer] = useState<string | undefined>(getBackgroundLayer(state));
+	const [jobKey] = useState<string | undefined>(getCurrentJobKey(state));
 
 	/**
 	 * Router instance for navigation.
@@ -47,62 +45,17 @@ export default function DownloadStep2() {
 	const [shouldFetch, setShouldFetch] = useState(false);
 
 	/**
-	 * Selector to retrieve the current job key from the state.
-	 * @type {string | undefined}
-	 */
-	const jobKey = getCurrentJobKey(state);
-
-	/**
-	 * Selector to retrieve the output file format from the state.
-	 * @type {string | undefined}
-	 */
-	const outputFileFormat = getOutputFileFormat(state);
-
-	/**
-	 * Selector to retrieve the bounding box from the state.
-	 * @type {string[] | undefined}
-	 */
-	const bbox = getBBox(state);
-
-	/**
-	 * Selector to retrieve the background layer from the state.
-	 * @type {string | undefined}
-	 */
-	const backgroundLayer = getBackgroundLayer(state);
-
-	/**
-	 * Selector to retrieve the collection from the state.
-	 * @type {string | undefined}
-	 */
-	const collection = getCollection(state);
-
-	/**
-	 * Selector to retrieve the product from the state.
-	 * @type {string | undefined}
-	 */
-	const product = getProduct(state);
-
-	/**
-	 * Display name for the selected output file format.
-	 * @type {string | undefined}
-	 */
-	const outputFileFormatNameDisplay = formParams.outputFileFormat.options.find(
-		(option) => option.value === outputFileFormat
-	)?.label;
-
-	/**
-	 * Display name for the selected product.
-	 * @type {string | undefined}
-	 */
-	const productNameDisplay = formParams.product.options.find((option) => option.value === product)?.label;
-
-	/**
 	 * Effect to set the active step in the state when the component mounts.
 	 */
 	useEffect(() => {
 		dispatch({
 			type: WorldCerealStateActionType.DOWNLOAD_OFFICIAL_PRODUCT_SET_ACTIVE_STEP,
 			payload: 3,
+		});
+		// clear settings
+		dispatch({
+			type: WorldCerealStateActionType.DOWNLOAD_OFFICIAL_PRODUCT_RESET_SETTINGS,
+			payload: undefined,
 		});
 	}, []);
 
@@ -157,7 +110,6 @@ export default function DownloadStep2() {
 	 * Handler to navigate to the first step for setting up a new process.
 	 */
 	const onNewProcessClick = () => {
-		// TODO clear all download official products state
 		router.push(`/download-official-products/steps/1`);
 	};
 
@@ -165,7 +117,6 @@ export default function DownloadStep2() {
 	 * Handler to navigate to the process list.
 	 */
 	const onGoToList = () => {
-		// TODO clear all download official products state
 		router.push(`/processes-list`);
 	};
 
@@ -176,10 +127,12 @@ export default function DownloadStep2() {
 			</TextParagraph>
 			{data && data.key === jobKey ? (
 				<Details
-					bbox={bbox}
-					resultFileFormat={outputFileFormatNameDisplay}
-					oeoCollection={productNameDisplay}
-					collectionName={collection}
+					bbox={data.bbox}
+					resultFileFormat={
+						formParams.outputFileFormat.options.find((option) => option.value === data.resultFileFormat)?.label
+					}
+					oeoCollection={formParams.product.options.find((option) => option.value === data.oeoCollection)?.label}
+					collectionName={data.timeRange?.[0]?.split('-')?.[0]}
 					backgroundLayer={backgroundLayer}
 				/>
 			) : null}

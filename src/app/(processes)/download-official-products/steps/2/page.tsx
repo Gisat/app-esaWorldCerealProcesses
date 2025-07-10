@@ -206,13 +206,11 @@ export default function DownloadStep2() {
 	 */
 	useEffect(() => {
 		if (data?.key) {
-			setTimeout(() => {
-				dispatch({
-					type: WorldCerealStateActionType.DOWNLOAD_OFFICIAL_PRODUCT_SET_CURRENT_JOB_KEY,
-					payload: data.key,
-				});
-				router.push(`/download-official-products/steps/3`);
-			}, 50);
+			dispatch({
+				type: WorldCerealStateActionType.DOWNLOAD_OFFICIAL_PRODUCT_SET_CURRENT_JOB_KEY,
+				payload: data.key,
+			});
+			router.push(`/download-official-products/steps/3`);
 		}
 	}, [data, router]);
 

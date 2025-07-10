@@ -9,5 +9,6 @@ export enum WorldCerealStateActionType {
 	DOWNLOAD_OFFICIAL_PRODUCT_SET_BACKGROUND_LAYER = 'downloadOfficialProductSetBackgroundLayer',
 	DOWNLOAD_OFFICIAL_PRODUCT_SET_BBOX = 'downloadOfficialProductSetBBox',
 	DOWNLOAD_OFFICIAL_PRODUCT_SET_CURRENT_JOB_KEY = 'downloadOfficialProductSetCurrentJobKey',
+	DOWNLOAD_OFFICIAL_PRODUCT_RESET_SETTINGS = 'downloadOfficialProductResetSettings',
 	// ...add more action types as needed
 }

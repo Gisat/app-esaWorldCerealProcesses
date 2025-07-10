@@ -6,6 +6,7 @@ import { SetOutputFileFormatAction } from '@features/state/actions/downloadOffic
 import { SetBackgroundLayerAction } from '@features/state/actions/downloadOfficialProduct/action.setBackgroundLayer';
 import { SetBBoxAction } from '@features/state/actions/downloadOfficialProduct/action.setBBox';
 import { SetCurrentJobKeyAction } from '@features/state/actions/downloadOfficialProduct/action.setCurrentJobKey';
+import { ResetSettingsAction } from '@features/state/actions/downloadOfficialProduct/action.resetSettings';
 
 /**
  * List of all actions that can be dispatched to the world cereal app state.
@@ -21,5 +22,6 @@ export type OneOfWorldCerealActions = AppSpecificAction &
 		| SetBackgroundLayerAction
 		| SetBBoxAction
 		| SetCurrentJobKeyAction
+		| ResetSettingsAction
 	);
 // ...add more custom actions as needed
