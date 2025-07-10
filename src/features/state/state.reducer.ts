@@ -1,8 +1,4 @@
 import { AppSpecficReducerFunc, AppSpecificReducerMap } from '@gisatcz/ptr-fe-core/client';
-import { WorldCerealState } from './state.models';
-import { OneOfWorldCerealActions } from './state.actions';
-import { WorldCerealStateActionType } from './state.actionTypes';
-import { setActiveStepHandler } from './reducers/downloadOfficialProduct/handler.setActiveStep';
 import { setCollectionHandler } from '@features/state/reducers/downloadOfficialProduct/handler.setCollection';
 import { setProductHandler } from '@features/state/reducers/downloadOfficialProduct/handler.setProduct';
 import { setOutputFileFormatHandler } from '@features/state/reducers/downloadOfficialProduct/handler.setOutputFileFormat';
@@ -10,6 +6,10 @@ import { setBBoxHandler } from '@features/state/reducers/downloadOfficialProduct
 import { setBackgroundLayerHandler } from '@features/state/reducers/downloadOfficialProduct/handler.setBackgroundLayer';
 import { setCurrentJobKeyHandler } from '@features/state/reducers/downloadOfficialProduct/handler.setCurrentJobKey';
 import { resetSettingsHandler } from '@features/state/reducers/downloadOfficialProduct/handler.resetSettings';
+import { WorldCerealState } from './state.models';
+import { OneOfWorldCerealActions } from './state.actions';
+import { WorldCerealStateActionType } from './state.actionTypes';
+import { setActiveStepHandler } from './reducers/downloadOfficialProduct/handler.setActiveStep';
 
 /**
  * Creates and returns a map of reducer functions specific to the WorldCereal application state management.

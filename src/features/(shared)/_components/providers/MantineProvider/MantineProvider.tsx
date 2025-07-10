@@ -1,6 +1,6 @@
+import React, { JSX } from 'react';
 import { MantineProvider as Mantine, createTheme, MantineThemeOverride } from '@mantine/core';
 import { defaultTheme } from './defaultTheme';
-import React, { JSX } from 'react';
 
 /**
  * Props for the MantineProvider component.

@@ -1,6 +1,6 @@
+import { useEffect, useState } from 'react';
 import { AppSharedState, ActionApplyPersistentState, usePersistentState } from '@gisatcz/ptr-fe-core/client';
 import { useStateFromPanther } from './useStateFromPanther';
-import { useEffect, useState } from 'react';
 
 interface usePersistentStateFromPantherProps {
 	fetchUrl?: string;

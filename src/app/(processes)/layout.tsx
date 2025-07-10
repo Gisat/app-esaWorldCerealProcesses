@@ -11,7 +11,7 @@ import { Navigation } from '@features/(processes)/_components/Navigation';
  * @param {React.ReactNode} props.children - The child components to be rendered inside the layout.
  * @returns {JSX.Element} The rendered layout component.
  */
-export default function ProcessesLayout({
+export default async function ProcessesLayout({
 	children,
 }: Readonly<{
 	children: React.ReactNode;

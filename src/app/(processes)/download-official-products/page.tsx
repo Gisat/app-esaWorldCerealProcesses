@@ -10,6 +10,6 @@ import DownloadStep1 from '@app/(processes)/download-official-products/steps/1/p
  * @component
  * @returns {JSX.Element} The rendered page component for the "Download Official Products" section.
  */
-export default function DownloadOfficialProductsPage() {
+export default async function DownloadOfficialProductsPage() {
 	return <DownloadStep1 />;
 }

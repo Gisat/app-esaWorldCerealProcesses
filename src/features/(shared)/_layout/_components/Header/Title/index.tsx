@@ -1,9 +1,9 @@
 'use client';
 
-import logoData from '../logo';
 import Link from 'next/link';
 import Image from 'next/image';
 import { pages } from '@features/(processes)/_constants/app';
+import logoData from '../logo';
 import './style.css';
 
 const Title = () => {

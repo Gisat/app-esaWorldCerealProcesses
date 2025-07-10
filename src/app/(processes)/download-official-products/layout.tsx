@@ -13,7 +13,7 @@ import { DownloadOfficialProductsStepper } from '@features/pages/processes/Downl
  * @param {React.ReactNode} props.children - The child components to be rendered inside the layout.
  * @returns {JSX.Element} The rendered layout component.
  */
-export default function DownloadLayout({ children }: { children: React.ReactNode }) {
+export default async function DownloadLayout({ children }: { children: React.ReactNode }) {
 	return (
 		/**
 		 * Wraps the children components inside a content container and stepper.

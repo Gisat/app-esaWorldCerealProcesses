@@ -1,9 +1,9 @@
 'use client';
 
+import { usePathname, useSelectedLayoutSegment } from 'next/navigation';
 import { navbarItems } from '@features/(processes)/_constants/app';
 import NavbarItem from '@features/(shared)/_layout/_components/Navbar/NavbarItem';
 import Navbar from '@features/(shared)/_layout/_components/Navbar';
-import { usePathname, useSelectedLayoutSegment } from 'next/navigation';
 
 export const Navigation = () => {
 	const currentPath = usePathname();

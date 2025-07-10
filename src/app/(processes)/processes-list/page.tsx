@@ -10,7 +10,7 @@
 
 import { ProcessesListClient } from '@features/pages/processes/ProcessesListClient';
 
-export default function ProcessesList() {
+export default async function ProcessesList() {
 	// Render the ProcessesListClient component
 	return <ProcessesListClient />;
 }

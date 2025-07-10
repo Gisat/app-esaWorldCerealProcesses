@@ -1,6 +1,6 @@
 'use client';
-import { usePersistentStateFromPanther } from '@features/hooks/usePersistentStateFromPanther';
 import { PageLoader, SharedStateWrapper } from '@gisatcz/ptr-fe-core/client';
+import { usePersistentStateFromPanther } from '@features/hooks/usePersistentStateFromPanther';
 
 /**
  * A React component that fetches and manages shared application state,
