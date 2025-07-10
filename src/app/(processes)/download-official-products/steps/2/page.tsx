@@ -2,6 +2,7 @@
 import useSWR from 'swr';
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { IconArrowLeft, IconCheck } from '@tabler/icons-react';
 import { WorldCerealStateActionType } from '@features/state/state.actionTypes';
 import { useSharedState } from '@gisatcz/ptr-fe-core/client';
 import {
@@ -25,7 +26,6 @@ import { getBBox } from '@features/state/selectors/downloadOfficialProducts/getB
 import { getBackgroundLayer } from '@features/state/selectors/downloadOfficialProducts/getBackgroundLayer';
 import { getCollection } from '@features/state/selectors/downloadOfficialProducts/getCollection';
 import { getProduct } from '@features/state/selectors/downloadOfficialProducts/getProduct';
-import { IconArrowLeft, IconCheck } from '@tabler/icons-react';
 import { apiFetcher } from '@features/(shared)/_url/apiFetcher';
 
 /**
