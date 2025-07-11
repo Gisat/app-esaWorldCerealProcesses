@@ -14,7 +14,7 @@ export type CreateCustomProductsModelModel = string; // TODO it should be an URL
 export type CreateCustomProductsBackgroundLayerModel = string;
 export type CreateCustomProductsOutputFileFormatModel = 'GTiff' | 'NETCDF';
 export type CreateCustomProductsBBoxModel = [number, number, number, number] | undefined;
-export type CreateCustomProductsEndDateModel = Date | undefined;
+export type CreateCustomProductsEndDateModel = string | undefined;
 export type CreateCustomProductsCurrentJobKeyModel = string | undefined;
 /**
  * Interface representing the `downloadOfficialProducts` section of the application state.
