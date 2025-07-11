@@ -74,14 +74,14 @@ export default function CreateProductsStep3Client() {
 	/**
 	 * SWR hook for fetching data when the process starts.
 	 */
-	const { data: startedProcessData, isLoading } = useSWR(shouldFetch ? [startJobUrl] : null, () =>
+	const { data: startedProcessData, isLoading } = useSWR(shouldFetch && jobKey ? startJobUrl : null, () =>
 		fetcher(startJobUrl)
 	);
 
 	/**
 	 * SWR hook for fetching job details.
 	 */
-	const { data } = useSWR(getJobUrl, fetcher);
+	const { data } = useSWR(jobKey ? getJobUrl : null, fetcher);
 
 	/**
 	 * Effect to reset the fetch state when process data is retrieved.
