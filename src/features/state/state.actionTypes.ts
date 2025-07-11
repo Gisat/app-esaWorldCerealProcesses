@@ -10,5 +10,14 @@ export enum WorldCerealStateActionType {
 	DOWNLOAD_OFFICIAL_PRODUCT_SET_BBOX = 'downloadOfficialProductSetBBox',
 	DOWNLOAD_OFFICIAL_PRODUCT_SET_CURRENT_JOB_KEY = 'downloadOfficialProductSetCurrentJobKey',
 	DOWNLOAD_OFFICIAL_PRODUCT_RESET_SETTINGS = 'downloadOfficialProductResetSettings',
-	// ...add more action types as needed
+
+	CREATE_CUSTOM_PRODUCTS_SET_ACTIVE_STEP = 'createCustomProductsSetActiveStep',
+	CREATE_CUSTOM_PRODUCTS_SET_PRODUCT = 'createCustomProductsSetProduct',
+	CREATE_CUSTOM_PRODUCTS_SET_MODEL = 'createCustomProductsSetModel',
+	CREATE_CUSTOM_PRODUCTS_SET_BACKGROUND_LAYER = 'createCustomProductsSetBackgroundLayer',
+	CREATE_CUSTOM_PRODUCTS_SET_OUTPUT_FILE_FORMAT = 'createCustomProductsSetOutputFileFormat',
+	CREATE_CUSTOM_PRODUCTS_SET_BBOX = 'createCustomProductsSetBBox',
+	CREATE_CUSTOM_PRODUCTS_SET_END_DATE = 'createCustomProductsSetEndDate',
+	CREATE_CUSTOM_PRODUCTS_SET_CURRENT_JOB_KEY = 'createCustomProductsSetCurrentJobKey',
+	CREATE_CUSTOM_PRODUCTS_RESET_SETTINGS = 'createCustomProductsResetSettings',
 }
