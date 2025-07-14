@@ -1,12 +1,12 @@
+import { MantineProvider } from '@features/(shared)/_components/providers/MantineProvider/MantineProvider';
 import { AppShell, AppShellMain, rem } from '@mantine/core';
 import type { Metadata } from 'next';
 import React from 'react';
-import { MantineProvider } from '@features/(shared)/_components/providers/MantineProvider/MantineProvider';
 /** Import of style files */
+import '@features/styles/index.css';
+import '@gisatcz/ptr-fe-core/client/styles';
 import '@mantine/core/styles.css';
 import '@mantine/dates/styles.css';
-import '@gisatcz/ptr-fe-core/client/styles';
-import '@features/styles/index.css';
 import './index.css';
 
 import { Header } from '@features/(shared)/_layout/_components/Header';
