@@ -1,7 +1,4 @@
-import { fetchWithSessions } from '@features/(auth)/_ssr/handlers.sessionFetch';
-import { ErrorBehavior } from '@features/(shared)/errors/enums.errorBehavior';
 import { handleRouteError } from '@features/(shared)/errors/handlers.errorInRoute';
-import { BaseHttpError } from '@features/(shared)/errors/models.error';
 import { NextRequest, NextResponse } from 'next/server';
 
 export const dynamic = 'force-dynamic';
@@ -17,7 +14,6 @@ export const fetchCache = 'force-no-store';
  */
 export async function GET(req: NextRequest, { params }: { params: { key: string } }): Promise<NextResponse> {
 	try {
-		const key = params.key;
 		return NextResponse.json({ key: params.key });
 		// validate inputs for safe aggregation
 		// if (!key) throw new BaseHttpError('Missing key value', 400, ErrorBehavior.SSR);
