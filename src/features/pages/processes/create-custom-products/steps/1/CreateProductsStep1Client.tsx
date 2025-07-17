@@ -92,8 +92,6 @@ export default function CreateProductsStep1Client() {
 		// setCurrentModelUrl(model);
 		if (model) {
 			setCurrentModelUrl(model);
-		} else {
-			setCurrentModelUrl('');
 		}
 	}, [model]);
 
