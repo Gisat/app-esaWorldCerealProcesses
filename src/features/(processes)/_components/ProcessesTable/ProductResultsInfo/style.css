@@ -1,9 +1,9 @@
-.worldCereal-ProductResultsInfo ul {
+.worldCereal-ProductValuesInfo ul {
     margin: 0;
     padding: 0 1rem;
     max-width: 25rem;
 }
 
-.worldCereal-ProductResultsInfo ul li {
+.worldCereal-ProductValuesInfo ul li {
     font-size: var(--font-size-sm);
 }

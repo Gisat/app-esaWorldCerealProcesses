@@ -76,7 +76,7 @@ input {
 }
 
 /* Select */
-.worldCereal-appContent .worldCereal-Select {
+.worldCereal-appContent .worldCereal-Select, .worldCereal-appContent .worldCereal-Input {
   font-family: var(--headingsFontFamily) sans-serif;
 	width: 20rem;
 	max-width: 25rem;
@@ -88,6 +88,10 @@ input {
   .mantine-Select-label {
     font-weight: bold;
   }
+}
+
+.worldCereal-appContent .worldCereal-Input .mantine-InputWrapper-description {
+  padding-bottom: 5px;
 }
 
 .esaWorldCerealProcesses .mantine-Select-option {

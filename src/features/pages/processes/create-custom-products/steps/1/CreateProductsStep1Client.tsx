@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { IconArrowRight } from '@tabler/icons-react';
-import { Button, Group, Input, Select, Space, TextInput } from '@mantine/core';
+import { Button, Group, Input, Select, Space, Stack, Text, TextInput } from '@mantine/core';
 import { useSharedState } from '@gisatcz/ptr-fe-core/client';
 import TwoColumns, { Column } from '@features/(shared)/_layout/_components/Content/TwoColumns';
 import formParams from '@features/(processes)/_constants/generate-custom-products/formParams';
@@ -132,21 +132,34 @@ export default function CreateProductsStep1Client() {
 				/>
 				<Space h="md" />
 				{product === 'worldcereal_crop_type' ? (
-					<Input.Wrapper
-						size="md"
-						label="Enter model URL"
-						description="Write the URL of the product model"
-						withAsterisk
-					>
-						<TextInput
-							className="worldCereal-Select"
+					<Stack>
+						<Input.Wrapper
+							className="worldCereal-Input"
 							size="md"
-							placeholder="Valid URL..."
-							error={!model && currentModelUrl !== '' ? 'URL not valid' : null} //"Something went wrong"
-							value={currentModelUrl}
-							onChange={(event) => setModelUrl(event.currentTarget.value)}
-						/>
-					</Input.Wrapper>
+							label="Enter model URL"
+							description="Write the URL of the product model"
+							withAsterisk
+						>
+							<TextInput
+								size="md"
+								placeholder="Valid URL..."
+								error={!model && currentModelUrl !== '' ? 'URL not valid' : null} //"Something went wrong"
+								value={currentModelUrl}
+								onChange={(event) => setModelUrl(event.currentTarget.value)}
+							/>
+						</Input.Wrapper>
+						<Text>
+							This service only works with custom models, learn more{' '}
+							<Link
+								href={
+									'https://github.com/WorldCereal/worldcereal-classification/blob/main/notebooks/worldcereal_custom_croptype.ipynb'
+								}
+							>
+								here
+							</Link>
+							.
+						</Text>
+					</Stack>
 				) : (
 					<Select
 						withAsterisk
