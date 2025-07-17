@@ -19,8 +19,7 @@ import { TextLink } from '@features/(shared)/_layout/_components/Content/TextLin
  *
  * This component allows users to select a product and model, and proceed to the next step.
  *
- * @function CreateProductsStep1Client
- * @returns {JSX.Element} - The rendered step 1 UI for creating custom products.
+ * @returns {JSX.Element} The rendered step 1 UI for creating custom products.
  */
 export default function CreateProductsStep1Client() {
 	/**
@@ -30,11 +29,15 @@ export default function CreateProductsStep1Client() {
 	const [state, dispatch] = useSharedState<WorldCerealState, OneOfWorldCerealActions>();
 
 	/**
-	 * Selector to retrieve the selected product collection from the state.
+	 * Selector to retrieve the selected model from the state.
 	 * @type {string | undefined}
 	 */
 	const model = getModel_customProducts(state);
 
+	/**
+	 * Local state for the current model URL input.
+	 * @type {[string | null, Function]}
+	 */
 	const [currentModelUrl, setCurrentModelUrl] = useState<string | null>(model ? model : '');
 
 	/**
@@ -61,7 +64,7 @@ export default function CreateProductsStep1Client() {
 	};
 
 	/**
-	 * Updates the selected product in the state.
+	 * Updates the selected product in the state and resets the model.
 	 * @param {string | null} value - The selected product.
 	 */
 	const setProduct = (value: string | null) => {
@@ -88,22 +91,25 @@ export default function CreateProductsStep1Client() {
 		});
 	}, []);
 
+	/**
+	 * Effect to update the current model URL when the model changes.
+	 */
 	useEffect(() => {
-		// If model is set, update the currentModelUrl to match the model.
-		// setCurrentModelUrl(model);
 		if (model) {
 			setCurrentModelUrl(model);
 		}
 	}, [model]);
 
+	/**
+	 * Validates and updates the model URL input.
+	 * If the URL is valid, dispatches it to the state; otherwise, resets the model in the state.
+	 *
+	 * @param {string} value - The model URL to validate and set.
+	 */
 	const setModelUrl = (value: string) => {
 		setCurrentModelUrl(value);
-		// On every change check the value, if it is not valid, give warning and if it is valid, dispatch the url to the state.
 		const regex = /^https?:\/\/.+\.onnx$/i;
-
 		const isValid = regex.test(value);
-
-		console.log(value, currentModelUrl, model, isValid);
 
 		if (isValid) {
 			setModel(value);
@@ -111,8 +117,6 @@ export default function CreateProductsStep1Client() {
 			setModel(null);
 		}
 	};
-
-	console.log(model, currentModelUrl);
 
 	return (
 		/**
@@ -144,8 +148,8 @@ export default function CreateProductsStep1Client() {
 							<TextInput
 								size="md"
 								placeholder="Valid URL..."
-								error={!model && currentModelUrl !== '' ? 'URL not valid' : null} //"Something went wrong"
-								value={currentModelUrl}
+								error={!model && currentModelUrl !== '' ? 'URL not valid' : null}
+								value={currentModelUrl ?? ''}
 								onChange={(event) => setModelUrl(event.currentTarget.value)}
 							/>
 						</Input.Wrapper>

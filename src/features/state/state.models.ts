@@ -10,7 +10,7 @@ export type DownloadOfficialProductsCurrentJobKeyModel = string | undefined;
 
 export type CreateCustomProductsActiveStepModel = 1 | 2 | 3;
 export type CreateCustomProductsProductModel = string | undefined;
-export type CreateCustomProductsModelModel = string; // TODO it should be an URL
+export type CreateCustomProductsModelModel = string | null;
 export type CreateCustomProductsBackgroundLayerModel = string;
 export type CreateCustomProductsOutputFileFormatModel = 'GTiff' | 'NETCDF';
 export type CreateCustomProductsBBoxModel = [number, number, number, number] | undefined;
