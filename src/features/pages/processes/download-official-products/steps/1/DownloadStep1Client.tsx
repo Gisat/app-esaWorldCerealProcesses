@@ -106,6 +106,7 @@ export default function DownloadStep1Client() {
 					size="md"
 					allowDeselect={false}
 					label="Select the product collection"
+					placeholder="Pick one"
 					data={formParams.collection.options}
 					value={collection}
 					onChange={(value) => setCollection(value)}

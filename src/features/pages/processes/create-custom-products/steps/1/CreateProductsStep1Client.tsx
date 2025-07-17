@@ -1,9 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { IconArrowRight } from '@tabler/icons-react';
-import { Button, Group, Select, Space } from '@mantine/core';
+import { Button, Group, Input, Select, Space, TextInput } from '@mantine/core';
 import { useSharedState } from '@gisatcz/ptr-fe-core/client';
 import TwoColumns, { Column } from '@features/(shared)/_layout/_components/Content/TwoColumns';
 import formParams from '@features/(processes)/_constants/generate-custom-products/formParams';
@@ -34,6 +34,8 @@ export default function CreateProductsStep1Client() {
 	 */
 	const model = getModel_customProducts(state);
 
+	const [currentModelUrl, setCurrentModelUrl] = useState<string | null>(model ? model : '');
+
 	/**
 	 * Selector to retrieve the selected product from the state.
 	 * @type {string | undefined}
@@ -51,12 +53,10 @@ export default function CreateProductsStep1Client() {
 	 * @param {string | null} value - The selected model.
 	 */
 	const setModel = (value: string | null) => {
-		if (value) {
-			dispatch({
-				type: WorldCerealStateActionType.CREATE_CUSTOM_PRODUCTS_SET_MODEL,
-				payload: value,
-			});
-		}
+		dispatch({
+			type: WorldCerealStateActionType.CREATE_CUSTOM_PRODUCTS_SET_MODEL,
+			payload: value,
+		});
 	};
 
 	/**
@@ -64,10 +64,15 @@ export default function CreateProductsStep1Client() {
 	 * @param {string | null} value - The selected product.
 	 */
 	const setProduct = (value: string | null) => {
-		if (value) {
+		if (value && value !== product) {
+			setCurrentModelUrl(''); // Reset model URL when product changes
 			dispatch({
 				type: WorldCerealStateActionType.CREATE_CUSTOM_PRODUCTS_SET_PRODUCT,
 				payload: value,
+			});
+			dispatch({
+				type: WorldCerealStateActionType.CREATE_CUSTOM_PRODUCTS_SET_MODEL,
+				payload: null, // Reset model when product changes
 			});
 		}
 	};
@@ -82,6 +87,34 @@ export default function CreateProductsStep1Client() {
 		});
 	}, []);
 
+	useEffect(() => {
+		// If model is set, update the currentModelUrl to match the model.
+		// setCurrentModelUrl(model);
+		if (model) {
+			setCurrentModelUrl(model);
+		} else {
+			setCurrentModelUrl('');
+		}
+	}, [model]);
+
+	const setModelUrl = (value: string) => {
+		setCurrentModelUrl(value);
+		// On every change check the value, if it is not valid, give warning and if it is valid, dispatch the url to the state.
+		const regex = /^https?:\/\/.+\.onnx$/i;
+
+		const isValid = regex.test(value);
+
+		console.log(value, currentModelUrl, model, isValid);
+
+		if (isValid) {
+			setModel(value);
+		} else if (model) {
+			setModel(null);
+		}
+	};
+
+	console.log(model, currentModelUrl);
+
 	return (
 		/**
 		 * Layout with two columns for the step UI.
@@ -94,22 +127,42 @@ export default function CreateProductsStep1Client() {
 					size="md"
 					allowDeselect={false}
 					label="Select your product"
+					placeholder="Pick one"
 					data={formParams.product.options}
 					value={product}
 					onChange={(value) => setProduct(value)}
 				/>
 				<Space h="md" />
-				<Select
-					withAsterisk
-					className="worldCereal-Select"
-					size="md"
-					allowDeselect={false}
-					label="Select model"
-					placeholder="Pick one"
-					data={formParams.model.options}
-					value={model}
-					onChange={(value) => setModel(value)}
-				/>
+				{product === 'worldcereal_crop_type' ? (
+					<Input.Wrapper
+						size="md"
+						label="Enter model URL"
+						description="Write the URL of the product model"
+						withAsterisk
+					>
+						<TextInput
+							className="worldCereal-Select"
+							size="md"
+							placeholder="Valid URL..."
+							error={!model && currentModelUrl !== '' ? 'URL not valid' : null} //"Something went wrong"
+							value={currentModelUrl}
+							onChange={(event) => setModelUrl(event.currentTarget.value)}
+						/>
+					</Input.Wrapper>
+				) : (
+					<Select
+						withAsterisk
+						className="worldCereal-Select"
+						size="md"
+						allowDeselect={false}
+						label="Select model"
+						placeholder="Pick one"
+						description="Select model for the product"
+						data={formParams.model.options}
+						value={model}
+						onChange={(value) => setModel(value)}
+					/>
+				)}
 				<Group mt="xl">
 					<Link href="/generate-custom-products/steps/2">
 						<Button
