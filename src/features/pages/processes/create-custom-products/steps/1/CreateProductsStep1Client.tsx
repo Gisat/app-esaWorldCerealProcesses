@@ -12,6 +12,7 @@ import { OneOfWorldCerealActions } from '@features/state/state.actions';
 import { WorldCerealStateActionType } from '@features/state/state.actionTypes';
 import { getModel_customProducts } from '@features/state/selectors/createCustomProducts/getModel';
 import { getProduct_customProducts } from '@features/state/selectors/createCustomProducts/getProduct';
+import { TextLink } from '@features/(shared)/_layout/_components/Content/TextLink';
 
 /**
  * React component for the first step of creating custom products.
@@ -150,13 +151,13 @@ export default function CreateProductsStep1Client() {
 						</Input.Wrapper>
 						<Text>
 							This service only works with custom models, learn more{' '}
-							<Link
-								href={
+							<TextLink
+								url={
 									'https://github.com/WorldCereal/worldcereal-classification/blob/main/notebooks/worldcereal_custom_croptype.ipynb'
 								}
 							>
 								here
-							</Link>
+							</TextLink>
 							.
 						</Text>
 					</Stack>
