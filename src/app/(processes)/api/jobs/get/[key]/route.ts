@@ -16,10 +16,11 @@ export const fetchCache = "force-no-store";
  */
 export async function GET(
   req: NextRequest,
-  { params: { key: key } }: { params: { key: string } }
+  context: { params: Promise<{ key: string }> }
 ) {
   try {
-    // validate inputs for safe aggregation
+    const { key } = await context.params; // Await params
+
     if (!key) {
       return NextResponse.json("Missing key value", {
         status: 400,
