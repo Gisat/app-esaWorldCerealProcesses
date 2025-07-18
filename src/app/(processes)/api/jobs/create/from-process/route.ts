@@ -6,6 +6,7 @@ import { ErrorBehavior } from "@features/(shared)/errors/enums.errorBehavior";
 import { BaseHttpError } from "@features/(shared)/errors/models.error";
 import getBoundaryDates from "@features/(processes)/_utils/boundaryDates";
 import { transformDate } from "@features/(processes)/_utils/transformDate";
+import { getRequireSessionId } from "@features/(auth)/_utils/requireSessionId";
 
 /**
  * Handles the GET request to create a job from a process.
@@ -70,7 +71,7 @@ export async function GET(req: NextRequest) {
           "Content-Type": "application/json"
         },
         body: JSON.stringify(data),
-        requireSessionId: true
+        requireSessionId: getRequireSessionId(),
       })
 
     const nextResponse = NextResponse.json(backendContent);

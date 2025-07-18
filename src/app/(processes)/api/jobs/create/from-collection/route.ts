@@ -5,6 +5,7 @@ import { BaseHttpError } from "@features/(shared)/errors/models.error";
 import { NextRequest, NextResponse } from "next/server";
 
 import formParams from "@features/(processes)/_constants/download-official-products/formParams";
+import { getRequireSessionId } from "@features/(auth)/_utils/requireSessionId";
 
 /**
  * Handles the GET request to create a job from a collection.
@@ -76,7 +77,7 @@ export async function GET(req: NextRequest) {
     const { backendContent, setCookieHeader } = await fetchWithSessions(
       {
         method: "POST",
-        requireSessionId: true,
+        requireSessionId: getRequireSessionId(),
         url,
         browserCookies: req.cookies,
         headers: {
