@@ -105,6 +105,10 @@ const Details = ({
 	};
 
 	const getDescriptionInfo = () => {
+		if (!results || results.length === 0) {
+			return null;
+		}
+
 		if (descriptionType === 'values') {
 			return (
 				<DetailsItem label="Values description">
@@ -118,6 +122,19 @@ const Details = ({
 				</DetailsItem>
 			);
 		}
+	};
+
+	const getModelLink = () => {
+		if (model && model !== 'Default') {
+			return (
+				<a href={model} target="_blank" rel="noopener noreferrer">
+					Custom
+				</a>
+			);
+		} else if (model === 'Default') {
+			return 'Default';
+		}
+		return null;
 	};
 
 	return (
@@ -137,7 +154,7 @@ const Details = ({
 			<div className="worldCereal-ProcessesTable-Details-column">
 				<DetailsItem label={'Product collection'}>{collectionName}</DetailsItem>
 				<DetailsItem label={'Product'}>{collection || process}</DetailsItem>
-				<DetailsItem label={'Model'}>{model}</DetailsItem>
+				<DetailsItem label={'Model'}>{getModelLink()}</DetailsItem>
 				<DetailsItem label={'Start date'}>{startDate ? new Date(startDate).toLocaleDateString() : null}</DetailsItem>
 				<DetailsItem label={'End date'}>{endDate ? new Date(endDate).toLocaleDateString() : null}</DetailsItem>
 				<DetailsItem label={'Output file format'}>{resultFileFormat}</DetailsItem>

@@ -1,15 +1,17 @@
+import { TextParagraph } from '@features/(shared)/_layout/_components/Content/TextParagraph';
+import { TextLink } from '@features/(shared)/_layout/_components/Content/TextLink';
+
 import './style.css';
 
 const ProductResultsInfo = () => {
 	return (
 		<div className="worldCereal-ProductResultsInfo">
-			<ul>
-				<li>Band 1: "classification": The classification label of the pixel.</li>
-				<li>Band 2: "confidence": The class-specific probablity of the winning class.</li>
-				<li>
-					Band 3 and beyond: "probability_xxx": Class-specific probablities. The "xxx" indicates the associated class.
-				</li>
-			</ul>
+			<TextParagraph>
+				For comprehensive details regarding the results, please refer to the documentation.<br />
+				<TextLink url="https://worldcereal.github.io/worldcereal-documentation/vdm/launch.html">
+					WorldCereal Documentation Portal
+				</TextLink>
+			</TextParagraph>
 		</div>
 	);
 };

@@ -48,7 +48,7 @@ const formParams: {
 				value: 'worldcereal_crop_type',
 				label: 'Crop type',
 				namespace:
-					'https://raw.githubusercontent.com/WorldCereal/worldcereal-classification/refs/tags/worldcereal_crop_type_v1.0.0/src/worldcereal/udp/worldcereal_crop_type.json',
+					'https://raw.githubusercontent.com/WorldCereal/worldcereal-classification/dc0173996e7a98308c77a81f161e3b75a8d32e23/src/worldcereal/udp/worldcereal_crop_type.json',
 			},
 			{
 				value: 'worldcereal_active_cropland',

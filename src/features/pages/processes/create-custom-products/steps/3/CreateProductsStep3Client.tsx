@@ -135,7 +135,7 @@ export default function CreateProductsStep3Client() {
 					backgroundLayer={backgroundLayer}
 					startDate={data?.timeRange?.[0]}
 					endDate={data?.timeRange?.[1]}
-					// TODO add model from response
+					model={data.model}
 				/>
 			) : null}
 			<Group mt="xl">
