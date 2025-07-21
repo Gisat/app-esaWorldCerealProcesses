@@ -64,7 +64,6 @@ type DetailsProps = {
 	collectionName?: string;
 	model?: string;
 	backgroundLayer?: string;
-	descriptionType?: 'values' | 'results';
 };
 
 /**
@@ -81,7 +80,6 @@ const Details = ({
 	oeoCollection,
 	oeoProcessId,
 	results,
-	descriptionType,
 	status,
 	collectionName,
 	model,
@@ -102,26 +100,6 @@ const Details = ({
 		const pathname = url.pathname;
 		const filename = pathname.substring(pathname.lastIndexOf('/') + 1);
 		return filename.replace(/^openEO_/, '');
-	};
-
-	const getDescriptionInfo = () => {
-		if (!results || results.length === 0) {
-			return null;
-		}
-
-		if (descriptionType === 'values') {
-			return (
-				<DetailsItem label="Values description">
-					<ProductValuesInfo />
-				</DetailsItem>
-			);
-		} else if (descriptionType === 'results') {
-			return (
-				<DetailsItem label="Results description">
-					<ProductResultsInfo />
-				</DetailsItem>
-			);
-		}
 	};
 
 	const getModelLink = () => {
@@ -180,8 +158,6 @@ const Details = ({
 						))}
 					</DetailsItem>
 				)}
-
-				{getDescriptionInfo()}
 			</div>
 		</div>
 	);

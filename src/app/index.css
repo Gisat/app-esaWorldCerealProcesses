@@ -105,6 +105,18 @@ input {
   padding: 1rem;
 }
 
+.esaWorldCerealProcesses .worldCereal-Modal .mantine-Modal-header {
+  background: var(--lightBackgroundColor);
+}
+
+.esaWorldCerealProcesses .worldCereal-Modal .mantine-Modal-close:hover {
+  background-color: transparent;
+}
+
+.esaWorldCerealProcesses .worldCereal-Modal .mantine-Modal-title {
+  font-size: var(--font-size-lg);
+}
+
 /* Stepper */
 .worldCereal-appContent .worldCereal-Stepper {
   .mantine-Stepper-stepLabel {

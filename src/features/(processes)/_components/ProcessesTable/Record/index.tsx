@@ -1,6 +1,14 @@
 import { ActionIcon, Button, Flex, Modal, Table, Tooltip } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { IconChevronDown, IconChevronUp, IconDownload, IconPlayerPlay, IconTrash } from '@tabler/icons-react';
+import {
+	IconChevronDown,
+	IconChevronUp,
+	IconDownload,
+	IconInfoCircle,
+	IconPlayerPlay,
+	IconTrash,
+	IconX,
+} from '@tabler/icons-react';
 import { useState } from 'react';
 import './style.css';
 
@@ -12,6 +20,8 @@ import { Statuses } from '@features/(shared)/_logic/models.statuses';
 
 import downloadFormParams from '@features/(processes)/_constants/download-official-products/formParams';
 import customProductFormParams from '@features/(processes)/_constants/generate-custom-products/formParams';
+import ProductValuesInfo from '../ProductValuesInfo';
+import ProductResultsInfo from '../ProductResultsInfo';
 
 const fetcher = (url: string) => {
 	return fetch(`${url}`).then((r) => r.json());
@@ -174,6 +184,62 @@ const RemoveJobButton = ({
 	);
 };
 
+/**
+ * Info button that opens a modal with process results explanation.
+ * Shows ProductValuesInfo for downloads and ProductResultsInfo for products.
+ *
+ * @param descriptionType - The process type string (e.g., "download" or "product").
+ */
+const OpenInfoButton = ({ descriptionType }: { descriptionType: string | undefined }) => {
+	const [opened, setOpened] = useState(false);
+
+	const getDescriptionInfo = () => {
+		switch (descriptionType) {
+			case processTypes.download:
+				return <ProductValuesInfo />;
+			case processTypes.product:
+				return <ProductResultsInfo />;
+			default:
+				return null;
+		}
+	};
+
+	return (
+		<>
+			<Tooltip label="Show results info" openDelay={500}>
+				<ActionIcon
+					radius="lg"
+					size="lg"
+					variant="subtle"
+					aria-label="Show results info"
+					onClick={() => setOpened(true)}
+				>
+					<IconInfoCircle color="var(--textAccentedColor)" size={16} />
+				</ActionIcon>
+			</Tooltip>
+			<Modal
+				className="worldCereal-Modal"
+				opened={opened}
+				onClose={() => setOpened(false)}
+				title="Explanation of Results"
+				centered
+				radius={0}
+				size={'xl'}
+				transitionProps={{ transition: 'fade', duration: 200 }}
+				closeButtonProps={{
+					icon: (
+						<ActionIcon radius="lg" size="lg" variant="subtle" aria-label="Close modal">
+							<IconX color="var(--deleteColor)" size={20} />
+						</ActionIcon>
+					),
+				}}
+			>
+				{getDescriptionInfo()}
+			</Modal>
+		</>
+	);
+};
+
 const Record = ({
 	jobKey,
 	type,
@@ -212,7 +278,6 @@ Props) => {
 								(option) => option.start === `${timeRange?.[0]}` && option.end === `${timeRange?.[1]}`
 							)?.label
 						}
-						descriptionType="values"
 					/>
 				);
 			case processTypes.product:
@@ -228,7 +293,6 @@ Props) => {
 						}
 						results={results}
 						status={status}
-						descriptionType="results"
 					/>
 				);
 			default:
@@ -261,6 +325,7 @@ Props) => {
 						}
 						model={model}
 					/>
+					{results?.[0] ? <OpenInfoButton descriptionType={type} /> : null}
 					{status === Statuses.created ? <StartJobButton jobKey={jobKey} forceReloadList={forceReloadList} /> : null}
 					{results?.[0] ? (
 						<Tooltip label="Go to downloads" openDelay={500}>
