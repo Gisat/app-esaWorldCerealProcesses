@@ -208,12 +208,11 @@ export default function CreateProductsStep2Client() {
 		endDate: endDate?.toString() || '',
 		...(product === 'worldcereal_crop_type'
 			? {
-					orbitState: orbitState || '',
-					postprocessMethod: postprocessMethod || '',
-					postprocessKernelSize:
-						postprocessMethod === 'majority_vote' && postprocessKernelSize !== undefined
-							? postprocessKernelSize.toString()
-							: '',
+					orbitState: orbitState?.toString() || '',
+					postprocessMethod: postprocessMethod?.toString() || '',
+					...(postprocessMethod === 'majority_vote' && postprocessKernelSize !== undefined
+						? { postprocessKernelSize: postprocessKernelSize.toString() }
+						: {}),
 				}
 			: {}),
 	});
