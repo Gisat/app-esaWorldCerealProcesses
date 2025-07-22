@@ -1,4 +1,5 @@
 import { customProductsDateLimits } from '@features/(processes)/_constants/app';
+import { min } from 'lodash';
 
 const formParams: {
 	product: {
@@ -27,6 +28,22 @@ const formParams: {
 		}[];
 	};
 	outputFileFormat: {
+		required?: boolean;
+		options: {
+			label: string;
+			value: string;
+			default?: boolean;
+		}[];
+	};
+	orbitState: {
+		required?: boolean;
+		options: {
+			label: string;
+			value: string;
+			default?: boolean;
+		}[];
+	};
+	postprocessMethod: {
 		required?: boolean;
 		options: {
 			label: string;
@@ -87,6 +104,34 @@ const formParams: {
 			{
 				label: 'NetCDF',
 				value: 'NETCDF',
+			},
+		],
+	},
+	orbitState: {
+		required: false,
+		options: [
+			{
+				value: 'ASCENDING',
+				label: 'Ascending',
+			},
+			{
+				value: 'DESCENDING',
+				label: 'Descending',
+				default: true,
+			},
+		],
+	},
+	postprocessMethod: {
+		required: false,
+		options: [
+			{
+				value: 'smooth_probabilities',
+				label: 'Smooth probabilities',
+				default: true,
+			},
+			{
+				value: 'majority_vote',
+				label: 'Majority vote',
 			},
 		],
 	},

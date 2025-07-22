@@ -30,6 +30,9 @@ import { getModel_customProducts } from '@features/state/selectors/createCustomP
 import { getProduct_customProducts } from '@features/state/selectors/createCustomProducts/getProduct';
 import { getEndDate_customProducts } from '@features/state/selectors/createCustomProducts/getEndDate';
 import { SelectMonth } from '@features/(processes)/_components/SelectMonth';
+import { getOrbitState_customProducts } from '@features/state/selectors/createCustomProducts/getOrbitState';
+import { getPostProcessMethod_customProducts } from '@features/state/selectors/createCustomProducts/getPostProcessMethod';
+import { getPostProcessKernelSize_customProducts } from '@features/state/selectors/createCustomProducts/getPostProcessKernelSize';
 
 /**
  * Component representing the second step in the "Create Custom Products" process.
@@ -110,6 +113,10 @@ export default function CreateProductsStep2Client() {
 	 * @type {string | undefined}
 	 */
 	const endDate = getEndDate_customProducts(state);
+
+	const orbitState = getOrbitState_customProducts(state);
+	const postprocessMethod = getPostProcessMethod_customProducts(state);
+	const postprocessKernelSize = getPostProcessKernelSize_customProducts(state);
 
 	/**
 	 * Determines whether the next step is disabled based on the current state.
@@ -199,6 +206,16 @@ export default function CreateProductsStep2Client() {
 		model: model?.toString() || '',
 		product: product?.toString() || '',
 		endDate: endDate?.toString() || '',
+		...(product === 'worldcereal_crop_type'
+			? {
+					orbitState: orbitState || '',
+					postprocessMethod: postprocessMethod || '',
+					postprocessKernelSize:
+						postprocessMethod === 'majority_vote' && postprocessKernelSize !== undefined
+							? postprocessKernelSize.toString()
+							: '',
+				}
+			: {}),
 	});
 
 	/**

@@ -13,6 +13,7 @@ import { WorldCerealStateActionType } from '@features/state/state.actionTypes';
 import { getModel_customProducts } from '@features/state/selectors/createCustomProducts/getModel';
 import { getProduct_customProducts } from '@features/state/selectors/createCustomProducts/getProduct';
 import { TextLink } from '@features/(shared)/_layout/_components/Content/TextLink';
+import CropTypeOptions from './CropTypeOptions/CropTypeOptions';
 
 /**
  * React component for the first step of creating custom products.
@@ -192,6 +193,7 @@ export default function CreateProductsStep1Client() {
 					</Link>
 				</Group>
 			</Column>
+			<Column>{product === 'worldcereal_crop_type' ? <CropTypeOptions /> : null}</Column>
 		</TwoColumns>
 	);
 }
