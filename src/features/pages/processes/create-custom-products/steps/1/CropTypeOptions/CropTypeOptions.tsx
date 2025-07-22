@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Group, NumberInput, Radio, Stack, Text } from '@mantine/core';
 import formParams from '@features/(processes)/_constants/generate-custom-products/formParams';
 import './CropTypeOptions.css';
@@ -16,6 +16,7 @@ import { getPostProcessKernelSize_customProducts } from '@features/state/selecto
  *
  * @returns {JSX.Element}
  */
+
 export default function CropTypeOptions() {
 	// Access global state and dispatch
 	const [state, dispatch] = useSharedState<WorldCerealState, OneOfWorldCerealActions>();
@@ -24,6 +25,9 @@ export default function CropTypeOptions() {
 	const orbitState = getOrbitState_customProducts(state);
 	const postprocessMethod = getPostProcessMethod_customProducts(state);
 	const kernelSize = getPostProcessKernelSize_customProducts(state);
+
+	// Local state for kernel size input (for immediate feedback)
+	const [localKernelSize, setLocalKernelSize] = useState<string>(kernelSize !== undefined ? String(kernelSize) : '5');
 
 	// Set up initial/default values on mount
 	useEffect(() => {
@@ -44,8 +48,17 @@ export default function CropTypeOptions() {
 				type: WorldCerealStateActionType.CREATE_CUSTOM_PRODUCTS_SET_POSTPROCESS_KERNEL_SIZE,
 				payload: 5,
 			});
+			setLocalKernelSize('5');
 		}
 	}, []);
+
+	// Sync local state with global state if kernelSize changes externally
+	useEffect(() => {
+		if (kernelSize !== undefined && String(kernelSize) !== localKernelSize) {
+			setLocalKernelSize(String(kernelSize));
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [kernelSize]);
 
 	const handleOrbitStateChange = (value: string) => {
 		dispatch({
@@ -61,15 +74,27 @@ export default function CropTypeOptions() {
 		});
 	};
 
-	const handleKernelSizeChange = (val: number | string) => {
-		const num = Number(val);
-		if (!isNaN(num)) {
-			dispatch({
-				type: WorldCerealStateActionType.CREATE_CUSTOM_PRODUCTS_SET_POSTPROCESS_KERNEL_SIZE,
-				payload: num,
-			});
+	const handleKernelSizeChange = (val: string | number) => {
+		const strVal = String(val);
+		setLocalKernelSize(strVal);
+
+		// Only dispatch if not empty and is a valid number
+		if (strVal !== '') {
+			const num = Number(strVal);
+			if (!isNaN(num)) {
+				dispatch({
+					type: WorldCerealStateActionType.CREATE_CUSTOM_PRODUCTS_SET_POSTPROCESS_KERNEL_SIZE,
+					payload: num,
+				});
+			}
 		}
 	};
+
+	const kernelSizeNum = Number(localKernelSize);
+	const kernelSizeError =
+		localKernelSize === '' || isNaN(kernelSizeNum) || kernelSizeNum < 1 || kernelSizeNum > 25 || kernelSizeNum % 2 === 0
+			? 'Kernel size must be an odd number between 1 and 25'
+			: undefined;
 
 	return (
 		<Stack>
@@ -119,11 +144,13 @@ export default function CropTypeOptions() {
 					<NumberInput
 						className="worldCereal-Input"
 						label="Postprocess kernel size"
-						value={kernelSize}
+						value={localKernelSize}
 						onChange={handleKernelSizeChange}
 						min={1}
+						max={25}
 						step={1}
 						size="md"
+						error={kernelSizeError}
 					/>
 					<Text size="sm" c="dimmed">
 						Additional parameter used for the majority vote postprocessing method. The higher the value, the more

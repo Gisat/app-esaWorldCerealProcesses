@@ -14,6 +14,9 @@ import { getModel_customProducts } from '@features/state/selectors/createCustomP
 import { getProduct_customProducts } from '@features/state/selectors/createCustomProducts/getProduct';
 import { TextLink } from '@features/(shared)/_layout/_components/Content/TextLink';
 import CropTypeOptions from './CropTypeOptions/CropTypeOptions';
+import { getOrbitState_customProducts } from '@features/state/selectors/createCustomProducts/getOrbitState';
+import { getPostProcessMethod_customProducts } from '@features/state/selectors/createCustomProducts/getPostProcessMethod';
+import { getPostProcessKernelSize_customProducts } from '@features/state/selectors/createCustomProducts/getPostProcessKernelSize';
 
 /**
  * React component for the first step of creating custom products.
@@ -47,11 +50,23 @@ export default function CreateProductsStep1Client() {
 	 */
 	const product = getProduct_customProducts(state);
 
+	const orbitState = getOrbitState_customProducts(state);
+	const postprocessMethod = getPostProcessMethod_customProducts(state);
+	const kernelSize = getPostProcessKernelSize_customProducts(state);
+
+	// Enhanced nextStepDisabled logic
+	const isCropType = product === 'worldcereal_crop_type';
+	const isKernelValid =
+		!isCropType || (typeof kernelSize === 'number' && kernelSize >= 1 && kernelSize <= 25 && kernelSize % 2 === 1);
+
+	const areCropTypeParamsValid =
+		!isCropType || (orbitState && postprocessMethod && (postprocessMethod !== 'majority_vote' || isKernelValid));
+
 	/**
 	 * Determines whether the next step is disabled based on the current state.
 	 * @type {boolean}
 	 */
-	const nextStepDisabled = !model || !product;
+	const nextStepDisabled = !model || !product || !areCropTypeParamsValid;
 
 	/**
 	 * Updates the selected model in the state.
