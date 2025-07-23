@@ -112,7 +112,8 @@ export default function CropTypeOptions() {
 					))}
 				</Group>
 				<Text size="sm" c="dimmed">
-					Most dominant Sentinel-1 orbit for your area of interest, either 'ASCENDING' or 'DESCENDING'. See{' '}
+					Most dominant Sentinel-1 orbit for your area of interest, either &apos;ASCENDING&apos; or
+					&apos;DESCENDING&apos;. See{' '}
 					<TextLink url="https://docs.sentinel-hub.com/api/latest/data/sentinel-1-grd/">
 						https://docs.sentinel-hub.com/api/latest/data/sentinel-1-grd/
 					</TextLink>
@@ -133,9 +134,9 @@ export default function CropTypeOptions() {
 					))}
 				</Group>
 				<Text size="sm" c="dimmed">
-					"smooth_probabilities" will perform limited spatial cleaning of the map, while "majority_vote" will perform
-					more aggressive spatial cleaning by assessing the most dominant predicted class in a moving window (see also
-					postprocess_kernel_size parameter).
+					&quot;smooth_probabilities&quot; will perform limited spatial cleaning of the map, while
+					&quot;majority_vote&quot; will perform more aggressive spatial cleaning by assessing the most dominant
+					predicted class in a moving window (see also postprocess_kernel_size parameter).
 				</Text>
 			</Radio.Group>
 			{/* Kernel Size Input (only for majority_vote) */}
