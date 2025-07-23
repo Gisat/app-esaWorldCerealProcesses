@@ -135,7 +135,12 @@ export default function CreateProductsStep3Client() {
 					backgroundLayer={backgroundLayer}
 					startDate={data?.timeRange?.[0]}
 					endDate={data?.timeRange?.[1]}
-					model={data.model}
+					model={data?.model}
+					orbitState={formParams.orbitState.options.find((option) => option.value === data?.orbitState)?.label}
+					postprocessMethod={
+						formParams.postprocessMethod.options.find((option) => option.value === data?.postprocessMethod)?.label
+					}
+					postprocessKernelSize={data?.postprocessKernelSize}
 				/>
 			) : null}
 			<Group mt="xl">

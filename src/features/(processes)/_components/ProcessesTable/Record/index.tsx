@@ -45,6 +45,9 @@ type Props = {
 	collectionName?: string;
 	model?: string;
 	forceReloadList?: () => void;
+	orbitState?: string;
+	postprocessMethod?: string;
+	postprocessKernelSize?: number;
 };
 
 const StartJobButton = ({ jobKey, forceReloadList }: { jobKey?: string; forceReloadList?: () => void }) => {
@@ -253,6 +256,9 @@ const Record = ({
 	oeoProcessId,
 	model,
 	forceReloadList,
+	orbitState,
+	postprocessMethod,
+	postprocessKernelSize,
 }: // details
 Props) => {
 	const [isExpanded, setIsExpanded] = useState(false);
@@ -293,6 +299,12 @@ Props) => {
 						}
 						results={results}
 						status={status}
+						orbitState={customProductFormParams.orbitState.options.find((option) => option.value === orbitState)?.label}
+						postprocessMethod={
+							customProductFormParams.postprocessMethod.options.find((option) => option.value === postprocessMethod)
+								?.label
+						}
+						postprocessKernelSize={postprocessKernelSize}
 					/>
 				);
 			default:

@@ -64,6 +64,9 @@ type DetailsProps = {
 	collectionName?: string;
 	model?: string;
 	backgroundLayer?: string;
+	orbitState?: string;
+	postprocessMethod?: string;
+	postprocessKernelSize?: number;
 };
 
 /**
@@ -84,6 +87,9 @@ const Details = ({
 	collectionName,
 	model,
 	backgroundLayer,
+	orbitState,
+	postprocessMethod,
+	postprocessKernelSize,
 }: DetailsProps) => {
 	const [bboxDescription, setBboxDescription] = useState<string | string[] | null>(null);
 	const collection = oeoCollection;
@@ -138,6 +144,11 @@ const Details = ({
 				<DetailsItem label={'Output file format'}>{resultFileFormat}</DetailsItem>
 			</div>
 			<div className="worldCereal-ProcessesTable-Details-column">
+				{orbitState && <DetailsItem label={'Orbit state'}>{orbitState}</DetailsItem>}
+				{postprocessMethod && <DetailsItem label={'Postprocess method'}>{postprocessMethod}</DetailsItem>}
+				{typeof postprocessKernelSize === 'number' && (
+					<DetailsItem label={'Postprocess kernel size'}>{postprocessKernelSize}</DetailsItem>
+				)}
 				{status === Statuses.error ? (
 					<div className="worldCereal-ProcessesTable-Details-error">
 						Your processing job resulted in an error. Please reach out to us on the{' '}
