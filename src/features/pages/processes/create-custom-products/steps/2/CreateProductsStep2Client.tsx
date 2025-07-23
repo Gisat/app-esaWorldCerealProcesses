@@ -267,13 +267,13 @@ export default function CreateProductsStep2Client() {
 					<Group gap={'0.3rem'} align="baseline">
 						<FormLabel>Draw the extent</FormLabel>
 						<TextDescription color={'var(--textSecondaryColor)'}>
-							(MIN: 900 m<sup>2</sup>, MAX: 100 000 km<sup>2</sup>)
+							(MIN: 900 m<sup>2</sup>, MAX: 2 500 km<sup>2</sup>)
 						</TextDescription>
 					</Group>
 					<MapBBox
 						mapSize={[650, 400]}
-						minBboxArea={bboxSizeLimits.downloadProducts.min}
-						maxBboxArea={bboxSizeLimits.downloadProducts.max}
+						minBboxArea={bboxSizeLimits.customProducts.min}
+						maxBboxArea={bboxSizeLimits.customProducts.max}
 						bbox={bbox?.map(Number)}
 						setBboxDescription={setBboxDescription}
 						setBboxExtent={setBBoxExtent}
