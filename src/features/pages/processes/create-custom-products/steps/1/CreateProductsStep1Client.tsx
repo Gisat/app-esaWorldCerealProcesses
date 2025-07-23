@@ -56,8 +56,7 @@ export default function CreateProductsStep1Client() {
 
 	// Enhanced nextStepDisabled logic
 	const isCropType = product === 'worldcereal_crop_type';
-	const isKernelValid =
-		!isCropType || (typeof kernelSize === 'number' && kernelSize >= 1 && kernelSize <= 25 && kernelSize % 2 === 1);
+	const isKernelValid = !isCropType || (typeof kernelSize === 'number' && kernelSize >= 1 && kernelSize <= 25);
 
 	const areCropTypeParamsValid =
 		!isCropType || (orbitState && postprocessMethod && (postprocessMethod !== 'majority_vote' || isKernelValid));

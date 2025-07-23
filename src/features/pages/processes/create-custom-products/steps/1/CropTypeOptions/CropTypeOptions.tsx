@@ -92,8 +92,8 @@ export default function CropTypeOptions() {
 
 	const kernelSizeNum = Number(localKernelSize);
 	const kernelSizeError =
-		localKernelSize === '' || isNaN(kernelSizeNum) || kernelSizeNum < 1 || kernelSizeNum > 25 || kernelSizeNum % 2 === 0
-			? 'Kernel size must be an odd number between 1 and 25'
+		localKernelSize === '' || isNaN(kernelSizeNum) || kernelSizeNum < 1 || kernelSizeNum > 25
+			? 'Kernel size must be a number between 1 and 25'
 			: undefined;
 
 	return (
