@@ -230,11 +230,7 @@ const OpenInfoButton = ({ descriptionType }: { descriptionType: string | undefin
 				size={'xl'}
 				transitionProps={{ transition: 'fade', duration: 200 }}
 				closeButtonProps={{
-					icon: (
-						<ActionIcon radius="lg" size="lg" variant="subtle" aria-label="Close modal">
-							<IconX color="var(--deleteColor)" size={20} />
-						</ActionIcon>
-					),
+					icon: <IconX color="var(--deleteColor)" size={20} />,
 				}}
 			>
 				{getDescriptionInfo()}
@@ -346,13 +342,13 @@ Props) => {
 								size="lg"
 								variant="subtle"
 								aria-label="Settings"
-								onClick={() => setIsExpanded(!isExpanded)}
+								onClick={() => setIsExpanded(true)}
 							>
 								<IconDownload color="var(--textAccentedColor)" size={16} />
 							</ActionIcon>
 						</Tooltip>
 					) : null}
-					<Tooltip label="Show details" openDelay={500}>
+					<Tooltip label={isExpanded ? 'Hide details' : 'Show details'} openDelay={500}>
 						<ActionIcon
 							radius="lg"
 							size="lg"
