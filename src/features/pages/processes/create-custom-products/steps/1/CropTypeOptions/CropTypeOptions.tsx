@@ -14,9 +14,13 @@ import { getPostProcessKernelSize_customProducts } from '@features/state/selecto
 /**
  * CropTypeOptions component for selecting orbit state and postprocess options.
  *
- * @returns {JSX.Element}
+ * - Initializes default values for orbit state, postprocess method, and kernel size on mount.
+ * - Synchronizes local kernel size input with global state.
+ * - Handles user input for orbit state, postprocess method, and kernel size.
+ * - Validates kernel size input.
+ *
+ * @returns {JSX.Element} The rendered crop type options UI.
  */
-
 export default function CropTypeOptions() {
 	// Access global state and dispatch
 	const [state, dispatch] = useSharedState<WorldCerealState, OneOfWorldCerealActions>();
@@ -29,7 +33,10 @@ export default function CropTypeOptions() {
 	// Local state for kernel size input (for immediate feedback)
 	const [localKernelSize, setLocalKernelSize] = useState<string>(kernelSize !== undefined ? String(kernelSize) : '5');
 
-	// Set up initial/default values on mount
+	/**
+	 * Initializes default values for orbit state, postprocess method, and kernel size on mount.
+	 * Synchronizes local kernel size input with global state if changed externally.
+	 */
 	useEffect(() => {
 		if (!orbitState) {
 			dispatch({
@@ -49,17 +56,16 @@ export default function CropTypeOptions() {
 				payload: 5,
 			});
 			setLocalKernelSize('5');
-		}
-	}, []);
-
-	// Sync local state with global state if kernelSize changes externally
-	useEffect(() => {
-		if (kernelSize !== undefined && String(kernelSize) !== localKernelSize) {
+		} else if (String(kernelSize) !== localKernelSize) {
 			setLocalKernelSize(String(kernelSize));
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [kernelSize]);
+	}, [orbitState, postprocessMethod, kernelSize]);
 
+	/**
+	 * Handles change for orbit state radio group.
+	 * @param {string} value - The selected orbit state.
+	 */
 	const handleOrbitStateChange = (value: string) => {
 		dispatch({
 			type: WorldCerealStateActionType.CREATE_CUSTOM_PRODUCTS_SET_ORBIT_STATE,
@@ -67,6 +73,10 @@ export default function CropTypeOptions() {
 		});
 	};
 
+	/**
+	 * Handles change for postprocess method radio group.
+	 * @param {string} value - The selected postprocess method.
+	 */
 	const handlePostprocessMethodChange = (value: string) => {
 		dispatch({
 			type: WorldCerealStateActionType.CREATE_CUSTOM_PRODUCTS_SET_POSTPROCESS_METHOD,
@@ -74,6 +84,11 @@ export default function CropTypeOptions() {
 		});
 	};
 
+	/**
+	 * Handles change for kernel size input.
+	 * Updates local state and dispatches to global state if valid.
+	 * @param {string | number} val - The input value.
+	 */
 	const handleKernelSizeChange = (val: string | number) => {
 		const strVal = String(val);
 		setLocalKernelSize(strVal);
@@ -91,6 +106,9 @@ export default function CropTypeOptions() {
 	};
 
 	const kernelSizeNum = Number(localKernelSize);
+	/**
+	 * Error message for invalid kernel size input.
+	 */
 	const kernelSizeError =
 		localKernelSize === '' || isNaN(kernelSizeNum) || kernelSizeNum < 1 || kernelSizeNum > 25
 			? 'Kernel size must be a number between 1 and 25'
@@ -155,7 +173,7 @@ export default function CropTypeOptions() {
 					/>
 					<Text size="sm" c="dimmed">
 						Additional parameter used for the majority vote postprocessing method. The higher the value, the more
-						aggressive the spatial cleaning. Should be an odd, positive number, not larger than 25.
+						aggressive the spatial cleaning. Should be a positive number not larger than 25.
 					</Text>
 				</Stack>
 			)}

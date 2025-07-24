@@ -200,22 +200,23 @@ export default function CreateProductsStep2Client() {
 	 * URL parameters for the API request.
 	 * @type {URLSearchParams}
 	 */
-	const urlParams = new URLSearchParams({
+	const params: Record<string, string> = {
 		bbox: bbox ? bbox.join(',') : '',
 		outputFileFormat: outputFileFormat?.toString() || '',
 		model: model?.toString() || '',
 		product: product?.toString() || '',
 		endDate: endDate?.toString() || '',
-		...(product === 'worldcereal_crop_type'
-			? {
-					orbitState: orbitState?.toString() || '',
-					postprocessMethod: postprocessMethod?.toString() || '',
-					...(postprocessMethod === 'majority_vote' && postprocessKernelSize !== undefined
-						? { postprocessKernelSize: postprocessKernelSize.toString() }
-						: {}),
-				}
-			: {}),
-	});
+	};
+
+	if (product === 'worldcereal_crop_type') {
+		if (orbitState) params.orbitState = orbitState.toString();
+		if (postprocessMethod) params.postprocessMethod = postprocessMethod.toString();
+		if (postprocessMethod === 'majority_vote' && postprocessKernelSize !== undefined) {
+			params.postprocessKernelSize = postprocessKernelSize.toString();
+		}
+	}
+
+	const urlParams = new URLSearchParams(params);
 
 	/**
 	 * SWR hook for fetching process data.

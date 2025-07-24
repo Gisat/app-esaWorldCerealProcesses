@@ -162,7 +162,7 @@ export const MapBBox = function ({
 		} else if (initialView) {
 			// bboxDisabled is set after the map's initial view is ready.
 			// This prevents BoundingBox from being disabled during the initial render,
-			// which causes the bounding box to be deformed.
+			// which causes the map to be deformed.
 			setBboxDisabled(disabled);
 		}
 		// Only run when bbox, bboxPoints, initialView, or mapSize change
