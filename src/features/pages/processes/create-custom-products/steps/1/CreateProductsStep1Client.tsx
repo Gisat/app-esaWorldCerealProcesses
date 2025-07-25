@@ -17,6 +17,7 @@ import CropTypeOptions from './CropTypeOptions/CropTypeOptions';
 import { getOrbitState_customProducts } from '@features/state/selectors/createCustomProducts/getOrbitState';
 import { getPostProcessMethod_customProducts } from '@features/state/selectors/createCustomProducts/getPostProcessMethod';
 import { getPostProcessKernelSize_customProducts } from '@features/state/selectors/createCustomProducts/getPostProcessKernelSize';
+import { customProductsProductTypes } from '@features/(processes)/_constants/app';
 
 /**
  * React component for the first step of creating custom products.
@@ -55,7 +56,7 @@ export default function CreateProductsStep1Client() {
 	const kernelSize = getPostProcessKernelSize_customProducts(state);
 
 	// Enhanced nextStepDisabled logic
-	const isCropType = product === 'worldcereal_crop_type';
+	const isCropType = product === customProductsProductTypes.cropType;
 	const isKernelValid = !isCropType || (typeof kernelSize === 'number' && kernelSize >= 1 && kernelSize <= 25);
 
 	const areCropTypeParamsValid =
@@ -151,7 +152,7 @@ export default function CreateProductsStep1Client() {
 					onChange={(value) => setProduct(value)}
 				/>
 				<Space h="md" />
-				{product === 'worldcereal_crop_type' ? (
+				{product === customProductsProductTypes.cropType ? (
 					<Stack>
 						<Input.Wrapper
 							className="worldCereal-Input"
@@ -207,7 +208,7 @@ export default function CreateProductsStep1Client() {
 					</Link>
 				</Group>
 			</Column>
-			<Column>{product === 'worldcereal_crop_type' ? <CropTypeOptions /> : null}</Column>
+			<Column>{product === customProductsProductTypes.cropType ? <CropTypeOptions /> : null}</Column>
 		</TwoColumns>
 	);
 }

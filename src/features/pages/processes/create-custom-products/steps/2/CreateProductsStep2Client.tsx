@@ -19,7 +19,12 @@ import { Button, Group, SegmentedControl, Stack } from '@mantine/core';
 import FormLabel from '@features/(shared)/_layout/_components/Content/FormLabel';
 import { TextDescription } from '@features/(shared)/_layout/_components/Content/TextDescription';
 import { MapBBox } from '@features/(shared)/_components/map/MapBBox';
-import { bboxSizeLimits, customProductsDateLimits, defaultProductsDates } from '@features/(processes)/_constants/app';
+import {
+	bboxSizeLimits,
+	customProductsDateLimits,
+	customProductsProductTypes,
+	defaultProductsDates,
+} from '@features/(processes)/_constants/app';
 import { TextLink } from '@features/(shared)/_layout/_components/Content/TextLink';
 import formParams from '@features/(processes)/_constants/generate-custom-products/formParams';
 import { apiFetcher } from '@features/(shared)/_url/apiFetcher';
@@ -208,7 +213,7 @@ export default function CreateProductsStep2Client() {
 		endDate: endDate?.toString() || '',
 	};
 
-	if (product === 'worldcereal_crop_type') {
+	if (product === customProductsProductTypes.cropType) {
 		if (orbitState) params.orbitState = orbitState.toString();
 		if (postprocessMethod) params.postprocessMethod = postprocessMethod.toString();
 		if (postprocessMethod === 'majority_vote' && postprocessKernelSize !== undefined) {

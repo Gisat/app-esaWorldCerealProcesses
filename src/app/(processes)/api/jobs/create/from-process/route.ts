@@ -7,6 +7,7 @@ import { BaseHttpError } from '@features/(shared)/errors/models.error';
 import getBoundaryDates from '@features/(processes)/_utils/boundaryDates';
 import { transformDate } from '@features/(processes)/_utils/transformDate';
 import { getRequireSessionId } from '@features/(auth)/_utils/requireSessionId';
+import { customProductsProductTypes } from '@features/(processes)/_constants/app';
 
 /**
  * Handles the GET request to create a job from a process.
@@ -38,7 +39,7 @@ export async function GET(req: NextRequest) {
 		if (!model) throw new BaseHttpError('Missing model value', 400, ErrorBehavior.SSR);
 
 		// Additional validation for crop type parameters
-		if (processId === 'worldcereal_crop_type') {
+		if (processId === customProductsProductTypes.cropType) {
 			if (!orbitState) throw new BaseHttpError('Missing orbitState for crop type', 400, ErrorBehavior.SSR);
 			if (!postprocessMethod)
 				throw new BaseHttpError('Missing postprocessMethod for crop type', 400, ErrorBehavior.SSR);

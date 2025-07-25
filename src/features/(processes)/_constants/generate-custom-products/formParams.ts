@@ -1,4 +1,4 @@
-import { customProductsDateLimits } from '@features/(processes)/_constants/app';
+import { customProductsDateLimits, customProductsProductTypes } from '@features/(processes)/_constants/app';
 
 const formParams: {
 	product: {
@@ -55,19 +55,19 @@ const formParams: {
 		required: true,
 		options: [
 			{
-				value: 'worldcereal_crop_extent',
+				value: customProductsProductTypes.cropExtent,
 				label: 'Cropland',
 				namespace:
 					'https://raw.githubusercontent.com/WorldCereal/worldcereal-classification/refs/tags/worldcereal_crop_extent_v1.0.2/src/worldcereal/udp/worldcereal_crop_extent.json',
 			},
 			{
-				value: 'worldcereal_crop_type',
+				value: customProductsProductTypes.cropType,
 				label: 'Crop type',
 				namespace:
 					'https://raw.githubusercontent.com/WorldCereal/worldcereal-classification/dc0173996e7a98308c77a81f161e3b75a8d32e23/src/worldcereal/udp/worldcereal_crop_type.json',
 			},
 			{
-				value: 'worldcereal_active_cropland',
+				value: customProductsProductTypes.activeCropland,
 				label: 'Active cropland',
 				disabled: true,
 			},
