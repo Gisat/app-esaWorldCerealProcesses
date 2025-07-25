@@ -17,7 +17,7 @@ import CropTypeOptions from './CropTypeOptions/CropTypeOptions';
 import { getOrbitState_customProducts } from '@features/state/selectors/createCustomProducts/getOrbitState';
 import { getPostProcessMethod_customProducts } from '@features/state/selectors/createCustomProducts/getPostProcessMethod';
 import { getPostProcessKernelSize_customProducts } from '@features/state/selectors/createCustomProducts/getPostProcessKernelSize';
-import { customProductsProductTypes } from '@features/(processes)/_constants/app';
+import { customProductsPostprocessMethods, customProductsProductTypes } from '@features/(processes)/_constants/app';
 
 /**
  * React component for the first step of creating custom products.
@@ -60,7 +60,10 @@ export default function CreateProductsStep1Client() {
 	const isKernelValid = !isCropType || (typeof kernelSize === 'number' && kernelSize >= 1 && kernelSize <= 25);
 
 	const areCropTypeParamsValid =
-		!isCropType || (orbitState && postprocessMethod && (postprocessMethod !== 'majority_vote' || isKernelValid));
+		!isCropType ||
+		(orbitState &&
+			postprocessMethod &&
+			(postprocessMethod !== customProductsPostprocessMethods.majorityVote || isKernelValid));
 
 	/**
 	 * Determines whether the next step is disabled based on the current state.

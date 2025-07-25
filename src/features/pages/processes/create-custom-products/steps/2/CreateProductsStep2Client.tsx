@@ -22,6 +22,7 @@ import { MapBBox } from '@features/(shared)/_components/map/MapBBox';
 import {
 	bboxSizeLimits,
 	customProductsDateLimits,
+	customProductsPostprocessMethods,
 	customProductsProductTypes,
 	defaultProductsDates,
 } from '@features/(processes)/_constants/app';
@@ -216,7 +217,7 @@ export default function CreateProductsStep2Client() {
 	if (product === customProductsProductTypes.cropType) {
 		if (orbitState) params.orbitState = orbitState.toString();
 		if (postprocessMethod) params.postprocessMethod = postprocessMethod.toString();
-		if (postprocessMethod === 'majority_vote' && postprocessKernelSize !== undefined) {
+		if (postprocessMethod === customProductsPostprocessMethods.majorityVote && postprocessKernelSize !== undefined) {
 			params.postprocessKernelSize = postprocessKernelSize.toString();
 		}
 	}

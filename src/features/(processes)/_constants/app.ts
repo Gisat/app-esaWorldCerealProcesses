@@ -123,3 +123,15 @@ export const enum customProductsProductTypes {
 	cropType = 'worldcereal_crop_type',
 	activeCropland = 'worldcereal_active_cropland',
 }
+
+/**
+ * Enum representing the available postprocess methods for crop type product generation.
+ *
+ * @enum {string}
+ * @property {string} smoothProbabilities - Smooth probabilities postprocess method.
+ * @property {string} majorityVote - Majority vote postprocess method.
+ */
+export const enum customProductsPostprocessMethods {
+	smoothProbabilities = 'smooth_probabilities',
+	majorityVote = 'majority_vote',
+}

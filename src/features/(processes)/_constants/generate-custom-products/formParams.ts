@@ -1,4 +1,8 @@
-import { customProductsDateLimits, customProductsProductTypes } from '@features/(processes)/_constants/app';
+import {
+	customProductsDateLimits,
+	customProductsPostprocessMethods,
+	customProductsProductTypes,
+} from '@features/(processes)/_constants/app';
 
 const formParams: {
 	product: {
@@ -124,12 +128,12 @@ const formParams: {
 		required: false,
 		options: [
 			{
-				value: 'smooth_probabilities',
+				value: customProductsPostprocessMethods.smoothProbabilities,
 				label: 'Smooth probabilities',
 				default: true,
 			},
 			{
-				value: 'majority_vote',
+				value: customProductsPostprocessMethods.majorityVote,
 				label: 'Majority vote',
 			},
 		],

@@ -7,7 +7,7 @@ import { BaseHttpError } from '@features/(shared)/errors/models.error';
 import getBoundaryDates from '@features/(processes)/_utils/boundaryDates';
 import { transformDate } from '@features/(processes)/_utils/transformDate';
 import { getRequireSessionId } from '@features/(auth)/_utils/requireSessionId';
-import { customProductsProductTypes } from '@features/(processes)/_constants/app';
+import { customProductsPostprocessMethods, customProductsProductTypes } from '@features/(processes)/_constants/app';
 
 /**
  * Handles the GET request to create a job from a process.
@@ -43,7 +43,7 @@ export async function GET(req: NextRequest) {
 			if (!orbitState) throw new BaseHttpError('Missing orbitState for crop type', 400, ErrorBehavior.SSR);
 			if (!postprocessMethod)
 				throw new BaseHttpError('Missing postprocessMethod for crop type', 400, ErrorBehavior.SSR);
-			if (postprocessMethod === 'majority_vote' && !postprocessKernelSize) {
+			if (postprocessMethod === customProductsPostprocessMethods.majorityVote && !postprocessKernelSize) {
 				throw new BaseHttpError(
 					'Invalid or missing postprocessKernelSize for crop type with majority_vote',
 					400,
@@ -66,7 +66,7 @@ export async function GET(req: NextRequest) {
 			model,
 			...(orbitState && { orbitState }),
 			...(postprocessMethod && { postprocessMethod }),
-			...(postprocessMethod === 'majority_vote' && postprocessKernelSize
+			...(postprocessMethod === customProductsPostprocessMethods.majorityVote && postprocessKernelSize
 				? { postprocessKernelSize: Number(postprocessKernelSize) }
 				: {}),
 		};

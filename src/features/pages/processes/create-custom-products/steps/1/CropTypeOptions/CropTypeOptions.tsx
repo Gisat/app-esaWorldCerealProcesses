@@ -10,6 +10,7 @@ import { WorldCerealStateActionType } from '@features/state/state.actionTypes';
 import { getOrbitState_customProducts } from '@features/state/selectors/createCustomProducts/getOrbitState';
 import { getPostProcessMethod_customProducts } from '@features/state/selectors/createCustomProducts/getPostProcessMethod';
 import { getPostProcessKernelSize_customProducts } from '@features/state/selectors/createCustomProducts/getPostProcessKernelSize';
+import { customProductsPostprocessMethods } from '@features/(processes)/_constants/app';
 
 /**
  * CropTypeOptions component for selecting orbit state and postprocess options.
@@ -157,7 +158,7 @@ export default function CropTypeOptions() {
 				</Text>
 			</Radio.Group>
 			{/* Kernel Size Input (only for majority_vote) */}
-			{postprocessMethod === 'majority_vote' && (
+			{postprocessMethod === customProductsPostprocessMethods.majorityVote && (
 				<Stack gap="xs">
 					<NumberInput
 						className="worldCereal-Input"
