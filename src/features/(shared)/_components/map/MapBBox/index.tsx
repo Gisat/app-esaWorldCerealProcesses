@@ -65,7 +65,6 @@ export const MapBBox = function ({
 	setBackgroundLayer?: React.Dispatch<React.SetStateAction<string | null>>;
 }) {
 	const [initialView, setInitialView] = useState<object | null>(null); // State for the initial view of the map
-	const [bboxDisabled, setBboxDisabled] = useState(false);
 
 	let bboxPoints: BboxPoints | undefined;
 
@@ -159,11 +158,6 @@ export const MapBBox = function ({
 			setBboxValidity(area);
 		} else if (!initialView && !bbox) {
 			setInitialView(defaultMapView);
-		} else if (initialView) {
-			// bboxDisabled is set after the map's initial view is ready.
-			// This prevents BoundingBox from being disabled during the initial render,
-			// which causes the map to be deformed.
-			setBboxDisabled(disabled);
 		}
 		// Only run when bbox, bboxPoints, initialView, or mapSize change
 	}, [bbox, bboxPoints, initialView, mapSize]);
@@ -183,7 +177,7 @@ export const MapBBox = function ({
 					minBboxArea={minBboxArea}
 					maxBboxArea={maxBboxArea}
 					bboxPoints={bboxPoints}
-					disabled={bboxDisabled}
+					disabled={disabled}
 					CustomButtonsComponent={<ControlButtons />}
 				>
 					<RenderingMap

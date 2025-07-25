@@ -287,8 +287,7 @@ const BoundingBox: React.FC<BoundingBoxProps> = ({
 			onViewStateChange: viewStateChangeHandler,
 			disableControls:
 				(editModeIsActive && activeBboxPoints.length !== 4) ||
-				(editModeIsActive && bboxIsHovered && bboxDragInfo?.dragType) ||
-				disabled,
+				(editModeIsActive && bboxIsHovered && bboxDragInfo?.dragType),
 		});
 	});
 
