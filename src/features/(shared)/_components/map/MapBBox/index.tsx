@@ -159,7 +159,6 @@ export const MapBBox = function ({
 		} else if (!initialView && !bbox) {
 			setInitialView(defaultMapView);
 		}
-		// Only run when bbox, bboxPoints, initialView, or mapSize change
 	}, [bbox, bboxPoints, initialView, mapSize]);
 
 	return (

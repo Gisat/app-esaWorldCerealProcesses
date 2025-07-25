@@ -1,5 +1,4 @@
 import { customProductsDateLimits } from '@features/(processes)/_constants/app';
-import { min } from 'lodash';
 
 const formParams: {
 	product: {

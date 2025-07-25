@@ -59,7 +59,6 @@ export default function CropTypeOptions() {
 		} else if (String(kernelSize) !== localKernelSize) {
 			setLocalKernelSize(String(kernelSize));
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [orbitState, postprocessMethod, kernelSize]);
 
 	/**
