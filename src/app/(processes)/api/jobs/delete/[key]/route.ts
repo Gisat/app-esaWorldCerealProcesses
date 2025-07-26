@@ -45,7 +45,7 @@ export async function GET(
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(data),
-      requireSessionId: true,
+      requireSessionId: getRequireSessionId(),
     });
 
     const nextResponse = NextResponse.json(backendContent);
