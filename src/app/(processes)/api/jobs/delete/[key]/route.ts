@@ -1,4 +1,5 @@
 import { fetchWithSessions } from '@features/(auth)/_ssr/handlers.sessionFetch';
+import { getRequireSessionId } from '@features/(auth)/_utils/requireSessionId';
 import { ErrorBehavior } from '@features/(shared)/errors/enums.errorBehavior';
 import { handleRouteError } from '@features/(shared)/errors/handlers.errorInRoute';
 import { BaseHttpError } from '@features/(shared)/errors/models.error';
