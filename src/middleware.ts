@@ -1,4 +1,5 @@
 import { fetchWithSessions } from "@features/(auth)/_ssr/handlers.sessionFetch";
+import { getRequireSessionId } from "@features/(auth)/_utils/requireSessionId";
 import { handleRouteError } from "@features/(shared)/errors/handlers.errorInRoute";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
@@ -54,7 +55,7 @@ export async function middleware(request: NextRequest) {
       method: "HEAD",
       url: refreshUrl,
       browserCookies: request.cookies,
-      requireSessionId: true,
+      requireSessionId: getRequireSessionId()
     });
 
     if (!setCookieHeader)

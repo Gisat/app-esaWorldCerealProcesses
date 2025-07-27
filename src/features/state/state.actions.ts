@@ -16,6 +16,9 @@ import { SetOutputFileFormatAction_customProducts } from '@features/state/action
 import { SetProductAction_customProducts } from '@features/state/actions/createCustomProducts/action.setProduct';
 import { SetModelAction_customProducts } from '@features/state/actions/createCustomProducts/action.setModel';
 import { SetEndDateAction_customProducts } from '@features/state/actions/createCustomProducts/action.setEndDate';
+import { SetOrbitState_customProducts } from '@features/state/actions/createCustomProducts/action.setOrbitState';
+import { SetPostprocessMethod_customProducts } from './actions/createCustomProducts/action.setPostprocessMethod';
+import { SetPostprocessKernelSize_customProducts } from './actions/createCustomProducts/action.setPostprocessKernelSize';
 
 /**
  * List of all actions that can be dispatched to the world cereal app state.
@@ -43,4 +46,7 @@ export type OneOfWorldCerealActions = AppSpecificAction &
 		| SetModelAction_customProducts
 		| SetEndDateAction_customProducts
 		| ResetSettingsAction_customProducts
+		| SetOrbitState_customProducts
+		| SetPostprocessMethod_customProducts
+		| SetPostprocessKernelSize_customProducts
 	);
