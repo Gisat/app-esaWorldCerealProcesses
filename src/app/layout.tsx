@@ -24,6 +24,8 @@ export default function RootLayout({
 }: Readonly<{
 	children: React.ReactNode;
 }>) {
+	const { INSTANCE_WARNING_HIDDEN, INSTANCE_WARNING_COLOR, INSTANCE_WARNING_TEXT } = process.env;
+
 	return (
 		<html lang="en">
 			<head>
@@ -35,7 +37,7 @@ export default function RootLayout({
 				<title>WorldCereal Processes</title>
 			</head>
 			<body className={`esaWorldCerealProcesses`}>
-				<InstanceWarning />
+				<InstanceWarning hidden={INSTANCE_WARNING_HIDDEN === "true"} color={INSTANCE_WARNING_COLOR} text={INSTANCE_WARNING_TEXT} />
 				{/* TODO uncomment when Faro is ready for react 19 */}
 				{/*<FaroFrontendMonitoring envUrl="/api/faro" />*/}
 				<MantineProvider>
