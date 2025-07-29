@@ -110,8 +110,8 @@ export default function CropTypeOptions() {
 	 * Error message for invalid kernel size input.
 	 */
 	const kernelSizeError =
-		localKernelSize === '' || isNaN(kernelSizeNum) || kernelSizeNum < 1 || kernelSizeNum > 25
-			? 'Kernel size must be a number between 1 and 25'
+		localKernelSize === '' || isNaN(kernelSizeNum) || kernelSizeNum < 1 || kernelSizeNum > 25 || kernelSizeNum % 2 === 0
+			? 'Kernel size must be an odd number between 1 and 25'
 			: undefined;
 
 	return (
@@ -173,7 +173,7 @@ export default function CropTypeOptions() {
 					/>
 					<Text size="sm" c="dimmed">
 						Additional parameter used for the majority vote postprocessing method. The higher the value, the more
-						aggressive the spatial cleaning. Should be a positive number not larger than 25.
+						aggressive the spatial cleaning. Must be an odd positive number not larger than 25.
 					</Text>
 				</Stack>
 			)}
