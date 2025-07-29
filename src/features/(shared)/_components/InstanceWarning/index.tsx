@@ -7,12 +7,12 @@ import InstanceWarningPresentation
  * @returns {JSX.Element}
  * @constructor
  */
-const InstanceWarning: React.FC = () => {
+const InstanceWarning: React.FC<{ hidden: boolean; color?: string; text?: string }> = (props) => {
 	return (
 		<InstanceWarningPresentation
-			hidden={process?.env?.INSTANCE_WARNING_HIDDEN === "true"}
-			color={process.env.INSTANCE_WARNING_COLOR ? `#${process.env.INSTANCE_WARNING_COLOR}` : undefined}
-			text={process?.env?.INSTANCE_WARNING_TEXT}
+			hidden={props.hidden}
+			color={props.color}
+			text={props.text}
 		/>
 	)
 };
