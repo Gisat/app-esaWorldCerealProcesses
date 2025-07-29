@@ -57,7 +57,8 @@ export default function CreateProductsStep1Client() {
 
 	// Enhanced nextStepDisabled logic
 	const isCropType = product === customProductsProductTypes.cropType;
-	const isKernelValid = !isCropType || (typeof kernelSize === 'number' && kernelSize >= 1 && kernelSize <= 25);
+	const isKernelValid =
+		!isCropType || (typeof kernelSize === 'number' && kernelSize >= 1 && kernelSize <= 25 && kernelSize % 2 === 1);
 
 	const areCropTypeParamsValid =
 		!isCropType ||
