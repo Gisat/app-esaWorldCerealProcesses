@@ -1,20 +1,15 @@
 /**
- * Calculates the boundary dates based on a given date and interval.
- * 
- * @param date - The reference date from which the boundary dates are calculated.
- * @param interval - The number of months to subtract from the reference date to calculate the start date. Defaults to 12.
- * @returns An object containing the start and end dates:
- * - `start`: The first day of the month, `interval` months before the given date.
- * - `end`: The last day of the month of the given date.
+ * Calculates boundary dates.
+ *
+ * interval: number of whole months to look back (start month is exactly `interval` months before reference month).
+ * Example: date=2024-10-31, interval=12  => start=2023-10-01, end=2024-10-31
  */
 export default function getBoundaryDates(date: Date, interval: number = 12): { startDate: Date; endDate: Date } {
-    const startDate = new Date(date);
-    startDate.setMonth(startDate.getMonth() - (interval - 1));
-    startDate.setDate(1);
-
-    const endDate = new Date(date);
-    endDate.setMonth(endDate.getMonth() + 1);
-    endDate.setDate(0);
-
+    const refYear = date.getUTCFullYear();
+    const refMonth = date.getUTCMonth(); // 0-based
+    // Start: first day of the month `interval` months before reference month
+    const startDate = new Date(Date.UTC(refYear, refMonth - interval, 1));
+    // End: last day of reference month (day 0 of next month in UTC)
+    const endDate = new Date(Date.UTC(refYear, refMonth + 1, 0));
     return { startDate, endDate };
 }
