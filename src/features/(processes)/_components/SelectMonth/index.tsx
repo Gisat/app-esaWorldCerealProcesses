@@ -44,7 +44,7 @@ const SelectMonth: FC<SelectMonthProps> = ({
 	value,
 	onChange,
 }) => {
-	const [selectedDate, setSelectedDate] = useState<any>(null); // Don't know how to fix type for MonthPickerInput value
+	const [selectedDate, setSelectedDate] = useState<Date>();
 	const [startDateString, setStartDateString] = useState<string>('');
 	const [endDateString, setEndDateString] = useState<string>('');
 
@@ -66,7 +66,7 @@ const SelectMonth: FC<SelectMonthProps> = ({
 				value={selectedDate || (value && new Date(value)) || null}
 				minDate={minDate}
 				maxDate={maxDate}
-				onChange={(value) => setSelectedDate(value)}
+				onChange={(value) => value && setSelectedDate(new Date(value))}
 				clearable={false}
 				disabled={disabled}
 				valueFormat="MMMM YYYY"
