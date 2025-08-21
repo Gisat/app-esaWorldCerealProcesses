@@ -109,16 +109,13 @@ const Details = ({
 	};
 
 	const getModelLink = () => {
-		if (model && model !== 'Default') {
-			return (
-				<a href={model} target="_blank" rel="noopener noreferrer">
-					Custom
-				</a>
-			);
-		} else if (model === 'Default') {
-			return 'Default';
-		}
-		return null;
+		if (!model) return null;
+		if (model.toLowerCase() === 'default') return 'Default';
+		return (
+			<a href={model} target="_blank" rel="noopener noreferrer">
+				Custom
+			</a>
+		);
 	};
 
 	return (
