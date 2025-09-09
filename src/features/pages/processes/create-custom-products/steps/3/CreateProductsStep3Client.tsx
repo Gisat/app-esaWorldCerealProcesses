@@ -31,7 +31,7 @@ export default function CreateProductsStep3Client() {
 	 */
 	const [state, dispatch] = useSharedState<WorldCerealState, OneOfWorldCerealActions>();
 	const [backgroundLayer] = useState<string | undefined>(getBackgroundLayer_customProducts(state));
-	const [jobKey] = useState<string | undefined>(getCurrentJobKey_customProducts(state));
+	const jobKey = getCurrentJobKey_customProducts(state);
 
 	/**
 	 * Router instance for navigation.
