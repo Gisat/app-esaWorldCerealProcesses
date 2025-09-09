@@ -31,7 +31,7 @@ export default function DownloadStep3Client() {
 	 */
 	const [state, dispatch] = useSharedState<WorldCerealState, OneOfWorldCerealActions>();
 	const [backgroundLayer] = useState<string | undefined>(getBackgroundLayer(state));
-	const [jobKey] = useState<string | undefined>(getCurrentJobKey(state));
+	const jobKey = getCurrentJobKey(state);
 
 	/**
 	 * Router instance for navigation.
