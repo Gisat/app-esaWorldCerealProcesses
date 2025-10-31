@@ -62,13 +62,13 @@ const formParams: {
 				value: customProductsProductTypes.cropExtent,
 				label: 'Cropland',
 				namespace:
-					'https://raw.githubusercontent.com/WorldCereal/worldcereal-classification/refs/tags/worldcereal_crop_extent_v1.0.2/src/worldcereal/udp/worldcereal_crop_extent.json',
+					'https://raw.githubusercontent.com/WorldCereal/worldcereal-classification/refs/tags/worldcereal_crop_type_v1.1.2/src/worldcereal/udp/worldcereal_crop_extent.json',
 			},
 			{
 				value: customProductsProductTypes.cropType,
 				label: 'Crop type',
 				namespace:
-					'https://raw.githubusercontent.com/WorldCereal/worldcereal-classification/dc0173996e7a98308c77a81f161e3b75a8d32e23/src/worldcereal/udp/worldcereal_crop_type.json',
+					'https://raw.githubusercontent.com/WorldCereal/worldcereal-classification/refs/tags/worldcereal_crop_type_v1.1.2/src/worldcereal/udp/worldcereal_crop_type.json',
 			},
 			{
 				value: customProductsProductTypes.activeCropland,
