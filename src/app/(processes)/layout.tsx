@@ -1,38 +1,27 @@
-"use client";
-import { navbarItems } from "@features/(processes)/_constants/app";
-import { ContentWrapper as Content } from "@features/(shared)/_layout/_components/Content/ContentWrapper";
-import Navbar from "@features/(shared)/_layout/_components/Navbar";
-import NavbarItem from "@features/(shared)/_layout/_components/Navbar/NavbarItem";
-import { usePathname, useSelectedLayoutSegment } from "next/navigation";
-import { Suspense } from "react";
+import { ContentWrapper as Content } from '@features/(shared)/_layout/_components/Content/ContentWrapper';
+import { Navigation } from '@features/(processes)/_components/Navigation';
 
-export default function ProcessesLayout({
-  children,
+/**
+ * Layout component for the "Processes" section of the application.
+ *
+ * This component wraps the provided children with a navigation bar and content wrapper.
+ *
+ * @component
+ * @param {Object} props - The component props.
+ * @param {React.ReactNode} props.children - The child components to be rendered inside the layout.
+ * @returns {JSX.Element} The rendered layout component.
+ */
+export default async function ProcessesLayout({
+	children,
 }: Readonly<{
-  children: React.ReactNode;
+	children: React.ReactNode;
 }>) {
-  const currentPath = usePathname();
-  const segment = useSelectedLayoutSegment() || navbarItems[0].key;
-  const basePath = currentPath.split(`/${segment}`)[0];
-
-  return (
-    <Suspense>
-      <Navbar activeValue={segment}>
-        {navbarItems.map((item) => {
-          return (
-            <NavbarItem
-              key={item.key}
-              active={segment === item.key}
-              disabled={false}
-              value={item.key}
-              title={item.title}
-              icon={item.icon}
-              href={`${basePath}/${item.key}`}
-            />
-          );
-        })}
-      </Navbar>
-      <Content>{children}</Content>
-    </Suspense>
-  );
+	return (
+		<>
+			{/* Renders the navigation bar for the "Processes" section */}
+			<Navigation />
+			{/* Wraps the children components inside the content wrapper */}
+			<Content>{children}</Content>
+		</>
+	);
 }

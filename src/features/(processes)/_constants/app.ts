@@ -1,9 +1,4 @@
-import {
-  IconFileDownload,
-  IconHome,
-  IconListCheck,
-  IconPhotoPlus,
-} from "@tabler/icons-react";
+import { IconFileDownload, IconHome, IconListCheck, IconPhotoPlus } from '@tabler/icons-react';
 
 /**
  * URL path mappings for application process pages.
@@ -16,10 +11,10 @@ import {
  * @property {string} generateCustomProducts.url - URL path segment for the custom products generation page.
  */
 export const pages = {
-  home: { url: "home" },
-  processesList: { url: "processes-list" },
-  downloadOfficialProducts: { url: "download-official-products" },
-  generateCustomProducts: { url: "generate-custom-products" },
+	home: { url: 'home' },
+	processesList: { url: 'processes-list' },
+	downloadOfficialProducts: { url: 'download-official-products' },
+	generateCustomProducts: { url: 'generate-custom-products' },
 };
 
 /**
@@ -33,26 +28,26 @@ export const pages = {
  * @type {Array<{key: string, title: string, icon: React.ComponentType}>}
  */
 export const navbarItems = [
-  {
-    key: pages.home.url,
-    title: "Home",
-    icon: IconHome,
-  },
-  {
-    key: pages.downloadOfficialProducts.url,
-    title: "Download official products",
-    icon: IconFileDownload,
-  },
-  {
-    key: pages.generateCustomProducts.url,
-    title: "Generate custom products",
-    icon: IconPhotoPlus,
-  },
-  {
-    key: pages.processesList.url,
-    title: "Your processes",
-    icon: IconListCheck,
-  },
+	{
+		key: pages.home.url,
+		title: 'Home',
+		icon: IconHome,
+	},
+	{
+		key: pages.downloadOfficialProducts.url,
+		title: 'Download official products',
+		icon: IconFileDownload,
+	},
+	{
+		key: pages.generateCustomProducts.url,
+		title: 'Generate custom products',
+		icon: IconPhotoPlus,
+	},
+	{
+		key: pages.processesList.url,
+		title: 'Your processes',
+		icon: IconListCheck,
+	},
 ];
 
 /**
@@ -64,9 +59,9 @@ export const navbarItems = [
  * @property {string} unknown - Represents an unknown type of process.
  */
 export const enum processTypes {
-  download = "Download",
-  product = "Product",
-  unknown = "Unknown type",
+	download = 'Download',
+	product = 'Product',
+	unknown = 'Unknown type',
 }
 
 /**
@@ -75,23 +70,21 @@ export const enum processTypes {
  * @enum {string}
  * @readonly
  * @property {string} min - The minimum allowed date for custom products (December 31, 2018)
- * @property {string} max - The maximum allowed date for custom products (December 31, 2024)
+ * @property {string} max - The maximum allowed date for custom products (September 30, 2025)
  */
 export const enum customProductsDateLimits {
-  min = "2018-12-31",
-  max = "2024-12-31",
+	min = '2018-12-31',
+	max = '2025-09-30',
 }
 
 /**
  * Enum representing the default product dates.
  *
  * @enum {string}
- * @property {string} startDate - The default start date for products (2024-01-01).
- * @property {string} endDate - The default end date for products (2024-12-31).
+ * @property {string} endDate - The default end date for products.
  */
 export const enum defaultProductsDates {
-  startDate = "2024-01-01",
-  endDate = "2024-12-31",
+	endDate = customProductsDateLimits.max
 }
 
 /**
@@ -105,12 +98,38 @@ export const enum defaultProductsDates {
  * @property {number} customProducts.max - Maximum size for custom products (in square kilometers).
  */
 export const bboxSizeLimits = {
-  downloadProducts: {
-    min: 0.0009,
-    max: 100000,
-  },
-  customProducts: {
-    min: 0.0001,
-    max: 2500,
-  },
+	downloadProducts: {
+		min: 0.0009,
+		max: 100000,
+	},
+	customProducts: {
+		min: 0.0001,
+		max: 2500,
+	},
 };
+
+/**
+ * Enum representing the available custom product types for process generation.
+ *
+ * @enum {string}
+ * @property {string} cropExtent - WorldCereal crop extent product type.
+ * @property {string} cropType - WorldCereal crop type product type.
+ * @property {string} activeCropland - WorldCereal active cropland product type.
+ */
+export const enum customProductsProductTypes {
+	cropExtent = 'worldcereal_crop_extent',
+	cropType = 'worldcereal_crop_type',
+	activeCropland = 'worldcereal_active_cropland',
+}
+
+/**
+ * Enum representing the available postprocess methods for crop type product generation.
+ *
+ * @enum {string}
+ * @property {string} smoothProbabilities - Smooth probabilities postprocess method.
+ * @property {string} majorityVote - Majority vote postprocess method.
+ */
+export const enum customProductsPostprocessMethods {
+	smoothProbabilities = 'smooth_probabilities',
+	majorityVote = 'majority_vote',
+}

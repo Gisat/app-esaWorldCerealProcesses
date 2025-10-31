@@ -1,4 +1,5 @@
 import { fetchWithSessions } from "@features/(auth)/_ssr/handlers.sessionFetch";
+import { getRequireSessionId } from "@features/(auth)/_utils/requireSessionId";
 import { handleRouteError } from "@features/(shared)/errors/handlers.errorInRoute";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -15,10 +16,11 @@ export const fetchCache = "force-no-store";
  */
 export async function GET(
   req: NextRequest,
-  { params: { key: key } }: { params: { key: string } }
+  context: { params: Promise<{ key: string }> }
 ) {
   try {
-    // validate inputs for safe aggregation
+    const { key } = await context.params; // Await params
+
     if (!key) {
       return NextResponse.json("Missing key value", {
         status: 400,
@@ -41,7 +43,7 @@ export async function GET(
         headers: {
           "Content-Type": "application/json"
         },
-        requireSessionId: true
+        requireSessionId: getRequireSessionId()
       })
 
     const nextResponse = NextResponse.json(backendContent);
