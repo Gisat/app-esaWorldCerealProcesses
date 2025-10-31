@@ -70,23 +70,21 @@ export const enum processTypes {
  * @enum {string}
  * @readonly
  * @property {string} min - The minimum allowed date for custom products (December 31, 2018)
- * @property {string} max - The maximum allowed date for custom products (December 31, 2024)
+ * @property {string} max - The maximum allowed date for custom products (September 30, 2025)
  */
 export const enum customProductsDateLimits {
 	min = '2018-12-31',
-	max = '2024-12-31',
+	max = '2025-09-30',
 }
 
 /**
  * Enum representing the default product dates.
  *
  * @enum {string}
- * @property {string} startDate - The default start date for products (2024-01-01).
- * @property {string} endDate - The default end date for products (2024-12-31).
+ * @property {string} endDate - The default end date for products.
  */
 export const enum defaultProductsDates {
-	startDate = '2024-01-01',
-	endDate = '2024-12-31',
+	endDate = customProductsDateLimits.max
 }
 
 /**
