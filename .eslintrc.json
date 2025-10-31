@@ -1,7 +1,9 @@
 {
   "root": true,
   "parser": "@typescript-eslint/parser",
-  "plugins": ["@typescript-eslint"],
+  "plugins": [
+    "@typescript-eslint"
+  ],
   "extends": [
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
@@ -9,10 +11,15 @@
     "next/core-web-vitals"
   ],
   "settings": {
-    "react": { "version": "detect" },
+    "react": {
+      "version": "detect"
+    },
     "import/resolver": {
       "typescript": {}
     }
+  },
+  "env": {
+    "jest": true
   },
   "rules": {
     "@typescript-eslint/no-explicit-any": "off",
@@ -27,24 +34,35 @@
           {
             "target": "./src/features/(processes)",
             "from": "./src/features",
-            "except": ["./(processes)", "./(shared)"]
+            "except": [
+              "./(processes)",
+              "./(shared)"
+            ]
           },
           {
             "target": "./src/features/(auth)",
             "from": "./src/features",
-            "except": ["./(auth)", "./(shared)"]
+            "except": [
+              "./(auth)",
+              "./(shared)"
+            ]
           },
           {
             "target": "./src/features/(map)",
             "from": "./src/features",
-            "except": ["./(map)", "./(shared)"]
+            "except": [
+              "./(map)",
+              "./(shared)"
+            ]
           },
           {
             "target": "./src/features/(grafana)",
             "from": "./src/features",
-            "except": ["./(grafana)", "./(shared)"]
+            "except": [
+              "./(grafana)",
+              "./(shared)"
+            ]
           },
-
           // enforce unidirectional codebase:
           // e.g. src/app can import from src/features but not the other way around
 
@@ -60,5 +78,15 @@
     "import/no-absolute-path": "warn",
     "import/named": "off",
     "import/no-named-as-default": "off"
-  }
+  },
+  "overrides": [
+    {
+      "files": [
+        "src/app/**"
+      ],
+      "rules": {
+        "@next/next/no-page-custom-font": "off"
+      }
+    }
+  ]
 }

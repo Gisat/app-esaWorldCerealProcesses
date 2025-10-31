@@ -1,4 +1,6 @@
 import { fetchWithSessions } from "@features/(auth)/_ssr/handlers.sessionFetch";
+import { getRequireSessionId } from "@features/(auth)/_utils/requireSessionId";
+import { handleRouteError } from "@features/(shared)/errors/handlers.errorInRoute";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
@@ -32,8 +34,8 @@ export async function middleware(request: NextRequest) {
 
     // if no session ID is found, check if the current path is allowed
     if (!sid) {
-      
-      if (!allowedPaths.includes(request.nextUrl.pathname)){
+
+      if (!allowedPaths.includes(request.nextUrl.pathname)) {
         return NextResponse.rewrite(new URL("/", request.nextUrl));
       }
 
@@ -53,14 +55,18 @@ export async function middleware(request: NextRequest) {
       method: "HEAD",
       url: refreshUrl,
       browserCookies: request.cookies,
-      requireSessionId: true,
+      requireSessionId: getRequireSessionId()
     });
 
     if (!setCookieHeader)
       throw new Error("Fetch response with new session cookie missing");
 
-    // prepare NextJS response with recived cookies including new SID
-    const response = NextResponse.next();
+
+    // Only added lines: redirect authenticated user from "/" to "/home"
+    const response =
+        request.nextUrl.pathname === "/"
+            ? NextResponse.redirect(new URL("/home", request.nextUrl))
+            : NextResponse.next();
 
     // Remove the old SID cookie and set the new one
     response.cookies.delete("sid");
@@ -70,7 +76,10 @@ export async function middleware(request: NextRequest) {
     return response;
   } catch (error: any) {
 
-    console.warn("Error in middleware", error);
+    const { message, status } = handleRouteError(error)
+
+    // Log the error message
+    console.warn("Error in middleware", message, status);
 
     // Redirect to the logout endpoint if the session is invalid or refresh failed
     const logoutUrl = new URL("/api/auth/logout", request.nextUrl);

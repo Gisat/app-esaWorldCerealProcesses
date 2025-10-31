@@ -3,10 +3,10 @@ a:has(.worldCereal-NavbarItem) {
 }
 
 .worldCereal-NavbarItem {
-  font-size: var(--a1);
+  font-size: var(--font-size-md);
   text-decoration: none;
   color: var(--textPrimaryColor);
-  font-family: var(--titleFontFamily), sans-serif;
+  font-family: var(--headingsFontFamily), sans-serif;
 
   &:hover {
     background: var(--hoverBackgroundColor);

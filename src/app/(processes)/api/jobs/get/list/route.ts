@@ -6,6 +6,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 import downloadFormParmas from "@features/(processes)/_constants/download-official-products/formParams";
 import customProductFormParams from "@features/(processes)/_constants/generate-custom-products/formParams";
+import { getRequireSessionId } from "@features/(auth)/_utils/requireSessionId";
 
 
 /**
@@ -65,7 +66,7 @@ export async function GET(req: NextRequest) {
         headers: {
           "Content-Type": "application/json"
         },
-        requireSessionId: true
+        requireSessionId: getRequireSessionId()
       })
 
     const samples = getSamples();
