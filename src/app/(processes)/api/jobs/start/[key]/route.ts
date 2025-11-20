@@ -17,8 +17,9 @@ export const fetchCache = "force-no-store";
  */
 export async function GET(
   req: NextRequest,
-  { params: { key } }: { params: { key: string } }
+  context: { params: Promise<{ key: string }> }
 ) {
+  const { key } = await context.params;
   try {
     // Validate inputs for safe aggregation
     if (!key) {
