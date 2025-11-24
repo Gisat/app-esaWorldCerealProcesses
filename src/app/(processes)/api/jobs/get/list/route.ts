@@ -71,11 +71,11 @@ export async function GET(req: NextRequest) {
 
     const samples = getSamples();
 
-    const nextResponse = NextResponse.json(
-      getProcessesWithCorrectProductType(
-        [].concat(samples, backendContent)
-      )
-    );
+    const processesWithValidProductType = getProcessesWithCorrectProductType(
+      [].concat(samples, backendContent)
+    ).filter((p: any) => p.type !== processTypes.unknown);
+
+    const nextResponse = NextResponse.json(processesWithValidProductType);
 
     if (setCookieHeader) {
       nextResponse.headers.set('set-cookie', setCookieHeader);
