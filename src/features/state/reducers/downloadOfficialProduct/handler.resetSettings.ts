@@ -13,7 +13,7 @@ export const resetSettingsHandler: AppSpecficReducerFunc<WorldCerealState> = (
 			bbox: undefined,
 			collection: undefined,
 			product: undefined,
-			currentJobKey: undefined,
+			// currentJobKey: undefined,
 			outputFileFormat: 'GTiff', // Reset to default format
 		},
 	};

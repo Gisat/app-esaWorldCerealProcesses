@@ -19,7 +19,13 @@ import { Button, Group, SegmentedControl, Stack } from '@mantine/core';
 import FormLabel from '@features/(shared)/_layout/_components/Content/FormLabel';
 import { TextDescription } from '@features/(shared)/_layout/_components/Content/TextDescription';
 import { MapBBox } from '@features/(shared)/_components/map/MapBBox';
-import { bboxSizeLimits, customProductsDateLimits, defaultProductsDates } from '@features/(processes)/_constants/app';
+import {
+	bboxSizeLimits,
+	customProductsDateLimits,
+	customProductsPostprocessMethods,
+	customProductsProductTypes,
+	defaultProductsDates,
+} from '@features/(processes)/_constants/app';
 import { TextLink } from '@features/(shared)/_layout/_components/Content/TextLink';
 import formParams from '@features/(processes)/_constants/generate-custom-products/formParams';
 import { apiFetcher } from '@features/(shared)/_url/apiFetcher';
@@ -30,6 +36,9 @@ import { getModel_customProducts } from '@features/state/selectors/createCustomP
 import { getProduct_customProducts } from '@features/state/selectors/createCustomProducts/getProduct';
 import { getEndDate_customProducts } from '@features/state/selectors/createCustomProducts/getEndDate';
 import { SelectMonth } from '@features/(processes)/_components/SelectMonth';
+import { getOrbitState_customProducts } from '@features/state/selectors/createCustomProducts/getOrbitState';
+import { getPostProcessMethod_customProducts } from '@features/state/selectors/createCustomProducts/getPostProcessMethod';
+import { getPostProcessKernelSize_customProducts } from '@features/state/selectors/createCustomProducts/getPostProcessKernelSize';
 
 /**
  * Component representing the second step in the "Create Custom Products" process.
@@ -110,6 +119,10 @@ export default function CreateProductsStep2Client() {
 	 * @type {string | undefined}
 	 */
 	const endDate = getEndDate_customProducts(state);
+
+	const orbitState = getOrbitState_customProducts(state);
+	const postprocessMethod = getPostProcessMethod_customProducts(state);
+	const postprocessKernelSize = getPostProcessKernelSize_customProducts(state);
 
 	/**
 	 * Determines whether the next step is disabled based on the current state.
@@ -193,13 +206,23 @@ export default function CreateProductsStep2Client() {
 	 * URL parameters for the API request.
 	 * @type {URLSearchParams}
 	 */
-	const urlParams = new URLSearchParams({
+	const params: Record<string, string> = {
 		bbox: bbox ? bbox.join(',') : '',
 		outputFileFormat: outputFileFormat?.toString() || '',
 		model: model?.toString() || '',
 		product: product?.toString() || '',
 		endDate: endDate?.toString() || '',
-	});
+	};
+
+	if (product === customProductsProductTypes.cropType) {
+		if (orbitState) params.orbitState = orbitState.toString();
+		if (postprocessMethod) params.postprocessMethod = postprocessMethod.toString();
+		if (postprocessMethod === customProductsPostprocessMethods.majorityVote && postprocessKernelSize !== undefined) {
+			params.postprocessKernelSize = postprocessKernelSize.toString();
+		}
+	}
+
+	const urlParams = new URLSearchParams(params);
 
 	/**
 	 * SWR hook for fetching process data.
@@ -251,13 +274,13 @@ export default function CreateProductsStep2Client() {
 					<Group gap={'0.3rem'} align="baseline">
 						<FormLabel>Draw the extent</FormLabel>
 						<TextDescription color={'var(--textSecondaryColor)'}>
-							(MIN: 900 m<sup>2</sup>, MAX: 100 000 km<sup>2</sup>)
+							(MIN: 900 m<sup>2</sup>, MAX: 2 500 km<sup>2</sup>)
 						</TextDescription>
 					</Group>
 					<MapBBox
 						mapSize={[650, 400]}
-						minBboxArea={bboxSizeLimits.downloadProducts.min}
-						maxBboxArea={bboxSizeLimits.downloadProducts.max}
+						minBboxArea={bboxSizeLimits.customProducts.min}
+						maxBboxArea={bboxSizeLimits.customProducts.max}
 						bbox={bbox?.map(Number)}
 						setBboxDescription={setBboxDescription}
 						setBboxExtent={setBBoxExtent}

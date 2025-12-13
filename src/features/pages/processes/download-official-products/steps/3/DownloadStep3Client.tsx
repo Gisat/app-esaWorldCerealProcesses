@@ -31,7 +31,7 @@ export default function DownloadStep3Client() {
 	 */
 	const [state, dispatch] = useSharedState<WorldCerealState, OneOfWorldCerealActions>();
 	const [backgroundLayer] = useState<string | undefined>(getBackgroundLayer(state));
-	const [jobKey] = useState<string | undefined>(getCurrentJobKey(state));
+	const jobKey = getCurrentJobKey(state);
 
 	/**
 	 * Router instance for navigation.
@@ -74,14 +74,14 @@ export default function DownloadStep3Client() {
 	/**
 	 * SWR hook for fetching data when the process starts.
 	 */
-	const { data: startedProcessData, isLoading } = useSWR(shouldFetch ? [startJobUrl] : null, () =>
+	const { data: startedProcessData, isLoading } = useSWR(shouldFetch && jobKey ? startJobUrl : null, () =>
 		fetcher(startJobUrl)
 	);
 
 	/**
 	 * SWR hook for fetching job details.
 	 */
-	const { data } = useSWR(getJobUrl, fetcher);
+	const { data } = useSWR(jobKey ? getJobUrl : null, fetcher);
 
 	/**
 	 * Effect to reset the fetch state when process data is retrieved.

@@ -20,4 +20,7 @@ export enum WorldCerealStateActionType {
 	CREATE_CUSTOM_PRODUCTS_SET_END_DATE = 'createCustomProductsSetEndDate',
 	CREATE_CUSTOM_PRODUCTS_SET_CURRENT_JOB_KEY = 'createCustomProductsSetCurrentJobKey',
 	CREATE_CUSTOM_PRODUCTS_RESET_SETTINGS = 'createCustomProductsResetSettings',
+	CREATE_CUSTOM_PRODUCTS_SET_ORBIT_STATE = 'createCustomProductsSetOrbitState',
+	CREATE_CUSTOM_PRODUCTS_SET_POSTPROCESS_METHOD = 'createCustomProductsSetPostprocessMethod',
+	CREATE_CUSTOM_PRODUCTS_SET_POSTPROCESS_KERNEL_SIZE = 'createCustomProductsSetPostprocessKernelSize',
 }

@@ -1,4 +1,5 @@
 import { fetchWithSessions } from "@features/(auth)/_ssr/handlers.sessionFetch";
+import { getRequireSessionId } from "@features/(auth)/_utils/requireSessionId";
 import { handleRouteError } from "@features/(shared)/errors/handlers.errorInRoute";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
@@ -54,14 +55,18 @@ export async function middleware(request: NextRequest) {
       method: "HEAD",
       url: refreshUrl,
       browserCookies: request.cookies,
-      requireSessionId: true,
+      requireSessionId: getRequireSessionId()
     });
 
     if (!setCookieHeader)
       throw new Error("Fetch response with new session cookie missing");
 
-    // prepare NextJS response with recived cookies including new SID
-    const response = NextResponse.next();
+
+    // Only added lines: redirect authenticated user from "/" to "/home"
+    const response =
+        request.nextUrl.pathname === "/"
+            ? NextResponse.redirect(new URL("/home", request.nextUrl))
+            : NextResponse.next();
 
     // Remove the old SID cookie and set the new one
     response.cookies.delete("sid");

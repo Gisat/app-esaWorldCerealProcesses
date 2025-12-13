@@ -1,4 +1,5 @@
 import { fetchWithSessions } from "@features/(auth)/_ssr/handlers.sessionFetch";
+import { getRequireSessionId } from "@features/(auth)/_utils/requireSessionId";
 import { handleRouteError } from "@features/(shared)/errors/handlers.errorInRoute";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -16,8 +17,9 @@ export const fetchCache = "force-no-store";
  */
 export async function GET(
   req: NextRequest,
-  { params: { key } }: { params: { key: string } }
+  context: { params: Promise<{ key: string }> }
 ) {
+  const { key } = await context.params;
   try {
     // Validate inputs for safe aggregation
     if (!key) {
@@ -47,7 +49,7 @@ export async function GET(
           "Content-Type": "application/json"
         },
         body: JSON.stringify(data),
-        requireSessionId: true
+        requireSessionId: getRequireSessionId()
       });
 
     const nextResponse = NextResponse.json(backendContent);

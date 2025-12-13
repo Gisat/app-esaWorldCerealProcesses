@@ -19,6 +19,9 @@ import { setOutputFileFormatHandler_customProducts } from '@features/state/reduc
 import { setProductHandler_customProducts } from '@features/state/reducers/createCustomProducts/handler.setProduct';
 import { setModelHandler_customProducts } from '@features/state/reducers/createCustomProducts/handler.setModel';
 import { setEndDateHandler_customProducts } from '@features/state/reducers/createCustomProducts/handler.setEndDate';
+import { setOrbitStateHandler_customProducts } from './reducers/createCustomProducts/handler.setOrbitState';
+import { setPostprocessMethodHandler_customProducts } from './reducers/createCustomProducts/handler.setPostprocessMethod';
+import { setPostprocessKernelSizeHandler_customProducts } from './reducers/createCustomProducts/handler.setPostprocessKernelSize';
 
 /**
  * Creates and returns a map of reducer functions specific to the WorldCereal application state management.
@@ -84,6 +87,18 @@ export const stateReducerMapForWorldCerealApplication = (): AppSpecificReducerMa
 	map.set(WorldCerealStateActionType.CREATE_CUSTOM_PRODUCTS_SET_PRODUCT as string, setProductHandler_customProducts);
 	map.set(WorldCerealStateActionType.CREATE_CUSTOM_PRODUCTS_SET_MODEL as string, setModelHandler_customProducts);
 	map.set(WorldCerealStateActionType.CREATE_CUSTOM_PRODUCTS_SET_END_DATE as string, setEndDateHandler_customProducts);
+	map.set(
+		WorldCerealStateActionType.CREATE_CUSTOM_PRODUCTS_SET_ORBIT_STATE as string,
+		setOrbitStateHandler_customProducts
+	);
+	map.set(
+		WorldCerealStateActionType.CREATE_CUSTOM_PRODUCTS_SET_POSTPROCESS_METHOD as string,
+		setPostprocessMethodHandler_customProducts
+	);
+	map.set(
+		WorldCerealStateActionType.CREATE_CUSTOM_PRODUCTS_SET_POSTPROCESS_KERNEL_SIZE as string,
+		setPostprocessKernelSizeHandler_customProducts
+	);
 
 	// Return the map to be merged with the default reducer map in the ptr-fe-core package.
 	return map;

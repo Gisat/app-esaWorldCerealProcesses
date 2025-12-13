@@ -31,7 +31,7 @@ export default function CreateProductsStep3Client() {
 	 */
 	const [state, dispatch] = useSharedState<WorldCerealState, OneOfWorldCerealActions>();
 	const [backgroundLayer] = useState<string | undefined>(getBackgroundLayer_customProducts(state));
-	const [jobKey] = useState<string | undefined>(getCurrentJobKey_customProducts(state));
+	const jobKey = getCurrentJobKey_customProducts(state);
 
 	/**
 	 * Router instance for navigation.
@@ -74,14 +74,14 @@ export default function CreateProductsStep3Client() {
 	/**
 	 * SWR hook for fetching data when the process starts.
 	 */
-	const { data: startedProcessData, isLoading } = useSWR(shouldFetch ? [startJobUrl] : null, () =>
+	const { data: startedProcessData, isLoading } = useSWR(shouldFetch && jobKey ? startJobUrl : null, () =>
 		fetcher(startJobUrl)
 	);
 
 	/**
 	 * SWR hook for fetching job details.
 	 */
-	const { data } = useSWR(getJobUrl, fetcher);
+	const { data } = useSWR(jobKey ? getJobUrl : null, fetcher);
 
 	/**
 	 * Effect to reset the fetch state when process data is retrieved.
@@ -135,7 +135,12 @@ export default function CreateProductsStep3Client() {
 					backgroundLayer={backgroundLayer}
 					startDate={data?.timeRange?.[0]}
 					endDate={data?.timeRange?.[1]}
-					// TODO add model from response
+					model={data?.model}
+					orbitState={formParams.orbitState.options.find((option) => option.value === data?.orbitState)?.label}
+					postprocessMethod={
+						formParams.postprocessMethod.options.find((option) => option.value === data?.postprocessMethod)?.label
+					}
+					postprocessKernelSize={data?.postprocessKernelSize}
 				/>
 			) : null}
 			<Group mt="xl">

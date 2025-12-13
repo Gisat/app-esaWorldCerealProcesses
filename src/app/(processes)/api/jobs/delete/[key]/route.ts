@@ -1,3 +1,6 @@
+import { fetchWithSessions } from '@features/(auth)/_ssr/handlers.sessionFetch';
+import { getRequireSessionId } from '@features/(auth)/_utils/requireSessionId';
+import { ErrorBehavior } from '@features/(shared)/errors/enums.errorBehavior';
 import { handleRouteError } from '@features/(shared)/errors/handlers.errorInRoute';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -12,41 +15,42 @@ export const fetchCache = 'force-no-store';
  * @param {string} params.key - The key of the job to delete.
  * @returns {Promise<NextResponse>} - The response object.
  */
-export async function GET(req: NextRequest, { params }: { params: { key: string } }): Promise<NextResponse> {
+export async function GET(req: NextRequest, context: { params: Promise<{ key: string }> }): Promise<NextResponse> {
 	try {
-		return NextResponse.json({ key: params.key });
+		const { key } = await context.params; // Await params
+
 		// validate inputs for safe aggregation
-		// if (!key) throw new BaseHttpError('Missing key value', 400, ErrorBehavior.SSR);
-		//
-		// // prepare data for the request
-		// const data = {
-		// 	keys: [key],
-		// };
-		//
-		// const openeoUrlPrefix = process.env.OEO_URL;
-		//
-		// if (!openeoUrlPrefix) throw new BaseHttpError('Missing openeo URL variable', 400, ErrorBehavior.SSR);
-		//
-		// const url = `${openeoUrlPrefix}/openeo/jobs/delete`;
-		//
-		// // fetch data with sessions
-		// const { backendContent, setCookieHeader } = await fetchWithSessions({
-		// 	method: 'POST',
-		// 	url,
-		// 	browserCookies: req.cookies,
-		// 	headers: {
-		// 		'Content-Type': 'application/json',
-		// 	},
-		// 	body: JSON.stringify(data),
-		// 	requireSessionId: true,
-		// });
-		//
-		// const nextResponse = NextResponse.json(backendContent);
-		//
-		// if (setCookieHeader) {
-		// 	nextResponse.headers.set('set-cookie', setCookieHeader);
-		// }
-		// return nextResponse;
+		if (!key) throw new BaseHttpError('Missing key value', 400, ErrorBehavior.SSR);
+
+		// prepare data for the request
+		const data = {
+			keys: [key],
+		};
+
+		const openeoUrlPrefix = process.env.OEO_URL;
+
+		if (!openeoUrlPrefix) throw new BaseHttpError('Missing openeo URL variable', 400, ErrorBehavior.SSR);
+
+		const url = `${openeoUrlPrefix}/openeo/jobs/delete`;
+
+		// fetch data with sessions
+		const { backendContent, setCookieHeader } = await fetchWithSessions({
+			method: 'POST',
+			url,
+			browserCookies: req.cookies,
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify(data),
+			requireSessionId: getRequireSessionId(),
+		});
+
+		const nextResponse = NextResponse.json(backendContent);
+
+		if (setCookieHeader) {
+			nextResponse.headers.set('set-cookie', setCookieHeader);
+		}
+		return nextResponse;
 	} catch (error: any) {
 		const { message, status } = handleRouteError(error);
 		const response = NextResponse.json({ error: message }, { status });

@@ -76,18 +76,22 @@ input {
 }
 
 /* Select */
-.worldCereal-appContent .worldCereal-Select {
+.worldCereal-appContent .worldCereal-Select, .worldCereal-appContent .worldCereal-Input {
   font-family: var(--headingsFontFamily) sans-serif;
 	width: 20rem;
 	max-width: 25rem;
 
-  .mantine-Select-input {
+  .mantine-Select-input, .mantine-TextInput-input, .mantine-NumberInput-input {
     font-family: var(--headingsFontFamily) sans-serif;
   }
 
-  .mantine-Select-label {
+  .mantine-Select-label, .mantine-InputWrapper-label, .mantine-NumberInput-label {
     font-weight: bold;
   }
+}
+
+.worldCereal-appContent .worldCereal-Input .mantine-InputWrapper-description {
+  padding-bottom: 5px;
 }
 
 .esaWorldCerealProcesses .mantine-Select-option {
@@ -99,6 +103,18 @@ input {
   background: var(--lightBackgroundColor);
   border: 1px solid var(--borderPrimaryColor);
   padding: 1rem;
+}
+
+.esaWorldCerealProcesses .worldCereal-Modal .mantine-Modal-header {
+  background: var(--lightBackgroundColor);
+}
+
+.esaWorldCerealProcesses .worldCereal-Modal .mantine-Modal-close:hover {
+  background-color: transparent;
+}
+
+.esaWorldCerealProcesses .worldCereal-Modal .mantine-Modal-title {
+  font-size: var(--font-size-lg);
 }
 
 /* Stepper */
@@ -119,4 +135,17 @@ input {
   .mantine-SegmentedControl-label:where([data-active]) .mantine-SegmentedControl-innerLabel {
     font-weight: bold;
   }
+}
+
+/* Radio */
+.worldCereal-Radio {
+	font-family: var(--headingsFontFamily) sans-serif;
+
+  .mantine-Radio-label {
+    font-family: var(--headingsFontFamily) sans-serif;
+  };
+
+  .mantine-RadioGroup-label {
+    font-weight: bold;
+  };
 }

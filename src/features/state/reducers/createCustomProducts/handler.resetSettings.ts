@@ -12,7 +12,7 @@ export const resetSettingsHandler_customProducts: AppSpecficReducerFunc<WorldCer
 			backgroundLayer: undefined,
 			bbox: undefined,
 			product: undefined,
-			currentJobKey: undefined,
+			// currentJobKey: undefined,
 			outputFileFormat: 'GTiff', // Reset to default format
 			model: undefined,
 			endDate: undefined,
