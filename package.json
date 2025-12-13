@@ -28,7 +28,7 @@
     "classnames": "^2.5.1",
     "js-cookie": "^3.0.5",
     "jsonwebtoken": "^9.0.2",
-    "next": "^15.3.5",
+    "next": "^15.3.8",
     "openid-client": "^5.7.0",
     "prop-types": "^15.8.1",
     "react": "^19.1.0",
