@@ -1,5 +1,6 @@
-.worldCereal-ProcessesTable {
-
+.worldCereal-ProcessesTable-noProcess {
+    color: var(--textPrimaryColor);
+    font-size: var(--font-size-md);
 }
 
 .worldCereal-ProcessesTable .mantine-Table-th {
