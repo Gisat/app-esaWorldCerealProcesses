@@ -1,8 +1,11 @@
 import { Center, Loader, Table } from '@mantine/core';
 import Record from './Record';
 import './style.css';
-import { processTypes } from '@features/(processes)/_constants/app';
+import { pages, processTypes } from '@features/(processes)/_constants/app';
 import formParams from '@features/(processes)/_constants/generate-custom-products/formParams';
+import Link from 'next/link';
+import { TextHighlight } from '@features/(shared)/_layout/_components/Content/TextHighlight';
+import React from 'react';
 
 type Props = {
 	loading?: boolean;
@@ -96,26 +99,40 @@ export const ProcessesTable = ({ data, loading, forceReloadList }: Props) => {
 		<p>No records</p>
 	);
 
-	return (
-		<>
-			{loading ? (
-				<Center>
-					<Loader />
-				</Center>
-			) : (
-				<Table horizontalSpacing="md" className="worldCereal-ProcessesTable">
-					<Table.Thead>
-						<Table.Tr className="worldCereal-ProcessesTable-row">
-							<Table.Th>ID</Table.Th>
-							<Table.Th>Type</Table.Th>
-							<Table.Th>Created</Table.Th>
-							<Table.Th>Status</Table.Th>
-							<Table.Th></Table.Th>
-						</Table.Tr>
-					</Table.Thead>
-					<Table.Tbody>{rows}</Table.Tbody>
-				</Table>
-			)}
-		</>
-	);
+	if (loading) {
+		return (
+			<Center>
+				<Loader />
+			</Center>
+		);
+	} else if (data.length === 0) {
+		return (
+			<p className="worldCereal-ProcessesTable-noProcess">
+				You have not created any process yet! Go to{' '}
+				<Link href={pages.downloadOfficialProducts.url}>
+					<TextHighlight bold>Download official products</TextHighlight>
+				</Link>{' '}
+				or{' '}
+				<Link href={pages.generateCustomProducts.url}>
+					<TextHighlight bold>Generate custom products</TextHighlight>
+				</Link>
+				.
+			</p>
+		);
+	} else {
+		return (
+			<Table horizontalSpacing="md" className="worldCereal-ProcessesTable">
+				<Table.Thead>
+					<Table.Tr className="worldCereal-ProcessesTable-row">
+						<Table.Th>ID</Table.Th>
+						<Table.Th>Type</Table.Th>
+						<Table.Th>Created</Table.Th>
+						<Table.Th>Status</Table.Th>
+						<Table.Th></Table.Th>
+					</Table.Tr>
+				</Table.Thead>
+				<Table.Tbody>{rows}</Table.Tbody>
+			</Table>
+		);
+	}
 };

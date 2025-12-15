@@ -43,6 +43,7 @@ input {
 .worldCereal-appContent {
   max-width: var(--pageWidth);
   margin: 0 auto;
+    padding-bottom: 1rem;
 }
 
 /* Buttons */
