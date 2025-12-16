@@ -16,7 +16,7 @@ export const Header = () => {
 	if (error) console.error('Error fetching user info', error);
 
 	return (
-		<AppShellHeader>
+		<AppShellHeader className="worldCereal-Header-shell">
 			<div className="worldCereal-Header">
 				<Title />
 				<div className="worldCereal-Header-tools">

@@ -19,7 +19,7 @@ export const ProcessesListClient = () => {
 	const url = `/api/jobs/get/list`;
 
 	// Fetch data using SWR with a refresh interval of 15 seconds
-	const { data, mutate, error } = useSWR(url, apiFetcher, {
+	const { data, mutate, error, isLoading } = useSWR(url, apiFetcher, {
 		refreshInterval: 15000,
 	});
 
@@ -37,5 +37,5 @@ export const ProcessesListClient = () => {
 
 	// Render the ProcessesTable component with the fetched data
 	// If no data is available, show a loading state
-	return <ProcessesTable loading={!data?.length} data={data || []} forceReloadList={forceReloadList} />;
+	return <ProcessesTable loading={isLoading} data={data || []} forceReloadList={forceReloadList} />;
 };
