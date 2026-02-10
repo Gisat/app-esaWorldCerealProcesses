@@ -1,0 +1,68 @@
+.step2-slider-root {
+    padding-bottom: 30px;
+}
+
+.step2-slider-track {
+    background-color: #333;
+    height: 6px;
+}
+
+.step2-slider-bar {
+    background-color: #F2D06B;
+    height: 6px;
+}
+
+.step2-slider-thumb {
+    border: 4px solid #F2D06B;
+    background-color: white;
+    width: 20px;
+    height: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.step2-slider-mark {
+    border: none;
+    background-color: #fff;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+}
+
+.step2-slider-mark-label {
+    color: #666;
+    margin-top: 15px;
+    font-size: 14px;
+}
+
+.step2-slider-label {
+    background-color: transparent;
+    padding: 0;
+    box-shadow: none;
+    font-size: 0; /* hide default text if any leaks */
+    /* Ensure it floats above */
+}
+
+.step2-thumb-label {
+    background-color: #999;
+    color: #1A1A1A;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: bold;
+    white-space: nowrap;
+    position: relative;
+    /* Removed top: -45px because Mantine label positions it */
+}
+
+.step2-thumb-label-arrow {
+    position: absolute;
+    bottom: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid #999;
+}
+
