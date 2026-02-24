@@ -1,4 +1,5 @@
 import { MantineProvider } from '@features/(shared)/_components/providers/MantineProvider/MantineProvider';
+import FaroClient from '@features/(shared)/_components/providers/grafana/FaroClient';
 import { AppShell, AppShellMain, rem } from '@mantine/core';
 import type { Metadata } from 'next';
 import React from 'react';
@@ -36,7 +37,7 @@ export default function RootLayout({
 			</head>
 			<body className={`esaWorldCerealProcesses`}>
 				<InstanceWarning />
-				{/* TODO uncomment when Faro is ready for react 19 */}
+				<FaroClient />
 				{/*<FaroFrontendMonitoring envUrl="/api/faro" />*/}
 				<MantineProvider>
 					<PersistentStateWrapper>
