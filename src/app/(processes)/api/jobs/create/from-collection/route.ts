@@ -47,7 +47,7 @@ export async function GET(req: NextRequest) {
 		}
 
 		if (!outputFileFormat) {
-			loggyError("Jobs create from collection GET", "Missing outputFileFormat");
+			loggyError("Jobs create from collection GET", "Missing outputFileFormat value");
 			throw new BaseHttpError("Missing outputFileFormat value", 400, ErrorBehavior.SSR);
 		}
 
