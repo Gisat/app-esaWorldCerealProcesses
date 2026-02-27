@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { loggyWarn } from '@gisatcz/ptr-be-core/node';
 import { authContext } from "@features/(auth)/_ssr/handlers.auth";
 import { handleRouteError } from "@features/(shared)/errors/handlers.errorInRoute";
 
@@ -20,8 +21,10 @@ export async function GET() {
     const { message, status } = handleRouteError(error)
     const response = NextResponse.json({ error: message }, { status })
 
-    if (status === 401)
-      response.cookies.delete("sid")
+    if (status === 401) {
+      loggyWarn('Unauthorized', `Authentication failed: ${message}`);
+      response.cookies.delete('sid');
+    }
 
     return response
 

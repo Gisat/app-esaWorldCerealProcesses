@@ -8,6 +8,7 @@ import getBoundaryDates from '@features/(processes)/_utils/boundaryDates';
 import { transformDate } from '@features/(processes)/_utils/transformDate';
 import { getRequireSessionId } from '@features/(auth)/_utils/requireSessionId';
 import { customProductsPostprocessMethods, customProductsProductTypes } from '@features/(processes)/_constants/app';
+import { loggyError, loggyWarn } from '@gisatcz/ptr-be-core/node';
 
 /**
  * Handles the GET request to create a job from a process.
@@ -30,20 +31,41 @@ export async function GET(req: NextRequest) {
 		const postprocessKernelSize = searchParams.get('postprocessKernelSize');
 
 		// validate inputs for safe aggregation
-		if (!endDate) throw new BaseHttpError('Missing endDate value', 400, ErrorBehavior.SSR);
+		if (!endDate) {
+			loggyError('Jobs create from process GET', 'Missing endDate value');
+			throw new BaseHttpError('Missing endDate value', 400, ErrorBehavior.SSR);
+		}
 
-		if (!bbox) throw new BaseHttpError('Missing bbox value', 400, ErrorBehavior.SSR);
+		if (!bbox) {
+			loggyError('Jobs create from process GET', 'Missing bbox value');
+			throw new BaseHttpError('Missing bbox value', 400, ErrorBehavior.SSR);
+		}
 
-		if (!outputFileFormat) throw new BaseHttpError('Missing outputFileFormat value', 400, ErrorBehavior.SSR);
+		if (!outputFileFormat) {
+			loggyError('Jobs create from process GET', 'Missing outputFileFormat value');
+			throw new BaseHttpError('Missing outputFileFormat value', 400, ErrorBehavior.SSR);
+		}
 
-		if (!model) throw new BaseHttpError('Missing model value', 400, ErrorBehavior.SSR);
+		if (!model) {
+			loggyError('Jobs create from process GET', 'Missing model value');
+			throw new BaseHttpError('Missing model value', 400, ErrorBehavior.SSR);
+		}
 
 		// Additional validation for crop type parameters
 		if (processId === customProductsProductTypes.cropType) {
-			if (!orbitState) throw new BaseHttpError('Missing orbitState for crop type', 400, ErrorBehavior.SSR);
-			if (!postprocessMethod)
+			if (!orbitState) {
+				loggyError('Jobs create from process GET', 'Missing orbitState for crop type');
+				throw new BaseHttpError('Missing orbitState for crop type', 400, ErrorBehavior.SSR);
+			}
+			if (!postprocessMethod) {
+				loggyError('Jobs create from process GET', 'Missing postprocessMethod for crop type');
 				throw new BaseHttpError('Missing postprocessMethod for crop type', 400, ErrorBehavior.SSR);
+			}
 			if (postprocessMethod === customProductsPostprocessMethods.majorityVote && !postprocessKernelSize) {
+				loggyError(
+					'Jobs create from process GET',
+					'Invalid or missing postprocessKernelSize for crop type with majority_vote'
+				);
 				throw new BaseHttpError(
 					'Invalid or missing postprocessKernelSize for crop type with majority_vote',
 					400,
@@ -75,7 +97,10 @@ export async function GET(req: NextRequest) {
 
 		const openeoUrlPrefix = process.env.OEO_URL;
 
-		if (!openeoUrlPrefix) throw new Error('Missing openeo URL variable');
+		if (!openeoUrlPrefix) {
+			loggyError('Jobs create from process GET', 'Missing openeo URL variable');
+			throw new Error('Missing openeo URL variable');
+		}
 
 		const url = `${openeoUrlPrefix}/openeo/jobs/create/from-process`;
 
@@ -98,10 +123,14 @@ export async function GET(req: NextRequest) {
 		}
 		return nextResponse;
 	} catch (error: any) {
+		loggyError('Jobs create from process GET', error);
 		const { message, status } = handleRouteError(error);
 		const response = NextResponse.json({ error: message }, { status });
 
-		if (status === 401) response.cookies.delete('sid');
+		if (status === 401) {
+			loggyWarn('Unauthorized', 'User is not authorized to access the resource. Deleting session cookie.');
+			response.cookies.delete('sid');
+		}
 
 		return response;
 	}

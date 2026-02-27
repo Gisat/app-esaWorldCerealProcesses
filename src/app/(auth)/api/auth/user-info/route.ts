@@ -2,6 +2,7 @@ import { fetchWithSessions } from "@features/(auth)/_ssr/handlers.sessionFetch";
 import { handleRouteError } from "@features/(shared)/errors/handlers.errorInRoute";
 import { NextRequest, NextResponse } from "next/server";
 import { getRequireSessionId } from "@features/(auth)/_utils/requireSessionId";
+import { loggyError, loggyWarn } from "@gisatcz/ptr-be-core/node";
 
 // NextJS Cache controls
 export const dynamic = "force-dynamic";
@@ -22,11 +23,15 @@ export async function GET(req: NextRequest) {
     });
 
     // check fetch result
-    if (!backendContent)
+    if (!backendContent) {
+      loggyError("User info GET", "Fetch response data missing in session fetch");
       throw new Error("Fetch response data missing in session fetch");
+    }
 
-    if (!setCookieHeader)
+    if (!setCookieHeader) {
+      loggyError("User info GET", "Fetch response with new session cookie missing");
       throw new Error("Fetch response with new session cookie missing");
+    }
 
     // prepare NextJS response with recived cookies including new SID
     const nextResponse = NextResponse.json(backendContent);
@@ -37,10 +42,14 @@ export async function GET(req: NextRequest) {
     }
     return nextResponse;
   } catch (error: any) {
+    loggyError("User info GET", error);
     const { message, status } = handleRouteError(error);
     const response = NextResponse.json({ error: message }, { status });
 
-    if (status === 401) response.cookies.delete("sid");
+    if (status === 401) {
+      loggyWarn('Unauthorized', 'User is not authorized to access the resource. Deleting session cookie.');
+      response.cookies.delete('sid');
+    }
 
     return response;
   }

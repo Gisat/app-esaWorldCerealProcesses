@@ -2,6 +2,7 @@ import { fetchWithSessions } from "@features/(auth)/_ssr/handlers.sessionFetch";
 import { getRequireSessionId } from "@features/(auth)/_utils/requireSessionId";
 import { handleRouteError } from "@features/(shared)/errors/handlers.errorInRoute";
 import { NextRequest, NextResponse } from "next/server";
+import { loggyError, loggyWarn } from "@gisatcz/ptr-be-core/node";
 
 export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
@@ -22,6 +23,7 @@ export async function GET(
     const { key } = await context.params; // Await params
 
     if (!key) {
+      loggyError("Jobs get by key GET", "Missing key value");
       return NextResponse.json("Missing key value", {
         status: 400,
       });
@@ -29,8 +31,10 @@ export async function GET(
 
     const openeoUrlPrefix = process.env.OEO_URL
 
-    if (!openeoUrlPrefix)
+    if (!openeoUrlPrefix) {
+      loggyError("Jobs get by key GET", "Missing openeo URL variable");
       throw new Error("Missing openeo URL variable")
+    }
 
     const url = `${openeoUrlPrefix}/openeo/jobs/${key}`
 
@@ -54,11 +58,14 @@ export async function GET(
     return nextResponse
 
   } catch (error: any) {
+    loggyError("Jobs get by key GET", error);
     const { message, status } = handleRouteError(error)
     const response = NextResponse.json({ error: message }, { status })
 
-    if (status === 401)
-      response.cookies.delete("sid")
+    if (status === 401) {
+      loggyWarn('Unauthorized', 'User is not authorized to access the resource. Deleting session cookie.');
+      response.cookies.delete('sid');
+    }
 
     return response
   }

@@ -4,6 +4,7 @@ import { ErrorBehavior } from '@features/(shared)/errors/enums.errorBehavior';
 import { handleRouteError } from '@features/(shared)/errors/handlers.errorInRoute';
 import { BaseHttpError } from '@features/(shared)/errors/models.error';
 import { NextRequest, NextResponse } from 'next/server';
+import { loggyError, loggyWarn } from '@gisatcz/ptr-be-core/node';
 
 export const dynamic = 'force-dynamic';
 export const fetchCache = 'force-no-store';
@@ -21,7 +22,10 @@ export async function GET(req: NextRequest, context: { params: Promise<{ key: st
 		const { key } = await context.params; // Await params
 
 		// validate inputs for safe aggregation
-		if (!key) throw new BaseHttpError('Missing key value', 400, ErrorBehavior.SSR);
+		if (!key) {
+			loggyError('Jobs delete GET', 'Missing key value');
+			throw new BaseHttpError('Missing key value', 400, ErrorBehavior.SSR);
+		}
 
 		// prepare data for the request
 		const data = {
@@ -30,7 +34,10 @@ export async function GET(req: NextRequest, context: { params: Promise<{ key: st
 
 		const openeoUrlPrefix = process.env.OEO_URL;
 
-		if (!openeoUrlPrefix) throw new BaseHttpError('Missing openeo URL variable', 400, ErrorBehavior.SSR);
+		if (!openeoUrlPrefix) {
+			loggyError('Jobs delete GET', 'Missing openeo URL variable');
+			throw new BaseHttpError('Missing openeo URL variable', 400, ErrorBehavior.SSR);
+		}
 
 		const url = `${openeoUrlPrefix}/openeo/jobs/delete`;
 
@@ -53,10 +60,14 @@ export async function GET(req: NextRequest, context: { params: Promise<{ key: st
 		}
 		return nextResponse;
 	} catch (error: any) {
+		loggyError('Jobs delete GET', error);
 		const { message, status } = handleRouteError(error);
 		const response = NextResponse.json({ error: message }, { status });
 
-		if (status === 401) response.cookies.delete('sid');
+		if (status === 401) {
+			loggyWarn('Unauthorized', 'User is not authorized to access the resource. Deleting session cookie.');
+			response.cookies.delete('sid');
+		}
 
 		return response;
 	}
