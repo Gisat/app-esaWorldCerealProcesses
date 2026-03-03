@@ -37,16 +37,39 @@ import { getProduct_customProducts } from '@features/state/selectors/createCusto
 import { getEndDate_customProducts } from '@features/state/selectors/createCustomProducts/getEndDate';
 import { SelectMonth } from '@features/(processes)/_components/SelectMonth';
 import { getOrbitState_customProducts } from '@features/state/selectors/createCustomProducts/getOrbitState';
-import {
-	getPostProcessMethod_customProducts
-} from '@features/state/selectors/createCustomProducts/getPostProcessMethod';
-import {
-	getPostProcessKernelSize_customProducts
-} from '@features/state/selectors/createCustomProducts/getPostProcessKernelSize';
+import { getPostProcessMethod_customProducts } from '@features/state/selectors/createCustomProducts/getPostProcessMethod';
+import { getPostProcessKernelSize_customProducts } from '@features/state/selectors/createCustomProducts/getPostProcessKernelSize';
 import './CreateProductsStep2Client.css';
 
-const START_YEAR = 2020;
-const SLIDER_MAX = 48; //4 years * 12 months = 48 (Jan 2020 to Jan 2024)
+const START_YEAR = 2018;
+const CURRENT_YEAR = new Date().getFullYear();
+const SLIDER_MAX = (CURRENT_YEAR - START_YEAR) * 12; // months from START_YEAR to current year
+
+// Number of years visible in the focused slider
+const YEAR_WINDOW_SIZE = 3; // 3 years window
+
+// Generate marks for year navigation slider (show every other year for visibility)
+const generateYearMarks = () => {
+	const marks = [];
+	for (let year = START_YEAR; year <= CURRENT_YEAR; year++) {
+		// Show label every other year, but include all marks for stepping
+		const label = (year - START_YEAR) % 2 === 0 ? year.toString() : '';
+		marks.push({ value: year - START_YEAR, label });
+	}
+	return marks;
+};
+
+const getMaxYearWindow = () => CURRENT_YEAR - START_YEAR - YEAR_WINDOW_SIZE + 1;
+
+// Generate marks for focused month slider - 24 marks representing the 3-year window
+const generateMonthMarks = (yearWindowStart: number) => {
+	const marks = [];
+	const startYear = START_YEAR + yearWindowStart;
+	marks.push({ value: 0, label: startYear.toString() });
+	marks.push({ value: 12, label: (startYear + 1).toString() });
+	marks.push({ value: 24, label: (startYear + 2).toString() });
+	return marks;
+};
 
 /**
  * Convert a date into a slider index (months since START_YEAR).
@@ -84,7 +107,7 @@ const formatPeriodDate = (dateStr: string) => {
 	const [year, month] = dateStr.split('-').map(Number);
 	// Create date in local time for consistent display.
 	const date = new Date(year, month - 1);
-	return date.toLocaleString('en-US', {month: 'long', year: 'numeric'});
+	return date.toLocaleString('en-US', { month: 'long', year: 'numeric' });
 };
 
 /**
@@ -215,19 +238,30 @@ export default function CreateProductsStep2Client() {
 	const postprocessMethod = getPostProcessMethod_customProducts(state);
 	const postprocessKernelSize = getPostProcessKernelSize_customProducts(state);
 
-
 	/**
 	 * Local start date used for slider-based range selection.
 	 * @type {Date | null}
 	 */
 	const [startDate, setStartDate] = useState<Date | null>(null);
+
+	/**
+	 * State for year window selection (year navigator).
+	 * Value is the starting year index (0 = START_YEAR, 1 = START_YEAR+1, etc.)
+	 * Default to middle of available range
+	 * @type {number}
+	 */
+	const [yearWindow, setYearWindow] = useState<number>(() => {
+		// Start at middle of available years
+		const maxYear = CURRENT_YEAR - START_YEAR - YEAR_WINDOW_SIZE + 1;
+		return Math.floor(maxYear / 2);
+	});
 	/**
 	 * Suggested periods returned by the backend for the selected extent.
 	 * @type {Array<{ id: string; startDate: string; endDate: string }>}
 	 */
-	const [suggestedPeriods, setSuggestedPeriods] = useState<
-		Array<{ id: string; startDate: string; endDate: string }>
-	>([]);
+	const [suggestedPeriods, setSuggestedPeriods] = useState<Array<{ id: string; startDate: string; endDate: string }>>(
+		[]
+	);
 	/**
 	 * Currently selected suggested period id.
 	 * @type {string | null}
@@ -260,9 +294,8 @@ export default function CreateProductsStep2Client() {
 		}
 	}, [bbox, bboxIsInBounds, isCropType]);
 
-	const {data: periodsData} = useSWR(
-		debouncedBbox ? [suggestedPeriodsApiUrl, debouncedBbox] : null,
-		() => apiFetcher(suggestedPeriodsApiUrl, `bbox=${debouncedBbox}`)
+	const { data: periodsData } = useSWR(debouncedBbox ? [suggestedPeriodsApiUrl, debouncedBbox] : null, () =>
+		apiFetcher(suggestedPeriodsApiUrl, `bbox=${debouncedBbox}`)
 	);
 
 	useEffect(() => {
@@ -284,20 +317,6 @@ export default function CreateProductsStep2Client() {
 			const defaultValue = formParams.outputFileFormat.options.find((option) => option.default)?.value;
 			if (defaultValue) {
 				setOutputFileFormat(defaultValue as CreateCustomProductsOutputFileFormatModel);
-			}
-		}
-
-		if (!endDate) {
-			const defaultEndDate = defaultProductsDates?.endDate;
-			if (defaultEndDate) {
-				setEndDate(defaultEndDate as unknown as CreateCustomProductsEndDateModel);
-
-				// Default start date could be 1 year prior if needed, but keeping null requires user selection or default logic
-				// If we want to pre-fill 12 months prior:
-				const endD = new Date(defaultEndDate);
-				const startD = new Date(endD);
-				startD.setFullYear(endD.getFullYear() - 1);
-				setStartDate(startD);
 			}
 		}
 	}, []);
@@ -368,18 +387,26 @@ export default function CreateProductsStep2Client() {
 		}
 	};
 
+	const MIN_MONTHS = 3; // 3 months minimum
+
+	// Bottom slider: 24 marks representing the 3-year window (0 = start, 12 = middle, 24 = end)
+	const monthSliderMax = 24;
+
 	const onSliderChange = ([startVal, endVal]: [number, number]) => {
 		// Manual slider change overrides suggested period selection.
 		setSelectedPeriodId(null);
 
-		// Clamp endVal to 47 (Dec 2023) because we shouldn't enter 2024.
-		let newEndVal = endVal;
-		if (newEndVal > 47) newEndVal = 47;
+		// Convert year-relative values to absolute month values
+		const absoluteStartMonth = yearWindow * 12 + startVal;
+		const absoluteEndMonth = yearWindow * 12 + endVal;
 
-		// Ensure minRange of 1 month is maintained after clamping.
-		let newStartVal = startVal;
-		if (newEndVal - newStartVal < 1) {
-			newStartVal = Math.max(0, newEndVal - 1);
+		// Clamp to available range
+		let newEndVal = Math.min(absoluteEndMonth, SLIDER_MAX);
+		let newStartVal = Math.max(absoluteStartMonth, 0);
+
+		// Ensure minRange of 36 months (3 years) is maintained after clamping.
+		if (newEndVal - newStartVal < MIN_MONTHS) {
+			newStartVal = Math.max(0, newEndVal - MIN_MONTHS);
 		}
 
 		const newStart = getDateFromSliderValue(newStartVal);
@@ -388,8 +415,94 @@ export default function CreateProductsStep2Client() {
 		setStartDate(newStart);
 		const endDateStr = newEnd.toISOString().split('T')[0] as CreateCustomProductsEndDateModel;
 		setEndDate(endDateStr);
-
 	};
+
+	/**
+	 * Effect to sync dates when year window changes.
+	 * Sets the bottom slider to 12-month window centered on mark 12.
+	 * Only runs when yearWindow changes, but can be overridden by user selection.
+	 */
+	const [userHasInteracted, setUserHasInteracted] = useState(false);
+
+	const handleSliderChange = ([startVal, endVal]: [number, number]) => {
+		setUserHasInteracted(true);
+		setSelectedPeriodId(null);
+
+		// Convert to absolute months
+		const absoluteStartMonth = yearWindow * 12 + startVal;
+		const absoluteEndMonth = yearWindow * 12 + endVal;
+
+		// Ensure minimum 3 months
+		let newStartVal = startVal;
+		let newEndVal = endVal;
+		if (newEndVal - newStartVal < MIN_MONTHS) {
+			newStartVal = Math.max(0, newEndVal - MIN_MONTHS);
+		}
+
+		const finalStartMonth = yearWindow * 12 + newStartVal;
+		const finalEndMonth = yearWindow * 12 + newEndVal;
+
+		const newStart = getDateFromSliderValue(finalStartMonth);
+		const newEnd = getDateFromSliderValue(finalEndMonth, true);
+
+		setStartDate(newStart);
+		const endDateStr = newEnd.toISOString().split('T')[0] as CreateCustomProductsEndDateModel;
+		setEndDate(endDateStr);
+	};
+
+	// Reset user interaction flag when year window changes
+	useEffect(() => {
+		setUserHasInteracted(false);
+	}, [yearWindow]);
+
+	// Sync dates on first load - set to 12-month window centered on mark 12
+	const isFirstRender = React.useRef(true);
+	const prevYearWindow = React.useRef(yearWindow);
+
+	useEffect(() => {
+		if (isFirstRender.current) {
+			isFirstRender.current = false;
+			// Bottom slider range is 0-24, 12-month window centered on mark 12
+			// Jul-Jun = 12 months (start at 6, end at 17)
+			const sliderStart = 6;
+			const sliderEnd = 17;
+
+			const windowStartMonth = yearWindow * 12 + sliderStart;
+			const windowEndMonth = yearWindow * 12 + sliderEnd;
+
+			const newStart = getDateFromSliderValue(windowStartMonth);
+			const newEnd = getDateFromSliderValue(windowEndMonth, true);
+
+			setStartDate(newStart);
+			const endDateStr = newEnd.toISOString().split('T')[0] as CreateCustomProductsEndDateModel;
+			setEndDate(endDateStr);
+		} else if (prevYearWindow.current !== yearWindow && startDate && endDate) {
+			// Year window changed - shift dates to maintain same slider positions
+			const oldYearWindow = prevYearWindow.current;
+			const yearWindowDiff = yearWindow - oldYearWindow;
+
+			// Calculate current slider positions
+			const oldStartSliderPos = getSliderValueFromDate(startDate) - oldYearWindow * 12;
+			const oldEndSliderPos = getSliderValueFromDate(endDate) - oldYearWindow * 12;
+
+			// Calculate new absolute month positions
+			const newStartMonth = yearWindow * 12 + oldStartSliderPos;
+			const newEndMonth = yearWindow * 12 + oldEndSliderPos;
+
+			// Clamp to valid range
+			const clampedStartMonth = Math.max(0, Math.min(newStartMonth, SLIDER_MAX));
+			const clampedEndMonth = Math.max(0, Math.min(newEndMonth, SLIDER_MAX));
+
+			const newStart = getDateFromSliderValue(clampedStartMonth);
+			const newEnd = getDateFromSliderValue(clampedEndMonth, true);
+
+			setStartDate(newStart);
+			const endDateStr = newEnd.toISOString().split('T')[0] as CreateCustomProductsEndDateModel;
+			setEndDate(endDateStr);
+		}
+
+		prevYearWindow.current = yearWindow;
+	}, [yearWindow]);
 
 	/**
 	 * URL parameters for the API request.
@@ -402,7 +515,6 @@ export default function CreateProductsStep2Client() {
 		product: product?.toString() || '',
 		endDate: endDate?.toString() || '',
 		startDate: startDate ? startDate.toISOString().split('T')[0] : '',
-
 	};
 
 	if (product === customProductsProductTypes.cropType) {
@@ -419,7 +531,7 @@ export default function CreateProductsStep2Client() {
 	/**
 	 * SWR hook for fetching process data.
 	 */
-	const {data, isLoading} = useSWR(shouldFetch ? [apiUrl, urlParams.toString()] : null, () =>
+	const { data, isLoading } = useSWR(shouldFetch ? [apiUrl, urlParams.toString()] : null, () =>
 		apiFetcher(apiUrl, urlParams.toString())
 	);
 
@@ -508,12 +620,12 @@ export default function CreateProductsStep2Client() {
 						className="worldCereal-Button is-secondary is-ghost"
 						variant="outline"
 						onClick={onBackClick}
-						leftSection={<IconArrowLeft size={14}/>}
+						leftSection={<IconArrowLeft size={14} />}
 					>
 						Back
 					</Button>
 					<Button
-						leftSection={<IconCheck size={14}/>}
+						leftSection={<IconCheck size={14} />}
 						disabled={isLoading || nextStepDisabled}
 						className="worldCereal-Button"
 						onClick={onCreateProcessClick}
@@ -530,18 +642,15 @@ export default function CreateProductsStep2Client() {
 								<FormLabel>Select season of interest</FormLabel>
 								<div>
 									<TextDescription>
-										Define the end month of your processing period. The default length of the period
-										is 12 months.
+										Define the end month of your processing period. The default length of the period is 12 months.
 									</TextDescription>
 									<TextDescription>
-										To guide your decision concerning the processing period, you can consult
-										the{' '}
-										<TextLink url="https://ipad.fas.usda.gov/ogamaps/cropcalendar.aspx">USDA crop
-											calendars</TextLink>
+										To guide your decision concerning the processing period, you can consult the{' '}
+										<TextLink url="https://ipad.fas.usda.gov/ogamaps/cropcalendar.aspx">USDA crop calendars</TextLink>
 									</TextDescription>
 								</div>
 							</div>
-							<div style={{width: '20rem'}}>
+							<div style={{ width: '20rem' }}>
 								<SelectMonth
 									label="Ending month"
 									disabled={false}
@@ -556,14 +665,13 @@ export default function CreateProductsStep2Client() {
 						<>
 							<div>
 								<FormLabel>Pick a suggested period</FormLabel>
-								<TextDescription>Select a predefined period based on the area of
-									interest.</TextDescription>
+								<TextDescription>Select a predefined period based on the area of interest.</TextDescription>
 								{suggestedPeriods.length > 0 ? (
 									<Radio.Group
 										value={selectedPeriodId}
 										onChange={onSuggestedPeriodChange}
 										name="suggestedPeriod"
-										style={{marginTop: '0.5rem'}}
+										style={{ marginTop: '0.5rem' }}
 									>
 										<Stack gap="xs">
 											{suggestedPeriods.map((period) => (
@@ -582,50 +690,101 @@ export default function CreateProductsStep2Client() {
 								)}
 							</div>
 
-							<div style={{width: '100%'}}>
+							<div style={{ width: '100%' }}>
 								<FormLabel>Adjust the date range</FormLabel>
 								<div>
 									<TextDescription>
-										Select a period between 2020 and 2024. Min 1 month, Max 12 months.
+										Select a period between 2018 and {CURRENT_YEAR}. Min 1 month, Max 12 months.
 									</TextDescription>
 
-									<Box p="lg" bg="#1A1A1A" style={{borderRadius: '8px', marginTop: '0.5rem'}}>
-										<RangeSlider
-											min={0}
-											max={SLIDER_MAX}
-											step={1}
-											minRange={1}
-											maxRange={11}
-											marks={[
-												{value: 0, label: '2020'},
-												{value: 12, label: '2021'},
-												{value: 24, label: '2022'},
-												{value: 36, label: '2023'},
-												{value: 48, label: '2024'},
-											]}
-											value={[getSliderValueFromDate(startDate), getSliderValueFromDate(endDate)]}
-											onChange={onSliderChange}
-											classNames={{
-												root: 'step2-slider-root',
-												track: 'step2-slider-track',
-												bar: 'step2-slider-bar',
-												thumb: 'step2-slider-thumb',
-												mark: 'step2-slider-mark',
-												markLabel: 'step2-slider-mark-label',
-												label: 'step2-slider-label',
-											}}
-											labelAlwaysOn
-											label={(value) => {
-												const date = getDateFromSliderValue(value);
-												const text = date.toLocaleString('en-US', {month: 'short'});
-												return (
-													<div className="step2-thumb-label">
-														{text}
-														<div className="step2-thumb-label-arrow"/>
-													</div>
-												);
-											}}
-										/>
+									<Box p="lg" pt={60} bg="#1A1A1A" style={{ borderRadius: '8px', marginTop: '0.5rem' }}>
+										{/* Year Navigator Slider */}
+										<Box mb="xl">
+											<RangeSlider
+												min={0}
+												max={CURRENT_YEAR - START_YEAR}
+												step={1}
+												value={[yearWindow, yearWindow + YEAR_WINDOW_SIZE - 1]}
+												onChange={(val) => {
+													if (Array.isArray(val)) {
+														const maxVal = getMaxYearWindow();
+														// Calculate which thumb moved more
+														const prevStart = yearWindow;
+														const prevEnd = yearWindow + YEAR_WINDOW_SIZE - 1;
+														const startDiff = Math.abs(val[0] - prevStart);
+														const endDiff = Math.abs(val[1] - prevEnd);
+
+														let newStart: number;
+														if (startDiff >= endDiff) {
+															// Left thumb moved more or equal - use its position
+															newStart = Math.max(0, Math.min(val[0], maxVal));
+														} else {
+															// Right thumb moved more - derive start from end
+															newStart = Math.max(0, Math.min(val[1] - YEAR_WINDOW_SIZE + 1, maxVal));
+														}
+														setYearWindow(newStart);
+													}
+												}}
+												classNames={{
+													root: 'step2-slider-root',
+													track: 'step2-slider-track',
+													bar: 'step2-slider-bar',
+													thumb: 'step2-slider-thumb',
+													mark: 'step2-slider-mark',
+													markLabel: 'step2-slider-mark-label',
+													label: 'step2-slider-label',
+												}}
+												label={(value) => {
+													const year = START_YEAR + value;
+													return (
+														<div className="step2-thumb-label">
+															{year}
+															<div className="step2-thumb-label-arrow" />
+														</div>
+													);
+												}}
+												labelAlwaysOn
+												restrictToMarks
+												marks={generateYearMarks()}
+											/>
+										</Box>
+
+										{/* Month Range Slider */}
+										<Box pt={20} mt={40}>
+											<RangeSlider
+												min={0}
+												max={monthSliderMax}
+												step={1}
+												minRange={3}
+												maxRange={11}
+												marks={generateMonthMarks(yearWindow)}
+												value={[
+													startDate ? Math.max(0, getSliderValueFromDate(startDate) - yearWindow * 12) : 0,
+													endDate ? Math.max(0, getSliderValueFromDate(endDate) - yearWindow * 12) : 0,
+												]}
+												onChange={handleSliderChange}
+												classNames={{
+													root: 'step2-slider-root',
+													track: 'step2-slider-track',
+													bar: 'step2-slider-bar',
+													thumb: 'step2-slider-thumb',
+													mark: 'step2-slider-mark',
+													markLabel: 'step2-slider-mark-label',
+													label: 'step2-slider-label',
+												}}
+												labelAlwaysOn
+												label={(value) => {
+													const date = new Date(START_YEAR, yearWindow * 12 + value);
+													const text = date.toLocaleString('en-US', { month: 'short' });
+													return (
+														<div className="step2-thumb-label">
+															{text}
+															<div className="step2-thumb-label-arrow" />
+														</div>
+													);
+												}}
+											/>
+										</Box>
 									</Box>
 
 									{(startDate || endDate) && (
@@ -642,7 +801,7 @@ export default function CreateProductsStep2Client() {
 							</div>
 						</>
 					)}
-					<div style={{width: '100%'}}>
+					<div style={{ width: '100%' }}>
 						<FormLabel>Choose output file format</FormLabel>
 						<SegmentedControl
 							onChange={(value) => setOutputFileFormat(value as CreateCustomProductsOutputFileFormatModel)}
