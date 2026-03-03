@@ -268,6 +268,13 @@ export default function CreateProductsStep2Client() {
 	 */
 	const [selectedPeriodId, setSelectedPeriodId] = useState<string | null>(null);
 
+	/**
+	 * Slider values when a suggested period is selected.
+	 * These override the calculated values from startDate/endDate.
+	 * @type {number[] | null}
+	 */
+	const [suggestedPeriodSliderValues, setSuggestedPeriodSliderValues] = useState<number[] | null>(null);
+
 	const isCropType = product === customProductsProductTypes.cropType;
 
 	/**
@@ -277,11 +284,15 @@ export default function CreateProductsStep2Client() {
 	const nextStepDisabled = !bboxIsInBounds || !bbox || !model || !product || !outputFileFormat || !endDate;
 
 	// Fetch suggested periods when bbox changes.
-	const suggestedPeriodsApiUrl = '/api/jobs/get/periods';
+	const suggestedPeriodsApiUrl = '/api/seasons/get';
 	const [debouncedBbox, setDebouncedBbox] = useState<string | null>(null);
 
 	useEffect(() => {
 		if (bbox && bboxIsInBounds && isCropType) {
+			// Deselect period when bbox changes to a new extent
+			setSelectedPeriodId(null);
+			setSuggestedPeriodSliderValues(null);
+
 			// Debounce bbox changes to avoid excessive calls while drawing.
 			const timer = setTimeout(() => {
 				setDebouncedBbox(bbox.join(','));
@@ -301,8 +312,14 @@ export default function CreateProductsStep2Client() {
 	useEffect(() => {
 		if (periodsData) {
 			setSuggestedPeriods(periodsData);
+			// Clear selected period when new suggestions are loaded,
+			// unless the current selection is still valid
+			if (selectedPeriodId && !periodsData.find((p: { id: string }) => p.id === selectedPeriodId)) {
+				setSelectedPeriodId(null);
+				setSuggestedPeriodSliderValues(null);
+			}
 		}
-	}, [periodsData]);
+	}, [periodsData, selectedPeriodId]);
 
 	/**
 	 * Effect to initialize the active step and set default output file format and end date.
@@ -376,14 +393,35 @@ export default function CreateProductsStep2Client() {
 			// startDate: YYYY-MM -> YYYY-MM-01
 			const [startYear, startMonth] = period.startDate.split('-').map(Number);
 			const newStartDate = new Date(startYear, startMonth - 1, 1);
-			setStartDate(newStartDate);
 
-			// endDate: YYYY-MM -> Last day of month
+			// endDate: YYYY-MM -> Last day of month (original behavior)
 			const [endYear, endMonth] = period.endDate.split('-').map(Number);
-			const newEndDate = new Date(endYear, endMonth, 0); // 0th day of next month is last day of current month
+			const newEndDate = new Date(endYear, endMonth, 0); // Last day of end month
 
+			// Update yearWindow to position the slider correctly for the selected period.
+			// Calculate the year index relative to START_YEAR.
+			const periodYear = startYear - START_YEAR;
+			// Clamp to valid range (max yearWindow allows yearWindow + YEAR_WINDOW_SIZE to not exceed max year)
+			const maxYearWindow = getMaxYearWindow();
+			const newYearWindow = Math.max(0, Math.min(periodYear, maxYearWindow));
+
+			// Calculate slider-relative values: convert absolute months to year-window-relative position
+			// The slider shows months within the 3-year window starting at yearWindow
+			// Position = absolute_month - yearWindow_start_month
+			const absoluteStartMonth = getSliderValueFromDate(newStartDate);
+			const absoluteEndMonth = getSliderValueFromDate(newEndDate);
+			const yearWindowStartMonth = newYearWindow * 12;
+
+			const sliderStartValue = Math.max(0, Math.min(monthSliderMax, absoluteStartMonth - yearWindowStartMonth));
+			const sliderEndValue = Math.max(0, Math.min(monthSliderMax, absoluteEndMonth - yearWindowStartMonth));
+
+			setSuggestedPeriodSliderValues([sliderStartValue, sliderEndValue]);
+
+			// Set the dates and yearWindow
+			setStartDate(newStartDate);
 			const endDateStr = newEndDate.toISOString().split('T')[0] as CreateCustomProductsEndDateModel;
 			setEndDate(endDateStr);
+			setYearWindow(newYearWindow);
 		}
 	};
 
@@ -427,6 +465,7 @@ export default function CreateProductsStep2Client() {
 	const handleSliderChange = ([startVal, endVal]: [number, number]) => {
 		setUserHasInteracted(true);
 		setSelectedPeriodId(null);
+		setSuggestedPeriodSliderValues(null); // Clear the suggested period override
 
 		// Convert to absolute months
 		const absoluteStartMonth = yearWindow * 12 + startVal;
@@ -453,6 +492,7 @@ export default function CreateProductsStep2Client() {
 	// Reset user interaction flag when year window changes
 	useEffect(() => {
 		setUserHasInteracted(false);
+		setSuggestedPeriodSliderValues(null);
 	}, [yearWindow]);
 
 	// Sync dates on first load - set to 12-month window centered on mark 12
@@ -460,6 +500,12 @@ export default function CreateProductsStep2Client() {
 	const prevYearWindow = React.useRef(yearWindow);
 
 	useEffect(() => {
+		// Skip this effect when a suggested period is selected - the dates are already set correctly
+		if (selectedPeriodId) {
+			prevYearWindow.current = yearWindow;
+			return;
+		}
+
 		if (isFirstRender.current) {
 			isFirstRender.current = false;
 			// Bottom slider range is 0-24, 12-month window centered on mark 12
@@ -722,6 +768,11 @@ export default function CreateProductsStep2Client() {
 															// Right thumb moved more - derive start from end
 															newStart = Math.max(0, Math.min(val[1] - YEAR_WINDOW_SIZE + 1, maxVal));
 														}
+														// Deselect suggested period when year window changes
+														if (selectedPeriodId) {
+															setSelectedPeriodId(null);
+															setSuggestedPeriodSliderValues(null);
+														}
 														setYearWindow(newStart);
 													}
 												}}
@@ -758,10 +809,20 @@ export default function CreateProductsStep2Client() {
 												minRange={3}
 												maxRange={11}
 												marks={generateMonthMarks(yearWindow)}
-												value={[
-													startDate ? Math.max(0, getSliderValueFromDate(startDate) - yearWindow * 12) : 0,
-													endDate ? Math.max(0, getSliderValueFromDate(endDate) - yearWindow * 12) : 0,
-												]}
+												value={
+													(suggestedPeriodSliderValues as [number, number] | undefined) ||
+													([
+														startDate
+															? Math.min(
+																	monthSliderMax,
+																	Math.max(0, getSliderValueFromDate(startDate) - yearWindow * 12)
+																)
+															: 0,
+														endDate
+															? Math.min(monthSliderMax, Math.max(0, getSliderValueFromDate(endDate) - yearWindow * 12))
+															: 0,
+													] as [number, number])
+												}
 												onChange={handleSliderChange}
 												classNames={{
 													root: 'step2-slider-root',
