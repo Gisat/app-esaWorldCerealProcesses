@@ -128,7 +128,7 @@ export default function CreateProductsStep1Client() {
 	 */
 	const setModelUrl = (value: string) => {
 		setCurrentModelUrl(value);
-		const regex = /^https?:\/\/.+\.onnx$/i;
+		const regex = /^https?:\/\/.+\.(onnx|zip)$/i;
 		const isValid = regex.test(value);
 
 		if (isValid) {

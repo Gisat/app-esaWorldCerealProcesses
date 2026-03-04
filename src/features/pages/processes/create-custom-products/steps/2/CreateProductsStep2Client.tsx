@@ -21,11 +21,9 @@ import { TextDescription } from '@features/(shared)/_layout/_components/Content/
 import { MapBBox } from '@features/(shared)/_components/map/MapBBox';
 import {
 	bboxSizeLimits,
-	customProductsDateLimits,
 	customProductsPostprocessMethods,
 	customProductsProductTypes,
 } from '@features/(processes)/_constants/app';
-import { TextLink } from '@features/(shared)/_layout/_components/Content/TextLink';
 import formParams from '@features/(processes)/_constants/generate-custom-products/formParams';
 import { apiFetcher } from '@features/(shared)/_url/apiFetcher';
 import { getOutputFileFormat_customProducts } from '@features/state/selectors/createCustomProducts/getOutputFileFormat';
@@ -34,7 +32,6 @@ import { getBackgroundLayer_customProducts } from '@features/state/selectors/cre
 import { getModel_customProducts } from '@features/state/selectors/createCustomProducts/getModel';
 import { getProduct_customProducts } from '@features/state/selectors/createCustomProducts/getProduct';
 import { getEndDate_customProducts } from '@features/state/selectors/createCustomProducts/getEndDate';
-import { SelectMonth } from '@features/(processes)/_components/SelectMonth';
 import { getOrbitState_customProducts } from '@features/state/selectors/createCustomProducts/getOrbitState';
 import { getPostProcessMethod_customProducts } from '@features/state/selectors/createCustomProducts/getPostProcessMethod';
 import { getPostProcessKernelSize_customProducts } from '@features/state/selectors/createCustomProducts/getPostProcessKernelSize';
@@ -287,7 +284,7 @@ export default function CreateProductsStep2Client() {
 	const [debouncedBbox, setDebouncedBbox] = useState<string | null>(null);
 
 	useEffect(() => {
-		if (bbox && bboxIsInBounds && isCropType) {
+		if (bbox && bboxIsInBounds) {
 			// Deselect period when bbox changes to a new extent
 			setSelectedPeriodId(null);
 			setSuggestedPeriodSliderValues(null);
@@ -302,7 +299,7 @@ export default function CreateProductsStep2Client() {
 			setSuggestedPeriods([]);
 			setSelectedPeriodId(null);
 		}
-	}, [bbox, bboxIsInBounds, isCropType]);
+	}, [bbox, bboxIsInBounds]);
 
 	const { data: periodsData } = useSWR(debouncedBbox ? [suggestedPeriodsApiUrl, debouncedBbox] : null, () =>
 		apiFetcher(suggestedPeriodsApiUrl, `bbox=${debouncedBbox}`)
@@ -425,6 +422,7 @@ export default function CreateProductsStep2Client() {
 	};
 
 	const MIN_MONTHS = 3; // 3 months minimum
+	const minSliderRange = isCropType ? 3 : 11; // 3 for crop type (min 3 months), 11 for crop land (exactly 12 months)
 
 	// Bottom slider: 24 marks representing the 3-year window (0 = start, 12 = middle, 24 = end)
 	const monthSliderMax = 24;
@@ -433,11 +431,11 @@ export default function CreateProductsStep2Client() {
 		setSelectedPeriodId(null);
 		setSuggestedPeriodSliderValues(null); // Clear the suggested period override
 
-		// Ensure minimum 3 months
+		// Ensure minimum months based on product type
 		let newStartVal = startVal;
 		let newEndVal = endVal;
-		if (newEndVal - newStartVal < MIN_MONTHS) {
-			newStartVal = Math.max(0, newEndVal - MIN_MONTHS);
+		if (newEndVal - newStartVal < minSliderRange) {
+			newStartVal = Math.max(0, newEndVal - minSliderRange);
 		}
 
 		const finalStartMonth = yearWindow * 12 + newStartVal;
@@ -637,186 +635,155 @@ export default function CreateProductsStep2Client() {
 			</Column>
 			<Column>
 				<Stack gap="lg" w="100%" align="flex-start">
-					{!isCropType ? (
-						<>
-							<div>
-								<FormLabel>Select season of interest</FormLabel>
-								<div>
-									<TextDescription>
-										Define the end month of your processing period. The default length of the period is 12 months.
-									</TextDescription>
-									<TextDescription>
-										To guide your decision concerning the processing period, you can consult the{' '}
-										<TextLink url="https://ipad.fas.usda.gov/ogamaps/cropcalendar.aspx">USDA crop calendars</TextLink>
-									</TextDescription>
-								</div>
-							</div>
-							<div style={{ width: '20rem' }}>
-								<SelectMonth
-									label="Ending month"
-									disabled={false}
-									value={endDate}
-									minDate={new Date(customProductsDateLimits.min)}
-									maxDate={new Date(customProductsDateLimits.max)}
-									onChange={setEndDate}
-								/>
-							</div>
-						</>
-					) : (
-						<>
-							<div>
-								<FormLabel>Pick a suggested period</FormLabel>
-								<TextDescription>Select a predefined period based on the area of interest.</TextDescription>
-								{suggestedPeriods.length > 0 ? (
-									<Radio.Group
-										value={selectedPeriodId}
-										onChange={onSuggestedPeriodChange}
-										name="suggestedPeriod"
-										style={{ marginTop: '0.5rem' }}
-									>
-										<Stack gap="xs">
-											{suggestedPeriods.map((period) => (
-												<Radio
-													key={period.id}
-													value={period.id}
-													label={formatPeriodLabel(period.startDate, period.endDate)}
-												/>
-											))}
-										</Stack>
-									</Radio.Group>
-								) : (
-									<TextDescription color="dimmed">
-										{bbox ? 'Loading suggested periods...' : 'Please draw an extent first.'}
-									</TextDescription>
-								)}
-							</div>
+					<div>
+						<FormLabel>Pick a suggested period</FormLabel>
+						<TextDescription>Select a predefined period based on the area of interest.</TextDescription>
+						{suggestedPeriods.length > 0 ? (
+							<Radio.Group
+								value={selectedPeriodId}
+								onChange={onSuggestedPeriodChange}
+								name="suggestedPeriod"
+								style={{ marginTop: '0.5rem' }}
+							>
+								<Stack gap="xs">
+									{suggestedPeriods.map((period) => (
+										<Radio
+											key={period.id}
+											value={period.id}
+											label={formatPeriodLabel(period.startDate, period.endDate)}
+										/>
+									))}
+								</Stack>
+							</Radio.Group>
+						) : (
+							<TextDescription color="dimmed">
+								{bbox ? 'Loading suggested periods...' : 'Please draw an extent first.'}
+							</TextDescription>
+						)}
+					</div>
 
-							<div style={{ width: '100%' }}>
-								<FormLabel>Adjust the date range</FormLabel>
-								<div>
-									<TextDescription>
-										Select a period between 2018 and {CURRENT_YEAR}. Min 1 month, Max 12 months.
-									</TextDescription>
+					<div style={{ width: '100%' }}>
+						<FormLabel>Adjust the date range</FormLabel>
+						<div>
+							<TextDescription>
+								Select a period between 2018 and {CURRENT_YEAR}.{' '}
+								{isCropType ? 'Min 3 months, Max 12 months.' : 'Exactly 12 months.'}
+							</TextDescription>
 
-									<Box p="lg" pt={60} bg="#1A1A1A" style={{ borderRadius: '8px', marginTop: '0.5rem' }}>
-										{/* Year Navigator Slider */}
-										<Box mb="xl">
-											<RangeSlider
-												min={0}
-												max={CURRENT_YEAR - START_YEAR}
-												step={1}
-												value={[yearWindow, yearWindow + YEAR_WINDOW_SIZE - 1]}
-												onChange={(val) => {
-													if (Array.isArray(val)) {
-														const maxVal = getMaxYearWindow();
-														// Calculate which thumb moved more
-														const prevStart = yearWindow;
-														const prevEnd = yearWindow + YEAR_WINDOW_SIZE - 1;
-														const startDiff = Math.abs(val[0] - prevStart);
-														const endDiff = Math.abs(val[1] - prevEnd);
+							<Box p="lg" pt={60} bg="#1A1A1A" style={{ borderRadius: '8px', marginTop: '0.5rem' }}>
+								{/* Year Navigator Slider */}
+								<Box mb="xl">
+									<RangeSlider
+										min={0}
+										max={CURRENT_YEAR - START_YEAR}
+										step={1}
+										value={[yearWindow, yearWindow + YEAR_WINDOW_SIZE - 1]}
+										onChange={(val) => {
+											if (Array.isArray(val)) {
+												const maxVal = getMaxYearWindow();
+												// Calculate which thumb moved more
+												const prevStart = yearWindow;
+												const prevEnd = yearWindow + YEAR_WINDOW_SIZE - 1;
+												const startDiff = Math.abs(val[0] - prevStart);
+												const endDiff = Math.abs(val[1] - prevEnd);
 
-														let newStart: number;
-														if (startDiff >= endDiff) {
-															// Left thumb moved more or equal - use its position
-															newStart = Math.max(0, Math.min(val[0], maxVal));
-														} else {
-															// Right thumb moved more - derive start from end
-															newStart = Math.max(0, Math.min(val[1] - YEAR_WINDOW_SIZE + 1, maxVal));
-														}
-														// Deselect suggested period when year window changes
-														if (selectedPeriodId) {
-															setSelectedPeriodId(null);
-															setSuggestedPeriodSliderValues(null);
-														}
-														setYearWindow(newStart);
-													}
-												}}
-												classNames={{
-													root: 'step2-slider-root',
-													track: 'step2-slider-track',
-													bar: 'step2-slider-bar',
-													thumb: 'step2-slider-thumb',
-													mark: 'step2-slider-mark',
-													markLabel: 'step2-slider-mark-label',
-													label: 'step2-slider-label',
-												}}
-												label={(value) => {
-													const year = START_YEAR + value;
-													return (
-														<div className="step2-thumb-label">
-															{year}
-															<div className="step2-thumb-label-arrow" />
-														</div>
-													);
-												}}
-												labelAlwaysOn
-												restrictToMarks
-												marks={generateYearMarks()}
-											/>
-										</Box>
-
-										{/* Month Range Slider */}
-										<Box pt={20} mt={40}>
-											<RangeSlider
-												min={0}
-												max={monthSliderMax}
-												step={1}
-												minRange={3}
-												maxRange={11}
-												marks={generateMonthMarks(yearWindow)}
-												value={
-													(suggestedPeriodSliderValues as [number, number] | undefined) ||
-													([
-														startDate
-															? Math.min(
-																	monthSliderMax,
-																	Math.max(0, getSliderValueFromDate(startDate) - yearWindow * 12)
-																)
-															: 0,
-														endDate
-															? Math.min(monthSliderMax, Math.max(0, getSliderValueFromDate(endDate) - yearWindow * 12))
-															: 0,
-													] as [number, number])
+												let newStart: number;
+												if (startDiff >= endDiff) {
+													// Left thumb moved more or equal - use its position
+													newStart = Math.max(0, Math.min(val[0], maxVal));
+												} else {
+													// Right thumb moved more - derive start from end
+													newStart = Math.max(0, Math.min(val[1] - YEAR_WINDOW_SIZE + 1, maxVal));
 												}
-												onChange={handleSliderChange}
-												classNames={{
-													root: 'step2-slider-root',
-													track: 'step2-slider-track',
-													bar: 'step2-slider-bar',
-													thumb: 'step2-slider-thumb',
-													mark: 'step2-slider-mark',
-													markLabel: 'step2-slider-mark-label',
-													label: 'step2-slider-label',
-												}}
-												labelAlwaysOn
-												label={(value) => {
-													const date = new Date(START_YEAR, yearWindow * 12 + value);
-													const text = date.toLocaleString('en-US', { month: 'short' });
-													return (
-														<div className="step2-thumb-label">
-															{text}
-															<div className="step2-thumb-label-arrow" />
-														</div>
-													);
-												}}
-											/>
-										</Box>
-									</Box>
+												// Deselect suggested period when year window changes
+												if (selectedPeriodId) {
+													setSelectedPeriodId(null);
+													setSuggestedPeriodSliderValues(null);
+												}
+												setYearWindow(newStart);
+											}
+										}}
+										classNames={{
+											root: 'step2-slider-root',
+											track: 'step2-slider-track',
+											bar: 'step2-slider-bar',
+											thumb: 'step2-slider-thumb',
+											mark: 'step2-slider-mark',
+											markLabel: 'step2-slider-mark-label',
+											label: 'step2-slider-label',
+										}}
+										label={(value) => {
+											const year = START_YEAR + value;
+											return (
+												<div className="step2-thumb-label">
+													{year}
+													<div className="step2-thumb-label-arrow" />
+												</div>
+											);
+										}}
+										labelAlwaysOn
+										restrictToMarks
+										marks={generateYearMarks()}
+									/>
+								</Box>
 
-									{(startDate || endDate) && (
-										<Stack gap={2} mt="xs">
-											<TextDescription>
-												Selected start date: <b>{formatToFirstOfMonth(startDate)}</b>
-											</TextDescription>
-											<TextDescription>
-												Selected end date: <b>{formatToEndOfMonth(endDate)}</b>
-											</TextDescription>
-										</Stack>
-									)}
-								</div>
-							</div>
-						</>
-					)}
+								{/* Month Range Slider */}
+								<Box pt={20} mt={40}>
+									<RangeSlider
+										min={0}
+										max={monthSliderMax}
+										step={1}
+										minRange={isCropType ? 3 : 11}
+										maxRange={11}
+										marks={generateMonthMarks(yearWindow)}
+										value={
+											(suggestedPeriodSliderValues as [number, number] | undefined) ||
+											([
+												startDate
+													? Math.min(monthSliderMax, Math.max(0, getSliderValueFromDate(startDate) - yearWindow * 12))
+													: 0,
+												endDate
+													? Math.min(monthSliderMax, Math.max(0, getSliderValueFromDate(endDate) - yearWindow * 12))
+													: 0,
+											] as [number, number])
+										}
+										onChange={handleSliderChange}
+										classNames={{
+											root: 'step2-slider-root',
+											track: 'step2-slider-track',
+											bar: 'step2-slider-bar',
+											thumb: 'step2-slider-thumb',
+											mark: 'step2-slider-mark',
+											markLabel: 'step2-slider-mark-label',
+											label: 'step2-slider-label',
+										}}
+										labelAlwaysOn
+										label={(value) => {
+											const date = new Date(START_YEAR, yearWindow * 12 + value);
+											const text = date.toLocaleString('en-US', { month: 'short' });
+											return (
+												<div className="step2-thumb-label">
+													{text}
+													<div className="step2-thumb-label-arrow" />
+												</div>
+											);
+										}}
+									/>
+								</Box>
+							</Box>
+
+							{(startDate || endDate) && (
+								<Stack gap={2} mt="xs">
+									<TextDescription>
+										Selected start date: <b>{formatToFirstOfMonth(startDate)}</b>
+									</TextDescription>
+									<TextDescription>
+										Selected end date: <b>{formatToEndOfMonth(endDate)}</b>
+									</TextDescription>
+								</Stack>
+							)}
+						</div>
+					</div>
 					<div style={{ width: '100%' }}>
 						<FormLabel>Choose output file format</FormLabel>
 						<SegmentedControl
