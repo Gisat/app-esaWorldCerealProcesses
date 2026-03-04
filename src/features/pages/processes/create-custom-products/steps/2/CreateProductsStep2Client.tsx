@@ -271,6 +271,9 @@ export default function CreateProductsStep2Client() {
 	 */
 	const [suggestedPeriodSliderValues, setSuggestedPeriodSliderValues] = useState<number[] | null>(null);
 
+	const [sliderStart, setSliderStart] = useState<number>(6);
+	const [sliderEnd, setSliderEnd] = useState<number>(17);
+
 	const isCropType = product === customProductsProductTypes.cropType;
 
 	/**
@@ -386,24 +389,27 @@ export default function CreateProductsStep2Client() {
 		const period = suggestedPeriods.find((p) => p.id === value);
 		if (period) {
 			setSelectedPeriodId(value);
-			// startDate: YYYY-MM -> YYYY-MM-01
 			const [startYear, startMonth] = period.startDate.split('-').map(Number);
-			const newStartDate = new Date(startYear, startMonth - 1, 1);
+			let newStartDate = new Date(startYear, startMonth - 1, 1);
 
-			// endDate: YYYY-MM -> Last day of month (original behavior)
 			const [endYear, endMonth] = period.endDate.split('-').map(Number);
-			const newEndDate = new Date(endYear, endMonth, 0); // Last day of end month
+			let newEndDate = new Date(endYear, endMonth, 0);
 
-			// Update yearWindow to position the slider correctly for the selected period.
-			// Calculate the year index relative to START_YEAR.
+			if (!isCropType) {
+				const startSliderValue = getSliderValueFromDate(newStartDate);
+				const endSliderValue = getSliderValueFromDate(newEndDate);
+				const periodMonths = endSliderValue - startSliderValue;
+
+				if (periodMonths !== minSliderRange) {
+					const newEndSliderVal = startSliderValue + minSliderRange;
+					newEndDate = getDateFromSliderValue(newEndSliderVal, true);
+				}
+			}
+
 			const periodYear = startYear - START_YEAR;
-			// Clamp to valid range (max yearWindow allows yearWindow + YEAR_WINDOW_SIZE to not exceed max year)
 			const maxYearWindow = getMaxYearWindow();
 			const newYearWindow = Math.max(0, Math.min(periodYear, maxYearWindow));
 
-			// Calculate slider-relative values: convert absolute months to year-window-relative position
-			// The slider shows months within the 3-year window starting at yearWindow
-			// Position = absolute_month - yearWindow_start_month
 			const absoluteStartMonth = getSliderValueFromDate(newStartDate);
 			const absoluteEndMonth = getSliderValueFromDate(newEndDate);
 			const yearWindowStartMonth = newYearWindow * 12;
@@ -412,8 +418,9 @@ export default function CreateProductsStep2Client() {
 			const sliderEndValue = Math.max(0, Math.min(monthSliderMax, absoluteEndMonth - yearWindowStartMonth));
 
 			setSuggestedPeriodSliderValues([sliderStartValue, sliderEndValue]);
+			setSliderStart(sliderStartValue);
+			setSliderEnd(sliderEndValue);
 
-			// Set the dates and yearWindow
 			setStartDate(newStartDate);
 			const endDateStr = newEndDate.toISOString().split('T')[0] as CreateCustomProductsEndDateModel;
 			setEndDate(endDateStr);
@@ -427,26 +434,66 @@ export default function CreateProductsStep2Client() {
 	// Bottom slider: 24 marks representing the 3-year window (0 = start, 12 = middle, 24 = end)
 	const monthSliderMax = 24;
 
-	const handleSliderChange = ([startVal, endVal]: [number, number]) => {
-		setSelectedPeriodId(null);
-		setSuggestedPeriodSliderValues(null); // Clear the suggested period override
+	/**
+	 * Handles changes to the month range slider.
+	 * For crop land: enforces exactly 12 months (minSliderRange = 11) by deriving
+	 * the end position from the start position. This ensures both thumbs move
+	 * together maintaining a fixed 12-month window.
+	 * For crop type: allows flexible range between 3-12 months.
+	 *
+	 * @param values - Array of [start, end] slider values
+	 */
+	const handleMonthSliderChange = (values: number[]) => {
+		if (!Array.isArray(values)) return;
 
-		// Ensure minimum months based on product type
-		let newStartVal = startVal;
-		let newEndVal = endVal;
-		if (newEndVal - newStartVal < minSliderRange) {
-			newStartVal = Math.max(0, newEndVal - minSliderRange);
+		const [newStartVal, newEndVal] = values;
+
+		if (!isCropType) {
+			// For crop land: enforce exactly 12 months
+			const prevStart = sliderStart;
+			const prevEnd = sliderStart + minSliderRange;
+			const startDiff = Math.abs(newStartVal - prevStart);
+			const endDiff = Math.abs(newEndVal - prevEnd);
+
+			let finalSliderStart: number;
+			if (startDiff >= endDiff) {
+				// Start thumb moved more - position window based on start
+				finalSliderStart = Math.max(0, Math.min(newStartVal, monthSliderMax - minSliderRange));
+			} else {
+				// End thumb moved more - derive start from end
+				finalSliderStart = Math.max(0, Math.min(newEndVal - minSliderRange, monthSliderMax - minSliderRange));
+			}
+
+			setSliderStart(finalSliderStart);
+
+			const finalStartMonth = yearWindow * 12 + finalSliderStart;
+			const finalEndMonth = yearWindow * 12 + finalSliderStart + minSliderRange;
+
+			const newStartDate = getDateFromSliderValue(finalStartMonth);
+			const newEndDate = getDateFromSliderValue(finalEndMonth, true);
+
+			setSelectedPeriodId(null);
+			setSuggestedPeriodSliderValues(null);
+			setStartDate(newStartDate);
+			const endDateStr = newEndDate.toISOString().split('T')[0] as CreateCustomProductsEndDateModel;
+			setEndDate(endDateStr);
+		} else {
+			// For crop type: flexible range (3-12 months)
+			setSliderStart(newStartVal);
+			setSliderEnd(newEndVal);
+
+			const finalStartMonth = yearWindow * 12 + newStartVal;
+			const finalEndMonth = yearWindow * 12 + newEndVal;
+
+			const newStartDate = getDateFromSliderValue(finalStartMonth);
+			const newEndDate = getDateFromSliderValue(finalEndMonth, true);
+
+			setSelectedPeriodId(null);
+			setSuggestedPeriodSliderValues(null);
+			setStartDate(newStartDate);
+			const endDateStr = newEndDate.toISOString().split('T')[0] as CreateCustomProductsEndDateModel;
+			setEndDate(endDateStr);
 		}
-
-		const finalStartMonth = yearWindow * 12 + newStartVal;
-		const finalEndMonth = yearWindow * 12 + newEndVal;
-
-		const newStart = getDateFromSliderValue(finalStartMonth);
-		const newEnd = getDateFromSliderValue(finalEndMonth, true);
-
-		setStartDate(newStart);
-		const endDateStr = newEnd.toISOString().split('T')[0] as CreateCustomProductsEndDateModel;
-		setEndDate(endDateStr);
 	};
 
 	// Sync dates on first load - set to 12-month window centered on mark 12
@@ -462,13 +509,14 @@ export default function CreateProductsStep2Client() {
 
 		if (isFirstRender.current) {
 			isFirstRender.current = false;
-			// Bottom slider range is 0-24, 12-month window centered on mark 12
-			// Jul-Jun = 12 months (start at 6, end at 17)
-			const sliderStart = 6;
-			const sliderEnd = 17;
+			const start = 6;
+			const end = isCropType ? 17 : start + minSliderRange;
 
-			const windowStartMonth = yearWindow * 12 + sliderStart;
-			const windowEndMonth = yearWindow * 12 + sliderEnd;
+			setSliderStart(start);
+			setSliderEnd(end);
+
+			const windowStartMonth = yearWindow * 12 + start;
+			const windowEndMonth = yearWindow * 12 + end;
 
 			const newStart = getDateFromSliderValue(windowStartMonth);
 			const newEnd = getDateFromSliderValue(windowEndMonth, true);
@@ -477,18 +525,19 @@ export default function CreateProductsStep2Client() {
 			const endDateStr = newEnd.toISOString().split('T')[0] as CreateCustomProductsEndDateModel;
 			setEndDate(endDateStr);
 		} else if (prevYearWindow.current !== yearWindow && startDate && endDate) {
-			// Year window changed - shift dates to maintain same slider positions
 			const oldYearWindow = prevYearWindow.current;
 
-			// Calculate current slider positions
 			const oldStartSliderPos = getSliderValueFromDate(startDate) - oldYearWindow * 12;
-			const oldEndSliderPos = getSliderValueFromDate(endDate) - oldYearWindow * 12;
+			const oldEndSliderPos = isCropType
+				? getSliderValueFromDate(endDate) - oldYearWindow * 12
+				: oldStartSliderPos + minSliderRange;
 
-			// Calculate new absolute month positions
+			setSliderStart(oldStartSliderPos);
+			setSliderEnd(oldEndSliderPos);
+
 			const newStartMonth = yearWindow * 12 + oldStartSliderPos;
 			const newEndMonth = yearWindow * 12 + oldEndSliderPos;
 
-			// Clamp to valid range
 			const clampedStartMonth = Math.max(0, Math.min(newStartMonth, SLIDER_MAX));
 			const clampedEndMonth = Math.max(0, Math.min(newEndMonth, SLIDER_MAX));
 
@@ -733,21 +782,14 @@ export default function CreateProductsStep2Client() {
 										min={0}
 										max={monthSliderMax}
 										step={1}
-										minRange={isCropType ? 3 : 11}
-										maxRange={11}
+										minRange={isCropType ? minSliderRange : undefined}
+										maxRange={isCropType ? 11 : undefined}
 										marks={generateMonthMarks(yearWindow)}
 										value={
 											(suggestedPeriodSliderValues as [number, number] | undefined) ||
-											([
-												startDate
-													? Math.min(monthSliderMax, Math.max(0, getSliderValueFromDate(startDate) - yearWindow * 12))
-													: 0,
-												endDate
-													? Math.min(monthSliderMax, Math.max(0, getSliderValueFromDate(endDate) - yearWindow * 12))
-													: 0,
-											] as [number, number])
+											(isCropType ? [sliderStart, sliderEnd] : [sliderStart, sliderStart + minSliderRange])
 										}
-										onChange={handleSliderChange}
+										onChange={handleMonthSliderChange}
 										classNames={{
 											root: 'step2-slider-root',
 											track: 'step2-slider-track',
