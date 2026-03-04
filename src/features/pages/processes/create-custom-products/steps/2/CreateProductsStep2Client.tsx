@@ -101,9 +101,8 @@ const getDateFromSliderValue = (sliderVal: number, isEnd = false) => {
  */
 const formatPeriodDate = (dateStr: string) => {
 	const [year, month] = dateStr.split('-').map(Number);
-	// Create date in local time for consistent display.
 	const date = new Date(year, month - 1);
-	return date.toLocaleString('en-US', { month: 'long', year: 'numeric' });
+	return date.toLocaleString('en-US', { month: 'short', year: 'numeric' });
 };
 
 /**
@@ -113,7 +112,7 @@ const formatPeriodDate = (dateStr: string) => {
  * @returns {string} Combined label, e.g. "January 2021/December 2021".
  */
 const formatPeriodLabel = (start: string, end: string) => {
-	return `${formatPeriodDate(start)}/${formatPeriodDate(end)}`;
+	return `${formatPeriodDate(start)} / ${formatPeriodDate(end)}`;
 };
 
 /**
