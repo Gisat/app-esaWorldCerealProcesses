@@ -24,7 +24,6 @@ import {
 	customProductsDateLimits,
 	customProductsPostprocessMethods,
 	customProductsProductTypes,
-	defaultProductsDates,
 } from '@features/(processes)/_constants/app';
 import { TextLink } from '@features/(shared)/_layout/_components/Content/TextLink';
 import formParams from '@features/(processes)/_constants/generate-custom-products/formParams';
@@ -430,46 +429,9 @@ export default function CreateProductsStep2Client() {
 	// Bottom slider: 24 marks representing the 3-year window (0 = start, 12 = middle, 24 = end)
 	const monthSliderMax = 24;
 
-	const onSliderChange = ([startVal, endVal]: [number, number]) => {
-		// Manual slider change overrides suggested period selection.
-		setSelectedPeriodId(null);
-
-		// Convert year-relative values to absolute month values
-		const absoluteStartMonth = yearWindow * 12 + startVal;
-		const absoluteEndMonth = yearWindow * 12 + endVal;
-
-		// Clamp to available range
-		let newEndVal = Math.min(absoluteEndMonth, SLIDER_MAX);
-		let newStartVal = Math.max(absoluteStartMonth, 0);
-
-		// Ensure minRange of 36 months (3 years) is maintained after clamping.
-		if (newEndVal - newStartVal < MIN_MONTHS) {
-			newStartVal = Math.max(0, newEndVal - MIN_MONTHS);
-		}
-
-		const newStart = getDateFromSliderValue(newStartVal);
-		const newEnd = getDateFromSliderValue(newEndVal, true);
-
-		setStartDate(newStart);
-		const endDateStr = newEnd.toISOString().split('T')[0] as CreateCustomProductsEndDateModel;
-		setEndDate(endDateStr);
-	};
-
-	/**
-	 * Effect to sync dates when year window changes.
-	 * Sets the bottom slider to 12-month window centered on mark 12.
-	 * Only runs when yearWindow changes, but can be overridden by user selection.
-	 */
-	const [userHasInteracted, setUserHasInteracted] = useState(false);
-
 	const handleSliderChange = ([startVal, endVal]: [number, number]) => {
-		setUserHasInteracted(true);
 		setSelectedPeriodId(null);
 		setSuggestedPeriodSliderValues(null); // Clear the suggested period override
-
-		// Convert to absolute months
-		const absoluteStartMonth = yearWindow * 12 + startVal;
-		const absoluteEndMonth = yearWindow * 12 + endVal;
 
 		// Ensure minimum 3 months
 		let newStartVal = startVal;
@@ -488,12 +450,6 @@ export default function CreateProductsStep2Client() {
 		const endDateStr = newEnd.toISOString().split('T')[0] as CreateCustomProductsEndDateModel;
 		setEndDate(endDateStr);
 	};
-
-	// Reset user interaction flag when year window changes
-	useEffect(() => {
-		setUserHasInteracted(false);
-		setSuggestedPeriodSliderValues(null);
-	}, [yearWindow]);
 
 	// Sync dates on first load - set to 12-month window centered on mark 12
 	const isFirstRender = React.useRef(true);
@@ -525,7 +481,6 @@ export default function CreateProductsStep2Client() {
 		} else if (prevYearWindow.current !== yearWindow && startDate && endDate) {
 			// Year window changed - shift dates to maintain same slider positions
 			const oldYearWindow = prevYearWindow.current;
-			const yearWindowDiff = yearWindow - oldYearWindow;
 
 			// Calculate current slider positions
 			const oldStartSliderPos = getSliderValueFromDate(startDate) - oldYearWindow * 12;
