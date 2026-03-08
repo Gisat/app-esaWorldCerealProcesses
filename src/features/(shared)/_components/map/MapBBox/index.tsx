@@ -13,6 +13,34 @@ const defaultMapSize: Array<number> = [500, 500]; // Default map size in pixels
 const defaultMapView = { latitude: 30, longitude: 0, zoom: 1 }; // Default map view settings
 
 /**
+ * Converts EPSG:4326 [lng, lat] to EPSG:3857 [x, y] in meters.
+ * @param coordinates - [lng, lat] in EPSG:4326
+ * @returns [x, y] in EPSG:3857
+ */
+const lngLatToWebMercator = (coordinates: number[]): number[] => {
+	const lng = coordinates[0];
+	const lat = coordinates[1];
+	const RADIUS = 6378137;
+	const x = lng * (Math.PI / 180) * RADIUS;
+	const y = Math.log(Math.tan(Math.PI / 4 + (lat * Math.PI) / 180 / 2)) * RADIUS;
+	return [x, y];
+};
+
+/**
+ * Converts EPSG:4326 points to EPSG:3857 bbox extent.
+ * @param points - Array of [lng, lat] coordinates in EPSG:4326
+ * @returns BoundingBoxExtent in EPSG:3857 [minX, minY, maxX, maxY]
+ */
+const convertPointsToExtent = (points: Array<Array<number>>): BoundingBoxExtent => {
+	const convertedPoints = points.map(lngLatToWebMercator);
+	const minX = Math.min(convertedPoints[0][0], convertedPoints[2][0]);
+	const maxX = Math.max(convertedPoints[0][0], convertedPoints[2][0]);
+	const minY = Math.min(convertedPoints[0][1], convertedPoints[2][1]);
+	const maxY = Math.max(convertedPoints[0][1], convertedPoints[2][1]);
+	return [minX, minY, maxX, maxY] as BoundingBoxExtent;
+};
+
+/**
  * Rounds the coordinates to two decimal places.
  *
  * @param {Array<Array<number>>} coordinatesToRound - The coordinates to round.
@@ -119,7 +147,7 @@ export const MapBBox = function ({
 	const onBboxChange = (points: Array<Array<number>> | null, area: number | null) => {
 		onBboxDescriptionChange(points, area);
 		if (points?.length === 4 && area) {
-			const bboxExtent = [...points[2], ...points[0]] as BoundingBoxExtent;
+			const bboxExtent = convertPointsToExtent(points);
 			setBboxExtent?.(bboxExtent);
 			setBboxValidity(area);
 		} else {
@@ -156,6 +184,9 @@ export const MapBBox = function ({
 			const area = turfArea(polygon) / 1000000;
 			onBboxDescriptionChange(bboxPoints, area);
 			setBboxValidity(area);
+
+			const bboxExtent = convertPointsToExtent(bboxPoints);
+			setBboxExtent?.(bboxExtent);
 		} else if (!initialView && !bbox) {
 			setInitialView(defaultMapView);
 		}

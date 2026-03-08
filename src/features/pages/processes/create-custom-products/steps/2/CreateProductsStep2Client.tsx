@@ -304,7 +304,7 @@ export default function CreateProductsStep2Client() {
 	}, [bbox, bboxIsInBounds]);
 
 	const { data: periodsData } = useSWR(debouncedBbox ? [suggestedPeriodsApiUrl, debouncedBbox] : null, () =>
-		apiFetcher(suggestedPeriodsApiUrl, `bbox=${debouncedBbox}`)
+		apiFetcher(suggestedPeriodsApiUrl, undefined, 'POST', { bbox: debouncedBbox!.split(',').map(Number), epsg: 3857 })
 	);
 
 	useEffect(() => {
