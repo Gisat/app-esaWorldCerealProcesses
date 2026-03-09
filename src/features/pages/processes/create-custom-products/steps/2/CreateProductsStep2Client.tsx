@@ -456,19 +456,8 @@ export default function CreateProductsStep2Client() {
 
 		if (!isCropType) {
 			// For crop land: enforce exactly 12 months
-			const prevStart = sliderStart;
-			const prevEnd = sliderStart + minSliderRange;
-			const startDiff = Math.abs(newStartVal - prevStart);
-			const endDiff = Math.abs(newEndVal - prevEnd);
-
-			let finalSliderStart: number;
-			if (startDiff >= endDiff) {
-				// Start thumb moved more - position window based on start
-				finalSliderStart = Math.max(0, Math.min(newStartVal, monthSliderMax - minSliderRange));
-			} else {
-				// End thumb moved more - derive start from end
-				finalSliderStart = Math.max(0, Math.min(newEndVal - minSliderRange, monthSliderMax - minSliderRange));
-			}
+			// Always derive start position from end position
+			const finalSliderStart = Math.max(0, Math.min(newEndVal - minSliderRange, monthSliderMax - minSliderRange));
 
 			setSliderStart(finalSliderStart);
 

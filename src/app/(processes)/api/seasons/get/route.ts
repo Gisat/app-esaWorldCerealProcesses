@@ -56,11 +56,21 @@ const handleSeasonsRequest = async (request: NextRequest) => {
 		const transformedSeasons = Object.entries(backendContent).map(([id, dates]) => {
 			const [startDateFull, endDateFull] = dates as [string, string];
 			const formatDate = (dateStr: string) => {
+				// Extract YYYY-MM-DD using regex to avoid timezone issues
+				// Handles formats like: "2021-03-01 00:00:00", "2021-03-01T00:00:00", "2021-03-01T00:00:00.000000"
+				const match = dateStr.match(/(\d{4})-(\d{2})-(\d{2})/);
+				if (match) {
+					return `${match[1]}-${match[2]}-${match[3]}`;
+				}
+				// Fallback: try parsing as date
 				const date = new Date(dateStr);
-				const year = date.getFullYear();
-				const month = String(date.getMonth() + 1).padStart(2, '0');
-				const day = String(date.getDate()).padStart(2, '0');
-				return `${year}-${month}-${day}`;
+				if (!isNaN(date.getTime())) {
+					const y = date.getUTCFullYear();
+					const m = String(date.getUTCMonth() + 1).padStart(2, '0');
+					const d = String(date.getUTCDate()).padStart(2, '0');
+					return `${y}-${m}-${d}`;
+				}
+				return dateStr;
 			};
 			return {
 				id,

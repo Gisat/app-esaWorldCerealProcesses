@@ -53,15 +53,19 @@ export async function GET(req: NextRequest) {
 		}
 
 		// prepare data for the request
-		const boundaryDates = getBoundaryDates(new Date(endDate));
+		// Parse date as local time to avoid timezone issues
+		const [year, month, day] = endDate.split('-').map(Number);
+		const endDateAsLocal = new Date(year, month - 1, day);
+		const boundaryDates = getBoundaryDates(endDateAsLocal);
 		const startDate = transformDate(boundaryDates.startDate);
+		const transformedEndDate = transformDate(boundaryDates.endDate);
 
 		const data = {
 			processId,
 			namespace: getNamespaceByProcessId(processId),
 			bbox: bbox.split(',').map(Number),
 			crs: 'EPSG:4326',
-			timeRange: [startDate, endDate],
+			timeRange: [startDate, transformedEndDate],
 			outputFileFormat,
 			model,
 			...(orbitState && { orbitState }),
