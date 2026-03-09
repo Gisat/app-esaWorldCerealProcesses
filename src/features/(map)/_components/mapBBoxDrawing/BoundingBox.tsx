@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useEffect, Children, cloneElement, useRef } from 'react';
 import ControlButtons from './ControlButtons';
 import { dragLayer } from './_logic/dragLayer';

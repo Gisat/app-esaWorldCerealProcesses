@@ -94,10 +94,19 @@ export const MapBBox = function ({
 }) {
 	const [initialView, setInitialView] = useState<object | null>(null); // State for the initial view of the map
 
+	// Helper to validate bbox coordinates
+	const isValidBboxCoordinates = (bboxArr: Array<number>): boolean => {
+		if (!bboxArr || bboxArr.length !== 4) return false;
+		const [minLng, minLat, maxLng, maxLat] = bboxArr;
+		const isValidLatitude = (lat: number) => Number.isFinite(lat) && lat >= -90 && lat <= 90;
+		const isValidLongitude = (lng: number) => Number.isFinite(lng) && lng >= -180 && lng <= 180;
+		return isValidLatitude(minLat) && isValidLatitude(maxLat) && isValidLongitude(minLng) && isValidLongitude(maxLng);
+	};
+
 	let bboxPoints: BboxPoints | undefined;
 
-	// Convert bbox coordinates to bbox points
-	if (bbox) {
+	// Convert bbox coordinates to bbox points (only if valid to prevent rendering issues)
+	if (bbox && isValidBboxCoordinates(bbox)) {
 		bboxPoints = [
 			[bbox[2], bbox[3]],
 			[bbox[2], bbox[1]],
@@ -158,35 +167,55 @@ export const MapBBox = function ({
 	// If there is no initial view and bounding box data is available, calculate the view to fit the bounding box and set it as the initial view.
 	// Also, create a polygon from the bounding box points, calculate its area, and update the bounding box description.
 	useEffect(() => {
+		// Handle case where bbox exists but has invalid coordinates - use default view
+		if (!initialView && bbox && !bboxPoints) {
+			console.warn('Invalid bbox coordinates, using default view');
+			setInitialView(defaultMapView);
+			return;
+		}
+
 		if (!initialView && bbox && bboxPoints) {
-			const bboxView = {
-				longitude: (bbox[0] + bbox[2]) / 2,
-				latitude: (bbox[1] + bbox[3]) / 2,
-			};
+			// Skip viewport calculation if bbox has invalid coordinates
+			if (!isValidBboxCoordinates(bbox)) {
+				console.warn('Invalid bbox coordinates, using default view');
+				setInitialView(defaultMapView);
+				return;
+			}
 
-			const viewport = new WebMercatorViewport(bboxView);
-			const fitView = viewport.fitBounds(
-				[
-					[bbox[0], bbox[1]],
-					[bbox[2], bbox[3]],
-				],
-				{
-					width: mapSize[0],
-					height: mapSize[1],
-					padding: 50,
-				}
-			);
-			setInitialView(fitView);
+			try {
+				const bboxView = {
+					longitude: (bbox[0] + bbox[2]) / 2,
+					latitude: (bbox[1] + bbox[3]) / 2,
+				};
 
-			const polygon = turfPolygon([[...bboxPoints, bboxPoints[0]]], {
-				name: 'polygon',
-			});
-			const area = turfArea(polygon) / 1000000;
-			onBboxDescriptionChange(bboxPoints, area);
-			setBboxValidity(area);
+				const viewport = new WebMercatorViewport(bboxView);
+				const fitView = viewport.fitBounds(
+					[
+						[bbox[0], bbox[1]],
+						[bbox[2], bbox[3]],
+					],
+					{
+						width: mapSize[0],
+						height: mapSize[1],
+						padding: 50,
+					}
+				);
+				setInitialView(fitView);
 
-			const bboxExtent = convertPointsToExtent(bboxPoints);
-			setBboxExtent?.(bboxExtent);
+				const polygon = turfPolygon([[...bboxPoints, bboxPoints[0]]], {
+					name: 'polygon',
+				});
+				const area = turfArea(polygon) / 1000000;
+				onBboxDescriptionChange(bboxPoints, area);
+				setBboxValidity(area);
+
+				const bboxExtent = convertPointsToExtent(bboxPoints);
+				setBboxExtent?.(bboxExtent);
+			} catch (error) {
+				console.warn('Failed to calculate initial view from bbox:', error);
+				// Fall back to default view if bbox calculation fails
+				setInitialView(defaultMapView);
+			}
 		} else if (!initialView && !bbox) {
 			setInitialView(defaultMapView);
 		}
