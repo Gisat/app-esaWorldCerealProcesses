@@ -1,7 +1,7 @@
 'use client';
 
 import styles from './map.module.css';
-import React, { useMemo } from 'react';
+import React, { useMemo, useRef, useEffect } from 'react';
 import { LayersList } from '@deck.gl/core';
 import DeckGL from '@deck.gl/react';
 import { TileLayer } from '@deck.gl/geo-layers';
@@ -54,6 +54,24 @@ export interface RenderMapProps {
  * @returns {JSX.Element} The rendered map component.
  */
 const RenderingMap: React.FC<RenderMapProps> = (props: RenderMapProps) => {
+	// Internal ref to track DeckGL instance for cleanup
+	const internalMapRef = useRef<any>(null);
+
+	// Use internal ref if no external ref provided, otherwise use external ref
+	// This ensures we can always clean up the DeckGL instance
+	const deckRef = props.mapRef || internalMapRef;
+
+	// Cleanup WebGL context when component unmounts to prevent context leaks
+	useEffect(() => {
+		return () => {
+			// Check both refs to ensure cleanup happens in all cases
+			if (props.mapRef?.current) {
+				props.mapRef.current.finalize();
+			} else if (internalMapRef.current) {
+				internalMapRef.current.finalize();
+			}
+		};
+	}, [props.mapRef]);
 	const tileLayer = useMemo(() => {
 		return new TileLayer({
 			id: 'TileLayer',
@@ -81,7 +99,7 @@ const RenderingMap: React.FC<RenderMapProps> = (props: RenderMapProps) => {
 	return (
 		<section className={`${styles.mapRender}`}>
 			<DeckGL
-				ref={props.mapRef}
+				ref={deckRef}
 				initialViewState={props.initialView}
 				layers={layers}
 				controller={!props.disableControls}

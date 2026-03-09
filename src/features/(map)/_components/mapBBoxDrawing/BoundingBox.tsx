@@ -93,6 +93,15 @@ const BoundingBox: React.FC<BoundingBoxProps> = ({
 	const [predictedHoveredPoints, setPredictedHoveredPoints] = useState<BboxPoints | null>(null); // Predicted hovered points
 	const [bboxArea, setBboxArea] = useState<number | null>(null); // Area of the bounding box
 
+	// Cleanup WebGL context when component unmounts to prevent context leaks
+	useEffect(() => {
+		return () => {
+			if (mapRef.current) {
+				mapRef.current.finalize();
+			}
+		};
+	}, []);
+
 	const viewport = mapRef?.current?.deck?.viewManager?._viewports?.[0];
 
 	const onBboxCoordinatesChange = (bboxCoordinates: BboxPoints | BboxPoint | null) => {
