@@ -27,16 +27,30 @@ const lngLatToWebMercator = (coordinates: number[]): number[] => {
 };
 
 /**
- * Converts EPSG:4326 points to EPSG:3857 bbox extent.
+ * Converts EPSG:4326 points to bbox extent in EPSG:4326.
  * @param points - Array of [lng, lat] coordinates in EPSG:4326
- * @returns BoundingBoxExtent in EPSG:3857 [minX, minY, maxX, maxY]
+ * @returns BoundingBoxExtent in EPSG:4326 [minLng, minLat, maxLng, maxLat]
  */
 const convertPointsToExtent = (points: Array<Array<number>>): BoundingBoxExtent => {
-	const convertedPoints = points.map(lngLatToWebMercator);
-	const minX = Math.min(convertedPoints[0][0], convertedPoints[2][0]);
-	const maxX = Math.max(convertedPoints[0][0], convertedPoints[2][0]);
-	const minY = Math.min(convertedPoints[0][1], convertedPoints[2][1]);
-	const maxY = Math.max(convertedPoints[0][1], convertedPoints[2][1]);
+	const minLng = Math.min(points[0][0], points[2][0]);
+	const maxLng = Math.max(points[0][0], points[2][0]);
+	const minLat = Math.min(points[0][1], points[2][1]);
+	const maxLat = Math.max(points[0][1], points[2][1]);
+	return [minLng, minLat, maxLng, maxLat] as BoundingBoxExtent;
+};
+
+/**
+ * Converts EPSG:4326 bbox extent to EPSG:3857.
+ * @param bbox - Array of 4 coordinates in EPSG:4326 [minLng, minLat, maxLng, maxLat]
+ * @returns BoundingBoxExtent in EPSG:3857 [minX, minY, maxX, maxY]
+ */
+const convertExtentToEpsg3857 = (bbox: number[]): BoundingBoxExtent => {
+	if (!bbox || bbox.length !== 4) return bbox as BoundingBoxExtent;
+	const [minLng, minLat, maxLng, maxLat] = bbox;
+	const minX = lngLatToWebMercator([minLng, minLat])[0];
+	const maxX = lngLatToWebMercator([maxLng, maxLat])[0];
+	const minY = lngLatToWebMercator([minLng, minLat])[1];
+	const maxY = lngLatToWebMercator([maxLng, maxLat])[1];
 	return [minX, minY, maxX, maxY] as BoundingBoxExtent;
 };
 
@@ -251,3 +265,5 @@ export const MapBBox = function ({
 		</div>
 	);
 };
+
+export { convertExtentToEpsg3857 };
