@@ -1,5 +1,6 @@
 'use client';
 import useSWR from 'swr';
+import { Text } from '@mantine/core';
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { IconArrowLeft, IconCheck } from '@tabler/icons-react';
@@ -684,8 +685,13 @@ export default function CreateProductsStep2Client() {
 			<Column>
 				<Stack gap="lg" w="100%" align="flex-start">
 					<div>
-						<FormLabel>Pick a suggested period</FormLabel>
-						<TextDescription>Select a predefined period based on the area of interest.</TextDescription>
+						<FormLabel>Select season of interest</FormLabel>
+						<TextDescription>
+							Pick a recommended period for your selected area and tweak as needed, or define your own.
+						</TextDescription>
+					</div>
+					<div>
+						<Text>Pick a suggested period</Text>
 						{suggestedPeriods.length > 0 ? (
 							<Radio.Group
 								value={selectedPeriodId}
@@ -704,14 +710,14 @@ export default function CreateProductsStep2Client() {
 								</Stack>
 							</Radio.Group>
 						) : (
-							<TextDescription color="dimmed">
-								{bbox ? 'Loading suggested periods...' : 'Please draw an extent first.'}
+							<TextDescription color="var(--textSecondaryColor)">
+								{bbox ? 'Loading suggested periods...' : 'Please draw the extent first.'}
 							</TextDescription>
 						)}
 					</div>
 
 					<div style={{ width: '100%' }}>
-						<FormLabel>Adjust the date range</FormLabel>
+						<Text>Adjust the date range</Text>
 						<div>
 							<TextDescription>
 								Select a period between 2018 and {CURRENT_YEAR}.{' '}
@@ -815,12 +821,12 @@ export default function CreateProductsStep2Client() {
 
 							{(startDate || endDate) && (
 								<Stack gap={2} mt="xs">
-									<TextDescription>
+									<Text>
 										Selected start date: <b>{formatToFirstOfMonth(startDate)}</b>
-									</TextDescription>
-									<TextDescription>
+									</Text>
+									<Text>
 										Selected end date: <b>{formatToEndOfMonth(endDate)}</b>
-									</TextDescription>
+									</Text>
 								</Stack>
 							)}
 						</div>

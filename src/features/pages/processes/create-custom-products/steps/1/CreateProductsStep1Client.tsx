@@ -173,7 +173,7 @@ export default function CreateProductsStep1Client() {
 								onChange={(event) => setModelUrl(event.currentTarget.value)}
 							/>
 						</Input.Wrapper>
-						<Text>
+						<Text size="sm" c="var(--textSecondaryColor)">
 							This service only works with custom models, learn more{' '}
 							<TextLink
 								url={
