@@ -396,26 +396,32 @@ export default function CreateProductsStep2Client() {
 			let newEndDate = new Date(endYear, endMonth, 0);
 
 			if (!isCropType) {
-				const startSliderValue = getSliderValueFromDate(newStartDate);
 				const endSliderValue = getSliderValueFromDate(newEndDate);
+				const startSliderValue = getSliderValueFromDate(newStartDate);
 				const periodMonths = endSliderValue - startSliderValue;
 
 				if (periodMonths !== minSliderRange) {
-					const newEndSliderVal = startSliderValue + minSliderRange;
-					newEndDate = getDateFromSliderValue(newEndSliderVal, true);
+					const absoluteEndMonth = endSliderValue;
+					const absoluteStartMonth = Math.max(0, absoluteEndMonth - minSliderRange);
+					newStartDate = getDateFromSliderValue(absoluteStartMonth);
 				}
 			}
 
-			const periodYear = startYear - START_YEAR;
-			const maxYearWindow = getMaxYearWindow();
-			const newYearWindow = Math.max(0, Math.min(periodYear, maxYearWindow));
-
 			const absoluteStartMonth = getSliderValueFromDate(newStartDate);
 			const absoluteEndMonth = getSliderValueFromDate(newEndDate);
+			const adjustedPeriodYear = Math.floor(absoluteEndMonth / 12);
+			const maxYearWindow = getMaxYearWindow();
+			let newYearWindow = Math.max(0, Math.min(adjustedPeriodYear, maxYearWindow));
 			const yearWindowStartMonth = newYearWindow * 12;
 
-			const sliderStartValue = Math.max(0, Math.min(monthSliderMax, absoluteStartMonth - yearWindowStartMonth));
-			const sliderEndValue = Math.max(0, Math.min(monthSliderMax, absoluteEndMonth - yearWindowStartMonth));
+			if (absoluteStartMonth < yearWindowStartMonth) {
+				newYearWindow = Math.max(0, Math.floor(absoluteStartMonth / 12));
+			}
+
+			const finalYearWindowStartMonth = newYearWindow * 12;
+
+			const sliderStartValue = Math.max(0, Math.min(monthSliderMax, absoluteStartMonth - finalYearWindowStartMonth));
+			const sliderEndValue = Math.max(0, Math.min(monthSliderMax, absoluteEndMonth - finalYearWindowStartMonth));
 
 			setSuggestedPeriodSliderValues([sliderStartValue, sliderEndValue]);
 			setSliderStart(sliderStartValue);
