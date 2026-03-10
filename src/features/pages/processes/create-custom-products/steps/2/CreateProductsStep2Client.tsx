@@ -16,7 +16,7 @@ import {
 import { OneOfWorldCerealActions } from '@features/state/state.actions';
 import TwoColumns, { Column } from '@features/(shared)/_layout/_components/Content/TwoColumns';
 import { SectionContainer } from '@features/(shared)/_layout/_components/Content/SectionContainer';
-import { convertExtentToEpsg3857 } from '@features/(shared)/_components/map/MapBBox';
+
 import { Button, Group, SegmentedControl, Stack, Radio, RangeSlider, Box } from '@mantine/core';
 import FormLabel from '@features/(shared)/_layout/_components/Content/FormLabel';
 import { TextDescription } from '@features/(shared)/_layout/_components/Content/TextDescription';
@@ -306,11 +306,9 @@ export default function CreateProductsStep2Client() {
 	}, [bbox, bboxIsInBounds]);
 
 	const { data: periodsData } = useSWR(debouncedBbox ? [suggestedPeriodsApiUrl, debouncedBbox] : null, () => {
-		// Convert bbox from EPSG:4326 to EPSG:3857 for the suggested periods API
-		const bboxInEpsg3857 = convertExtentToEpsg3857(bbox!);
 		return apiFetcher(suggestedPeriodsApiUrl, undefined, 'POST', {
-			bbox: bboxInEpsg3857,
-			epsg: 3857,
+			bbox: bbox,
+			epsg: 4326,
 		});
 	});
 
