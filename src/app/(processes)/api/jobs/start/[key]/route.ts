@@ -2,6 +2,7 @@ import { fetchWithSessions } from "@features/(auth)/_ssr/handlers.sessionFetch";
 import { getRequireSessionId } from "@features/(auth)/_utils/requireSessionId";
 import { handleRouteError } from "@features/(shared)/errors/handlers.errorInRoute";
 import { NextRequest, NextResponse } from "next/server";
+import { loggyError, loggyWarn } from "@gisatcz/ptr-be-core/node";
 
 // NextJS Cache controls
 export const dynamic = "force-dynamic";
@@ -11,8 +12,8 @@ export const fetchCache = "force-no-store";
  * Handles the GET request to start a job.
  * 
  * @param {NextRequest} req - The incoming request object.
- * @param {Object} params - The route parameters.
- * @param {string} params.key - The key parameter from the route.
+ * @param {Object} context - The context object containing route parameters.
+ * @param {Promise<{ key: string }>} context.params - The key parameter from the route.
  * @returns {Promise<NextResponse>} - The response object.
  */
 export async function GET(
@@ -23,6 +24,7 @@ export async function GET(
   try {
     // Validate inputs for safe aggregation
     if (!key) {
+      loggyError("Jobs start GET", "Missing key value");
       return NextResponse.json("Missing key value", {
         status: 400,
       });
@@ -34,8 +36,10 @@ export async function GET(
     const openeoUrlPrefix = process.env.OEO_URL;
 
     // Check if the OpenEO URL prefix is defined
-    if (!openeoUrlPrefix)
+    if (!openeoUrlPrefix) {
+      loggyError("Jobs start GET", "Missing openeo URL variable");
       throw new Error("Missing openeo URL variable");
+    }
 
     const url = `${openeoUrlPrefix}/openeo/jobs/start`;
 
@@ -61,13 +65,16 @@ export async function GET(
     return nextResponse;
 
   } catch (error: any) {
+    loggyError("Jobs start GET", error);
     // Handle errors and return appropriate response
     const { message, status } = handleRouteError(error);
     const response = NextResponse.json({ error: message }, { status });
 
     // Delete session cookie if unauthorized
-    if (status === 401)
-      response.cookies.delete("sid");
+    if (status === 401) {
+      loggyWarn('Unauthorized', 'User is not authorized to access the resource. Deleting session cookie.');
+      response.cookies.delete('sid');
+    }
 
     return response;
   }

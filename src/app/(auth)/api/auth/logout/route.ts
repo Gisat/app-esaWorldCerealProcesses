@@ -1,6 +1,7 @@
 import { fetchLogoutNotification } from "@features/(auth)/_ssr/handlers.logoutFetch";
 import { handleRouteError } from "@features/(shared)/errors/handlers.errorInRoute";
 import { NextRequest, NextResponse } from "next/server";
+import { loggyWarn, loggyInfo } from '@gisatcz/ptr-be-core/node';
 
 // NextJS Cache controls
 export const dynamic = "force-dynamic";
@@ -25,17 +26,17 @@ export async function GET(req: NextRequest) {
     // delete cookies from logout
     feRedirect.cookies.delete("sid");
 
-    console.log("Logout successful");
+    loggyInfo('Logout successful', 'User has been logged out successfully.');
     return feRedirect;
 
   } catch (error: any) {
       const { message, status } = handleRouteError(error)
       const response = NextResponse.json({ error: message }, { status })
-      
-      if(status === 401) 
-        response.cookies.delete("sid")
 
-      console.log("Logout error", error);
+      if (status === 401) {
+          loggyWarn('Unauthorized', `Logout failed: ${message}`);
+          response.cookies.delete('sid');
+      }
 
       return response
   }

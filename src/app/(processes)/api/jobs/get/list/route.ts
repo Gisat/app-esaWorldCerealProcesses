@@ -3,6 +3,7 @@ import { processTypes } from "@features/(processes)/_constants/app";
 import { getSamples } from "@features/(processes)/_utils/sample.loader";
 import { handleRouteError } from "@features/(shared)/errors/handlers.errorInRoute";
 import { NextRequest, NextResponse } from "next/server";
+import { loggyError, loggyWarn } from "@gisatcz/ptr-be-core/node";
 
 import downloadFormParmas from "@features/(processes)/_constants/download-official-products/formParams";
 import customProductFormParams from "@features/(processes)/_constants/generate-custom-products/formParams";
@@ -52,8 +53,10 @@ export async function GET(req: NextRequest) {
   try {
     const openeoUrlPrefix = process.env.OEO_URL
 
-    if (!openeoUrlPrefix)
+    if (!openeoUrlPrefix) {
+      loggyError("Jobs get list GET", "Missing openeo URL variable");
       throw new Error("Missing openeo URL variable")
+    }
 
     const url = `${openeoUrlPrefix}/openeo/jobs/list-all`
 
@@ -83,11 +86,14 @@ export async function GET(req: NextRequest) {
     return nextResponse
 
   } catch (error: any) {
+    loggyError("Jobs get list GET", error);
     const { message, status } = handleRouteError(error)
     const response = NextResponse.json({ error: message }, { status })
 
-    if (status === 401)
-      response.cookies.delete("sid")
+    if (status === 401) {
+      loggyWarn('Unauthorized', 'User is not authorized to access the resource. Deleting session cookie.');
+      response.cookies.delete('sid');
+    }
 
     return response
   }

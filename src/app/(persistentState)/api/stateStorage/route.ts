@@ -1,6 +1,7 @@
 import { openDb, dbSaveState, dbNeedAppState } from '@gisatcz/ptr-fe-core/server';
 import { handleRouteError, BaseHttpError, ErrorBehavior } from '@gisatcz/ptr-fe-core/globals';
 import { randomUUID } from 'crypto';
+import { loggyError } from '@gisatcz/ptr-be-core/node';
 // Importing necessary modules and utilities
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -25,19 +26,24 @@ export const dynamic = 'force-dynamic';
 export async function GET(request: NextRequest) {
 	try {
 		// Parse the search parameters from the request URL
-		const { searchParams } = new URL(request.url);
+		const {searchParams} = new URL(request.url);
 		const stateKey = searchParams.get('key');
 
-		if (!stateKey)
+		if (!stateKey) {
 			// Throw an error if the 'key' parameter is missing
-			throw new BaseHttpError('Missing key parameter', 400, ErrorBehavior.SSR);
+			const message = 'Missing key parameter';
+			loggyError('Missing parameter', message);
+			throw new BaseHttpError(message, 400, ErrorBehavior.SSR);
+		}
 
 		// Retrieve the database file path from environment variables
 		const databaseFile = process.env.DATABASE_FILE;
 
 		if (!databaseFile) {
 			// Throw an error if the database file is not found
-			throw new BaseHttpError('Database file not found', 500, ErrorBehavior.SSR);
+			const message = 'Database file not found';
+			loggyError('State storage error', message);
+			throw new BaseHttpError(message, 500, ErrorBehavior.SSR);
 		}
 
 		// Open a connection to the SQLite database
@@ -48,15 +54,18 @@ export async function GET(request: NextRequest) {
 
 		if (!wantedState) {
 			// Throw an error if the requested state is not found
-			throw new BaseHttpError(`State with key ${stateKey} was not found`, 400, ErrorBehavior.SSR);
+			const message = `State with key ${stateKey} was not found`;
+			loggyError('StateStorage Config Error', message);
+			throw new BaseHttpError(message, 400, ErrorBehavior.SSR);
 		}
 
 		// Return the requested state as a JSON response
-		return NextResponse.json(wantedState, { status: 200 });
+		return NextResponse.json(wantedState, {status: 200});
 	} catch (error: any) {
 		// Handle errors and return an appropriate response
-		const { message, status } = handleRouteError(error);
-		return NextResponse.json({ error: message }, { status });
+		loggyError('StateStorage GET', error);
+		const {message, status} = handleRouteError(error);
+		return NextResponse.json({error: message}, {status});
 	}
 }
 
@@ -82,7 +91,9 @@ export async function POST(request: NextRequest) {
 
 		if (!databaseFile) {
 			// Throw an error if the database file is not found
-			throw new BaseHttpError('Database file not found', 500, ErrorBehavior.SSR);
+			const message = 'Database file not found';
+			loggyError('State storage error', message);
+			throw new BaseHttpError(message, 500, ErrorBehavior.SSR);
 		}
 
 		// Retrieve the expiration time for state data from environment variables
@@ -103,10 +114,11 @@ export async function POST(request: NextRequest) {
 		await dbSaveState(db, key, body ?? {}, databaseStateExpirationSec);
 
 		// Return a success response
-		return NextResponse.json({ key }, { status: 200 });
+		return NextResponse.json({key}, {status: 200});
 	} catch (error: any) {
 		// Handle errors and return an appropriate response
-		const { message, status } = handleRouteError(error);
-		return NextResponse.json({ error: message }, { status });
+		loggyError('StateStorage POST', error);
+		const {message, status} = handleRouteError(error);
+		return NextResponse.json({error: message}, {status});
 	}
 }

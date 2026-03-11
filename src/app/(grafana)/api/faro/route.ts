@@ -4,6 +4,7 @@ import path from 'path';
 import { FaroConfigProps } from "@features/(grafana)/_logic/models.faro";
 import { parseFaroParameters } from "@features/(grafana)/_logic/parsers.faro";
 import { handleRouteError } from "@features/(shared)/errors/handlers.errorInRoute";
+import { loggyError, loggyWarn } from "@gisatcz/ptr-be-core/node";
 
 // do not batch into app build
 export const dynamic = 'force-dynamic'
@@ -32,11 +33,14 @@ export async function GET() {
 
         return NextResponse.json(faroSetup)
     } catch (error: any) {
+        loggyError("Faro api GET", error);
         const { message, status } = handleRouteError(error)
         const response = NextResponse.json({ error: message }, { status })
 
-        if (status === 401)
-            response.cookies.delete("sid")
+        if (status === 401) {
+            loggyWarn('Unauthorized', 'User is not authorized to access the resource. Deleting session cookie.');
+            response.cookies.delete('sid');
+        }
 
         return response
     }

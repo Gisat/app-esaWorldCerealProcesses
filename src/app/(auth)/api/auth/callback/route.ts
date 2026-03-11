@@ -2,6 +2,7 @@ import { authContext } from "@features/(auth)/_ssr/handlers.auth";
 import { fetchForCookies } from "@features/(auth)/_ssr/handlers.callbackFetch";
 import { handleRouteError } from "@features/(shared)/errors/handlers.errorInRoute";
 import { NextRequest, NextResponse } from "next/server";
+import { loggyWarn } from "@gisatcz/ptr-be-core/node";
 import { pages } from "@features/(processes)/_constants/app";
 
 // NextJS Cache controls
@@ -53,9 +54,11 @@ export async function GET(req: NextRequest) {
   } catch (error: any) {
       const { message, status } = handleRouteError(error)
       const response = NextResponse.json({ error: message }, { status })
-      
-      if(status === 401) 
-        response.cookies.delete("sid")
+
+    if (status === 401) {
+      loggyWarn('Unauthorized', 'User is not authorized to access the resource. Deleting session cookie.');
+      response.cookies.delete('sid');
+    }
 
       return response
   }
