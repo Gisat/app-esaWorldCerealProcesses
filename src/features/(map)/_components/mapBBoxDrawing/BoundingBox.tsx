@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useEffect, Children, cloneElement, useRef } from 'react';
 import ControlButtons from './ControlButtons';
 import { dragLayer } from './_logic/dragLayer';
@@ -90,6 +92,15 @@ const BoundingBox: React.FC<BoundingBoxProps> = ({
 	const [updatedAvailableArea, setUpdatedAvailableArea] = useState<BboxEnclosedPoints | null>(null); // Updated available area
 	const [predictedHoveredPoints, setPredictedHoveredPoints] = useState<BboxPoints | null>(null); // Predicted hovered points
 	const [bboxArea, setBboxArea] = useState<number | null>(null); // Area of the bounding box
+
+	// Cleanup WebGL context when component unmounts to prevent context leaks
+	useEffect(() => {
+		return () => {
+			if (mapRef.current) {
+				mapRef.current.finalize();
+			}
+		};
+	}, []);
 
 	const viewport = mapRef?.current?.deck?.viewManager?._viewports?.[0];
 

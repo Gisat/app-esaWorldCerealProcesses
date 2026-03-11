@@ -46,7 +46,6 @@ export const useStateFromPanther = ({
 
 	// Initialize the shared application state using a reducer
 	const [sharedAppState, dispatch] = useReducer(reactReducer, defaultStateValue());
-	console.log('### AppState', sharedAppState);
 
 	const { data, error, isLoading, isValidating } = useSWR(fetchUrl, (url: string) =>
 		swrFetcher(url, { loginRedirectPath, errorRedirectPath })

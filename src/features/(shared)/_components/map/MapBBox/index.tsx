@@ -13,6 +13,19 @@ const defaultMapSize: Array<number> = [500, 500]; // Default map size in pixels
 const defaultMapView = { latitude: 30, longitude: 0, zoom: 1 }; // Default map view settings
 
 /**
+ * Converts EPSG:4326 points to bbox extent in EPSG:4326.
+ * @param points - Array of [lng, lat] coordinates in EPSG:4326
+ * @returns BoundingBoxExtent in EPSG:4326 [minLng, minLat, maxLng, maxLat]
+ */
+const convertPointsToExtent = (points: Array<Array<number>>): BoundingBoxExtent => {
+	const minLng = Math.min(points[0][0], points[2][0]);
+	const maxLng = Math.max(points[0][0], points[2][0]);
+	const minLat = Math.min(points[0][1], points[2][1]);
+	const maxLat = Math.max(points[0][1], points[2][1]);
+	return [minLng, minLat, maxLng, maxLat] as BoundingBoxExtent;
+};
+
+/**
  * Rounds the coordinates to two decimal places.
  *
  * @param {Array<Array<number>>} coordinatesToRound - The coordinates to round.
@@ -66,10 +79,19 @@ export const MapBBox = function ({
 }) {
 	const [initialView, setInitialView] = useState<object | null>(null); // State for the initial view of the map
 
+	// Helper to validate bbox coordinates
+	const isValidBboxCoordinates = (bboxArr: Array<number>): boolean => {
+		if (!bboxArr || bboxArr.length !== 4) return false;
+		const [minLng, minLat, maxLng, maxLat] = bboxArr;
+		const isValidLatitude = (lat: number) => Number.isFinite(lat) && lat >= -90 && lat <= 90;
+		const isValidLongitude = (lng: number) => Number.isFinite(lng) && lng >= -180 && lng <= 180;
+		return isValidLatitude(minLat) && isValidLatitude(maxLat) && isValidLongitude(minLng) && isValidLongitude(maxLng);
+	};
+
 	let bboxPoints: BboxPoints | undefined;
 
-	// Convert bbox coordinates to bbox points
-	if (bbox) {
+	// Convert bbox coordinates to bbox points (only if valid to prevent rendering issues)
+	if (bbox && isValidBboxCoordinates(bbox)) {
 		bboxPoints = [
 			[bbox[2], bbox[3]],
 			[bbox[2], bbox[1]],
@@ -119,7 +141,7 @@ export const MapBBox = function ({
 	const onBboxChange = (points: Array<Array<number>> | null, area: number | null) => {
 		onBboxDescriptionChange(points, area);
 		if (points?.length === 4 && area) {
-			const bboxExtent = [...points[2], ...points[0]] as BoundingBoxExtent;
+			const bboxExtent = convertPointsToExtent(points);
 			setBboxExtent?.(bboxExtent);
 			setBboxValidity(area);
 		} else {
@@ -130,32 +152,55 @@ export const MapBBox = function ({
 	// If there is no initial view and bounding box data is available, calculate the view to fit the bounding box and set it as the initial view.
 	// Also, create a polygon from the bounding box points, calculate its area, and update the bounding box description.
 	useEffect(() => {
+		// Handle case where bbox exists but has invalid coordinates - use default view
+		if (!initialView && bbox && !bboxPoints) {
+			console.warn('Invalid bbox coordinates, using default view');
+			setInitialView(defaultMapView);
+			return;
+		}
+
 		if (!initialView && bbox && bboxPoints) {
-			const bboxView = {
-				longitude: (bbox[0] + bbox[2]) / 2,
-				latitude: (bbox[1] + bbox[3]) / 2,
-			};
+			// Skip viewport calculation if bbox has invalid coordinates
+			if (!isValidBboxCoordinates(bbox)) {
+				console.warn('Invalid bbox coordinates, using default view');
+				setInitialView(defaultMapView);
+				return;
+			}
 
-			const viewport = new WebMercatorViewport(bboxView);
-			const fitView = viewport.fitBounds(
-				[
-					[bbox[0], bbox[1]],
-					[bbox[2], bbox[3]],
-				],
-				{
-					width: mapSize[0],
-					height: mapSize[1],
-					padding: 50,
-				}
-			);
-			setInitialView(fitView);
+			try {
+				const bboxView = {
+					longitude: (bbox[0] + bbox[2]) / 2,
+					latitude: (bbox[1] + bbox[3]) / 2,
+				};
 
-			const polygon = turfPolygon([[...bboxPoints, bboxPoints[0]]], {
-				name: 'polygon',
-			});
-			const area = turfArea(polygon) / 1000000;
-			onBboxDescriptionChange(bboxPoints, area);
-			setBboxValidity(area);
+				const viewport = new WebMercatorViewport(bboxView);
+				const fitView = viewport.fitBounds(
+					[
+						[bbox[0], bbox[1]],
+						[bbox[2], bbox[3]],
+					],
+					{
+						width: mapSize[0],
+						height: mapSize[1],
+						padding: 50,
+					}
+				);
+				setInitialView(fitView);
+
+				const polygon = turfPolygon([[...bboxPoints, bboxPoints[0]]], {
+					name: 'polygon',
+				});
+				const area = turfArea(polygon) / 1000000;
+				onBboxDescriptionChange(bboxPoints, area);
+				setBboxValidity(area);
+
+				const bboxExtent = convertPointsToExtent(bboxPoints);
+				setBboxExtent?.(bboxExtent);
+			} catch (error) {
+				console.warn('Failed to calculate initial view from bbox:', error);
+				// Fall back to default view if bbox calculation fails
+				setInitialView(defaultMapView);
+			}
 		} else if (!initialView && !bbox) {
 			setInitialView(defaultMapView);
 		}

@@ -1,50 +1,50 @@
-"use client";
+'use client';
 
-import styles from "./map.module.css";
-import React from "react";
-import { LayersList } from "@deck.gl/core";
-import DeckGL from "@deck.gl/react";
-import { TileLayer } from "@deck.gl/geo-layers";
-import { BitmapLayer } from "@deck.gl/layers";
-import BackgroundLayersControl from "../mapBackgroundLayers/BackgroundLayersControl";
-import { backgroundLayers } from "../mapBackgroundLayers/backgroundLayers.js";
+import styles from './map.module.css';
+import React, { useMemo, useRef, useEffect } from 'react';
+import { LayersList } from '@deck.gl/core';
+import DeckGL from '@deck.gl/react';
+import { TileLayer } from '@deck.gl/geo-layers';
+import { BitmapLayer } from '@deck.gl/layers';
+import BackgroundLayersControl from '../mapBackgroundLayers/BackgroundLayersControl';
+import { backgroundLayers } from '../mapBackgroundLayers/backgroundLayers.js';
 
 /**
  * Interface for the RenderMapProps.
  */
 export interface RenderMapProps {
-  /** Reference to the map. */
-  mapRef?: any;
-  /** Custom base map layer. */
-  customBaseMap?: TileLayer;
-  /** Width of the map. */
-  width?: string;
-  /** Height of the map. */
-  height?: string;
-  /** List of layers to be rendered. */
-  layer?: LayersList;
-  /** Callback function for click events. */
-  onClick?: (info: object) => void;
-  /** Function to get the cursor style. */
-  getCursor?: (info: object) => string;
-  /** Callback function for hover events. */
-  onHover?: (info: object) => void;
-  /** Callback function for drag events. */
-  onDrag?: (info: object) => void;
-  /** Callback function for drag start events. */
-  onStartDragging?: (info: object) => void;
-  /** Callback function for drag stop events. */
-  onStopDragging?: (info: object) => void;
-  /** Callback function for view state change events. */
-  onViewStateChange?: (info: object) => void;
-  /** Boolean to disable controls. */
-  disableControls?: boolean;
-  /** Initial view state of the map. */
-  initialView: object | null;
-  /** Key of the selected background layer. */
-  backgroundLayer?: string | null;
-  /** Function to set the background layer. */
-  setBackgroundLayer?: React.Dispatch<React.SetStateAction<string | null>>;
+	/** Reference to the map. */
+	mapRef?: any;
+	/** Custom base map layer. */
+	customBaseMap?: TileLayer;
+	/** Width of the map. */
+	width?: string;
+	/** Height of the map. */
+	height?: string;
+	/** List of layers to be rendered. */
+	layer?: LayersList;
+	/** Callback function for click events. */
+	onClick?: (info: object) => void;
+	/** Function to get the cursor style. */
+	getCursor?: (info: object) => string;
+	/** Callback function for hover events. */
+	onHover?: (info: object) => void;
+	/** Callback function for drag events. */
+	onDrag?: (info: object) => void;
+	/** Callback function for drag start events. */
+	onStartDragging?: (info: object) => void;
+	/** Callback function for drag stop events. */
+	onStopDragging?: (info: object) => void;
+	/** Callback function for view state change events. */
+	onViewStateChange?: (info: object) => void;
+	/** Boolean to disable controls. */
+	disableControls?: boolean;
+	/** Initial view state of the map. */
+	initialView: object | null;
+	/** Key of the selected background layer. */
+	backgroundLayer?: string | null;
+	/** Function to set the background layer. */
+	setBackgroundLayer?: React.Dispatch<React.SetStateAction<string | null>>;
 }
 
 /**
@@ -54,71 +54,78 @@ export interface RenderMapProps {
  * @returns {JSX.Element} The rendered map component.
  */
 const RenderingMap: React.FC<RenderMapProps> = (props: RenderMapProps) => {
-  const tileLayer = new TileLayer({
-    id: "TileLayer",
-    data: backgroundLayers[
-      (props.backgroundLayer as keyof typeof backgroundLayers) ||
-        "esri_WorldImagery"
-    ].url,
-    maxZoom: 17,
-    minZoom: 0,
-    tileSize: 256,
+	// Internal ref to track DeckGL instance for cleanup
+	const internalMapRef = useRef<any>(null);
 
-    renderSubLayers: (props: any) => {
-      const { boundingBox } = props.tile;
+	// Use internal ref if no external ref provided, otherwise use external ref
+	// This ensures we can always clean up the DeckGL instance
+	const deckRef = props.mapRef || internalMapRef;
 
-      return new BitmapLayer(props, {
-        data: undefined,
-        image: props.data,
-        bounds: [
-          boundingBox[0][0],
-          boundingBox[0][1],
-          boundingBox[1][0],
-          boundingBox[1][1],
-        ],
-      });
-    },
-  });
+	// Cleanup WebGL context when component unmounts to prevent context leaks
+	useEffect(() => {
+		return () => {
+			// Check both refs to ensure cleanup happens in all cases
+			if (props.mapRef?.current) {
+				props.mapRef.current.finalize();
+			} else if (internalMapRef.current) {
+				internalMapRef.current.finalize();
+			}
+		};
+	}, [props.mapRef]);
+	const tileLayer = useMemo(() => {
+		return new TileLayer({
+			id: 'TileLayer',
+			data: backgroundLayers[(props.backgroundLayer as keyof typeof backgroundLayers) || 'esri_WorldImagery'].url,
+			maxZoom: 17,
+			minZoom: 0,
+			tileSize: 256,
 
-  const layers = [
-    props.customBaseMap ? props.customBaseMap : tileLayer,
-    props.layer,
-  ].filter((layer) => layer !== undefined);
+			renderSubLayers: (props: any) => {
+				const { boundingBox } = props.tile;
 
-  return (
-    <section className={`${styles.mapRender}`}>
-      <DeckGL
-        ref={props.mapRef}
-        initialViewState={props.initialView}
-        layers={layers}
-        controller={!props.disableControls}
-        style={{
-          position: "relative",
-          width: props.width,
-          height: props.height,
-        }}
-        onClick={props.onClick}
-        onHover={props.onHover}
-        onDrag={props.onDrag}
-        onDragStart={props.onStartDragging}
-        onDragEnd={props.onStopDragging}
-        onViewStateChange={props.onViewStateChange}
-        getCursor={(info) => {
-          return props.getCursor
-            ? props.getCursor(info)
-            : info.isDragging
-            ? "grabbing"
-            : "grab";
-        }} // otherwise throws an error
-      ></DeckGL>
-      {props.setBackgroundLayer ? (
-        <BackgroundLayersControl
-          backgroundLayer={props.backgroundLayer}
-          setBackgroundLayer={props.setBackgroundLayer}
-        />
-      ) : null}
-    </section>
-  );
+				return new BitmapLayer(props, {
+					data: undefined,
+					image: props.data,
+					bounds: [boundingBox[0][0], boundingBox[0][1], boundingBox[1][0], boundingBox[1][1]],
+				});
+			},
+		});
+	}, [props.backgroundLayer]);
+
+	const layers = [props.customBaseMap ? props.customBaseMap : tileLayer, props.layer].filter(
+		(layer) => layer !== undefined
+	);
+
+	return (
+		<section className={`${styles.mapRender}`}>
+			<DeckGL
+				ref={deckRef}
+				initialViewState={props.initialView}
+				layers={layers}
+				controller={!props.disableControls}
+				style={{
+					position: 'relative',
+					width: props.width,
+					height: props.height,
+				}}
+				onClick={props.onClick}
+				onHover={props.onHover}
+				onDrag={props.onDrag}
+				onDragStart={props.onStartDragging}
+				onDragEnd={props.onStopDragging}
+				onViewStateChange={props.onViewStateChange}
+				getCursor={(info) => {
+					return props.getCursor ? props.getCursor(info) : info.isDragging ? 'grabbing' : 'grab';
+				}} // otherwise throws an error
+			></DeckGL>
+			{props.setBackgroundLayer ? (
+				<BackgroundLayersControl
+					backgroundLayer={props.backgroundLayer}
+					setBackgroundLayer={props.setBackgroundLayer}
+				/>
+			) : null}
+		</section>
+	);
 };
 
 export default RenderingMap;
