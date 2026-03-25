@@ -5,10 +5,10 @@ interface LogoutFetchProps {
 
 /**
  * Fetch from API handler to backend service with session ID included in cookies
- * @param url URL of target endpoint
- * @param browserCookies Cookies from browser request (SPA part of Next)
- * @param headers Optional - any headers added to request
- * @returns Response from backend back to Next API route handler
+ * @param props - Configuration properties for the logout fetch
+ * @param props.identityServiceUrl - Base URL of the identity service
+ * @param props.browserCookies - Cookies from the browser request (Next.js ReadonlyRequestCookies)
+ * @returns Promise that resolves when the notification is sent
  */
 export const fetchLogoutNotification = async (
     props: LogoutFetchProps
