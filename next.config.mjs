@@ -13,7 +13,7 @@ const nextConfig = {
 		return config;
 	},
 	reactStrictMode: true,
-	swcMinify: true,
+	transpilePackages: ['@gisatcz/ptr-fe-core'],
 	compiler: {
 		removeConsole: process.env.NODE_ENV === 'production',
 	},

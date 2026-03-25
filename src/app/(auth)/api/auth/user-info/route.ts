@@ -2,12 +2,17 @@ import { fetchWithSessions } from "@features/(auth)/_ssr/handlers.sessionFetch";
 import { handleRouteError } from "@features/(shared)/errors/handlers.errorInRoute";
 import { NextRequest, NextResponse } from "next/server";
 import { getRequireSessionId } from "@features/(auth)/_utils/requireSessionId";
-import { loggyError, loggyWarn } from "@gisatcz/ptr-be-core/node";
+import { UsedAuthCookies } from "@features/(shared)/ssr-auth/enums.auth";
 
 // NextJS Cache controls
 export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
 
+/**
+ * User info endpoint to retrieve user details from the backend
+ * @param req NextJS request object
+ * @returns JSON response with user info and updated session cookie
+ */
 export async function GET(req: NextRequest) {
   try {
     // user info auth URL
@@ -23,32 +28,21 @@ export async function GET(req: NextRequest) {
     });
 
     // check fetch result
-    if (!backendContent) {
-      loggyError("User info GET", "Fetch response data missing in session fetch");
-      throw new Error("Fetch response data missing in session fetch");
-    }
+    if (!backendContent) throw new Error("Fetch response data missing in session fetch");
+    if (!setCookieHeader) throw new Error("Fetch response with new session cookie missing");
 
-    if (!setCookieHeader) {
-      loggyError("User info GET", "Fetch response with new session cookie missing");
-      throw new Error("Fetch response with new session cookie missing");
-    }
+    // prepare NextJS response with received cookies including new SID
+    const response = NextResponse.json(backendContent);
+    response.cookies.delete(UsedAuthCookies.SESSION_ID);
+    response.headers.set("set-cookie", setCookieHeader);
 
-    // prepare NextJS response with recived cookies including new SID
-    const nextResponse = NextResponse.json(backendContent);
-
-    if (setCookieHeader) {
-      nextResponse.cookies.delete("sid");
-      nextResponse.headers.set("set-cookie", setCookieHeader);
-    }
-    return nextResponse;
+    return response;
   } catch (error: any) {
-    loggyError("User info GET", error);
     const { message, status } = handleRouteError(error);
     const response = NextResponse.json({ error: message }, { status });
 
     if (status === 401) {
-      loggyWarn('Unauthorized', 'User is not authorized to access the resource. Deleting session cookie.');
-      response.cookies.delete('sid');
+      response.cookies.delete(UsedAuthCookies.SESSION_ID);
     }
 
     return response;
