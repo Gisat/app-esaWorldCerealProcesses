@@ -1,5 +1,5 @@
 'use server';
-import { DEFAULT_DB_NAME, DEFAULT_DB_STATE_EXPIRATION_SEC } from '@features/(shared)/ssr-constants/db.constants';
+import { DEFAULT_DB_NAME, DEFAULT_DB_STATE_EXPIRATION_SEC } from '@features/shared/ssr/ssr-constants/db.constants';
 
 // This directive tells the transpiler to use server-side rendering (SSR) for this module.
 

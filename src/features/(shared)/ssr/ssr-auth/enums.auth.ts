@@ -13,3 +13,8 @@ export enum UsedAuthCookies {
 	/** Session ID cookie from the Panther backend */
 	SESSION_ID = 'sid',
 }
+
+export enum UsedAuthHeaders {
+	/** Session ID propagated from Next server handlers to backend services */
+	SESSION_ID = 'x-session-id',
+}
