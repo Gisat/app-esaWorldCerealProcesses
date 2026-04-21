@@ -1,8 +1,8 @@
-import { fetchWithSessions } from "@features/(auth)/_ssr/handlers.sessionFetch";
-import { handleRouteError } from "@features/(shared)/errors/handlers.errorInRoute";
 import { NextRequest, NextResponse } from "next/server";
+import { fetchWithSessions } from "@features/(auth)/_ssr/handlers.sessionFetch";
+import { handleRouteError } from '@gisatcz/ptr-fe-core/globals';
 import { getRequireSessionId } from "@features/(auth)/_utils/requireSessionId";
-import { UsedAuthCookies } from "@features/(shared)/ssr-auth/enums.auth";
+import { UsedAuthCookies } from "@features/(shared)/ssr/ssr-auth/enums.auth";
 
 // NextJS Cache controls
 export const dynamic = "force-dynamic";

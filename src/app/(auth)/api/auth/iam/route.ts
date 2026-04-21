@@ -1,6 +1,6 @@
-import { ssrOpenidContext } from '@features/(shared)/ssr-auth/ssr.openid';
-import { UsedAuthCookies } from '@features/(shared)/ssr-auth/enums.auth';
-import { handleRouteError } from '@features/(shared)/errors/handlers.errorInRoute';
+import { ssrOpenidContext } from '@features/(shared)/ssr/ssr-auth/ssr.openid';
+import { UsedAuthCookies } from '@features/(shared)/ssr/ssr-auth/enums.auth';
+import { handleRouteError } from '@gisatcz/ptr-fe-core/globals';
 import { NextRequest, NextResponse } from 'next/server';
 import { loggyWarn } from '@gisatcz/ptr-be-core/node';
 
@@ -24,8 +24,10 @@ export async function GET(req: NextRequest) {
 			throw new Error('Missing required environment variables for IAM authentication');
 		}
 
-		// get auth context and build authorization URL with PKCE checks
+		// get auth context and handle tokens from IAM
 		const auth = ssrOpenidContext(clientId, issuerUrl, redirectUrl);
+
+		// build authorization URL and checks for PKCE
 		const { authorizationUrl, checks } = await auth.handleUserOpenID();
 
 		// redirect to authorisation
