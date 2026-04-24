@@ -1,6 +1,6 @@
 import { fetchWithSessions } from "@features/(auth)/_ssr/handlers.sessionFetch";
 import { getRequireSessionId } from "@features/(auth)/_utils/requireSessionId";
-import { handleRouteError } from "@features/(shared)/errors/handlers.errorInRoute";
+import { handleRouteError } from "@gisatcz/ptr-fe-core/globals";
 import { NextRequest, NextResponse } from "next/server";
 import { loggyError, loggyWarn } from "@gisatcz/ptr-be-core/node";
 
@@ -11,8 +11,7 @@ export const fetchCache = "force-no-store";
  * Handles the GET request to get a job by key.
  *
  * @param {NextRequest} req - The incoming request object.
- * @param {Object} params - The parameters object.
- * @param {string} params.key - The key of the job to retrieve.
+ * @param context
  * @returns {Promise<NextResponse>} - The response object.
  */
 export async function GET(

@@ -1,4 +1,4 @@
-import { openDb, dbSaveState, dbNeedAppState } from '@gisatcz/ptr-fe-core/server';
+import { openDb, dbSaveState, dbNeedAppState } from '@gisatcz/ptr-be-core/node';
 import { handleRouteError, BaseHttpError, ErrorBehavior } from '@gisatcz/ptr-fe-core/globals';
 import { randomUUID } from 'crypto';
 import { loggyError } from '@gisatcz/ptr-be-core/node';

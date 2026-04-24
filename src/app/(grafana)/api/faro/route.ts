@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import { FaroConfigProps } from "@features/(grafana)/_logic/models.faro";
 import { parseFaroParameters } from "@features/(grafana)/_logic/parsers.faro";
-import { handleRouteError } from "@features/(shared)/errors/handlers.errorInRoute";
+import { handleRouteError } from '@gisatcz/ptr-fe-core/globals';
 import { loggyError, loggyWarn } from "@gisatcz/ptr-be-core/node";
 
 // do not batch into app build

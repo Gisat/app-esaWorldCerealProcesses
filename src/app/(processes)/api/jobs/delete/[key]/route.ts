@@ -1,8 +1,8 @@
 import { fetchWithSessions } from '@features/(auth)/_ssr/handlers.sessionFetch';
 import { getRequireSessionId } from '@features/(auth)/_utils/requireSessionId';
-import { ErrorBehavior } from '@features/(shared)/errors/enums.errorBehavior';
-import { handleRouteError } from '@features/(shared)/errors/handlers.errorInRoute';
-import { BaseHttpError } from '@features/(shared)/errors/models.error';
+import { ErrorBehavior } from "@gisatcz/ptr-fe-core/globals";
+import { handleRouteError } from "@gisatcz/ptr-fe-core/globals";
+import { BaseHttpError } from "@gisatcz/ptr-fe-core/globals";
 import { NextRequest, NextResponse } from 'next/server';
 import { loggyError, loggyWarn } from '@gisatcz/ptr-be-core/node';
 
@@ -13,8 +13,7 @@ export const fetchCache = 'force-no-store';
  * Handles the GET request to delete a job by key.
  *
  * @param {NextRequest} req - The incoming request object.
- * @param {Object} params - The parameters object.
- * @param {string} params.key - The key of the job to delete.
+ * @param context - The context object containing route parameters.
  * @returns {Promise<NextResponse>} - The response object.
  */
 export async function GET(req: NextRequest, context: { params: Promise<{ key: string }> }): Promise<NextResponse> {

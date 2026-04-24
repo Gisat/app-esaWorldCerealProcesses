@@ -2,7 +2,6 @@
 import EsaLogo from '@features/(processes)/_components/EsaLogo';
 import { AppShellHeader, Button } from '@mantine/core';
 import { IconLogout, IconUser } from '@tabler/icons-react';
-import Link from 'next/link';
 import './style.css';
 import Title from './Title';
 import useSWR from 'swr';
@@ -22,11 +21,16 @@ export const Header = () => {
 				<div className="worldCereal-Header-tools">
 					<EsaLogo className="worldCereal-Header-esaLogo" />
 					{!userInfoValue?.email ? (
-						<Link href="/api/auth/iam">
-							<Button className="worldCereal-Button" autoContrast leftSection={<IconUser size={14} />} size="sm">
-								Login/Sign up
-							</Button>
-						</Link>
+						<Button
+							className="worldCereal-Button"
+							autoContrast
+							leftSection={<IconUser size={14} />}
+							size="sm"
+							component="a"
+							href="/api/auth/iam"
+						>
+							Login/Sign up
+						</Button>
 					) : (
 						<>
 							<span className="worldCereal-Header-email">{userInfoValue?.email ?? 'unknown'}</span>
