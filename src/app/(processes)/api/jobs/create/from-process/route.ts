@@ -1,9 +1,9 @@
 import { fetchWithSessions } from '@features/(auth)/_ssr/handlers.sessionFetch';
 import { NextRequest, NextResponse } from 'next/server';
 import getNamespaceByProcessId from '@features/(processes)/_utils/namespaceByProcessId';
-import { handleRouteError } from '@features/(shared)/errors/handlers.errorInRoute';
-import { ErrorBehavior } from '@features/(shared)/errors/enums.errorBehavior';
-import { BaseHttpError } from '@features/(shared)/errors/models.error';
+import { handleRouteError } from "@gisatcz/ptr-fe-core/globals";
+import { ErrorBehavior } from "@gisatcz/ptr-fe-core/globals";
+import { BaseHttpError } from "@gisatcz/ptr-fe-core/globals";
 import getBoundaryDates from '@features/(processes)/_utils/boundaryDates';
 import { transformDate } from '@features/(processes)/_utils/transformDate';
 import { getRequireSessionId } from '@features/(auth)/_utils/requireSessionId';

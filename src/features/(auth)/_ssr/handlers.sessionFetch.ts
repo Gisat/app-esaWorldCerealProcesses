@@ -1,7 +1,7 @@
 import { Nullable } from "@features/(shared)/_logic/types.universal";
-import { ErrorBehavior } from "../../(shared)/errors/enums.errorBehavior";
-import { HttpStatusCode } from "../../(shared)/errors/enums.httpStatusCode";
-import { BaseHttpError } from "../../(shared)/errors/models.error";
+import { ErrorBehavior } from "@gisatcz/ptr-fe-core/globals";
+import { HttpStatusCode } from "@gisatcz/ptr-fe-core/globals";
+import { BaseHttpError } from "@gisatcz/ptr-fe-core/globals";
 
 // Define the interface for the properties of the fetchWithSessions function
 interface FetchWithBrowserSessionProps {

@@ -1,5 +1,5 @@
 import { fetchWithSessions } from '@features/(auth)/_ssr/handlers.sessionFetch';
-import { handleRouteError } from '@features/(shared)/errors/handlers.errorInRoute';
+import { handleRouteError } from "@gisatcz/ptr-fe-core/globals";
 import { NextRequest, NextResponse } from 'next/server';
 
 const handleSeasonsRequest = async (request: NextRequest) => {
