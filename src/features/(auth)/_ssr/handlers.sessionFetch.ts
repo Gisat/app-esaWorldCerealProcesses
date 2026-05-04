@@ -1,7 +1,7 @@
 import { Nullable } from "@features/(shared)/_logic/types.universal";
-import { ErrorBehavior } from "../../(shared)/errors/enums.errorBehavior";
-import { HttpStatusCode } from "../../(shared)/errors/enums.httpStatusCode";
-import { BaseHttpError } from "../../(shared)/errors/models.error";
+import { ErrorBehavior } from "@gisatcz/ptr-fe-core/globals";
+import { HttpStatusCode } from "@gisatcz/ptr-fe-core/globals";
+import { BaseHttpError } from "@gisatcz/ptr-fe-core/globals";
 
 // Define the interface for the properties of the fetchWithSessions function
 interface FetchWithBrowserSessionProps {
@@ -22,10 +22,14 @@ interface FetchWithSessionsResponse {
 
 /**
  * Fetch from API handler to backend service with session ID included in cookies
- * @param url URL of target endpoint
- * @param browserCookies Cookies from browser request (SPA part of Next)
- * @param headers Optional - any headers added to request
- * @returns Response from backend back to Next API route handler
+ * @param props - Configuration properties for the session fetch
+ * @param props.method - HTTP method (GET, POST, HEAD, PUT, DELETE, PATCH)
+ * @param props.url - URL of target endpoint
+ * @param props.browserCookies - Cookies from browser request (SPA part of Next)
+ * @param props.body - Optional request body
+ * @param props.headers - Optional request headers
+ * @param props.requireSessionId - Whether to require a session ID
+ * @returns Response object containing status, content, and potential cookie header
  */
 export const fetchWithSessions = async (
   props: FetchWithBrowserSessionProps

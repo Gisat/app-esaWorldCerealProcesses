@@ -1,7 +1,7 @@
 import { fetchWithSessions } from "@features/(auth)/_ssr/handlers.sessionFetch";
-import { ErrorBehavior } from "@features/(shared)/errors/enums.errorBehavior";
-import { handleRouteError } from "@features/(shared)/errors/handlers.errorInRoute";
-import { BaseHttpError } from "@features/(shared)/errors/models.error";
+import { ErrorBehavior } from "@gisatcz/ptr-fe-core/globals";
+import { handleRouteError } from "@gisatcz/ptr-fe-core/globals";
+import { BaseHttpError } from "@gisatcz/ptr-fe-core/globals";
 import { NextRequest, NextResponse } from "next/server";
 import { loggyError, loggyWarn } from "@gisatcz/ptr-be-core/node";
 

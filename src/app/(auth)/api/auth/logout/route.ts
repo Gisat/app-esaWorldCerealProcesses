@@ -1,43 +1,59 @@
-import { fetchLogoutNotification } from "@features/(auth)/_ssr/handlers.logoutFetch";
-import { handleRouteError } from "@features/(shared)/errors/handlers.errorInRoute";
-import { NextRequest, NextResponse } from "next/server";
-import { loggyWarn, loggyInfo } from '@gisatcz/ptr-be-core/node';
+import { handleRouteError } from '@gisatcz/ptr-fe-core/globals';
+import { NextRequest, NextResponse } from 'next/server';
+import { loggyWarn } from '@gisatcz/ptr-be-core/node';
+import { ssrOpenidContext } from '@features/(shared)/ssr/ssr-auth/ssr.openid';
+import { UsedAuthCookies } from '@features/(shared)/ssr/ssr-auth/enums.auth';
+import { fetchLogoutNotification } from '@features/(shared)/ssr/ssr-auth/handlers.logoutFetch';
 
 // NextJS Cache controls
-export const dynamic = "force-dynamic";
-export const fetchCache = "force-no-store";
+export const dynamic = 'force-dynamic';
+export const fetchCache = 'force-no-store';
 
+/**
+ * Logout endpoint to notify BE and clear session cookies
+ * @param req NextJS request
+ * @returns
+ */
 export async function GET(req: NextRequest) {
-  try {
+	try {
+		// environment parameters
+		const issuerUrl = process.env.OID_IAM_ISSUER_URL as string;
+		const redirectUrl = process.env.OID_SELF_REDIRECT_URL as string;
+		const clientId = process.env.OID_CLIENT_ID as string;
+		const identityServiceUrl = process.env.PID_URL as string;
 
-    // fetch logout notification for BE
-    await fetchLogoutNotification({
-      identityServiceUrl: process.env.PID_URL as string,
-      browserCookies: req.cookies,
-    })
+		// get auth context
+		const auth = ssrOpenidContext(clientId, issuerUrl, redirectUrl);
 
-    // url back to FE
-    const parsedUrl = new URL(process.env.OID_SELF_REDIRECT_URL as string);
-    const selfUrl = `${parsedUrl.protocol}//${parsedUrl.host}/`;
+		// handle logout with OIDC client
+		const { logoutUrl } = await auth.handleLogout(`${identityServiceUrl}/oid/logout`);
 
-    // prepare redirect back to FE
-    const feRedirect = NextResponse.redirect(selfUrl as string);
+		// fetch logout notification for BE
+		await fetchLogoutNotification({
+			logoutUrl,
+			browserCookies: req.cookies,
+		});
 
-    // delete cookies from logout
-    feRedirect.cookies.delete("sid");
+		// url back to FE
+		const parsedUrl = new URL(redirectUrl);
+		const selfUrl = `${parsedUrl.protocol}//${parsedUrl.host}`;
 
-    loggyInfo('Logout successful', 'User has been logged out successfully.');
-    return feRedirect;
+		// prepare redirect back to FE
+		const feRedirect = NextResponse.redirect(selfUrl);
 
-  } catch (error: any) {
-      const { message, status } = handleRouteError(error)
-      const response = NextResponse.json({ error: message }, { status })
+		// delete cookies from logout
+		feRedirect.cookies.delete(UsedAuthCookies.SESSION_ID);
 
-      if (status === 401) {
-          loggyWarn('Unauthorized', `Logout failed: ${message}`);
-          response.cookies.delete('sid');
-      }
+		return feRedirect;
+	} catch (error: any) {
+		const { message, status } = handleRouteError(error);
+		const response = NextResponse.json({ error: message }, { status });
 
-      return response
-  }
+		if (status === 401) {
+			loggyWarn('Unauthorized', 'User is not authorized to access the resource. Deleting session cookie.');
+			response.cookies.delete(UsedAuthCookies.SESSION_ID);
+		}
+
+		return response;
+	}
 }

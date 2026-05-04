@@ -1,6 +1,6 @@
 import { fetchWithSessions } from "@features/(auth)/_ssr/handlers.sessionFetch";
 import { getRequireSessionId } from "@features/(auth)/_utils/requireSessionId";
-import { handleRouteError } from "@features/(shared)/errors/handlers.errorInRoute";
+import { handleRouteError } from "@gisatcz/ptr-fe-core/globals";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
