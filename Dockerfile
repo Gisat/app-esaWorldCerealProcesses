@@ -1,16 +1,41 @@
-FROM node:lts-alpine
+# syntax=docker/dockerfile:1
 
-ENV NODE_ENV=production
+FROM node:lts-alpine AS deps
+WORKDIR /app
 
-USER node
+COPY package.json package-lock.json* ./
 
-RUN mkdir -pv /home/node/app
+RUN --mount=type=cache,target=/root/.npm \
+    npm ci --omit=dev
+
+FROM node:lts-alpine AS builder
+WORKDIR /app
+
+COPY --from=deps /app/node_modules ./node_modules
+COPY package.json package-lock.json* ./
+
+RUN --mount=type=cache,target=/root/.npm \
+    npm ci
+
+COPY . .
+
+RUN npm run build
+
+FROM node:lts-alpine AS runner
+
+RUN mkdir -p /home/node/app /mnt/app-data && \
+    chown -R node:node /home/node/app /mnt/app-data
 
 WORKDIR /home/node/app
 
-COPY --chown=node . .
+ENV NODE_ENV=production
+ENV PORT=3000
 
-RUN npm install \
-    && npm run build
+USER node
 
-CMD ["npm", "run", "start"]
+COPY --from=builder --chown=node:node /app/.next/standalone ./
+COPY --from=builder --chown=node:node /app/.next/static ./.next/static
+
+EXPOSE $PORT
+
+CMD ["node", "server.js"]

@@ -6,7 +6,9 @@ import tseslint from 'typescript-eslint';
 
 export default defineConfig([
 	{
-		ignores: ['**/node_modules/**', '**/dist/**', 'vitest.config.ts'],
+		ignores: ['**/node_modules/**', '**/dist/**', '**/.next/**', 'vitest.config.ts'],
+	},
+	{
 		plugins: {
 			'@next/next': nextPlugin,
 		},
