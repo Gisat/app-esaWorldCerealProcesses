@@ -1,3 +1,9 @@
+## [0.4.1](https://github.com/Gisat/app-esaWorldCerealProcesses/compare/v0.4.0...v0.4.1) (2026-05-06)
+
+### Bug Fixes
+
+* switch release Docker push from Docker Hub to GHCR ([eacccbe](https://github.com/Gisat/app-esaWorldCerealProcesses/commit/eacccbef409f88a34c39523f3abc2f4223554c42))
+
 ## [0.4.0](https://github.com/Gisat/app-esaWorldCerealProcesses/compare/v0.3.0...v0.4.0) (2026-05-06)
 
 ### Features
