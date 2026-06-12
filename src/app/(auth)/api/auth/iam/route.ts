@@ -32,20 +32,21 @@ export async function GET(req: NextRequest) {
 
 		// redirect to authorisation
 		const response = NextResponse.redirect(authorizationUrl.toString());
+		const secureCookie = req.nextUrl.protocol === 'https:';
 
 		// store checks for callback validation in cookies
-		response.cookies.set(UsedAuthCookies.OIDC_STATE, checks.state, { httpOnly: true, secure: true, sameSite: 'lax' });
+		response.cookies.set(UsedAuthCookies.OIDC_STATE, checks.state, { httpOnly: true, secure: secureCookie, sameSite: 'lax' });
 		response.cookies.set(UsedAuthCookies.OIDC_PKCE_CODE_VERIFIER, checks.pkceCodeVerifier, {
 			httpOnly: true,
-			secure: true,
+			secure: secureCookie,
 			sameSite: 'lax',
 		});
-		response.cookies.set(UsedAuthCookies.OIDC_NONCE, checks.nonce, { httpOnly: true, secure: true, sameSite: 'lax' });
+		response.cookies.set(UsedAuthCookies.OIDC_NONCE, checks.nonce, { httpOnly: true, secure: secureCookie, sameSite: 'lax' });
 
 		// store return URL from query param if present
 		const returnUrl = req.nextUrl.searchParams.get('returnUrl');
 		if (returnUrl && returnUrl.startsWith('/') && !returnUrl.startsWith('//')) {
-			response.cookies.set(UsedAuthCookies.AUTH_RETURN_URL, returnUrl, { httpOnly: true, secure: true, sameSite: 'lax' });
+			response.cookies.set(UsedAuthCookies.AUTH_RETURN_URL, returnUrl, { httpOnly: true, secure: secureCookie, sameSite: 'lax' });
 		}
 
 		return response;

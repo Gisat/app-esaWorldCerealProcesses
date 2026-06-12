@@ -51,15 +51,16 @@ export async function middleware(request: NextRequest) {
     const refreshUrl = `${identityUrl}/sessions/refresh`;
 
     // build cookie domain of the backend app
-    const { setCookieHeader } = await fetchWithSessions({
+    const { sessionId } = await fetchWithSessions({
       method: "HEAD",
       url: refreshUrl,
       browserCookies: request.cookies,
       requireSessionId: getRequireSessionId()
     });
 
-    if (!setCookieHeader)
-      throw new Error("Fetch response with new session cookie missing");
+	    if (!sessionId)
+	      throw new Error("Fetch response with new session header missing");
+	    const secureCookie = request.nextUrl.protocol === 'https:';
 
 
     // Only added lines: redirect authenticated user from "/" to "/home"
@@ -68,9 +69,9 @@ export async function middleware(request: NextRequest) {
             ? NextResponse.redirect(new URL("/home", request.nextUrl))
             : NextResponse.next();
 
-    // Remove the old SID cookie and set the new one
-    response.cookies.delete("sid");
-    response.headers.set("set-cookie", setCookieHeader);
+	    // Remove the old SID cookie and set the new one
+	    response.cookies.delete("sid");
+	    response.cookies.set("sid", sessionId, { httpOnly: true, secure: secureCookie, sameSite: 'lax', path: '/' });
 
     // Return the response
     return response;

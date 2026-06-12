@@ -95,7 +95,7 @@ export async function GET(req: NextRequest) {
 		const url = `${openeoUrlPrefix}/openeo/jobs/create/from-collection`;
 
 		// fetch data with sessions
-		const {backendContent, setCookieHeader} = await fetchWithSessions(
+		const {backendContent, sessionId} = await fetchWithSessions(
 			{
 				method: "POST",
 				requireSessionId: getRequireSessionId(),
@@ -109,8 +109,8 @@ export async function GET(req: NextRequest) {
 
 		const nextResponse = NextResponse.json(backendContent);
 
-		if (setCookieHeader) {
-			nextResponse.headers.set('set-cookie', setCookieHeader);
+		if (sessionId) {
+			nextResponse.cookies.set('sid', sessionId, { httpOnly: true, secure: true, sameSite: 'lax', path: '/' });
 		}
 
 		return nextResponse

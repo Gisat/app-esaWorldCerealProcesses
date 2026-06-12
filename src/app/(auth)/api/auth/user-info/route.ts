@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
     const userInfoUrl = `${identityUrl}/oid/user-info`;
 
     // build cookie domain of the backend app
-    const { backendContent, setCookieHeader } = await fetchWithSessions({
+    const { backendContent, sessionId } = await fetchWithSessions({
       method: "GET",
       url: userInfoUrl,
       browserCookies: req.cookies,
@@ -29,12 +29,12 @@ export async function GET(req: NextRequest) {
 
     // check fetch result
     if (!backendContent) throw new Error("Fetch response data missing in session fetch");
-    if (!setCookieHeader) throw new Error("Fetch response with new session cookie missing");
+    if (!sessionId) throw new Error("Fetch response with new session header missing");
 
-    // prepare NextJS response with received cookies including new SID
-    const response = NextResponse.json(backendContent);
-    response.cookies.delete(UsedAuthCookies.SESSION_ID);
-    response.headers.set("set-cookie", setCookieHeader);
+		// prepare NextJS response with received cookies including new SID
+		const response = NextResponse.json(backendContent);
+		response.cookies.delete(UsedAuthCookies.SESSION_ID);
+		response.cookies.set(UsedAuthCookies.SESSION_ID, sessionId, { httpOnly: true, secure: req.nextUrl.protocol === 'https:', sameSite: 'lax', path: '/' });
 
     return response;
   } catch (error: any) {

@@ -41,7 +41,7 @@ export async function GET(req: NextRequest, context: { params: Promise<{ key: st
 		const url = `${openeoUrlPrefix}/openeo/jobs/delete`;
 
 		// fetch data with sessions
-		const { backendContent, setCookieHeader } = await fetchWithSessions({
+		const { backendContent, sessionId } = await fetchWithSessions({
 			method: 'POST',
 			url,
 			browserCookies: req.cookies,
@@ -54,8 +54,8 @@ export async function GET(req: NextRequest, context: { params: Promise<{ key: st
 
 		const nextResponse = NextResponse.json(backendContent);
 
-		if (setCookieHeader) {
-			nextResponse.headers.set('set-cookie', setCookieHeader);
+		if (sessionId) {
+			nextResponse.cookies.set('sid', sessionId, { httpOnly: true, secure: true, sameSite: 'lax', path: '/' });
 		}
 		return nextResponse;
 	} catch (error: any) {

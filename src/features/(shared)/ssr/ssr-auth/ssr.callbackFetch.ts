@@ -30,7 +30,7 @@ export const fetchExchangeTokensForSessionId = async (exchangeEndpointUrl: strin
 
 		// get body for session id parameter
 		const backendContent = await response.json();
-		const sessionId = backendContent?.session_id;
+		const sessionId = backendContent?.session?.session_id ?? backendContent?.session_id;
 
 		// check for session information
 		if (!sessionId) {
