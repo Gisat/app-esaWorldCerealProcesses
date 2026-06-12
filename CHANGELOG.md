@@ -1,3 +1,9 @@
+## [0.4.2](https://github.com/Gisat/app-esaWorldCerealProcesses/compare/v0.4.1...v0.4.2) (2026-06-12)
+
+### Bug Fixes
+
+* update UDP namespace URLs and misc config fixes ([43da16c](https://github.com/Gisat/app-esaWorldCerealProcesses/commit/43da16cfe2504fa5b19562745725132ab96cb680))
+
 ## [0.4.1](https://github.com/Gisat/app-esaWorldCerealProcesses/compare/v0.4.0...v0.4.1) (2026-05-06)
 
 ### Bug Fixes
