@@ -69,4 +69,4 @@ jobs:
           load: true
           tags: app-esaworldcereal:test
           cache-from: type=gha,scope=base
-          cache-to: type=gha,scope=base,mode=max
+          cache-to: type=gha,scope=base,mode=max,ignore-error=true
