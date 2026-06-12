@@ -1,3 +1,9 @@
+## [0.4.3](https://github.com/Gisat/app-esaWorldCerealProcesses/compare/v0.4.2...v0.4.3) (2026-06-12)
+
+### Bug Fixes
+
+* add ignore-error to Docker GHA cache export ([37bd58a](https://github.com/Gisat/app-esaWorldCerealProcesses/commit/37bd58a4e34c810933a0344c6a600d4519ed6d1e))
+
 ## [0.4.2](https://github.com/Gisat/app-esaWorldCerealProcesses/compare/v0.4.1...v0.4.2) (2026-06-12)
 
 ### Bug Fixes
