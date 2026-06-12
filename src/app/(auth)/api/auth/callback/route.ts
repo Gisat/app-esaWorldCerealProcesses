@@ -61,6 +61,7 @@ export async function GET(req: NextRequest) {
 
 		// prepare redirect response with session cookie
 		const feRedirect = NextResponse.redirect(urlToReturnWithSession);
+		const secureCookie = req.nextUrl.protocol === 'https:';
 		if (returnUrl) {
 			feRedirect.cookies.delete(UsedAuthCookies.AUTH_RETURN_URL);
 		}
@@ -78,7 +79,7 @@ export async function GET(req: NextRequest) {
 		const { sessionId } = await fetchExchangeTokensForSessionId(exchangeUrl, openidBundle);
 
 		// set sessions ID as Same Site HTTP Cookie
-		nextSetSessionIdCookie(sessionId, feRedirect);
+		nextSetSessionIdCookie(sessionId, feRedirect, secureCookie);
 
 		// delete OIDC checks from cookies
 		feRedirect.cookies.delete(UsedAuthCookies.OIDC_STATE);

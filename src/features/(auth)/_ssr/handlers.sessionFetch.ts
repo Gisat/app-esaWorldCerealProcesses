@@ -17,7 +17,7 @@ interface FetchWithBrowserSessionProps {
 interface FetchWithSessionsResponse {
   status: number;
   backendContent: Nullable<any>;
-  setCookieHeader: Nullable<string>;
+  sessionId: Nullable<string>;
 }
 
 /**
@@ -55,8 +55,10 @@ export const fetchWithSessions = async (
       ErrorBehavior.BE
     );
 
-  // Add the session cookie to the headers if it exists
-  const headersWithCookies = sessionCookie ? { ...headers, 'Cookie': `${sessionCookie.name}=${sessionCookie.value}` } : { ...headers }
+  // Add the session id header if it exists
+  const headersWithCookies = sessionCookie
+    ? { ...headers, 'x-session-id': sessionCookie.value }
+    : { ...headers }
 
   // Make the fetch request to the backend
   const response = await fetch(
@@ -68,26 +70,30 @@ export const fetchWithSessions = async (
     }
   )
 
-  // Parse the response from the backend, no content for HEAD requests
-  const backendContent = method !== "HEAD" ? await response.json() : {};
+  // Parse the response from the backend, no content for HEAD/empty responses
+  let backendContent: Nullable<any> = {};
+  if (method !== "HEAD" && response.status !== 204) {
+    const responseText = await response.text();
+    backendContent = responseText ? JSON.parse(responseText) : {};
+  }
 
   // Check if the response is successful
   if (response.ok) {
-    const setCookieHeader = response.headers.get("set-cookie");
+    const sessionId = response.headers.get("x-session-id");
 
-    // Check if the set-cookie header is missing when a session ID is required
-    if (!setCookieHeader && props.requireSessionId) {
-      console.error("Sessions Fetch: Missing cookies with SID");
+    // Check if the session id header is missing when a session ID is required
+    if (!sessionId && props.requireSessionId) {
+      console.error("Sessions Fetch: Missing session header with SID");
 
       throw new BaseHttpError(
-        "Fetch response with new session cookie missing",
+        "Fetch response with new session header missing",
         HttpStatusCode.INTERNAL_SERVER_ERROR,
         ErrorBehavior.BE
       );
     }
 
-    // Return the response status, content, and set-cookie header
-    return { status: response.status, backendContent, setCookieHeader };
+    // Return the response status, content, and refreshed session id
+    return { status: response.status, backendContent, sessionId };
   } else {
     console.error("Error in fetchWithSessions", response.status, backendContent);
     throw new BaseHttpError(backendContent, response.status, ErrorBehavior.BE);
