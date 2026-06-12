@@ -1,3 +1,9 @@
+## [0.4.4](https://github.com/Gisat/app-esaWorldCerealProcesses/compare/v0.4.3...v0.4.4) (2026-06-12)
+
+### Bug Fixes
+
+* harden session cookie handling ([1668ab0](https://github.com/Gisat/app-esaWorldCerealProcesses/commit/1668ab08d3003a9fdcd4c96075cb076ae2978a44))
+
 ## [0.4.3](https://github.com/Gisat/app-esaWorldCerealProcesses/compare/v0.4.2...v0.4.3) (2026-06-12)
 
 ### Bug Fixes
