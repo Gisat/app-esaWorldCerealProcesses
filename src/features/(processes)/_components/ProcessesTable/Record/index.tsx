@@ -24,7 +24,7 @@ import ProductValuesInfo from '../ProductValuesInfo';
 import ProductResultsInfo from '../ProductResultsInfo';
 
 const fetcher = (url: string) => {
-	return fetch(`${url}`).then((r) => r.json());
+	return fetch(`${url}`, { credentials: 'include' }).then((r) => r.json());
 };
 
 type Props = {

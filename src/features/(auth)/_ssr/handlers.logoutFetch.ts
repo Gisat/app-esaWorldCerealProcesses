@@ -1,3 +1,5 @@
+import { UsedAuthCookies, UsedAuthHeaders } from "@features/(shared)/ssr/ssr-auth/enums.auth";
+
 interface LogoutFetchProps {
     identityServiceUrl: string,
     browserCookies: any,
@@ -17,7 +19,7 @@ export const fetchLogoutNotification = async (
     const { browserCookies, identityServiceUrl } = props;
 
     // get session cookie from browser
-    const sessionCookie = (browserCookies as any).get("sid");
+    const sessionCookie = (browserCookies as any).get(UsedAuthCookies.SESSION_ID);
 
     if (!sessionCookie)
         console.warn("Logout: Missing SID from browser");
@@ -27,7 +29,7 @@ export const fetchLogoutNotification = async (
 
     // prepare body for session exchange
     const body = {
-        sid: sessionCookie
+        [UsedAuthHeaders.SESSION_ID]: sessionCookie?.value
     }
 
     // make notify POST request to backend for session exchange

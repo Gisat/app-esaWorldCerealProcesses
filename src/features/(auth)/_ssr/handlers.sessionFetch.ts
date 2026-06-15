@@ -2,6 +2,7 @@ import { Nullable } from "@features/(shared)/_logic/types.universal";
 import { ErrorBehavior } from "@gisatcz/ptr-fe-core/globals";
 import { HttpStatusCode } from "@gisatcz/ptr-fe-core/globals";
 import { BaseHttpError } from "@gisatcz/ptr-fe-core/globals";
+import { UsedAuthCookies, UsedAuthHeaders } from "@features/(shared)/ssr/ssr-auth/enums.auth";
 
 // Define the interface for the properties of the fetchWithSessions function
 interface FetchWithBrowserSessionProps {
@@ -35,6 +36,11 @@ export const fetchWithSessions = async (
   props: FetchWithBrowserSessionProps
 ): Promise<FetchWithSessionsResponse> => {
   const { url, browserCookies, method, body, headers } = props;
+  const cookiePairs = (browserCookies as any).getAll?.() ?? [];
+  const cookieHeader = cookiePairs
+    .filter((cookie: any) => cookie?.name && cookie?.value)
+    .map((cookie: any) => `${cookie.name}=${cookie.value}`)
+    .join('; ');
 
   // Check if the URL is provided
   if (!url)
@@ -45,7 +51,7 @@ export const fetchWithSessions = async (
     );
 
   // Get the session cookie from the browser cookies
-  const sessionCookie = (browserCookies as any).get("sid");
+  const sessionCookie = (browserCookies as any).get(UsedAuthCookies.SESSION_ID);
 
   // Check if the session cookie is required but missing
   if (!sessionCookie && props.requireSessionId)
@@ -57,7 +63,7 @@ export const fetchWithSessions = async (
 
   // Add the session id header if it exists
   const headersWithCookies = sessionCookie
-    ? { ...headers, 'x-session-id': sessionCookie.value }
+    ? { ...headers, [UsedAuthHeaders.SESSION_ID]: sessionCookie.value, Cookie: cookieHeader || `${UsedAuthCookies.SESSION_ID}=${sessionCookie.value}` }
     : { ...headers }
 
   // Make the fetch request to the backend
@@ -77,9 +83,13 @@ export const fetchWithSessions = async (
     backendContent = responseText ? JSON.parse(responseText) : {};
   }
 
+  const backendErrorMessage = typeof backendContent === 'string'
+    ? backendContent
+    : backendContent?.error ?? backendContent?.message ?? JSON.stringify(backendContent);
+
   // Check if the response is successful
   if (response.ok) {
-    const sessionId = response.headers.get("x-session-id");
+    const sessionId = response.headers.get(UsedAuthHeaders.SESSION_ID);
 
     // Check if the session id header is missing when a session ID is required
     if (!sessionId && props.requireSessionId) {
@@ -96,6 +106,6 @@ export const fetchWithSessions = async (
     return { status: response.status, backendContent, sessionId };
   } else {
     console.error("Error in fetchWithSessions", response.status, backendContent);
-    throw new BaseHttpError(backendContent, response.status, ErrorBehavior.BE);
+    throw new BaseHttpError(backendErrorMessage, response.status, ErrorBehavior.BE);
   }
 };

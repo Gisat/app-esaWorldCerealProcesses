@@ -1,6 +1,5 @@
 import { ssrOpenidContext } from '@features/(shared)/ssr/ssr-auth/ssr.openid';
 import { UsedAuthCookies } from '@features/(shared)/ssr/ssr-auth/enums.auth';
-import { nextSetSessionIdCookie } from '@features/(shared)/ssr/ssr-auth/cookies.sid';
 import { fetchExchangeTokensForSessionId } from '@features/(shared)/ssr/ssr-auth/ssr.callbackFetch';
 import { handleRouteError } from '@gisatcz/ptr-fe-core/globals';
 import { NextRequest, NextResponse } from 'next/server';
@@ -79,7 +78,8 @@ export async function GET(req: NextRequest) {
 		const { sessionId } = await fetchExchangeTokensForSessionId(exchangeUrl, openidBundle);
 
 		// set sessions ID as Same Site HTTP Cookie
-		nextSetSessionIdCookie(sessionId, feRedirect, secureCookie);
+		feRedirect.cookies.delete(UsedAuthCookies.SESSION_ID);
+		feRedirect.cookies.set(UsedAuthCookies.SESSION_ID, sessionId, { httpOnly: true, secure: secureCookie, sameSite: 'lax', path: '/' });
 
 		// delete OIDC checks from cookies
 		feRedirect.cookies.delete(UsedAuthCookies.OIDC_STATE);

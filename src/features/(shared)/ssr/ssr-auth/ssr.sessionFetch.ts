@@ -28,6 +28,11 @@ interface FetchWithSessionsResponse {
  */
 export const fetchWithSessions = async (props: FetchWithBrowserSessionProps): Promise<FetchWithSessionsResponse> => {
     const { url, browserCookies, explicitSessionId, method, body, headers } = props;
+    const cookiePairs = (browserCookies as any).getAll?.() ?? [];
+    const cookieHeader = cookiePairs
+        .filter((cookie: any) => cookie?.name && cookie?.value)
+        .map((cookie: any) => `${cookie.name}=${cookie.value}`)
+        .join('; ');
 
     // Check if the URL is provided
     if (!url)
@@ -45,7 +50,7 @@ export const fetchWithSessions = async (props: FetchWithBrowserSessionProps): Pr
 
     // Forward the browser session to backend using a dedicated session header.
     const headersWithSessionId = usedSessionId
-        ? { ...headers, [UsedAuthHeaders.SESSION_ID]: usedSessionId }
+        ? { ...headers, [UsedAuthHeaders.SESSION_ID]: usedSessionId, Cookie: cookieHeader || `${UsedAuthCookies.SESSION_ID}=${usedSessionId}` }
         : { ...headers };
 
     // Make the fetch request to the backend
@@ -57,6 +62,9 @@ export const fetchWithSessions = async (props: FetchWithBrowserSessionProps): Pr
 
     // Parse the response from the backend
     const backendContent = await response.json();
+    const backendErrorMessage = typeof backendContent === 'string'
+        ? backendContent
+        : backendContent?.error ?? backendContent?.message ?? JSON.stringify(backendContent);
 
     // Check if the response is successful
     if (response.ok) {
@@ -73,6 +81,6 @@ export const fetchWithSessions = async (props: FetchWithBrowserSessionProps): Pr
         return { status: response.status, backendContent, sessionId: updatedSessionId };
     } else {
         console.error('Error in fetchWithSessions', response.status, backendContent);
-        throw new ServerError(backendContent);
+        throw new ServerError(backendErrorMessage);
     }
 };

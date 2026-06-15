@@ -3,7 +3,7 @@ import { UsedAuthCookies } from "./enums.auth";
 
 /**
  * Add session id as same site http only cookie
- * @param sessionId SID value from source
+ * @param sessionId session identifier value from source
  * @param nextResponse NextJS response
  * @param secure Whether to mark the cookie secure
  */

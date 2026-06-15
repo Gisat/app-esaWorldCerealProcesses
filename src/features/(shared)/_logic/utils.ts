@@ -25,7 +25,7 @@ export const strCapitalizeFirstLetter = (str: string) => {
  * @returns {Promise<any>} - The fetched data.
  */
 export const queryFetcher = (url: string, queryParams: string) => {
-	return fetch(`${url}?${queryParams}`).then(r => r.json());
+	return fetch(`${url}?${queryParams}`, { credentials: 'include' }).then(r => r.json());
 }
 
 /**
@@ -34,5 +34,5 @@ export const queryFetcher = (url: string, queryParams: string) => {
  * @returns {Promise<any>} - The fetched data.
  */
 export const fetcher = (url: string) => {
-	return fetch(`${url}`).then(r => r.json());
+	return fetch(`${url}`, { credentials: 'include' }).then(r => r.json());
 }

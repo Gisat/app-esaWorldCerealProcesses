@@ -1,6 +1,7 @@
 import { MantineProvider } from '@features/(shared)/_components/providers/MantineProvider/MantineProvider';
 import FaroClient from '@features/(shared)/_components/providers/grafana/FaroClient';
 import { AppShell, AppShellMain, rem } from '@mantine/core';
+import { Roboto, Sen } from 'next/font/google';
 import type { Metadata } from 'next';
 import React from 'react';
 /** Import of style files */
@@ -16,6 +17,20 @@ import { Header } from '@features/(shared)/_layout/_components/Header';
 import InstanceWarning from '@features/(shared)/_components/InstanceWarning';
 import { PersistentStateWrapper } from '@features/wrappers/PersistentStateWrapper';
 
+const roboto = Roboto({
+	weight: ['300', '400', '500', '700'],
+	subsets: ['latin'],
+	variable: '--font-roboto',
+	display: 'swap',
+});
+
+const sen = Sen({
+	weight: ['400', '700'],
+	subsets: ['latin'],
+	variable: '--font-sen',
+	display: 'swap',
+});
+
 export const metadata: Metadata = {
 	title: 'WorldCereals Processes',
 };
@@ -26,13 +41,8 @@ export default function RootLayout({
 	children: React.ReactNode;
 }>) {
 	return (
-		<html lang="en">
+		<html lang="en" className={`${roboto.variable} ${sen.variable}`}>
 			<head>
-				{/* TODO: fix warning. Font should not be imported this way */}
-				<link
-					href="https://fonts.googleapis.com/css2?family=Sen:wght@400;700&family=Roboto:wght@300;400;500;700&display=swap"
-					rel="stylesheet"
-				></link>
 				<title>WorldCereal Processes</title>
 			</head>
 			<body className={`esaWorldCerealProcesses`}>

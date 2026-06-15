@@ -15,6 +15,8 @@ export const fetchCache = "force-no-store";
  */
 export async function GET(req: NextRequest) {
   try {
+    const secureCookie = req.nextUrl.protocol === 'https:';
+
     // user info auth URL
     const identityUrl = process.env.PID_URL as string;
     const userInfoUrl = `${identityUrl}/oid/user-info`;
@@ -34,7 +36,7 @@ export async function GET(req: NextRequest) {
 		// prepare NextJS response with received cookies including new SID
 		const response = NextResponse.json(backendContent);
 		response.cookies.delete(UsedAuthCookies.SESSION_ID);
-		response.cookies.set(UsedAuthCookies.SESSION_ID, sessionId, { httpOnly: true, secure: req.nextUrl.protocol === 'https:', sameSite: 'lax', path: '/' });
+		response.cookies.set(UsedAuthCookies.SESSION_ID, sessionId, { httpOnly: true, secure: secureCookie, sameSite: 'lax', path: '/' });
 
     return response;
   } catch (error: any) {

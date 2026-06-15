@@ -9,7 +9,9 @@
  */
 export const apiFetcher = (url: string, queryParams?: string, method?: string, body?: object) => {
 	const fullUrl = queryParams ? `${url}?${queryParams}` : url;
-	const options: RequestInit = {};
+	const options: RequestInit = {
+		credentials: 'include',
+	};
 	if (method && method !== 'GET') {
 		options.method = method;
 		if (body) {
