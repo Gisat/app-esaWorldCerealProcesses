@@ -1,3 +1,9 @@
+## [0.4.6](https://github.com/Gisat/app-esaWorldCerealProcesses/compare/v0.4.5...v0.4.6) (2026-06-15)
+
+### Bug Fixes
+
+* set majority_vote as default postprocess method and improve kernel size validation ([ff20275](https://github.com/Gisat/app-esaWorldCerealProcesses/commit/ff202752c41ae0edbd78ca9adcacd1ccf0cfb6d9))
+
 ## [0.4.5](https://github.com/Gisat/app-esaWorldCerealProcesses/compare/v0.4.4...v0.4.5) (2026-06-15)
 
 ### Bug Fixes
