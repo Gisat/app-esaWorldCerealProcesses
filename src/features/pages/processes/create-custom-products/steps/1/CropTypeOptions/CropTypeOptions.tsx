@@ -32,7 +32,7 @@ export default function CropTypeOptions() {
 	const kernelSize = getPostProcessKernelSize_customProducts(state);
 
 	// Local state for kernel size input (for immediate feedback)
-	const [localKernelSize, setLocalKernelSize] = useState<string>(kernelSize !== undefined ? String(kernelSize) : '5');
+	const [localKernelSize, setLocalKernelSize] = useState<string>(kernelSize !== undefined ? String(kernelSize) : '3');
 
 	/**
 	 * Initializes default values for orbit state, postprocess method, and kernel size on mount.
@@ -48,15 +48,15 @@ export default function CropTypeOptions() {
 		if (!postprocessMethod) {
 			dispatch({
 				type: WorldCerealStateActionType.CREATE_CUSTOM_PRODUCTS_SET_POSTPROCESS_METHOD,
-				payload: 'smooth_probabilities',
+				payload: 'majority_vote',
 			});
 		}
 		if (kernelSize === undefined) {
 			dispatch({
 				type: WorldCerealStateActionType.CREATE_CUSTOM_PRODUCTS_SET_POSTPROCESS_KERNEL_SIZE,
-				payload: 5,
+				payload: 3,
 			});
-			setLocalKernelSize('5');
+			setLocalKernelSize('3');
 		} else if (String(kernelSize) !== localKernelSize) {
 			setLocalKernelSize(String(kernelSize));
 		}
