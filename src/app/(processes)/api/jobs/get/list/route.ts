@@ -4,6 +4,7 @@ import { getSamples } from "@features/(processes)/_utils/sample.loader";
 import { handleRouteError } from "@gisatcz/ptr-fe-core/globals";
 import { NextRequest, NextResponse } from "next/server";
 import { loggyError, loggyWarn } from "@gisatcz/ptr-be-core/node";
+import { UsedAuthCookies } from '@features/(shared)/ssr/ssr-auth/enums.auth';
 
 import downloadFormParmas from "@features/(processes)/_constants/download-official-products/formParams";
 import customProductFormParams from "@features/(processes)/_constants/generate-custom-products/formParams";
@@ -51,6 +52,8 @@ export const fetchCache = "force-no-store";
  */
 export async function GET(req: NextRequest) {
   try {
+    const secureCookie = req.nextUrl.protocol === 'https:';
+
     const openeoUrlPrefix = process.env.OEO_URL
 
     if (!openeoUrlPrefix) {
@@ -61,14 +64,11 @@ export async function GET(req: NextRequest) {
     const url = `${openeoUrlPrefix}/openeo/jobs/list-all`
 
     // fetch data with sessions
-     const { backendContent, sessionId } = await fetchWithSessions(
+    const { backendContent, sessionId } = await fetchWithSessions(
       {
         method: "GET",
         url,
         browserCookies: req.cookies,
-        headers: {
-          "Content-Type": "application/json"
-        },
         requireSessionId: getRequireSessionId()
       })
 
@@ -81,18 +81,26 @@ export async function GET(req: NextRequest) {
     const nextResponse = NextResponse.json(processesWithValidProductType);
 
      if (sessionId) {
-       nextResponse.cookies.set('sid', sessionId, { httpOnly: true, secure: true, sameSite: 'lax', path: '/' });
+		nextResponse.cookies.set(UsedAuthCookies.SESSION_ID, sessionId, { httpOnly: true, secure: secureCookie, sameSite: 'lax', path: '/' });
      }
     return nextResponse
 
   } catch (error: any) {
     loggyError("Jobs get list GET", error);
     const { message, status } = handleRouteError(error)
-    const response = NextResponse.json({ error: message }, { status })
+    const normalizedMessage = typeof message === 'string'
+      ? message
+      : (message && typeof message === 'object'
+        ? (message as any).error ?? (message as any).message ?? JSON.stringify(message)
+        : String(message));
+    const response = NextResponse.json({
+      error: normalizedMessage,
+      details: typeof message === 'object' ? message : undefined,
+    }, { status })
 
     if (status === 401) {
       loggyWarn('Unauthorized', 'User is not authorized to access the resource. Deleting session cookie.');
-      response.cookies.delete('sid');
+		  response.cookies.delete(UsedAuthCookies.SESSION_ID);
     }
 
     return response

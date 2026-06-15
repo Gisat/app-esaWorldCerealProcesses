@@ -1,5 +1,6 @@
 import { fetchWithSessions } from "@features/(auth)/_ssr/handlers.sessionFetch";
 import { getRequireSessionId } from "@features/(auth)/_utils/requireSessionId";
+import { UsedAuthCookies } from "@features/(shared)/ssr/ssr-auth/enums.auth";
 import { handleRouteError } from "@gisatcz/ptr-fe-core/globals";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
@@ -27,7 +28,7 @@ export async function middleware(request: NextRequest) {
   try {
 
     // get the session ID from the request cookies
-    const sid = request.cookies.get("sid");
+    const sid = request.cookies.get(UsedAuthCookies.SESSION_ID);
 
     // allowed paths without session
     const allowedPaths = ["/"];
@@ -70,8 +71,8 @@ export async function middleware(request: NextRequest) {
             : NextResponse.next();
 
 	    // Remove the old SID cookie and set the new one
-	    response.cookies.delete("sid");
-	    response.cookies.set("sid", sessionId, { httpOnly: true, secure: secureCookie, sameSite: 'lax', path: '/' });
+    response.cookies.delete(UsedAuthCookies.SESSION_ID);
+    response.cookies.set(UsedAuthCookies.SESSION_ID, sessionId, { httpOnly: true, secure: secureCookie, sameSite: 'lax', path: '/' });
 
     // Return the response
     return response;
@@ -85,7 +86,7 @@ export async function middleware(request: NextRequest) {
     // Redirect to the logout endpoint if the session is invalid or refresh failed
     const logoutUrl = new URL("/api/auth/logout", request.nextUrl);
     const redirect = NextResponse.rewrite(logoutUrl);
-    redirect.cookies.delete("sid");
+    redirect.cookies.delete(UsedAuthCookies.SESSION_ID);
 
     return redirect;
   }

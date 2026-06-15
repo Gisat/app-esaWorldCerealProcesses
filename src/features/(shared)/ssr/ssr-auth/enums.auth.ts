@@ -10,8 +10,8 @@ export enum UsedAuthCookies {
 	OIDC_NONCE = 'oidc_nonce',
 	/** URL to return to after successful authentication */
 	AUTH_RETURN_URL = 'auth_return_url',
-	/** Session ID cookie from the Panther backend */
-	SESSION_ID = 'sid',
+	/** Session ID cookie from the backend */
+	SESSION_ID = 'x-session-id',
 }
 
 export enum UsedAuthHeaders {

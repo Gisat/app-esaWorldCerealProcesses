@@ -1,8 +1,8 @@
 :root, .esaWorldCerealProcesses {
     /* --- Font families --- */
-    --defaultFontFamily: 'Roboto', sans-serif;
-    --headingsFontFamily: "Sen", var(--defaultFontFamily);
-    --labelsFontFamily: "Sen", var(--defaultFontFamily);
+    --defaultFontFamily: var(--font-roboto), sans-serif;
+    --headingsFontFamily: var(--font-sen), var(--defaultFontFamily);
+    --labelsFontFamily: var(--font-sen), var(--defaultFontFamily);
 
     /* --- Font sizes --- */
     /* Base scale and ratio for font sizes */

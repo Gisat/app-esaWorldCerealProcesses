@@ -5,6 +5,7 @@ import { FaroConfigProps } from "@features/(grafana)/_logic/models.faro";
 import { parseFaroParameters } from "@features/(grafana)/_logic/parsers.faro";
 import { handleRouteError } from '@gisatcz/ptr-fe-core/globals';
 import { loggyError, loggyWarn } from "@gisatcz/ptr-be-core/node";
+import { UsedAuthCookies } from '@features/(shared)/ssr/ssr-auth/enums.auth';
 
 // do not batch into app build
 export const dynamic = 'force-dynamic'
@@ -39,7 +40,7 @@ export async function GET() {
 
         if (status === 401) {
             loggyWarn('Unauthorized', 'User is not authorized to access the resource. Deleting session cookie.');
-            response.cookies.delete('sid');
+			response.cookies.delete(UsedAuthCookies.SESSION_ID);
         }
 
         return response

@@ -3,6 +3,11 @@
 // import { fileURLToPath } from 'url';
 // const __filename = fileURLToPath(import.meta.url);
 // const __dirname = path.dirname(__filename);
+import { dirname } from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const nextConfig = {
 
@@ -10,6 +15,7 @@ const nextConfig = {
 	// reactStrictMode: false,
 	// transpilePackages: ['ptr-fe-core'],
 	turbopack: {
+		root: __dirname,
 		// resolveConditions: ['browser', 'module', 'main', 'import', 'default'],
 		// root: path.resolve(__dirname, '..'),
 		// resolveAlias: {

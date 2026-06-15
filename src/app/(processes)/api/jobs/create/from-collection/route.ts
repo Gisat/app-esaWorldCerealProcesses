@@ -4,6 +4,7 @@ import { handleRouteError } from "@gisatcz/ptr-fe-core/globals";
 import { BaseHttpError } from "@gisatcz/ptr-fe-core/globals";
 import { NextRequest, NextResponse } from "next/server";
 import { loggyError, loggyWarn } from "@gisatcz/ptr-be-core/node";
+import { UsedAuthCookies } from '@features/(shared)/ssr/ssr-auth/enums.auth';
 
 import formParams from "@features/(processes)/_constants/download-official-products/formParams";
 import { getRequireSessionId } from "@features/(auth)/_utils/requireSessionId";
@@ -16,6 +17,8 @@ import { getRequireSessionId } from "@features/(auth)/_utils/requireSessionId";
  */
 export async function GET(req: NextRequest) {
 	try {
+		const secureCookie = req.nextUrl.protocol === 'https:';
+
 		// read query params from the request URL
 		const {searchParams} = req.nextUrl;
 
@@ -110,7 +113,7 @@ export async function GET(req: NextRequest) {
 		const nextResponse = NextResponse.json(backendContent);
 
 		if (sessionId) {
-			nextResponse.cookies.set('sid', sessionId, { httpOnly: true, secure: true, sameSite: 'lax', path: '/' });
+			nextResponse.cookies.set(UsedAuthCookies.SESSION_ID, sessionId, { httpOnly: true, secure: secureCookie, sameSite: 'lax', path: '/' });
 		}
 
 		return nextResponse
@@ -122,7 +125,7 @@ export async function GET(req: NextRequest) {
 
 		if (status === 401) {
 			loggyWarn('Unauthorized', 'User is not authorized to access the resource. Deleting session cookie.');
-			response.cookies.delete('sid');
+			response.cookies.delete(UsedAuthCookies.SESSION_ID);
 		}
 
 		return response

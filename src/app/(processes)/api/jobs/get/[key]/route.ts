@@ -3,6 +3,7 @@ import { getRequireSessionId } from "@features/(auth)/_utils/requireSessionId";
 import { handleRouteError } from "@gisatcz/ptr-fe-core/globals";
 import { NextRequest, NextResponse } from "next/server";
 import { loggyError, loggyWarn } from "@gisatcz/ptr-be-core/node";
+import { UsedAuthCookies } from '@features/(shared)/ssr/ssr-auth/enums.auth';
 
 export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
@@ -19,6 +20,8 @@ export async function GET(
   context: { params: Promise<{ key: string }> }
 ) {
   try {
+    const secureCookie = req.nextUrl.protocol === 'https:';
+
     const { key } = await context.params; // Await params
 
     if (!key) {
@@ -52,7 +55,7 @@ export async function GET(
     const nextResponse = NextResponse.json(backendContent);
 
      if (sessionId) {
-       nextResponse.cookies.set('sid', sessionId, { httpOnly: true, secure: true, sameSite: 'lax', path: '/' });
+		nextResponse.cookies.set(UsedAuthCookies.SESSION_ID, sessionId, { httpOnly: true, secure: secureCookie, sameSite: 'lax', path: '/' });
      }
     return nextResponse
 
@@ -63,7 +66,7 @@ export async function GET(
 
     if (status === 401) {
       loggyWarn('Unauthorized', 'User is not authorized to access the resource. Deleting session cookie.');
-      response.cookies.delete('sid');
+	  response.cookies.delete(UsedAuthCookies.SESSION_ID);
     }
 
     return response

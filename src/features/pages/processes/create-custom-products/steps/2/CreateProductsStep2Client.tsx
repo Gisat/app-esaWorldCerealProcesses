@@ -564,6 +564,21 @@ export default function CreateProductsStep2Client() {
 		startDate: startDate ? startDate.toISOString().split('T')[0] : '',
 	};
 
+	const selectedPeriod = selectedPeriodId ? suggestedPeriods.find((period) => period.id === selectedPeriodId) : null;
+	const seasonStartDate = selectedPeriod?.startDate ?? (startDate ? startDate.toISOString().split('T')[0] : null);
+	const seasonEndDate = selectedPeriod?.endDate ?? (endDate ? endDate.toString() : null);
+	const seasonId =
+		selectedPeriod?.id ??
+		(seasonStartDate && seasonEndDate
+			? `season_${seasonStartDate.replaceAll('-', '_')}_${seasonEndDate.replaceAll('-', '_')}`
+			: null);
+
+	if (seasonId && seasonStartDate && seasonEndDate) {
+		const seasonWindows = { [seasonId]: [seasonStartDate, seasonEndDate] };
+		params.seasonWindows = JSON.stringify(seasonWindows);
+		params.seasonIds = JSON.stringify([seasonId]);
+	}
+
 	if (product === customProductsProductTypes.cropType) {
 		// Include extra Crop Type options when available.
 		if (orbitState) params.orbitState = orbitState.toString();

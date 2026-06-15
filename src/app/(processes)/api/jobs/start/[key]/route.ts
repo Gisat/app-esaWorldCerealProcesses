@@ -3,6 +3,7 @@ import { getRequireSessionId } from "@features/(auth)/_utils/requireSessionId";
 import { handleRouteError } from "@gisatcz/ptr-fe-core/globals";
 import { NextRequest, NextResponse } from "next/server";
 import { loggyError, loggyWarn } from "@gisatcz/ptr-be-core/node";
+import { UsedAuthCookies } from '@features/(shared)/ssr/ssr-auth/enums.auth';
 
 // NextJS Cache controls
 export const dynamic = "force-dynamic";
@@ -22,6 +23,8 @@ export async function GET(
 ) {
   const { key } = await context.params;
   try {
+    const secureCookie = req.nextUrl.protocol === 'https:';
+
     // Validate inputs for safe aggregation
     if (!key) {
       loggyError("Jobs start GET", "Missing key value");
@@ -59,7 +62,7 @@ export async function GET(
     const nextResponse = NextResponse.json(backendContent);
 
      if (sessionId) {
-       nextResponse.cookies.set('sid', sessionId, { httpOnly: true, secure: true, sameSite: 'lax', path: '/' });
+			nextResponse.cookies.set(UsedAuthCookies.SESSION_ID, sessionId, { httpOnly: true, secure: secureCookie, sameSite: 'lax', path: '/' });
      }
     return nextResponse;
 
@@ -72,7 +75,7 @@ export async function GET(
     // Delete session cookie if unauthorized
     if (status === 401) {
       loggyWarn('Unauthorized', 'User is not authorized to access the resource. Deleting session cookie.');
-      response.cookies.delete('sid');
+		  response.cookies.delete(UsedAuthCookies.SESSION_ID);
     }
 
     return response;

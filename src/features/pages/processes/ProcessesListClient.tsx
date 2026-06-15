@@ -3,6 +3,7 @@
 import React from 'react';
 import useSWR from 'swr';
 import { apiFetcher } from '@features/(shared)/_url/apiFetcher';
+import { swrFetcher } from '@features/(shared)/_logic/utils';
 import { ProcessesTable } from '@features/(processes)/_components/ProcessesTable';
 
 /**
@@ -15,13 +16,18 @@ import { ProcessesTable } from '@features/(processes)/_components/ProcessesTable
  * @returns {JSX.Element} The rendered `ProcessesTable` component with fetched data.
  */
 export const ProcessesListClient = () => {
+	const { data: userInfoValue, isLoading: isUserInfoLoading } = useSWR('/api/auth/user-info', swrFetcher);
+	const shouldFetchProcesses = !!userInfoValue?.email;
+
 	// API endpoint for fetching the list of processes
 	const url = `/api/jobs/get/list`;
 
 	// Fetch data using SWR with a refresh interval of 15 seconds
-	const { data, mutate, error, isLoading } = useSWR(url, apiFetcher, {
+	const { data, mutate, error, isLoading } = useSWR(shouldFetchProcesses ? url : null, apiFetcher, {
 		refreshInterval: 15000,
 	});
+
+	if (isUserInfoLoading) return null;
 
 	// Handle error state
 	if (error) return 'Error from data request';
