@@ -1,3 +1,9 @@
+## [0.4.5](https://github.com/Gisat/app-esaWorldCerealProcesses/compare/v0.4.4...v0.4.5) (2026-06-15)
+
+### Bug Fixes
+
+* bump sqlite3 to ^6.0.1 to satisfy @gisatcz/ptr-be-core peer dependency ([f3ffe0c](https://github.com/Gisat/app-esaWorldCerealProcesses/commit/f3ffe0ce43a20d59da0c6e46fb8e36b23e3e83b9))
+
 ## [0.4.4](https://github.com/Gisat/app-esaWorldCerealProcesses/compare/v0.4.3...v0.4.4) (2026-06-12)
 
 ### Bug Fixes
