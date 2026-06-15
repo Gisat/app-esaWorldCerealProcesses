@@ -45,7 +45,7 @@
     "react-dom": "^19.2.7",
     "react-resize-detector": "^12.3.0",
     "sqlite": "^5.1.1",
-    "sqlite3": "^5.1.7",
+    "sqlite3": "^6.0.1",
     "uuid": "^11.1.0",
     "swr": "^2.4.1"
   },
