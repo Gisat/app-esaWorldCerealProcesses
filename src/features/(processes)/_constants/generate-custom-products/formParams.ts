@@ -128,11 +128,11 @@ const formParams: {
 			{
 				value: customProductsPostprocessMethods.smoothProbabilities,
 				label: 'Smooth probabilities',
-				default: true,
 			},
 			{
 				value: customProductsPostprocessMethods.majorityVote,
 				label: 'Majority vote',
+				default: true,
 			},
 		],
 	},

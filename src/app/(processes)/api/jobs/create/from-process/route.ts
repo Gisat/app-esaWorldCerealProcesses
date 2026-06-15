@@ -86,16 +86,19 @@ export async function GET(req: NextRequest) {
 				loggyError('Jobs create from process GET', 'Missing postprocessMethod for crop type');
 				throw new BaseHttpError('Missing postprocessMethod for crop type', 400, ErrorBehavior.SSR);
 			}
-			if (postprocessMethod === customProductsPostprocessMethods.majorityVote && !postprocessKernelSize) {
-				loggyError(
-					'Jobs create from process GET',
-					'Invalid or missing postprocessKernelSize for crop type with majority_vote'
-				);
-				throw new BaseHttpError(
-					'Invalid or missing postprocessKernelSize for crop type with majority_vote',
-					400,
-					ErrorBehavior.SSR
-				);
+			if (postprocessKernelSize !== null && postprocessMethod === customProductsPostprocessMethods.majorityVote) {
+				const parsedSize = Number(postprocessKernelSize);
+				if (isNaN(parsedSize) || parsedSize < 1 || parsedSize > 25 || parsedSize % 2 === 0) {
+					loggyError(
+						'Jobs create from process GET',
+						'Invalid postprocessKernelSize for crop type with majority_vote'
+					);
+					throw new BaseHttpError(
+						'Invalid postprocessKernelSize: must be an odd integer between 1 and 25',
+						400,
+						ErrorBehavior.SSR
+					);
+				}
 			}
 		}
 
