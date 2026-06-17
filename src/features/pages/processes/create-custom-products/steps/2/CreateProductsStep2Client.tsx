@@ -26,6 +26,7 @@ import {
 	customProductsPostprocessMethods,
 	customProductsProductTypes,
 } from '@features/(processes)/_constants/app';
+import { transformDate } from '@features/(processes)/_utils/transformDate';
 import formParams from '@features/(processes)/_constants/generate-custom-products/formParams';
 import { apiFetcher } from '@features/(shared)/_url/apiFetcher';
 import { getOutputFileFormat_customProducts } from '@features/state/selectors/createCustomProducts/getOutputFileFormat';
@@ -399,14 +400,22 @@ export default function CreateProductsStep2Client() {
 			const [endYear, endMonth] = period.endDate.split('-').map(Number);
 			let newEndDate = new Date(endYear, endMonth, 0);
 
-			if (!isCropType) {
-				const endSliderValue = getSliderValueFromDate(newEndDate);
-				const startSliderValue = getSliderValueFromDate(newStartDate);
-				const periodMonths = endSliderValue - startSliderValue;
+			const endSliderValue = getSliderValueFromDate(newEndDate);
+			const startSliderValue = getSliderValueFromDate(newStartDate);
+			const periodMonths = endSliderValue - startSliderValue;
 
+			if (!isCropType) {
 				if (periodMonths !== minSliderRange) {
-					const absoluteEndMonth = endSliderValue;
-					const absoluteStartMonth = Math.max(0, absoluteEndMonth - minSliderRange);
+					const absoluteStartMonth = Math.max(0, endSliderValue - minSliderRange);
+					newStartDate = getDateFromSliderValue(absoluteStartMonth);
+				}
+			} else {
+				const MAX_MONTHS = 11;
+				if (periodMonths > MAX_MONTHS) {
+					const absoluteStartMonth = Math.max(0, endSliderValue - MAX_MONTHS);
+					newStartDate = getDateFromSliderValue(absoluteStartMonth);
+				} else if (periodMonths < minSliderRange) {
+					const absoluteStartMonth = Math.max(0, endSliderValue - minSliderRange);
 					newStartDate = getDateFromSliderValue(absoluteStartMonth);
 				}
 			}
@@ -424,17 +433,30 @@ export default function CreateProductsStep2Client() {
 
 			const finalYearWindowStartMonth = newYearWindow * 12;
 
-			const sliderStartValue = Math.max(0, Math.min(monthSliderMax, absoluteStartMonth - finalYearWindowStartMonth));
-			const sliderEndValue = Math.max(0, Math.min(monthSliderMax, absoluteEndMonth - finalYearWindowStartMonth));
+		const sliderStartValue = Math.max(0, Math.min(monthSliderMax, absoluteStartMonth - finalYearWindowStartMonth));
+		const sliderEndValue = Math.max(0, Math.min(monthSliderMax, absoluteEndMonth - finalYearWindowStartMonth));
 
-			setSuggestedPeriodSliderValues([sliderStartValue, sliderEndValue]);
-			setSliderStart(sliderStartValue);
-			setSliderEnd(sliderEndValue);
+		// Derive dates from clamped slider positions (same as manual slider handler)
+		if (!isCropType) {
+			const finalStartMonth = newYearWindow * 12 + sliderStartValue;
+			const finalEndMonth = finalStartMonth + minSliderRange;
+			newStartDate = getDateFromSliderValue(finalStartMonth);
+			newEndDate = getDateFromSliderValue(finalEndMonth, true);
+		} else {
+			const finalStartMonth = newYearWindow * 12 + sliderStartValue;
+			const finalEndMonth = newYearWindow * 12 + sliderEndValue;
+			newStartDate = getDateFromSliderValue(finalStartMonth);
+			newEndDate = getDateFromSliderValue(finalEndMonth, true);
+		}
 
-			setStartDate(newStartDate);
-			const endDateStr = newEndDate.toISOString().split('T')[0] as CreateCustomProductsEndDateModel;
-			setEndDate(endDateStr);
-			setYearWindow(newYearWindow);
+		setSuggestedPeriodSliderValues([sliderStartValue, sliderEndValue]);
+		setSliderStart(sliderStartValue);
+		setSliderEnd(sliderEndValue);
+
+		setStartDate(newStartDate);
+		const endDateStr = transformDate(newEndDate) as CreateCustomProductsEndDateModel;
+		setEndDate(endDateStr);
+		setYearWindow(newYearWindow);
 		}
 	};
 
@@ -474,7 +496,7 @@ export default function CreateProductsStep2Client() {
 			setSelectedPeriodId(null);
 			setSuggestedPeriodSliderValues(null);
 			setStartDate(newStartDate);
-			const endDateStr = newEndDate.toISOString().split('T')[0] as CreateCustomProductsEndDateModel;
+			const endDateStr = transformDate(newEndDate) as CreateCustomProductsEndDateModel;
 			setEndDate(endDateStr);
 		} else {
 			// For crop type: flexible range (3-12 months)
@@ -490,7 +512,7 @@ export default function CreateProductsStep2Client() {
 			setSelectedPeriodId(null);
 			setSuggestedPeriodSliderValues(null);
 			setStartDate(newStartDate);
-			const endDateStr = newEndDate.toISOString().split('T')[0] as CreateCustomProductsEndDateModel;
+			const endDateStr = transformDate(newEndDate) as CreateCustomProductsEndDateModel;
 			setEndDate(endDateStr);
 		}
 	};
@@ -521,7 +543,7 @@ export default function CreateProductsStep2Client() {
 			const newEnd = getDateFromSliderValue(windowEndMonth, true);
 
 			setStartDate(newStart);
-			const endDateStr = newEnd.toISOString().split('T')[0] as CreateCustomProductsEndDateModel;
+			const endDateStr = transformDate(newEnd) as CreateCustomProductsEndDateModel;
 			setEndDate(endDateStr);
 		} else if (prevYearWindow.current !== yearWindow && startDate && endDate) {
 			const oldYearWindow = prevYearWindow.current;
@@ -544,7 +566,7 @@ export default function CreateProductsStep2Client() {
 			const newEnd = getDateFromSliderValue(clampedEndMonth, true);
 
 			setStartDate(newStart);
-			const endDateStr = newEnd.toISOString().split('T')[0] as CreateCustomProductsEndDateModel;
+			const endDateStr = transformDate(newEnd) as CreateCustomProductsEndDateModel;
 			setEndDate(endDateStr);
 		}
 
@@ -561,12 +583,12 @@ export default function CreateProductsStep2Client() {
 		model: model?.toString() || '',
 		product: product?.toString() || '',
 		endDate: endDate?.toString() || '',
-		startDate: startDate ? startDate.toISOString().split('T')[0] : '',
+		startDate: startDate ? transformDate(startDate) : '',
 	};
 
 	const selectedPeriod = selectedPeriodId ? suggestedPeriods.find((period) => period.id === selectedPeriodId) : null;
-	const seasonStartDate = selectedPeriod?.startDate ?? (startDate ? startDate.toISOString().split('T')[0] : null);
-	const seasonEndDate = selectedPeriod?.endDate ?? (endDate ? endDate.toString() : null);
+	const seasonStartDate = startDate ? transformDate(startDate) : null;
+	const seasonEndDate = endDate ? endDate.toString() : null;
 	const seasonId =
 		selectedPeriod?.id ??
 		(seasonStartDate && seasonEndDate
