@@ -1,3 +1,9 @@
+## [0.4.7](https://github.com/Gisat/app-esaWorldCerealProcesses/compare/v0.4.6...v0.4.7) (2026-06-17)
+
+### Bug Fixes
+
+* unify seasonWindows date handling for cropland and crop type products ([43cfdb9](https://github.com/Gisat/app-esaWorldCerealProcesses/commit/43cfdb9f75e5f8441efd1c0a78af136b70d2cfdf))
+
 ## [0.4.6](https://github.com/Gisat/app-esaWorldCerealProcesses/compare/v0.4.5...v0.4.6) (2026-06-15)
 
 ### Bug Fixes
