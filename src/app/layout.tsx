@@ -1,5 +1,6 @@
 import { MantineProvider } from '@features/(shared)/_components/providers/MantineProvider/MantineProvider';
 import FaroClient from '@features/(shared)/_components/providers/grafana/FaroClient';
+import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import { AppShell, AppShellMain, rem } from '@mantine/core';
 import { Roboto, Sen } from 'next/font/google';
 import type { Metadata } from 'next';
@@ -15,7 +16,6 @@ import { Header } from '@features/(shared)/_layout/_components/Header';
 // TODO uncomment when Faro is ready for react 19
 // import FaroFrontendMonitoring from '../features/(grafana)/_components/FaroFrontendMonitoring';
 import InstanceWarning from '@features/(shared)/_components/InstanceWarning';
-import { PersistentStateWrapper } from '@features/wrappers/PersistentStateWrapper';
 
 const roboto = Roboto({
 	weight: ['300', '400', '500', '700'],
@@ -46,17 +46,17 @@ export default function RootLayout({
 				<title>WorldCereal Processes</title>
 			</head>
 			<body className={`esaWorldCerealProcesses`}>
-				<InstanceWarning />
-				<FaroClient />
-				{/*<FaroFrontendMonitoring envUrl="/api/faro" />*/}
-				<MantineProvider>
-					<PersistentStateWrapper>
+				<NuqsAdapter>
+					<InstanceWarning />
+					<FaroClient />
+					{/*<FaroFrontendMonitoring envUrl="/api/faro" />*/}
+					<MantineProvider>
 						<AppShell withBorder={false} padding={0} className={'worldCereal-appContent'}>
 							<Header />
 							<AppShellMain pt={`calc(${rem(64)})`}>{children}</AppShellMain>
 						</AppShell>
-					</PersistentStateWrapper>
-				</MantineProvider>
+					</MantineProvider>
+				</NuqsAdapter>
 			</body>
 		</html>
 	);
