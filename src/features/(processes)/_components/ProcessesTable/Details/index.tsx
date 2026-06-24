@@ -67,6 +67,7 @@ type DetailsProps = {
 	orbitState?: string;
 	postprocessMethod?: string;
 	postprocessKernelSize?: number;
+	title?: string;
 };
 
 /**
@@ -90,6 +91,7 @@ const Details = ({
 	orbitState,
 	postprocessMethod,
 	postprocessKernelSize,
+	title,
 }: DetailsProps) => {
 	const [bboxDescription, setBboxDescription] = useState<string | string[] | null>(null);
 	const collection = oeoCollection;
@@ -133,6 +135,7 @@ const Details = ({
 				/>
 			</div>
 			<div className="worldCereal-ProcessesTable-Details-column">
+				<DetailsItem label={'Title'}>{title}</DetailsItem>
 				<DetailsItem label={'Product collection'}>{collectionName}</DetailsItem>
 				<DetailsItem label={'Product'}>{collection || process}</DetailsItem>
 				<DetailsItem label={'Model'}>{getModelLink()}</DetailsItem>

@@ -48,6 +48,7 @@ type Props = {
 	orbitState?: string;
 	postprocessMethod?: string;
 	postprocessKernelSize?: number;
+	title?: string;
 };
 
 const StartJobButton = ({ jobKey, forceReloadList }: { jobKey?: string; forceReloadList?: () => void }) => {
@@ -97,6 +98,7 @@ type RemoveJobButtonProps = {
 	forceReloadList?: () => void;
 	collectionName?: string;
 	model?: string;
+	title?: string;
 };
 
 const RemoveJobButton = ({
@@ -109,6 +111,7 @@ const RemoveJobButton = ({
 	oeoProcessId,
 	collectionName,
 	model,
+	title,
 }: RemoveJobButtonProps) => {
 	const [shouldFetch, setShouldFetch] = useState(false);
 	const [opened, { open, close }] = useDisclosure(false);
@@ -152,6 +155,7 @@ const RemoveJobButton = ({
 					oeoProcessId={oeoProcessId}
 					collectionName={collectionName}
 					model={model}
+					title={title}
 				/>
 				<Flex mih={50} gap="lg" justify="flex-start" align="flex-end" direction="row" wrap="wrap">
 					<Button
@@ -255,6 +259,7 @@ const Record = ({
 	orbitState,
 	postprocessMethod,
 	postprocessKernelSize,
+	title,
 }: // details
 Props) => {
 	const [isExpanded, setIsExpanded] = useState(false);
@@ -275,6 +280,7 @@ Props) => {
 						oeoCollection={downloadFormParams.product.options.find((option) => option.value === oeoCollection)?.label}
 						results={results}
 						status={status}
+						title={title}
 						collectionName={
 							downloadFormParams.collection.options.find(
 								(option) => option.start === `${timeRange?.[0]}` && option.end === `${timeRange?.[1]}`
@@ -311,7 +317,9 @@ Props) => {
 	return (
 		<>
 			<Table.Tr key={jobKey} className={className}>
-				<Table.Td className="smallTextCell">{jobKey}</Table.Td>
+				<Table.Td className="smallTextCell">
+					{title ? <>{title}<br /><span style={{ opacity: 0.6, fontSize: '0.85em' }}>{jobKey}</span></> : jobKey}
+				</Table.Td>
 				<Table.Td className="highlightedCell">{type}</Table.Td>
 				<Table.Td>{createdIso && new Date(createdIso).toLocaleString()}</Table.Td>
 				<Table.Td>{status ? <ProcessStatus status={status} /> : null}</Table.Td>
@@ -332,6 +340,7 @@ Props) => {
 							)?.label || ''
 						}
 						model={model}
+						title={title}
 					/>
 					{results?.[0] ? <OpenInfoButton descriptionType={type} /> : null}
 					{status === Statuses.created ? <StartJobButton jobKey={jobKey} forceReloadList={forceReloadList} /> : null}

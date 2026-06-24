@@ -26,6 +26,7 @@ export async function GET(req: NextRequest) {
 		const outputFileFormat = searchParams.get("outputFileFormat");
 		const collection = searchParams.get("collection");
 		const product = searchParams.get("product");
+		const customPropertiesRaw = searchParams.get("customProperties");
 		const startDate = formParams.collection.options.find(
 			(option) => option.value === collection
 		)?.start;
@@ -79,6 +80,16 @@ export async function GET(req: NextRequest) {
 			throw new BaseHttpError("Missing endDate value", 400, ErrorBehavior.SSR);
 		}
 
+		let customProperties: Record<string, unknown> | undefined;
+		if (customPropertiesRaw) {
+			try {
+				customProperties = JSON.parse(customPropertiesRaw);
+			} catch {
+				loggyError("Jobs create from collection GET", "Invalid customProperties JSON");
+				throw new BaseHttpError("Invalid customProperties value", 400, ErrorBehavior.SSR);
+			}
+		}
+
 		// prepare data for the request
 		const data = {
 			collection: product,
@@ -86,6 +97,7 @@ export async function GET(req: NextRequest) {
 			crs: "EPSG:4326",   // Make parametrized in the future, if needed
 			timeRange: [startDate, endDate],
 			outputFileFormat: outputFileFormat,
+			...(customProperties ? { customProperties } : {}),
 		};
 
 		const openeoUrlPrefix = process.env.OEO_URL

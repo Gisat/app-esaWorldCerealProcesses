@@ -30,6 +30,8 @@ type Props = {
 		orbitState?: string;
 		postprocessMethod?: string;
 		postprocessKernelSize?: number;
+		title?: string;
+		customProperties?: Record<string, unknown>;
 	}[];
 };
 
@@ -69,6 +71,7 @@ export const ProcessesTable = ({ data, loading, forceReloadList }: Props) => {
 				orbitState,
 				postprocessMethod,
 				postprocessKernelSize,
+				title,
 			}) => (
 				<Record
 					key={key}
@@ -92,6 +95,7 @@ export const ProcessesTable = ({ data, loading, forceReloadList }: Props) => {
 					orbitState={orbitState}
 					postprocessMethod={postprocessMethod}
 					postprocessKernelSize={postprocessKernelSize}
+					title={title}
 				/>
 			)
 		)
