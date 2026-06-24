@@ -4,16 +4,7 @@ import { Text } from '@mantine/core';
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { IconArrowLeft, IconCheck } from '@tabler/icons-react';
-import { WorldCerealStateActionType } from '@features/state/state.actionTypes';
-import { useSharedState } from '@gisatcz/ptr-fe-core/client';
-import {
-	CreateCustomProductsBackgroundLayerModel,
-	CreateCustomProductsBBoxModel,
-	CreateCustomProductsEndDateModel,
-	CreateCustomProductsOutputFileFormatModel,
-	WorldCerealState,
-} from '@features/state/state.models';
-import { OneOfWorldCerealActions } from '@features/state/state.actions';
+import { useQueryStates } from 'nuqs';
 import TwoColumns, { Column } from '@features/(shared)/_layout/_components/Content/TwoColumns';
 import { SectionContainer } from '@features/(shared)/_layout/_components/Content/SectionContainer';
 
@@ -25,33 +16,27 @@ import {
 	bboxSizeLimits,
 	customProductsPostprocessMethods,
 	customProductsProductTypes,
+	processTypes,
 } from '@features/(processes)/_constants/app';
 import { transformDate } from '@features/(processes)/_utils/transformDate';
 import formParams from '@features/(processes)/_constants/generate-custom-products/formParams';
+import {
+	generateCustomProductsSearchParams,
+	serializeGenerateCustomProductsSearchParams,
+} from '@features/(processes)/_constants/generate-custom-products/searchParams';
+import { parseBbox, stringifyBbox } from '@features/(processes)/_utils/bbox';
 import { apiFetcher } from '@features/(shared)/_url/apiFetcher';
-import { getOutputFileFormat_customProducts } from '@features/state/selectors/createCustomProducts/getOutputFileFormat';
-import { getBBox_customProducts } from '@features/state/selectors/createCustomProducts/getBBox';
-import { getBackgroundLayer_customProducts } from '@features/state/selectors/createCustomProducts/getBackgroundLayer';
-import { getModel_customProducts } from '@features/state/selectors/createCustomProducts/getModel';
-import { getProduct_customProducts } from '@features/state/selectors/createCustomProducts/getProduct';
-import { getEndDate_customProducts } from '@features/state/selectors/createCustomProducts/getEndDate';
-import { getOrbitState_customProducts } from '@features/state/selectors/createCustomProducts/getOrbitState';
-import { getPostProcessMethod_customProducts } from '@features/state/selectors/createCustomProducts/getPostProcessMethod';
-import { getPostProcessKernelSize_customProducts } from '@features/state/selectors/createCustomProducts/getPostProcessKernelSize';
 import './CreateProductsStep2Client.css';
 
 const START_YEAR = 2018;
 const CURRENT_YEAR = new Date().getFullYear();
-const SLIDER_MAX = (CURRENT_YEAR - START_YEAR) * 12; // months from START_YEAR to current year
+const SLIDER_MAX = (CURRENT_YEAR - START_YEAR) * 12;
 
-// Number of years visible in the focused slider
-const YEAR_WINDOW_SIZE = 3; // 3 years window
+const YEAR_WINDOW_SIZE = 3;
 
-// Generate marks for year navigation slider (show every other year for visibility)
 const generateYearMarks = () => {
 	const marks = [];
 	for (let year = START_YEAR; year <= CURRENT_YEAR; year++) {
-		// Show label every other year, but include all marks for stepping
 		const label = (year - START_YEAR) % 2 === 0 ? year.toString() : '';
 		marks.push({ value: year - START_YEAR, label });
 	}
@@ -60,7 +45,6 @@ const generateYearMarks = () => {
 
 const getMaxYearWindow = () => CURRENT_YEAR - START_YEAR - YEAR_WINDOW_SIZE + 1;
 
-// Generate marks for focused month slider - 24 marks representing the 3-year window
 const generateMonthMarks = (yearWindowStart: number) => {
 	const marks = [];
 	const startYear = START_YEAR + yearWindowStart;
@@ -70,11 +54,6 @@ const generateMonthMarks = (yearWindowStart: number) => {
 	return marks;
 };
 
-/**
- * Convert a date into a slider index (months since START_YEAR).
- * @param {Date | string | null | undefined} date - Source date value.
- * @returns {number} Slider index in the 0...SLIDER_MAX range.
- */
 const getSliderValueFromDate = (date: Date | string | null | undefined): number => {
 	if (!date) return 0;
 	const tmpDate = new Date(date);
@@ -82,12 +61,6 @@ const getSliderValueFromDate = (date: Date | string | null | undefined): number 
 	return Math.max(0, Math.min(months, SLIDER_MAX));
 };
 
-/**
- * Convert a slider index back to a Date.
- * @param {number} sliderVal - Slider index in months since START_YEAR.
- * @param {boolean} isEnd - When true, return last day of month; otherwise first day.
- * @returns {Date} Normalized date corresponding to the slider position.
- */
 const getDateFromSliderValue = (sliderVal: number, isEnd = false) => {
 	const year = START_YEAR + Math.floor(sliderVal / 12);
 	const month = sliderVal % 12;
@@ -97,32 +70,16 @@ const getDateFromSliderValue = (sliderVal: number, isEnd = false) => {
 	return new Date(year, month, 1);
 };
 
-/**
- * Format a YYYY-MM string into a human-readable month/year label.
- * @param {string} dateStr - Date in YYYY-MM format.
- * @returns {string} Formatted label, e.g. "January 2021".
- */
 const formatPeriodDate = (dateStr: string) => {
 	const [year, month] = dateStr.split('-').map(Number);
 	const date = new Date(year, month - 1);
 	return date.toLocaleString('en-US', { month: 'short', year: 'numeric' });
 };
 
-/**
- * Build a suggested period label from start and end values.
- * @param {string} start - Start date in YYYY-MM format.
- * @param {string} end - End date in YYYY-MM format.
- * @returns {string} Combined label, e.g. "January 2021/December 2021".
- */
 const formatPeriodLabel = (start: string, end: string) => {
 	return `${formatPeriodDate(start)} / ${formatPeriodDate(end)}`;
 };
 
-/**
- * Convert a Date to the first day of that month (YYYY-MM-01).
- * @param {Date | null} date - Source date value.
- * @returns {string} Formatted date or "-" if undefined.
- */
 const formatToFirstOfMonth = (date: Date | null) => {
 	if (!date) return '-';
 	const year = date.getFullYear();
@@ -130,20 +87,14 @@ const formatToFirstOfMonth = (date: Date | null) => {
 	return `${year}-${month}-01`;
 };
 
-/**
- * Convert a date string to the last day of that month (YYYY-MM-DD).
- * @param {string | null | undefined} dateStr - Source date string.
- * @returns {string} Formatted date or "-" if invalid.
- */
 const formatToEndOfMonth = (dateStr: string | null | undefined) => {
 	if (!dateStr) return '-';
 	const date = new Date(dateStr);
-	// Check if date is valid.
 	if (isNaN(date.getTime())) return '-';
 
 	const year = date.getFullYear();
 	const month = date.getMonth();
-	const lastDay = new Date(year, month + 1, 0); // 0th day of next month is last day of current.
+	const lastDay = new Date(year, month + 1, 0);
 
 	const y = lastDay.getFullYear();
 	const m = String(lastDay.getMonth() + 1).padStart(2, '0');
@@ -151,152 +102,51 @@ const formatToEndOfMonth = (dateStr: string | null | undefined) => {
 	return `${y}-${m}-${d}`;
 };
 
-/**
- * Component representing the second step in the "Create Custom Products" process.
- *
- * This step allows users to define the bounding box, select the processing period,
- * choose output file format, and create a process.
- *
- * @component
- * @returns {JSX.Element} The rendered component for step 2 of the process.
- */
 export default function CreateProductsStep2Client() {
-	/**
-	 * API URL for creating a process from a collection.
-	 * @type {string}
-	 */
 	const apiUrl = '/api/jobs/create/from-process';
 
-	/**
-	 * Router instance for navigation.
-	 */
 	const router = useRouter();
 
-	/**
-	 * Shared state hook for accessing and dispatching application state.
-	 * @type {[WorldCerealState, React.Dispatch<OneOfWorldCerealActions>]}
-	 */
-	const [state, dispatch] = useSharedState<WorldCerealState, OneOfWorldCerealActions>();
+	const [
+		{ product, model, outputFileFormat, bbox, backgroundLayer, endDate, orbitState, postprocessMethod, postprocessKernelSize },
+		setParams,
+	] = useQueryStates(generateCustomProductsSearchParams);
 
-	/**
-	 * State to determine if the bounding box is within valid bounds.
-	 * @type {boolean | null}
-	 */
 	const [bboxIsInBounds, setBboxIsInBounds] = useState<boolean | null>(null);
-
-	/**
-	 * State to store the description of the bounding box.
-	 * @type {string | string[] | null}
-	 */
 	const [bboxDescription, setBboxDescription] = useState<string | string[] | null>(null);
-
-	/**
-	 * State to determine whether to fetch process data.
-	 * @type {boolean}
-	 */
 	const [shouldFetch, setShouldFetch] = useState(false);
 
-	/**
-	 * Selector to retrieve the output file format from the state.
-	 * @type {string | undefined}
-	 */
-	const outputFileFormat = getOutputFileFormat_customProducts(state);
+	const bboxArr = parseBbox(bbox);
 
-	/**
-	 * Selector to retrieve the bounding box from the state.
-	 * @type {string[] | undefined}
-	 */
-	const bbox = getBBox_customProducts(state);
+	const isCropType = product === customProductsProductTypes.cropType;
 
-	/**
-	 * Selector to retrieve the background layer from the state.
-	 * @type {string | undefined}
-	 */
-	const backgroundLayer = getBackgroundLayer_customProducts(state);
+	const nextStepDisabled = !bboxIsInBounds || !bboxArr || !model || !product || !outputFileFormat || !endDate;
 
-	/**
-	 * Selector to retrieve the collection from the state.
-	 * @type {string | undefined}
-	 */
-	const model = getModel_customProducts(state);
-
-	/**
-	 * Selector to retrieve the product from the state.
-	 * @type {string | undefined}
-	 */
-	const product = getProduct_customProducts(state);
-
-	/**
-	 * Selector to retrieve the end date from the state.
-	 * @type {string | undefined}
-	 */
-	const endDate = getEndDate_customProducts(state);
-
-	const orbitState = getOrbitState_customProducts(state);
-	const postprocessMethod = getPostProcessMethod_customProducts(state);
-	const postprocessKernelSize = getPostProcessKernelSize_customProducts(state);
-
-	/**
-	 * Local start date used for slider-based range selection.
-	 * @type {Date | null}
-	 */
 	const [startDate, setStartDate] = useState<Date | null>(null);
 
-	/**
-	 * State for year window selection (year navigator).
-	 * Value is the starting year index (0 = START_YEAR, 1 = START_YEAR+1, etc.)
-	 * Default to middle of available range
-	 * @type {number}
-	 */
 	const [yearWindow, setYearWindow] = useState<number>(() => {
-		// Start at middle of available years
 		const maxYear = CURRENT_YEAR - START_YEAR - YEAR_WINDOW_SIZE + 1;
 		return Math.floor(maxYear / 2);
 	});
-	/**
-	 * Suggested periods returned by the backend for the selected extent.
-	 * @type {Array<{ id: string; startDate: string; endDate: string }>}
-	 */
 	const [suggestedPeriods, setSuggestedPeriods] = useState<Array<{ id: string; startDate: string; endDate: string }>>(
 		[]
 	);
-	/**
-	 * Currently selected suggested period id.
-	 * @type {string | null}
-	 */
 	const [selectedPeriodId, setSelectedPeriodId] = useState<string | null>(null);
-
-	/**
-	 * Slider values when a suggested period is selected.
-	 * These override the calculated values from startDate/endDate.
-	 * @type {number[] | null}
-	 */
 	const [suggestedPeriodSliderValues, setSuggestedPeriodSliderValues] = useState<number[] | null>(null);
 
 	const [sliderStart, setSliderStart] = useState<number>(6);
 	const [sliderEnd, setSliderEnd] = useState<number>(17);
 
-	const isCropType = product === customProductsProductTypes.cropType;
-
-	/**
-	 * Determines whether the next step is disabled based on the current state.
-	 * @type {boolean}
-	 */
-	const nextStepDisabled = !bboxIsInBounds || !bbox || !model || !product || !outputFileFormat || !endDate;
-
-	// Fetch suggested periods when bbox changes.
 	const suggestedPeriodsApiUrl = '/api/seasons/get';
 	const [debouncedBbox, setDebouncedBbox] = useState<string | null>(null);
 
 	useEffect(() => {
 		if (bbox && bboxIsInBounds) {
-			// Deselect period when bbox changes to a new extent
 			setSelectedPeriodId(null);
 			setSuggestedPeriodSliderValues(null);
 
-			// Debounce bbox changes to avoid excessive calls while drawing.
 			const timer = setTimeout(() => {
-				setDebouncedBbox(bbox.join(','));
+				setDebouncedBbox(bbox);
 			}, 500);
 			return () => clearTimeout(timer);
 		} else {
@@ -308,7 +158,7 @@ export default function CreateProductsStep2Client() {
 
 	const { data: periodsData } = useSWR(debouncedBbox ? [suggestedPeriodsApiUrl, debouncedBbox] : null, () => {
 		return apiFetcher(suggestedPeriodsApiUrl, undefined, 'POST', {
-			bbox: bbox,
+			bbox: bboxArr,
 			epsg: 4326,
 		});
 	});
@@ -316,8 +166,6 @@ export default function CreateProductsStep2Client() {
 	useEffect(() => {
 		if (periodsData) {
 			setSuggestedPeriods(periodsData);
-			// Clear selected period when new suggestions are loaded,
-			// unless the current selection is still valid
 			if (selectedPeriodId && !periodsData.find((p: { id: string }) => p.id === selectedPeriodId)) {
 				setSelectedPeriodId(null);
 				setSuggestedPeriodSliderValues(null);
@@ -325,68 +173,21 @@ export default function CreateProductsStep2Client() {
 		}
 	}, [periodsData, selectedPeriodId]);
 
-	/**
-	 * Effect to initialize the active step and set default output file format and end date.
-	 */
-	useEffect(() => {
-		dispatch({
-			type: WorldCerealStateActionType.CREATE_CUSTOM_PRODUCTS_SET_ACTIVE_STEP,
-			payload: 2,
-		});
-
-		if (!outputFileFormat) {
-			const defaultValue = formParams.outputFileFormat.options.find((option) => option.default)?.value;
-			if (defaultValue) {
-				setOutputFileFormat(defaultValue as CreateCustomProductsOutputFileFormatModel);
-			}
-		}
-	}, []);
-
-	/**
-	 * Updates the output file format in the state.
-	 * @param {CreateCustomProductsOutputFileFormatModel} value - The selected output file format.
-	 */
-	const setOutputFileFormat = (value: CreateCustomProductsOutputFileFormatModel) => {
-		dispatch({
-			type: WorldCerealStateActionType.CREATE_CUSTOM_PRODUCTS_SET_OUTPUT_FILE_FORMAT,
-			payload: value,
-		});
+	const setOutputFileFormat = (value: string) => {
+		setParams({ outputFileFormat: value as 'GTiff' | 'NETCDF' });
 	};
 
-	/**
-	 * Updates the background layer in the state.
-	 * @param {CreateCustomProductsBackgroundLayerModel} value - The selected background layer.
-	 */
-	const setBackgroundLayer = (value: CreateCustomProductsBackgroundLayerModel) => {
-		if (value) {
-			dispatch({
-				type: WorldCerealStateActionType.CREATE_CUSTOM_PRODUCTS_SET_BACKGROUND_LAYER,
-				payload: value,
-			});
-		}
+	const setBackgroundLayer = (value: string | null) => {
+		if (value) setParams({ backgroundLayer: value });
 	};
 
-	/**
-	 * Updates the bounding box extent in the state.
-	 * @param {CreateCustomProductsBBoxModel | null} extent - The selected bounding box extent.
-	 */
-	const setBBoxExtent = (extent: CreateCustomProductsBBoxModel | null) => {
-		dispatch({
-			type: WorldCerealStateActionType.CREATE_CUSTOM_PRODUCTS_SET_BBOX,
-			payload: extent ?? undefined,
-		});
+	const setBBoxExtent = (extent: [number, number, number, number] | null) => {
+		setParams({ bbox: extent ? stringifyBbox(extent) : null });
 	};
 
-	/**
-	 * Updates the end date in the state.
-	 * @param {CreateCustomProductsEndDateModel | null} value - The selected end date.
-	 */
-	const setEndDate = (value: CreateCustomProductsEndDateModel | null) => {
+	const setEndDateParam = (value: string | null) => {
 		if (value && value !== endDate) {
-			dispatch({
-				type: WorldCerealStateActionType.CREATE_CUSTOM_PRODUCTS_SET_END_DATE,
-				payload: value ?? undefined,
-			});
+			setParams({ endDate: value });
 		}
 	};
 
@@ -436,7 +237,6 @@ export default function CreateProductsStep2Client() {
 		const sliderStartValue = Math.max(0, Math.min(monthSliderMax, absoluteStartMonth - finalYearWindowStartMonth));
 		const sliderEndValue = Math.max(0, Math.min(monthSliderMax, absoluteEndMonth - finalYearWindowStartMonth));
 
-		// Derive dates from clamped slider positions (same as manual slider handler)
 		if (!isCropType) {
 			const finalStartMonth = newYearWindow * 12 + sliderStartValue;
 			const finalEndMonth = finalStartMonth + minSliderRange;
@@ -454,35 +254,23 @@ export default function CreateProductsStep2Client() {
 		setSliderEnd(sliderEndValue);
 
 		setStartDate(newStartDate);
-		const endDateStr = transformDate(newEndDate) as CreateCustomProductsEndDateModel;
-		setEndDate(endDateStr);
+		const endDateStr = transformDate(newEndDate);
+		setEndDateParam(endDateStr);
 		setYearWindow(newYearWindow);
 		}
 	};
 
-	const MIN_MONTHS = 3; // 3 months minimum
-	const minSliderRange = isCropType ? 3 : 11; // 3 for crop type (min 3 months), 11 for crop land (exactly 12 months)
+	const MIN_MONTHS = 3;
+	const minSliderRange = isCropType ? 3 : 11;
 
-	// Bottom slider: 24 marks representing the 3-year window (0 = start, 12 = middle, 24 = end)
 	const monthSliderMax = 24;
 
-	/**
-	 * Handles changes to the month range slider.
-	 * For crop land: enforces exactly 12 months (minSliderRange = 11) by deriving
-	 * the end position from the start position. This ensures both thumbs move
-	 * together maintaining a fixed 12-month window.
-	 * For crop type: allows flexible range between 3-12 months.
-	 *
-	 * @param values - Array of [start, end] slider values
-	 */
 	const handleMonthSliderChange = (values: number[]) => {
 		if (!Array.isArray(values)) return;
 
 		const [newStartVal, newEndVal] = values;
 
 		if (!isCropType) {
-			// For crop land: enforce exactly 12 months
-			// Always derive start position from end position
 			const finalSliderStart = Math.max(0, Math.min(newEndVal - minSliderRange, monthSliderMax - minSliderRange));
 
 			setSliderStart(finalSliderStart);
@@ -496,10 +284,9 @@ export default function CreateProductsStep2Client() {
 			setSelectedPeriodId(null);
 			setSuggestedPeriodSliderValues(null);
 			setStartDate(newStartDate);
-			const endDateStr = transformDate(newEndDate) as CreateCustomProductsEndDateModel;
-			setEndDate(endDateStr);
+			const endDateStr = transformDate(newEndDate);
+			setEndDateParam(endDateStr);
 		} else {
-			// For crop type: flexible range (3-12 months)
 			setSliderStart(newStartVal);
 			setSliderEnd(newEndVal);
 
@@ -512,17 +299,15 @@ export default function CreateProductsStep2Client() {
 			setSelectedPeriodId(null);
 			setSuggestedPeriodSliderValues(null);
 			setStartDate(newStartDate);
-			const endDateStr = transformDate(newEndDate) as CreateCustomProductsEndDateModel;
-			setEndDate(endDateStr);
+			const endDateStr = transformDate(newEndDate);
+			setEndDateParam(endDateStr);
 		}
 	};
 
-	// Sync dates on first load - set to 12-month window centered on mark 12
 	const isFirstRender = React.useRef(true);
 	const prevYearWindow = React.useRef(yearWindow);
 
 	useEffect(() => {
-		// Skip this effect when a suggested period is selected - the dates are already set correctly
 		if (selectedPeriodId) {
 			prevYearWindow.current = yearWindow;
 			return;
@@ -543,8 +328,8 @@ export default function CreateProductsStep2Client() {
 			const newEnd = getDateFromSliderValue(windowEndMonth, true);
 
 			setStartDate(newStart);
-			const endDateStr = transformDate(newEnd) as CreateCustomProductsEndDateModel;
-			setEndDate(endDateStr);
+			const endDateStr = transformDate(newEnd);
+			setEndDateParam(endDateStr);
 		} else if (prevYearWindow.current !== yearWindow && startDate && endDate) {
 			const oldYearWindow = prevYearWindow.current;
 
@@ -566,24 +351,21 @@ export default function CreateProductsStep2Client() {
 			const newEnd = getDateFromSliderValue(clampedEndMonth, true);
 
 			setStartDate(newStart);
-			const endDateStr = transformDate(newEnd) as CreateCustomProductsEndDateModel;
-			setEndDate(endDateStr);
+			const endDateStr = transformDate(newEnd);
+			setEndDateParam(endDateStr);
 		}
 
 		prevYearWindow.current = yearWindow;
 	}, [yearWindow]);
 
-	/**
-	 * URL parameters for the API request.
-	 * @type {URLSearchParams}
-	 */
 	const params: Record<string, string> = {
-		bbox: bbox ? bbox.join(',') : '',
+		bbox: bbox ?? '',
 		outputFileFormat: outputFileFormat?.toString() || '',
 		model: model?.toString() || '',
 		product: product?.toString() || '',
 		endDate: endDate?.toString() || '',
 		startDate: startDate ? transformDate(startDate) : '',
+		...(product ? { customProperties: JSON.stringify({ process_type: processTypes.product }) } : {}),
 	};
 
 	const selectedPeriod = selectedPeriodId ? suggestedPeriods.find((period) => period.id === selectedPeriodId) : null;
@@ -602,7 +384,6 @@ export default function CreateProductsStep2Client() {
 	}
 
 	if (product === customProductsProductTypes.cropType) {
-		// Include extra Crop Type options when available.
 		if (orbitState) params.orbitState = orbitState.toString();
 		if (postprocessMethod) params.postprocessMethod = postprocessMethod.toString();
 		if (postprocessMethod === customProductsPostprocessMethods.majorityVote && postprocessKernelSize !== undefined) {
@@ -612,48 +393,42 @@ export default function CreateProductsStep2Client() {
 
 	const urlParams = new URLSearchParams(params);
 
-	/**
-	 * SWR hook for fetching process data.
-	 */
 	const { data, isLoading } = useSWR(shouldFetch ? [apiUrl, urlParams.toString()] : null, () =>
 		apiFetcher(apiUrl, urlParams.toString())
 	);
 
-	/**
-	 * Handler to initiate the process creation.
-	 */
 	const onCreateProcessClick = () => {
 		setShouldFetch(true);
 	};
 
-	/**
-	 * Handler to navigate back to the previous step.
-	 */
 	const onBackClick = () => {
-		router.push(`/generate-custom-products/steps/1`);
+		router.push(
+			serializeGenerateCustomProductsSearchParams('/generate-custom-products/steps/1', {
+				product,
+				model,
+				orbitState,
+				postprocessMethod,
+				postprocessKernelSize,
+			})
+		);
 	};
 
-	/**
-	 * Effect to reset fetch state when data is available.
-	 */
 	useEffect(() => {
 		if (shouldFetch && data) {
 			setShouldFetch(false);
 		}
 	}, [shouldFetch, data]);
 
-	/**
-	 * Effect to update URL parameters and navigate to the next step when job data is received.
-	 */
 	useEffect(() => {
 		if (data?.key) {
-			dispatch({
-				type: WorldCerealStateActionType.CREATE_CUSTOM_PRODUCTS_SET_CURRENT_JOB_KEY,
-				payload: data.key,
-			});
-			router.push(`/generate-custom-products/steps/3`);
+			const baseHref = serializeGenerateCustomProductsSearchParams(
+				'/generate-custom-products/steps/3',
+				{ backgroundLayer }
+			);
+			const separator = baseHref.includes('?') ? '&' : '?';
+			router.push(`${baseHref}${separator}jobKey=${encodeURIComponent(data.key)}`);
 		}
-	}, [data, router]);
+	}, [data, router, backgroundLayer]);
 
 	return (
 		<TwoColumns>
@@ -669,12 +444,12 @@ export default function CreateProductsStep2Client() {
 						mapSize={[650, 400]}
 						minBboxArea={bboxSizeLimits.customProducts.min}
 						maxBboxArea={bboxSizeLimits.customProducts.max}
-						bbox={bbox?.map(Number)}
+						bbox={bboxArr}
 						setBboxDescription={setBboxDescription}
 						setBboxExtent={setBBoxExtent}
 						setBboxIsInBounds={setBboxIsInBounds}
-						backgroundLayer={backgroundLayer}
-						setBackgroundLayer={(value) => setBackgroundLayer(value as CreateCustomProductsBackgroundLayerModel)}
+						backgroundLayer={backgroundLayer ?? undefined}
+						setBackgroundLayer={(value) => setBackgroundLayer(typeof value === 'function' ? value(backgroundLayer) : value)}
 					/>
 					<TextDescription>
 						Current extent:{' '}
@@ -761,7 +536,6 @@ export default function CreateProductsStep2Client() {
 							</TextDescription>
 
 							<Box p="lg" pt={60} bg="#1A1A1A" style={{ borderRadius: '8px', marginTop: '0.5rem' }}>
-								{/* Year Navigator Slider */}
 								<Box mb="xl">
 									<RangeSlider
 										min={0}
@@ -771,7 +545,6 @@ export default function CreateProductsStep2Client() {
 										onChange={(val) => {
 											if (Array.isArray(val)) {
 												const maxVal = getMaxYearWindow();
-												// Calculate which thumb moved more
 												const prevStart = yearWindow;
 												const prevEnd = yearWindow + YEAR_WINDOW_SIZE - 1;
 												const startDiff = Math.abs(val[0] - prevStart);
@@ -779,13 +552,10 @@ export default function CreateProductsStep2Client() {
 
 												let newStart: number;
 												if (startDiff >= endDiff) {
-													// Left thumb moved more or equal - use its position
 													newStart = Math.max(0, Math.min(val[0], maxVal));
 												} else {
-													// Right thumb moved more - derive start from end
 													newStart = Math.max(0, Math.min(val[1] - YEAR_WINDOW_SIZE + 1, maxVal));
 												}
-												// Deselect suggested period when year window changes
 												if (selectedPeriodId) {
 													setSelectedPeriodId(null);
 													setSuggestedPeriodSliderValues(null);
@@ -817,7 +587,6 @@ export default function CreateProductsStep2Client() {
 									/>
 								</Box>
 
-								{/* Month Range Slider */}
 								<Box pt={20} mt={40}>
 									<RangeSlider
 										min={0}
@@ -870,7 +639,7 @@ export default function CreateProductsStep2Client() {
 					<div style={{ width: '100%' }}>
 						<FormLabel>Choose output file format</FormLabel>
 						<SegmentedControl
-							onChange={(value) => setOutputFileFormat(value as CreateCustomProductsOutputFileFormatModel)}
+							onChange={(value) => setOutputFileFormat(value)}
 							className="worldCereal-SegmentedControl"
 							size="md"
 							value={outputFileFormat}

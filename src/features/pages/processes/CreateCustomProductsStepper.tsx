@@ -1,43 +1,38 @@
 'use client';
 import React from 'react';
-import { useRouter } from 'next/navigation';
-import { useSharedState } from '@gisatcz/ptr-fe-core/client';
+import { useRouter, usePathname } from 'next/navigation';
 import { Stepper } from '@mantine/core';
-import { WorldCerealState } from '@features/state/state.models';
-import { OneOfWorldCerealActions } from '@features/state/state.actions';
-import { getActiveStep_customProducts } from '@features/state/selectors/createCustomProducts/getActiveStep';
-import { getModel_customProducts } from '@features/state/selectors/createCustomProducts/getModel';
-import { getProduct_customProducts } from '@features/state/selectors/createCustomProducts/getProduct';
-import { getOutputFileFormat_customProducts } from '@features/state/selectors/createCustomProducts/getOutputFileFormat';
-import { getBBox_customProducts } from '@features/state/selectors/createCustomProducts/getBBox';
-import { getEndDate_customProducts } from '@features/state/selectors/createCustomProducts/getEndDate';
+import { useQueryStates } from 'nuqs';
+import {
+	generateCustomProductsSearchParams,
+	serializeGenerateCustomProductsSearchParams,
+} from '@features/(processes)/_constants/generate-custom-products/searchParams';
+import { parseBbox } from '@features/(processes)/_utils/bbox';
 
 export const CreateCustomProductsStepper = ({ children }: { children: React.ReactNode }) => {
 	const router = useRouter();
-	const [state] = useSharedState<WorldCerealState, OneOfWorldCerealActions>();
-	const activeStep = getActiveStep_customProducts(state);
-	const model = getModel_customProducts(state);
-	const product = getProduct_customProducts(state);
-	const outputFileFormat = getOutputFileFormat_customProducts(state);
-	const bbox = getBBox_customProducts(state);
-	const endDate = getEndDate_customProducts(state);
+	const pathname = usePathname();
+	const activeStep = Number(pathname.split('/').pop()) || 1;
 
-	// Determines if the first step is disabled based on the active step.
+	const [{ product, model, outputFileFormat, bbox, endDate, backgroundLayer, orbitState, postprocessMethod, postprocessKernelSize }] =
+		useQueryStates(generateCustomProductsSearchParams);
+
+	const bboxArr = parseBbox(bbox);
+
 	const firstStepDisabled = activeStep === 3;
 
-	// Determines if the second step is disabled based on the collection, product, and active step.
 	const secondStepDisabled = !model || !product || activeStep === 3;
 
-	// Determines if the third step is disabled based on the collection, product, output file format, and bounding box.
-	const thirdStepDisabled = !model || !product || !outputFileFormat || !bbox || !endDate;
+	const thirdStepDisabled = !model || !product || !outputFileFormat || !bboxArr || !endDate;
 
-	/**
-	 * Navigates to the specified step in the process.
-	 *
-	 * @param {number} step - The step number to navigate to.
-	 */
 	const setActive = (step: number) => {
-		router.push(`/generate-custom-products/steps/${step + 1}`); // navigates to the corresponding step URL
+		const targetStep = step + 1;
+		if (targetStep === activeStep) return;
+		const href = serializeGenerateCustomProductsSearchParams(
+			`/generate-custom-products/steps/${targetStep}`,
+			{ product, model, outputFileFormat, bbox, endDate, backgroundLayer, orbitState, postprocessMethod, postprocessKernelSize }
+		);
+		router.push(href);
 	};
 
 	return (
