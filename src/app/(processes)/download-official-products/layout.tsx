@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { ContentContainer } from '@features/(shared)/_layout/_components/Content/ContentContainer';
 import { DownloadOfficialProductsStepper } from '@features/pages/processes/DownloadOfficialProductsStepper';
 
@@ -19,7 +19,9 @@ export default async function DownloadLayout({ children }: { children: React.Rea
 		 * Wraps the children components inside a content container and stepper.
 		 */
 		<ContentContainer>
-			<DownloadOfficialProductsStepper>{children}</DownloadOfficialProductsStepper>
+			<Suspense>
+				<DownloadOfficialProductsStepper>{children}</DownloadOfficialProductsStepper>
+			</Suspense>
 		</ContentContainer>
 	);
 }

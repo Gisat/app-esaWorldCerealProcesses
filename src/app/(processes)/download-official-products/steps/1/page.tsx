@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import DownloadStep1Client from '@features/pages/processes/download-official-products/steps/1/DownloadStep1Client';
 
 /**
@@ -9,5 +10,9 @@ import DownloadStep1Client from '@features/pages/processes/download-official-pro
  * @returns {JSX.Element} The rendered component for step 1 of the process.
  */
 export default async function DownloadStep1() {
-	return <DownloadStep1Client />;
+	return (
+		<Suspense>
+			<DownloadStep1Client />
+		</Suspense>
+	);
 }
