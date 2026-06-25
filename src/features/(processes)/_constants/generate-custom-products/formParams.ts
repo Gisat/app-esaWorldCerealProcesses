@@ -23,17 +23,17 @@ const formParams: {
 			default?: boolean;
 		}[];
 	};
-	endDate: {
+	cropTypeModelType: {
 		required?: boolean;
 		options: {
+			label: string;
 			value: string;
 			default?: boolean;
 		}[];
 	};
-	outputFileFormat: {
+	endDate: {
 		required?: boolean;
 		options: {
-			label: string;
 			value: string;
 			default?: boolean;
 		}[];
@@ -54,13 +54,21 @@ const formParams: {
 			default?: boolean;
 		}[];
 	};
+	postprocessMethodCropland: {
+		required?: boolean;
+		options: {
+			label: string;
+			value: string;
+			default?: boolean;
+		}[];
+	};
 } = {
 	product: {
 		required: true,
 		options: [
 			{
 				value: customProductsProductTypes.cropExtent,
-				label: 'Cropland',
+				label: 'Cropland extent',
 				namespace: 'https://raw.githubusercontent.com/WorldCereal/worldcereal-classification/refs/heads/main/scripts/udp/worldcereal_crop_extent.json',
 			},
 			{
@@ -85,26 +93,26 @@ const formParams: {
 			},
 		],
 	},
+	cropTypeModelType: {
+		required: true,
+		options: [
+			{
+				value: 'default',
+				label: 'Default',
+				default: true,
+			},
+			{
+				value: 'custom',
+				label: 'Custom',
+			},
+		],
+	},
 	endDate: {
 		required: true,
 		options: [
 			{
 				value: customProductsDateLimits.max,
 				default: true,
-			},
-		],
-	},
-	outputFileFormat: {
-		required: true,
-		options: [
-			{
-				value: 'GTiff',
-				label: 'GeoTIFF',
-				default: true,
-			},
-			{
-				label: 'NetCDF',
-				value: 'NETCDF',
 			},
 		],
 	},
@@ -123,6 +131,20 @@ const formParams: {
 		],
 	},
 	postprocessMethod: {
+		required: false,
+		options: [
+			{
+				value: customProductsPostprocessMethods.smoothProbabilities,
+				label: 'Smooth probabilities',
+			},
+			{
+				value: customProductsPostprocessMethods.majorityVote,
+				label: 'Majority vote',
+				default: true,
+			},
+		],
+	},
+	postprocessMethodCropland: {
 		required: false,
 		options: [
 			{

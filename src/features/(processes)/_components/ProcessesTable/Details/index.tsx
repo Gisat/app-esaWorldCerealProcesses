@@ -2,8 +2,6 @@ import './style.css';
 import React, { useState } from 'react';
 import { MapBBox } from '@features/(shared)/_components/map/MapBBox';
 import { TextDescription } from '@features/(shared)/_layout/_components/Content/TextDescription';
-import ProductValuesInfo from '@features/(processes)/_components/ProcessesTable/ProductValuesInfo';
-import ProductResultsInfo from '@features/(processes)/_components/ProcessesTable/ProductResultsInfo';
 import { Statuses } from '@features/(shared)/_logic/models.statuses';
 
 type DetailsItemProps = {
@@ -67,6 +65,14 @@ type DetailsProps = {
 	orbitState?: string;
 	postprocessMethod?: string;
 	postprocessKernelSize?: number;
+	seasonId?: string;
+	seasonalModelZip?: string | null;
+	enableCroplandHead?: boolean;
+	landcoverHeadZip?: string | null;
+	croptypeHeadZip?: string | null;
+	maskCropland?: boolean;
+	postprocessMethodCropland?: string;
+	postprocessKernelSizeCropland?: number;
 };
 
 /**
@@ -90,6 +96,14 @@ const Details = ({
 	orbitState,
 	postprocessMethod,
 	postprocessKernelSize,
+	seasonId,
+	seasonalModelZip,
+	enableCroplandHead,
+	landcoverHeadZip,
+	croptypeHeadZip,
+	maskCropland,
+	postprocessMethodCropland,
+	postprocessKernelSizeCropland,
 }: DetailsProps) => {
 	const [bboxDescription, setBboxDescription] = useState<string | string[] | null>(null);
 	const collection = oeoCollection;
@@ -110,10 +124,25 @@ const Details = ({
 
 	const getModelLink = () => {
 		if (!model) return null;
-		if (model.toLowerCase() === 'default') return 'Default';
+		if (model.toLowerCase() === 'default' || model.toLowerCase() === 'custom') return 'Default model';
+		// Legacy: if model is a URL, show as custom link
+		try {
+			new URL(model);
+			return (
+				<a href={model} target="_blank" rel="noopener noreferrer">
+					Custom
+				</a>
+			);
+		} catch {
+			return model;
+		}
+	};
+
+	const getZipLink = (url: string | null | undefined, fallback?: string) => {
+		if (!url) return fallback ?? null;
 		return (
-			<a href={model} target="_blank" rel="noopener noreferrer">
-				Custom
+			<a href={url} target="_blank" rel="noopener noreferrer">
+				{url}
 			</a>
 		);
 	};
@@ -136,15 +165,39 @@ const Details = ({
 				<DetailsItem label={'Product collection'}>{collectionName}</DetailsItem>
 				<DetailsItem label={'Product'}>{collection || process}</DetailsItem>
 				<DetailsItem label={'Model'}>{getModelLink()}</DetailsItem>
+				{seasonalModelZip !== undefined && (
+					<DetailsItem label={'Base model'}>{getZipLink(seasonalModelZip)}</DetailsItem>
+				)}
+				{enableCroplandHead !== undefined && (
+					<DetailsItem label={'Enable landcover head'}>{enableCroplandHead ? 'True' : 'False'}</DetailsItem>
+				)}
+				{landcoverHeadZip !== undefined && (
+					<DetailsItem label={'Cropland head override'}>{getZipLink(landcoverHeadZip)}</DetailsItem>
+				)}
+				{croptypeHeadZip !== undefined && (
+					<DetailsItem label={'Crop Type head override'}>{getZipLink(croptypeHeadZip)}</DetailsItem>
+				)}
 				<DetailsItem label={'Start date'}>{startDate ? new Date(startDate).toLocaleDateString() : null}</DetailsItem>
 				<DetailsItem label={'End date'}>{endDate ? new Date(endDate).toLocaleDateString() : null}</DetailsItem>
 				<DetailsItem label={'Output file format'}>{resultFileFormat}</DetailsItem>
 			</div>
 			<div className="worldCereal-ProcessesTable-Details-column">
+				{seasonId && <DetailsItem label={'Season ID'}>{seasonId}</DetailsItem>}
 				{orbitState && <DetailsItem label={'Orbit state'}>{orbitState}</DetailsItem>}
-				{postprocessMethod && <DetailsItem label={'Postprocess method'}>{postprocessMethod}</DetailsItem>}
+				{postprocessMethodCropland && (
+					<DetailsItem label={'Post process method - cropland'}>{postprocessMethodCropland}</DetailsItem>
+				)}
+				{typeof postprocessKernelSizeCropland === 'number' && (
+					<DetailsItem label={'Post process kernel size - cropland'}>{postprocessKernelSizeCropland}</DetailsItem>
+				)}
+				{maskCropland !== undefined && (
+					<DetailsItem label={'Apply cropland mask'}>{maskCropland ? 'True' : 'False'}</DetailsItem>
+				)}
+				{postprocessMethod && (
+					<DetailsItem label={'Post process method - croptype'}>{postprocessMethod}</DetailsItem>
+				)}
 				{typeof postprocessKernelSize === 'number' && (
-					<DetailsItem label={'Postprocess kernel size'}>{postprocessKernelSize}</DetailsItem>
+					<DetailsItem label={'Post process kernel size - croptype'}>{postprocessKernelSize}</DetailsItem>
 				)}
 				{status === Statuses.error ? (
 					<div className="worldCereal-ProcessesTable-Details-error">

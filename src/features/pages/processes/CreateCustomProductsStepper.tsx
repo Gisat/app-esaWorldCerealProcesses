@@ -8,7 +8,6 @@ import { OneOfWorldCerealActions } from '@features/state/state.actions';
 import { getActiveStep_customProducts } from '@features/state/selectors/createCustomProducts/getActiveStep';
 import { getModel_customProducts } from '@features/state/selectors/createCustomProducts/getModel';
 import { getProduct_customProducts } from '@features/state/selectors/createCustomProducts/getProduct';
-import { getOutputFileFormat_customProducts } from '@features/state/selectors/createCustomProducts/getOutputFileFormat';
 import { getBBox_customProducts } from '@features/state/selectors/createCustomProducts/getBBox';
 import { getEndDate_customProducts } from '@features/state/selectors/createCustomProducts/getEndDate';
 
@@ -18,7 +17,6 @@ export const CreateCustomProductsStepper = ({ children }: { children: React.Reac
 	const activeStep = getActiveStep_customProducts(state);
 	const model = getModel_customProducts(state);
 	const product = getProduct_customProducts(state);
-	const outputFileFormat = getOutputFileFormat_customProducts(state);
 	const bbox = getBBox_customProducts(state);
 	const endDate = getEndDate_customProducts(state);
 
@@ -29,7 +27,7 @@ export const CreateCustomProductsStepper = ({ children }: { children: React.Reac
 	const secondStepDisabled = !model || !product || activeStep === 3;
 
 	// Determines if the third step is disabled based on the collection, product, output file format, and bounding box.
-	const thirdStepDisabled = !model || !product || !outputFileFormat || !bbox || !endDate;
+	const thirdStepDisabled = !model || !product || !bbox || !endDate;
 
 	/**
 	 * Navigates to the specified step in the process.

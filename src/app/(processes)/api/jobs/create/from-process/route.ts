@@ -25,7 +25,6 @@ export async function GET(req: NextRequest) {
 		const { searchParams } = req.nextUrl;
 
 		const bbox = searchParams.get('bbox');
-		const outputFileFormat = searchParams.get('outputFileFormat');
 		const endDate = searchParams.get('endDate');
 		const processId = searchParams.get('product');
 		const model = searchParams.get('model');
@@ -34,6 +33,14 @@ export async function GET(req: NextRequest) {
 		const postprocessKernelSize = searchParams.get('postprocessKernelSize');
 		const seasonWindowsParam = searchParams.get('seasonWindows');
 		const seasonIdsParam = searchParams.get('seasonIds');
+		// New Crop Type params
+		const enableCroplandHeadParam = searchParams.get('enableCroplandHead');
+		const landcoverHeadZip = searchParams.get('landcoverHeadZip');
+		const croptypeHeadZip = searchParams.get('croptypeHeadZip');
+		const maskCroplandParam = searchParams.get('maskCropland');
+		const postprocessMethodCropland = searchParams.get('postprocessMethodCropland');
+		const postprocessKernelSizeCropland = searchParams.get('postprocessKernelSizeCropland');
+		// Cropland Extent params (reuses postprocessMethod / postprocessKernelSize)
 
 		// validate inputs for safe aggregation
 		if (!endDate) {
@@ -44,11 +51,6 @@ export async function GET(req: NextRequest) {
 		if (!bbox) {
 			loggyError('Jobs create from process GET', 'Missing bbox value');
 			throw new BaseHttpError('Missing bbox value', 400, ErrorBehavior.SSR);
-		}
-
-		if (!outputFileFormat) {
-			loggyError('Jobs create from process GET', 'Missing outputFileFormat value');
-			throw new BaseHttpError('Missing outputFileFormat value', 400, ErrorBehavior.SSR);
 		}
 
 		if (!model) {
@@ -110,6 +112,10 @@ export async function GET(req: NextRequest) {
 		const startDate = transformDate(boundaryDates.startDate);
 		const transformedEndDate = transformDate(boundaryDates.endDate);
 
+		// Parse boolean params
+		const enableCroplandHead = enableCroplandHeadParam !== null ? enableCroplandHeadParam === 'true' : undefined;
+		const maskCropland = maskCroplandParam !== null ? maskCroplandParam === 'true' : undefined;
+
 		const data = {
 			processId,
 			namespace: getNamespaceByProcessId(processId),
@@ -118,12 +124,20 @@ export async function GET(req: NextRequest) {
 			timeRange: [startDate, transformedEndDate],
 			seasonWindows,
 			seasonIds,
-			outputFileFormat,
 			model,
 			...(orbitState && { orbitState }),
 			...(postprocessMethod && { postprocessMethod }),
 			...(postprocessMethod === customProductsPostprocessMethods.majorityVote && postprocessKernelSize
 				? { postprocessKernelSize: Number(postprocessKernelSize) }
+				: {}),
+			// New Crop Type params
+			...(enableCroplandHead !== undefined && { enableCroplandHead }),
+			...(enableCroplandHead && landcoverHeadZip ? { landcoverHeadZip } : {}),
+			...(croptypeHeadZip ? { croptypeHeadZip } : {}),
+			...(maskCropland !== undefined && enableCroplandHead ? { maskCropland } : {}),
+			...(postprocessMethodCropland && enableCroplandHead ? { postprocessMethodCropland } : {}),
+			...(postprocessMethodCropland === customProductsPostprocessMethods.majorityVote && postprocessKernelSizeCropland && enableCroplandHead
+				? { postprocessKernelSizeCropland: Number(postprocessKernelSizeCropland) }
 				: {}),
 		};
 

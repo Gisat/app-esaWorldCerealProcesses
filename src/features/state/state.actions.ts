@@ -12,13 +12,20 @@ import { ResetSettingsAction_customProducts } from '@features/state/actions/crea
 import { SetBackgroundLayerAction_customProducts } from '@features/state/actions/createCustomProducts/action.setBackgroundLayer';
 import { SetBBoxAction_customProducts } from '@features/state/actions/createCustomProducts/action.setBBox';
 import { SetCurrentJobKeyAction_customProducts } from '@features/state/actions/createCustomProducts/action.setCurrentJobKey';
-import { SetOutputFileFormatAction_customProducts } from '@features/state/actions/createCustomProducts/action.setOutputFileFormat';
 import { SetProductAction_customProducts } from '@features/state/actions/createCustomProducts/action.setProduct';
 import { SetModelAction_customProducts } from '@features/state/actions/createCustomProducts/action.setModel';
 import { SetEndDateAction_customProducts } from '@features/state/actions/createCustomProducts/action.setEndDate';
 import { SetOrbitState_customProducts } from '@features/state/actions/createCustomProducts/action.setOrbitState';
 import { SetPostprocessMethod_customProducts } from './actions/createCustomProducts/action.setPostprocessMethod';
 import { SetPostprocessKernelSize_customProducts } from './actions/createCustomProducts/action.setPostprocessKernelSize';
+import { SetCropTypeModelTypeAction_customProducts } from './actions/createCustomProducts/action.setCropTypeModelType';
+import { SetSeasonalModelZipAction_customProducts } from './actions/createCustomProducts/action.setSeasonalModelZip';
+import { SetEnableCroplandHeadAction_customProducts } from './actions/createCustomProducts/action.setEnableCroplandHead';
+import { SetLandcoverHeadZipAction_customProducts } from './actions/createCustomProducts/action.setLandcoverHeadZip';
+import { SetCroptypeHeadZipAction_customProducts } from './actions/createCustomProducts/action.setCroptypeHeadZip';
+import { SetMaskCroplandAction_customProducts } from './actions/createCustomProducts/action.setMaskCropland';
+import { SetPostprocessMethodCroplandAction_customProducts } from './actions/createCustomProducts/action.setPostprocessMethodCropland';
+import { SetPostprocessKernelSizeCroplandAction_customProducts } from './actions/createCustomProducts/action.setPostprocessKernelSizeCropland';
 
 /**
  * List of all actions that can be dispatched to the world cereal app state.
@@ -41,7 +48,6 @@ export type OneOfWorldCerealActions = AppSpecificAction &
 		| SetBackgroundLayerAction_customProducts
 		| SetBBoxAction_customProducts
 		| SetCurrentJobKeyAction_customProducts
-		| SetOutputFileFormatAction_customProducts
 		| SetProductAction_customProducts
 		| SetModelAction_customProducts
 		| SetEndDateAction_customProducts
@@ -49,4 +55,12 @@ export type OneOfWorldCerealActions = AppSpecificAction &
 		| SetOrbitState_customProducts
 		| SetPostprocessMethod_customProducts
 		| SetPostprocessKernelSize_customProducts
+		| SetCropTypeModelTypeAction_customProducts
+		| SetSeasonalModelZipAction_customProducts
+		| SetEnableCroplandHeadAction_customProducts
+		| SetLandcoverHeadZipAction_customProducts
+		| SetCroptypeHeadZipAction_customProducts
+		| SetMaskCroplandAction_customProducts
+		| SetPostprocessMethodCroplandAction_customProducts
+		| SetPostprocessKernelSizeCroplandAction_customProducts
 	);

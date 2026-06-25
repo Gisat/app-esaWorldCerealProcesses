@@ -122,27 +122,37 @@ export default function CreateProductsStep3Client() {
 
 	return (
 		<>
-			<TextParagraph color="var(--textAccentedColor)">
-				<b>You have created the Download official products process with following parameters:</b>
-			</TextParagraph>
-			{data && data.key === jobKey ? (
-				<Details
-					bbox={data.bbox}
-					resultFileFormat={
-						formParams.outputFileFormat.options.find((option) => option.value === data.resultFileFormat)?.label
-					}
-					oeoProcessId={formParams.product.options.find((option) => option.value === data.oeoProcessId)?.label}
-					backgroundLayer={backgroundLayer}
-					startDate={data?.timeRange?.[0]}
-					endDate={data?.timeRange?.[1]}
-					model={data?.model}
-					orbitState={formParams.orbitState.options.find((option) => option.value === data?.orbitState)?.label}
-					postprocessMethod={
-						formParams.postprocessMethod.options.find((option) => option.value === data?.postprocessMethod)?.label
-					}
-					postprocessKernelSize={data?.postprocessKernelSize}
-				/>
-			) : null}
+		<TextParagraph color="var(--textAccentedColor)">
+			<b>You have created the Generate custom product process with following parameters:</b>
+		</TextParagraph>
+		{data && data.key === jobKey ? (
+			<Details
+				bbox={data.bbox}
+				resultFileFormat={
+					({ GTiff: 'GeoTIFF', NETCDF: 'NetCDF' } as Record<string, string>)[data.resultFileFormat] ?? data.resultFileFormat
+				}
+				oeoProcessId={formParams.product.options.find((option) => option.value === data.oeoProcessId)?.label}
+				backgroundLayer={backgroundLayer}
+				startDate={data?.timeRange?.[0]}
+				endDate={data?.timeRange?.[1]}
+				model={data?.model}
+				orbitState={formParams.orbitState.options.find((option) => option.value === data?.orbitState)?.label}
+				postprocessMethod={
+					formParams.postprocessMethod.options.find((option) => option.value === data?.postprocessMethod)?.label
+				}
+				postprocessKernelSize={data?.postprocessKernelSize}
+				seasonId={data?.seasonIds?.[0]}
+				seasonalModelZip={data?.seasonalModelZip}
+				enableCroplandHead={data?.enableCroplandHead}
+				landcoverHeadZip={data?.landcoverHeadZip}
+				croptypeHeadZip={data?.croptypeHeadZip}
+				maskCropland={data?.maskCropland}
+				postprocessMethodCropland={
+					formParams.postprocessMethodCropland.options.find((option) => option.value === data?.postprocessMethodCropland)?.label
+				}
+				postprocessKernelSizeCropland={data?.postprocessKernelSizeCropland}
+			/>
+		) : null}
 			<Group mt="xl">
 				<Button
 					className="worldCereal-Button"

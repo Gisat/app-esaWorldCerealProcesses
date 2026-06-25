@@ -1,0 +1,31 @@
+.step1-container {
+	width: 100%;
+}
+
+.step1-container .worldCereal-Select,
+.step1-container .worldCereal-Input {
+	width: 100%;
+	max-width: none;
+}
+
+.step1-container .worldCereal-Select .mantine-Select-input,
+.step1-container .worldCereal-Input .mantine-TextInput-input {
+	height: 2.125rem;
+	min-height: 2.125rem;
+	border-radius: 2px;
+	margin-top: 0.5rem;
+}
+
+.step1-container .worldCereal-Input .mantine-InputWrapper-description {
+	padding-bottom: 2px;
+}
+
+.step1-container .worldCereal-Button {
+	height: 2rem;
+	border-radius: 2px;
+	width: 100%;
+}
+
+.step1-container .worldCereal-Checkbox .mantine-Checkbox-input {
+	border-radius: 6px;
+}

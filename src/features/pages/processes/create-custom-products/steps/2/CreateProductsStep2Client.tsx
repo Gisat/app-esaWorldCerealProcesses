@@ -1,7 +1,7 @@
 'use client';
 import useSWR from 'swr';
-import { Text } from '@mantine/core';
-import React, { useEffect, useState } from 'react';
+import { Checkbox, Text } from '@mantine/core';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { IconArrowLeft, IconCheck } from '@tabler/icons-react';
 import { WorldCerealStateActionType } from '@features/state/state.actionTypes';
@@ -10,14 +10,14 @@ import {
 	CreateCustomProductsBackgroundLayerModel,
 	CreateCustomProductsBBoxModel,
 	CreateCustomProductsEndDateModel,
-	CreateCustomProductsOutputFileFormatModel,
+	CreateCustomProductsPostprocessMethodCroplandModel,
 	WorldCerealState,
 } from '@features/state/state.models';
 import { OneOfWorldCerealActions } from '@features/state/state.actions';
 import TwoColumns, { Column } from '@features/(shared)/_layout/_components/Content/TwoColumns';
 import { SectionContainer } from '@features/(shared)/_layout/_components/Content/SectionContainer';
 
-import { Button, Group, SegmentedControl, Stack, Radio, RangeSlider, Box } from '@mantine/core';
+import { Button, Group, NumberInput, Select, Stack, Radio, RangeSlider, Box, TextInput, Input } from '@mantine/core';
 import FormLabel from '@features/(shared)/_layout/_components/Content/FormLabel';
 import { TextDescription } from '@features/(shared)/_layout/_components/Content/TextDescription';
 import { MapBBox } from '@features/(shared)/_components/map/MapBBox';
@@ -29,7 +29,6 @@ import {
 import { transformDate } from '@features/(processes)/_utils/transformDate';
 import formParams from '@features/(processes)/_constants/generate-custom-products/formParams';
 import { apiFetcher } from '@features/(shared)/_url/apiFetcher';
-import { getOutputFileFormat_customProducts } from '@features/state/selectors/createCustomProducts/getOutputFileFormat';
 import { getBBox_customProducts } from '@features/state/selectors/createCustomProducts/getBBox';
 import { getBackgroundLayer_customProducts } from '@features/state/selectors/createCustomProducts/getBackgroundLayer';
 import { getModel_customProducts } from '@features/state/selectors/createCustomProducts/getModel';
@@ -38,42 +37,44 @@ import { getEndDate_customProducts } from '@features/state/selectors/createCusto
 import { getOrbitState_customProducts } from '@features/state/selectors/createCustomProducts/getOrbitState';
 import { getPostProcessMethod_customProducts } from '@features/state/selectors/createCustomProducts/getPostProcessMethod';
 import { getPostProcessKernelSize_customProducts } from '@features/state/selectors/createCustomProducts/getPostProcessKernelSize';
+import { getEnableCroplandHead_customProducts } from '@features/state/selectors/createCustomProducts/getEnableCroplandHead';
+import { getSeasonalModelZip_customProducts } from '@features/state/selectors/createCustomProducts/getSeasonalModelZip';
+import { getLandcoverHeadZip_customProducts } from '@features/state/selectors/createCustomProducts/getLandcoverHeadZip';
+import { getCroptypeHeadZip_customProducts } from '@features/state/selectors/createCustomProducts/getCroptypeHeadZip';
+import { getMaskCropland_customProducts } from '@features/state/selectors/createCustomProducts/getMaskCropland';
+import { getPostprocessMethodCropland_customProducts } from '@features/state/selectors/createCustomProducts/getPostprocessMethodCropland';
+import { getPostprocessKernelSizeCropland_customProducts } from '@features/state/selectors/createCustomProducts/getPostprocessKernelSizeCropland';
 import './CreateProductsStep2Client.css';
 
 const START_YEAR = 2018;
 const CURRENT_YEAR = new Date().getFullYear();
 const SLIDER_MAX = (CURRENT_YEAR - START_YEAR) * 12; // months from START_YEAR to current year
 
-// Number of years visible in the focused slider
-const YEAR_WINDOW_SIZE = 3; // 3 years window
+// Constraints for the season length (expressed as the index difference between thumbs).
+// A difference of N covers (N + 1) months.
+const CROP_TYPE_MIN_DIFF = 2; // 3 months
+const CROP_TYPE_MAX_DIFF = 11; // 12 months
+const CROP_EXTENT_DIFF = 11; // exactly 12 months
 
-// Generate marks for year navigation slider (show every other year for visibility)
-const generateYearMarks = () => {
+// Default selection: a recent 12-month window.
+const DEFAULT_END_IDX = SLIDER_MAX - 6;
+const DEFAULT_START_IDX = Math.max(0, DEFAULT_END_IDX - CROP_EXTENT_DIFF);
+
+/**
+ * Generate marks for the full-range date slider (one mark per year, labelled every other year).
+ */
+const generateFullRangeMarks = () => {
 	const marks = [];
 	for (let year = START_YEAR; year <= CURRENT_YEAR; year++) {
-		// Show label every other year, but include all marks for stepping
+		const idx = (year - START_YEAR) * 12;
 		const label = (year - START_YEAR) % 2 === 0 ? year.toString() : '';
-		marks.push({ value: year - START_YEAR, label });
+		marks.push({ value: idx, label });
 	}
-	return marks;
-};
-
-const getMaxYearWindow = () => CURRENT_YEAR - START_YEAR - YEAR_WINDOW_SIZE + 1;
-
-// Generate marks for focused month slider - 24 marks representing the 3-year window
-const generateMonthMarks = (yearWindowStart: number) => {
-	const marks = [];
-	const startYear = START_YEAR + yearWindowStart;
-	marks.push({ value: 0, label: startYear.toString() });
-	marks.push({ value: 12, label: (startYear + 1).toString() });
-	marks.push({ value: 24, label: (startYear + 2).toString() });
 	return marks;
 };
 
 /**
  * Convert a date into a slider index (months since START_YEAR).
- * @param {Date | string | null | undefined} date - Source date value.
- * @returns {number} Slider index in the 0...SLIDER_MAX range.
  */
 const getSliderValueFromDate = (date: Date | string | null | undefined): number => {
 	if (!date) return 0;
@@ -84,9 +85,6 @@ const getSliderValueFromDate = (date: Date | string | null | undefined): number 
 
 /**
  * Convert a slider index back to a Date.
- * @param {number} sliderVal - Slider index in months since START_YEAR.
- * @param {boolean} isEnd - When true, return last day of month; otherwise first day.
- * @returns {Date} Normalized date corresponding to the slider position.
  */
 const getDateFromSliderValue = (sliderVal: number, isEnd = false) => {
 	const year = START_YEAR + Math.floor(sliderVal / 12);
@@ -99,8 +97,6 @@ const getDateFromSliderValue = (sliderVal: number, isEnd = false) => {
 
 /**
  * Format a YYYY-MM string into a human-readable month/year label.
- * @param {string} dateStr - Date in YYYY-MM format.
- * @returns {string} Formatted label, e.g. "January 2021".
  */
 const formatPeriodDate = (dateStr: string) => {
 	const [year, month] = dateStr.split('-').map(Number);
@@ -110,9 +106,6 @@ const formatPeriodDate = (dateStr: string) => {
 
 /**
  * Build a suggested period label from start and end values.
- * @param {string} start - Start date in YYYY-MM format.
- * @param {string} end - End date in YYYY-MM format.
- * @returns {string} Combined label, e.g. "January 2021/December 2021".
  */
 const formatPeriodLabel = (start: string, end: string) => {
 	return `${formatPeriodDate(start)} / ${formatPeriodDate(end)}`;
@@ -120,8 +113,6 @@ const formatPeriodLabel = (start: string, end: string) => {
 
 /**
  * Convert a Date to the first day of that month (YYYY-MM-01).
- * @param {Date | null} date - Source date value.
- * @returns {string} Formatted date or "-" if undefined.
  */
 const formatToFirstOfMonth = (date: Date | null) => {
 	if (!date) return '-';
@@ -132,18 +123,15 @@ const formatToFirstOfMonth = (date: Date | null) => {
 
 /**
  * Convert a date string to the last day of that month (YYYY-MM-DD).
- * @param {string | null | undefined} dateStr - Source date string.
- * @returns {string} Formatted date or "-" if invalid.
  */
 const formatToEndOfMonth = (dateStr: string | null | undefined) => {
 	if (!dateStr) return '-';
 	const date = new Date(dateStr);
-	// Check if date is valid.
 	if (isNaN(date.getTime())) return '-';
 
 	const year = date.getFullYear();
 	const month = date.getMonth();
-	const lastDay = new Date(year, month + 1, 0); // 0th day of next month is last day of current.
+	const lastDay = new Date(year, month + 1, 0);
 
 	const y = lastDay.getFullYear();
 	const m = String(lastDay.getMonth() + 1).padStart(2, '0');
@@ -153,136 +141,77 @@ const formatToEndOfMonth = (dateStr: string | null | undefined) => {
 
 /**
  * Component representing the second step in the "Create Custom Products" process.
- *
- * This step allows users to define the bounding box, select the processing period,
- * choose output file format, and create a process.
- *
- * @component
- * @returns {JSX.Element} The rendered component for step 2 of the process.
  */
 export default function CreateProductsStep2Client() {
-	/**
-	 * API URL for creating a process from a collection.
-	 * @type {string}
-	 */
 	const apiUrl = '/api/jobs/create/from-process';
-
-	/**
-	 * Router instance for navigation.
-	 */
 	const router = useRouter();
-
-	/**
-	 * Shared state hook for accessing and dispatching application state.
-	 * @type {[WorldCerealState, React.Dispatch<OneOfWorldCerealActions>]}
-	 */
 	const [state, dispatch] = useSharedState<WorldCerealState, OneOfWorldCerealActions>();
 
-	/**
-	 * State to determine if the bounding box is within valid bounds.
-	 * @type {boolean | null}
-	 */
 	const [bboxIsInBounds, setBboxIsInBounds] = useState<boolean | null>(null);
-
-	/**
-	 * State to store the description of the bounding box.
-	 * @type {string | string[] | null}
-	 */
 	const [bboxDescription, setBboxDescription] = useState<string | string[] | null>(null);
-
-	/**
-	 * State to determine whether to fetch process data.
-	 * @type {boolean}
-	 */
 	const [shouldFetch, setShouldFetch] = useState(false);
+	const [processError, setProcessError] = useState<string | null>(null);
 
-	/**
-	 * Selector to retrieve the output file format from the state.
-	 * @type {string | undefined}
-	 */
-	const outputFileFormat = getOutputFileFormat_customProducts(state);
-
-	/**
-	 * Selector to retrieve the bounding box from the state.
-	 * @type {string[] | undefined}
-	 */
 	const bbox = getBBox_customProducts(state);
-
-	/**
-	 * Selector to retrieve the background layer from the state.
-	 * @type {string | undefined}
-	 */
 	const backgroundLayer = getBackgroundLayer_customProducts(state);
-
-	/**
-	 * Selector to retrieve the collection from the state.
-	 * @type {string | undefined}
-	 */
 	const model = getModel_customProducts(state);
-
-	/**
-	 * Selector to retrieve the product from the state.
-	 * @type {string | undefined}
-	 */
 	const product = getProduct_customProducts(state);
-
-	/**
-	 * Selector to retrieve the end date from the state.
-	 * @type {string | undefined}
-	 */
 	const endDate = getEndDate_customProducts(state);
-
 	const orbitState = getOrbitState_customProducts(state);
+	// Croptype postprocess (reuse existing fields)
 	const postprocessMethod = getPostProcessMethod_customProducts(state);
 	const postprocessKernelSize = getPostProcessKernelSize_customProducts(state);
+	// New fields
+	const enableCroplandHead = getEnableCroplandHead_customProducts(state);
+	const seasonalModelZip = getSeasonalModelZip_customProducts(state);
+	const landcoverHeadZip = getLandcoverHeadZip_customProducts(state);
+	const croptypeHeadZip = getCroptypeHeadZip_customProducts(state);
+	const maskCropland = getMaskCropland_customProducts(state);
+	const postprocessMethodCropland = getPostprocessMethodCropland_customProducts(state);
+	const postprocessKernelSizeCropland = getPostprocessKernelSizeCropland_customProducts(state);
 
-	/**
-	 * Local start date used for slider-based range selection.
-	 * @type {Date | null}
-	 */
 	const [startDate, setStartDate] = useState<Date | null>(null);
+	const [customSeasonId, setCustomSeasonId] = useState<string>('');
 
-	/**
-	 * State for year window selection (year navigator).
-	 * Value is the starting year index (0 = START_YEAR, 1 = START_YEAR+1, etc.)
-	 * Default to middle of available range
-	 * @type {number}
-	 */
-	const [yearWindow, setYearWindow] = useState<number>(() => {
-		// Start at middle of available years
-		const maxYear = CURRENT_YEAR - START_YEAR - YEAR_WINDOW_SIZE + 1;
-		return Math.floor(maxYear / 2);
-	});
-	/**
-	 * Suggested periods returned by the backend for the selected extent.
-	 * @type {Array<{ id: string; startDate: string; endDate: string }>}
-	 */
 	const [suggestedPeriods, setSuggestedPeriods] = useState<Array<{ id: string; startDate: string; endDate: string }>>(
 		[]
 	);
-	/**
-	 * Currently selected suggested period id.
-	 * @type {string | null}
-	 */
 	const [selectedPeriodId, setSelectedPeriodId] = useState<string | null>(null);
 
-	/**
-	 * Slider values when a suggested period is selected.
-	 * These override the calculated values from startDate/endDate.
-	 * @type {number[] | null}
-	 */
-	const [suggestedPeriodSliderValues, setSuggestedPeriodSliderValues] = useState<number[] | null>(null);
-
-	const [sliderStart, setSliderStart] = useState<number>(6);
-	const [sliderEnd, setSliderEnd] = useState<number>(17);
-
 	const isCropType = product === customProductsProductTypes.cropType;
+	const isCropExtent = product === customProductsProductTypes.cropExtent;
 
-	/**
-	 * Determines whether the next step is disabled based on the current state.
-	 * @type {boolean}
-	 */
-	const nextStepDisabled = !bboxIsInBounds || !bbox || !model || !product || !outputFileFormat || !endDate;
+	// Kernel size validation helpers
+	const isCroplandKernelValid =
+		postprocessMethodCropland !== customProductsPostprocessMethods.majorityVote ||
+		(typeof postprocessKernelSizeCropland === 'number' &&
+			postprocessKernelSizeCropland >= 1 &&
+			postprocessKernelSizeCropland <= 25 &&
+			postprocessKernelSizeCropland % 2 === 1);
+
+	const isCroptypeKernelValid =
+		postprocessMethod !== customProductsPostprocessMethods.majorityVote ||
+		(typeof postprocessKernelSize === 'number' &&
+			postprocessKernelSize >= 1 &&
+			postprocessKernelSize <= 25 &&
+			postprocessKernelSize % 2 === 1);
+
+	const isCropExtentKernelValid =
+		postprocessMethodCropland !== customProductsPostprocessMethods.majorityVote ||
+		(typeof postprocessKernelSizeCropland === 'number' &&
+			postprocessKernelSizeCropland >= 3 &&
+			postprocessKernelSizeCropland <= 25 &&
+			postprocessKernelSizeCropland % 2 === 1);
+
+	const nextStepDisabled =
+		!bboxIsInBounds ||
+		!bbox ||
+		!model ||
+		!product ||
+		!startDate ||
+		!endDate ||
+		(isCropType && (!orbitState || !isCroplandKernelValid || !isCroptypeKernelValid)) ||
+		(isCropExtent && !isCropExtentKernelValid);
 
 	// Fetch suggested periods when bbox changes.
 	const suggestedPeriodsApiUrl = '/api/seasons/get';
@@ -290,11 +219,7 @@ export default function CreateProductsStep2Client() {
 
 	useEffect(() => {
 		if (bbox && bboxIsInBounds) {
-			// Deselect period when bbox changes to a new extent
 			setSelectedPeriodId(null);
-			setSuggestedPeriodSliderValues(null);
-
-			// Debounce bbox changes to avoid excessive calls while drawing.
 			const timer = setTimeout(() => {
 				setDebouncedBbox(bbox.join(','));
 			}, 500);
@@ -316,47 +241,64 @@ export default function CreateProductsStep2Client() {
 	useEffect(() => {
 		if (periodsData) {
 			setSuggestedPeriods(periodsData);
-			// Clear selected period when new suggestions are loaded,
-			// unless the current selection is still valid
 			if (selectedPeriodId && !periodsData.find((p: { id: string }) => p.id === selectedPeriodId)) {
 				setSelectedPeriodId(null);
-				setSuggestedPeriodSliderValues(null);
 			}
 		}
 	}, [periodsData, selectedPeriodId]);
 
-	/**
-	 * Effect to initialize the active step and set default output file format and end date.
-	 */
 	useEffect(() => {
 		dispatch({
 			type: WorldCerealStateActionType.CREATE_CUSTOM_PRODUCTS_SET_ACTIVE_STEP,
 			payload: 2,
 		});
 
-		if (!outputFileFormat) {
-			const defaultValue = formParams.outputFileFormat.options.find((option) => option.default)?.value;
-			if (defaultValue) {
-				setOutputFileFormat(defaultValue as CreateCustomProductsOutputFileFormatModel);
-			}
+		// Initialize default season selection (a recent 12-month window).
+		if (!startDate || !endDate) {
+			setStartDate(getDateFromSliderValue(DEFAULT_START_IDX));
+			const endDateStr = transformDate(getDateFromSliderValue(DEFAULT_END_IDX, true)) as CreateCustomProductsEndDateModel;
+			setEndDate(endDateStr);
+		}
+
+		// Initialize new field defaults
+		if (!orbitState && isCropType) {
+			dispatch({
+				type: WorldCerealStateActionType.CREATE_CUSTOM_PRODUCTS_SET_ORBIT_STATE,
+				payload: 'DESCENDING',
+			});
+		}
+		if (!postprocessMethod) {
+			dispatch({
+				type: WorldCerealStateActionType.CREATE_CUSTOM_PRODUCTS_SET_POSTPROCESS_METHOD,
+				payload: 'majority_vote',
+			});
+		}
+		if (postprocessKernelSize === undefined) {
+			dispatch({
+				type: WorldCerealStateActionType.CREATE_CUSTOM_PRODUCTS_SET_POSTPROCESS_KERNEL_SIZE,
+				payload: 5,
+			});
+		}
+		if (!postprocessMethodCropland) {
+			dispatch({
+				type: WorldCerealStateActionType.CREATE_CUSTOM_PRODUCTS_SET_POSTPROCESS_METHOD_CROPLAND,
+				payload: 'majority_vote',
+			});
+		}
+		if (postprocessKernelSizeCropland === undefined) {
+			dispatch({
+				type: WorldCerealStateActionType.CREATE_CUSTOM_PRODUCTS_SET_POSTPROCESS_KERNEL_SIZE_CROPLAND,
+				payload: 3,
+			});
+		}
+		if (maskCropland === undefined) {
+			dispatch({
+				type: WorldCerealStateActionType.CREATE_CUSTOM_PRODUCTS_SET_MASK_CROPLAND,
+				payload: true,
+			});
 		}
 	}, []);
 
-	/**
-	 * Updates the output file format in the state.
-	 * @param {CreateCustomProductsOutputFileFormatModel} value - The selected output file format.
-	 */
-	const setOutputFileFormat = (value: CreateCustomProductsOutputFileFormatModel) => {
-		dispatch({
-			type: WorldCerealStateActionType.CREATE_CUSTOM_PRODUCTS_SET_OUTPUT_FILE_FORMAT,
-			payload: value,
-		});
-	};
-
-	/**
-	 * Updates the background layer in the state.
-	 * @param {CreateCustomProductsBackgroundLayerModel} value - The selected background layer.
-	 */
 	const setBackgroundLayer = (value: CreateCustomProductsBackgroundLayerModel) => {
 		if (value) {
 			dispatch({
@@ -366,10 +308,6 @@ export default function CreateProductsStep2Client() {
 		}
 	};
 
-	/**
-	 * Updates the bounding box extent in the state.
-	 * @param {CreateCustomProductsBBoxModel | null} extent - The selected bounding box extent.
-	 */
 	const setBBoxExtent = (extent: CreateCustomProductsBBoxModel | null) => {
 		dispatch({
 			type: WorldCerealStateActionType.CREATE_CUSTOM_PRODUCTS_SET_BBOX,
@@ -377,274 +315,156 @@ export default function CreateProductsStep2Client() {
 		});
 	};
 
-	/**
-	 * Updates the end date in the state.
-	 * @param {CreateCustomProductsEndDateModel | null} value - The selected end date.
-	 */
 	const setEndDate = (value: CreateCustomProductsEndDateModel | null) => {
-		if (value && value !== endDate) {
-			dispatch({
-				type: WorldCerealStateActionType.CREATE_CUSTOM_PRODUCTS_SET_END_DATE,
-				payload: value ?? undefined,
-			});
-		}
+		dispatch({
+			type: WorldCerealStateActionType.CREATE_CUSTOM_PRODUCTS_SET_END_DATE,
+			payload: value ?? undefined,
+		});
 	};
 
 	const onSuggestedPeriodChange = (value: string) => {
 		const period = suggestedPeriods.find((p) => p.id === value);
-		if (period) {
-			setSelectedPeriodId(value);
-			const [startYear, startMonth] = period.startDate.split('-').map(Number);
-			let newStartDate = new Date(startYear, startMonth - 1, 1);
+		if (!period) return;
 
-			const [endYear, endMonth] = period.endDate.split('-').map(Number);
-			let newEndDate = new Date(endYear, endMonth, 0);
+		setSelectedPeriodId(value);
 
-			const endSliderValue = getSliderValueFromDate(newEndDate);
-			const startSliderValue = getSliderValueFromDate(newStartDate);
-			const periodMonths = endSliderValue - startSliderValue;
+		const [startYear, startMonth] = period.startDate.split('-').map(Number);
+		const [endYear, endMonth] = period.endDate.split('-').map(Number);
 
-			if (!isCropType) {
-				if (periodMonths !== minSliderRange) {
-					const absoluteStartMonth = Math.max(0, endSliderValue - minSliderRange);
-					newStartDate = getDateFromSliderValue(absoluteStartMonth);
-				}
-			} else {
-				const MAX_MONTHS = 11;
-				if (periodMonths > MAX_MONTHS) {
-					const absoluteStartMonth = Math.max(0, endSliderValue - MAX_MONTHS);
-					newStartDate = getDateFromSliderValue(absoluteStartMonth);
-				} else if (periodMonths < minSliderRange) {
-					const absoluteStartMonth = Math.max(0, endSliderValue - minSliderRange);
-					newStartDate = getDateFromSliderValue(absoluteStartMonth);
-				}
-			}
+		let startIdx = (startYear - START_YEAR) * 12 + (startMonth - 1);
+		const endIdx = Math.min(SLIDER_MAX, (endYear - START_YEAR) * 12 + (endMonth - 1));
+		const diff = endIdx - startIdx;
 
-			const absoluteStartMonth = getSliderValueFromDate(newStartDate);
-			const absoluteEndMonth = getSliderValueFromDate(newEndDate);
-			const adjustedPeriodYear = Math.floor(absoluteEndMonth / 12);
-			const maxYearWindow = getMaxYearWindow();
-			let newYearWindow = Math.max(0, Math.min(adjustedPeriodYear, maxYearWindow));
-			const yearWindowStartMonth = newYearWindow * 12;
-
-			if (absoluteStartMonth < yearWindowStartMonth) {
-				newYearWindow = Math.max(0, Math.floor(absoluteStartMonth / 12));
-			}
-
-			const finalYearWindowStartMonth = newYearWindow * 12;
-
-		const sliderStartValue = Math.max(0, Math.min(monthSliderMax, absoluteStartMonth - finalYearWindowStartMonth));
-		const sliderEndValue = Math.max(0, Math.min(monthSliderMax, absoluteEndMonth - finalYearWindowStartMonth));
-
-		// Derive dates from clamped slider positions (same as manual slider handler)
 		if (!isCropType) {
-			const finalStartMonth = newYearWindow * 12 + sliderStartValue;
-			const finalEndMonth = finalStartMonth + minSliderRange;
-			newStartDate = getDateFromSliderValue(finalStartMonth);
-			newEndDate = getDateFromSliderValue(finalEndMonth, true);
+			// Cropland Extent: exactly 12 months.
+			startIdx = endIdx - CROP_EXTENT_DIFF;
 		} else {
-			const finalStartMonth = newYearWindow * 12 + sliderStartValue;
-			const finalEndMonth = newYearWindow * 12 + sliderEndValue;
-			newStartDate = getDateFromSliderValue(finalStartMonth);
-			newEndDate = getDateFromSliderValue(finalEndMonth, true);
+			// Crop Type: between 3 and 12 months.
+			if (diff > CROP_TYPE_MAX_DIFF) startIdx = endIdx - CROP_TYPE_MAX_DIFF;
+			else if (diff < CROP_TYPE_MIN_DIFF) startIdx = endIdx - CROP_TYPE_MIN_DIFF;
 		}
+		startIdx = Math.max(0, startIdx);
 
-		setSuggestedPeriodSliderValues([sliderStartValue, sliderEndValue]);
-		setSliderStart(sliderStartValue);
-		setSliderEnd(sliderEndValue);
-
-		setStartDate(newStartDate);
-		const endDateStr = transformDate(newEndDate) as CreateCustomProductsEndDateModel;
+		setStartDate(getDateFromSliderValue(startIdx));
+		const endDateStr = transformDate(getDateFromSliderValue(endIdx, true)) as CreateCustomProductsEndDateModel;
 		setEndDate(endDateStr);
-		setYearWindow(newYearWindow);
-		}
 	};
 
-	const MIN_MONTHS = 3; // 3 months minimum
-	const minSliderRange = isCropType ? 3 : 11; // 3 for crop type (min 3 months), 11 for crop land (exactly 12 months)
-
-	// Bottom slider: 24 marks representing the 3-year window (0 = start, 12 = middle, 24 = end)
-	const monthSliderMax = 24;
-
-	/**
-	 * Handles changes to the month range slider.
-	 * For crop land: enforces exactly 12 months (minSliderRange = 11) by deriving
-	 * the end position from the start position. This ensures both thumbs move
-	 * together maintaining a fixed 12-month window.
-	 * For crop type: allows flexible range between 3-12 months.
-	 *
-	 * @param values - Array of [start, end] slider values
-	 */
-	const handleMonthSliderChange = (values: number[]) => {
+	const handleDateRangeChange = (values: number[]) => {
 		if (!Array.isArray(values)) return;
+		const [startIdx, endIdx] = values;
 
-		const [newStartVal, newEndVal] = values;
-
-		if (!isCropType) {
-			// For crop land: enforce exactly 12 months
-			// Always derive start position from end position
-			const finalSliderStart = Math.max(0, Math.min(newEndVal - minSliderRange, monthSliderMax - minSliderRange));
-
-			setSliderStart(finalSliderStart);
-
-			const finalStartMonth = yearWindow * 12 + finalSliderStart;
-			const finalEndMonth = yearWindow * 12 + finalSliderStart + minSliderRange;
-
-			const newStartDate = getDateFromSliderValue(finalStartMonth);
-			const newEndDate = getDateFromSliderValue(finalEndMonth, true);
-
-			setSelectedPeriodId(null);
-			setSuggestedPeriodSliderValues(null);
-			setStartDate(newStartDate);
-			const endDateStr = transformDate(newEndDate) as CreateCustomProductsEndDateModel;
-			setEndDate(endDateStr);
-		} else {
-			// For crop type: flexible range (3-12 months)
-			setSliderStart(newStartVal);
-			setSliderEnd(newEndVal);
-
-			const finalStartMonth = yearWindow * 12 + newStartVal;
-			const finalEndMonth = yearWindow * 12 + newEndVal;
-
-			const newStartDate = getDateFromSliderValue(finalStartMonth);
-			const newEndDate = getDateFromSliderValue(finalEndMonth, true);
-
-			setSelectedPeriodId(null);
-			setSuggestedPeriodSliderValues(null);
-			setStartDate(newStartDate);
-			const endDateStr = transformDate(newEndDate) as CreateCustomProductsEndDateModel;
-			setEndDate(endDateStr);
-		}
+		setSelectedPeriodId(null);
+		setStartDate(getDateFromSliderValue(startIdx));
+		const endDateStr = transformDate(getDateFromSliderValue(endIdx, true)) as CreateCustomProductsEndDateModel;
+		setEndDate(endDateStr);
 	};
 
-	// Sync dates on first load - set to 12-month window centered on mark 12
-	const isFirstRender = React.useRef(true);
-	const prevYearWindow = React.useRef(yearWindow);
+	// For Custom model: the actual model is seasonalModelZip (Base Model URL) if provided.
+	// Otherwise, fall back to 'default'.
+	const resolvedModel = seasonalModelZip ? seasonalModelZip : (model?.toString() || '');
 
+	const seasonStartDate = startDate ? transformDate(startDate) : null;
+	const seasonEndDate = endDate ? endDate.toString() : null;
+
+	const selectedPeriod = selectedPeriodId ? suggestedPeriods.find((period) => period.id === selectedPeriodId) : null;
+	const generatedSeasonId =
+		selectedPeriod?.id ??
+		(seasonStartDate && seasonEndDate
+			? `season_${seasonStartDate.replaceAll('-', '_')}_${seasonEndDate.replaceAll('-', '_')}`
+			: '');
+
+	// Sync local state with generated season ID
 	useEffect(() => {
-		// Skip this effect when a suggested period is selected - the dates are already set correctly
-		if (selectedPeriodId) {
-			prevYearWindow.current = yearWindow;
-			return;
+		if (generatedSeasonId) {
+			setCustomSeasonId(generatedSeasonId);
 		}
+	}, [generatedSeasonId]);
 
-		if (isFirstRender.current) {
-			isFirstRender.current = false;
-			const start = 6;
-			const end = isCropType ? 17 : start + minSliderRange;
+	// Current slider value derived from the selected dates.
+	const sliderValue: [number, number] = [
+		startDate ? getSliderValueFromDate(startDate) : DEFAULT_START_IDX,
+		endDate ? getSliderValueFromDate(endDate) : DEFAULT_END_IDX,
+	];
 
-			setSliderStart(start);
-			setSliderEnd(end);
-
-			const windowStartMonth = yearWindow * 12 + start;
-			const windowEndMonth = yearWindow * 12 + end;
-
-			const newStart = getDateFromSliderValue(windowStartMonth);
-			const newEnd = getDateFromSliderValue(windowEndMonth, true);
-
-			setStartDate(newStart);
-			const endDateStr = transformDate(newEnd) as CreateCustomProductsEndDateModel;
-			setEndDate(endDateStr);
-		} else if (prevYearWindow.current !== yearWindow && startDate && endDate) {
-			const oldYearWindow = prevYearWindow.current;
-
-			const oldStartSliderPos = getSliderValueFromDate(startDate) - oldYearWindow * 12;
-			const oldEndSliderPos = isCropType
-				? getSliderValueFromDate(endDate) - oldYearWindow * 12
-				: oldStartSliderPos + minSliderRange;
-
-			setSliderStart(oldStartSliderPos);
-			setSliderEnd(oldEndSliderPos);
-
-			const newStartMonth = yearWindow * 12 + oldStartSliderPos;
-			const newEndMonth = yearWindow * 12 + oldEndSliderPos;
-
-			const clampedStartMonth = Math.max(0, Math.min(newStartMonth, SLIDER_MAX));
-			const clampedEndMonth = Math.max(0, Math.min(newEndMonth, SLIDER_MAX));
-
-			const newStart = getDateFromSliderValue(clampedStartMonth);
-			const newEnd = getDateFromSliderValue(clampedEndMonth, true);
-
-			setStartDate(newStart);
-			const endDateStr = transformDate(newEnd) as CreateCustomProductsEndDateModel;
-			setEndDate(endDateStr);
-		}
-
-		prevYearWindow.current = yearWindow;
-	}, [yearWindow]);
-
-	/**
-	 * URL parameters for the API request.
-	 * @type {URLSearchParams}
-	 */
+	// Build API query params
 	const params: Record<string, string> = {
 		bbox: bbox ? bbox.join(',') : '',
-		outputFileFormat: outputFileFormat?.toString() || '',
-		model: model?.toString() || '',
+		model: resolvedModel,
 		product: product?.toString() || '',
 		endDate: endDate?.toString() || '',
 		startDate: startDate ? transformDate(startDate) : '',
 	};
 
-	const selectedPeriod = selectedPeriodId ? suggestedPeriods.find((period) => period.id === selectedPeriodId) : null;
-	const seasonStartDate = startDate ? transformDate(startDate) : null;
-	const seasonEndDate = endDate ? endDate.toString() : null;
-	const seasonId =
-		selectedPeriod?.id ??
-		(seasonStartDate && seasonEndDate
-			? `season_${seasonStartDate.replaceAll('-', '_')}_${seasonEndDate.replaceAll('-', '_')}`
-			: null);
-
-	if (seasonId && seasonStartDate && seasonEndDate) {
-		const seasonWindows = { [seasonId]: [seasonStartDate, seasonEndDate] };
+	const finalSeasonId = customSeasonId || generatedSeasonId;
+	if (finalSeasonId && seasonStartDate && seasonEndDate) {
+		const seasonWindows = { [finalSeasonId]: [seasonStartDate, seasonEndDate] };
 		params.seasonWindows = JSON.stringify(seasonWindows);
-		params.seasonIds = JSON.stringify([seasonId]);
+		params.seasonIds = JSON.stringify([finalSeasonId]);
 	}
 
-	if (product === customProductsProductTypes.cropType) {
-		// Include extra Crop Type options when available.
+	if (isCropType) {
 		if (orbitState) params.orbitState = orbitState.toString();
+		// Note: seasonalModelZip is already used as the `model` param above (resolvedModel)
+		// Cropland head params
+		params.enableCroplandHead = String(enableCroplandHead ?? true);
+		if ((enableCroplandHead ?? true) && landcoverHeadZip) params.landcoverHeadZip = landcoverHeadZip;
+		// Croptype head override
+		if (croptypeHeadZip) params.croptypeHeadZip = croptypeHeadZip;
+		// Cropland postprocess
+		if (enableCroplandHead ?? true) {
+			params.maskCropland = String(maskCropland ?? true);
+			if (postprocessMethodCropland) params.postprocessMethodCropland = postprocessMethodCropland.toString();
+			if (
+				postprocessMethodCropland === customProductsPostprocessMethods.majorityVote &&
+				postprocessKernelSizeCropland !== undefined
+			) {
+				params.postprocessKernelSizeCropland = postprocessKernelSizeCropland.toString();
+			}
+		}
+		// Croptype postprocess (reuse existing fields)
 		if (postprocessMethod) params.postprocessMethod = postprocessMethod.toString();
 		if (postprocessMethod === customProductsPostprocessMethods.majorityVote && postprocessKernelSize !== undefined) {
 			params.postprocessKernelSize = postprocessKernelSize.toString();
 		}
+	} else if (isCropExtent) {
+		// Cropland Extent postprocess
+		if (orbitState) params.orbitState = orbitState.toString();
+		if (postprocessMethodCropland) params.postprocessMethod = postprocessMethodCropland.toString();
+		if (
+			postprocessMethodCropland === customProductsPostprocessMethods.majorityVote &&
+			postprocessKernelSizeCropland !== undefined
+		) {
+			params.postprocessKernelSize = postprocessKernelSizeCropland.toString();
+		}
+		if (landcoverHeadZip) params.landcoverHeadZip = landcoverHeadZip;
 	}
 
 	const urlParams = new URLSearchParams(params);
 
-	/**
-	 * SWR hook for fetching process data.
-	 */
 	const { data, isLoading } = useSWR(shouldFetch ? [apiUrl, urlParams.toString()] : null, () =>
 		apiFetcher(apiUrl, urlParams.toString())
 	);
 
-	/**
-	 * Handler to initiate the process creation.
-	 */
 	const onCreateProcessClick = () => {
+		setProcessError(null);
+		if (nextStepDisabled) return;
 		setShouldFetch(true);
 	};
 
-	/**
-	 * Handler to navigate back to the previous step.
-	 */
 	const onBackClick = () => {
 		router.push(`/generate-custom-products/steps/1`);
 	};
 
-	/**
-	 * Effect to reset fetch state when data is available.
-	 */
 	useEffect(() => {
 		if (shouldFetch && data) {
 			setShouldFetch(false);
+			if (data?.error) {
+				setProcessError(data.error);
+			}
 		}
 	}, [shouldFetch, data]);
 
-	/**
-	 * Effect to update URL parameters and navigate to the next step when job data is received.
-	 */
 	useEffect(() => {
 		if (data?.key) {
 			dispatch({
@@ -655,229 +475,470 @@ export default function CreateProductsStep2Client() {
 		}
 	}, [data, router]);
 
+	const requiredAsterisk = <span style={{ color: 'var(--deleteColor)', fontWeight: 'bold' }}>*</span>;
+
 	return (
 		<TwoColumns>
 			<Column>
-				<SectionContainer>
-					<Group gap={'0.3rem'} align="baseline">
-						<FormLabel>Draw the extent</FormLabel>
-						<TextDescription color={'var(--textSecondaryColor)'}>
-							(MIN: 900 m<sup>2</sup>, MAX: 2 500 km<sup>2</sup>)
-						</TextDescription>
-					</Group>
-					<MapBBox
-						mapSize={[650, 400]}
-						minBboxArea={bboxSizeLimits.customProducts.min}
-						maxBboxArea={bboxSizeLimits.customProducts.max}
-						bbox={bbox?.map(Number)}
-						setBboxDescription={setBboxDescription}
-						setBboxExtent={setBBoxExtent}
-						setBboxIsInBounds={setBboxIsInBounds}
-						backgroundLayer={backgroundLayer}
-						setBackgroundLayer={(value) => setBackgroundLayer(value as CreateCustomProductsBackgroundLayerModel)}
-					/>
-					<TextDescription>
-						Current extent:{' '}
-						{bboxDescription ? (
-							<>
-								{bboxDescription} km<sup>2</sup>
-							</>
-						) : (
-							'No extent selected'
-						)}
-					</TextDescription>
-				</SectionContainer>
-				<TextDescription>
-					<b>Avoid too large areas to prevent excessive credit usage and long processing times!</b>
-				</TextDescription>
-				<TextDescription>
-					A run of 250 km<sup>2</sup> will typically consume 40 credits and last around 20min.
-				</TextDescription>
-				<TextDescription>
-					A run of 750 km<sup>2</sup> will typically consume 90 credits and last around 50min.
-				</TextDescription>
-				<TextDescription>
-					A run of 2500 km<sup>2</sup> will typically consume 250 credits and last around 1h 40min.
-				</TextDescription>
-				<Group mt="xl">
-					<Button
-						className="worldCereal-Button is-secondary is-ghost"
-						variant="outline"
-						onClick={onBackClick}
-						leftSection={<IconArrowLeft size={14} />}
-					>
-						Back
-					</Button>
-					<Button
-						leftSection={<IconCheck size={14} />}
-						disabled={isLoading || nextStepDisabled}
-						className="worldCereal-Button"
-						onClick={onCreateProcessClick}
-					>
-						{isLoading ? 'Creating...' : 'Create process'}
-					</Button>
-				</Group>
-			</Column>
-			<Column>
-				<Stack gap="lg" w="100%" align="flex-start">
+				<div className="step2-container">
+				<Stack gap="xl" w="100%" align="stretch">
+					{/* 2.1. Draw the extent (full width) */}
 					<div>
-						<FormLabel>Select season of interest</FormLabel>
-						<TextDescription>
-							Pick a recommended period for your selected area and tweak as needed, or define your own.
-						</TextDescription>
-					</div>
-					<div>
-						<Text>Pick a suggested period</Text>
-						{suggestedPeriods.length > 0 ? (
-							<Radio.Group
-								value={selectedPeriodId}
-								onChange={onSuggestedPeriodChange}
-								name="suggestedPeriod"
-								style={{ marginTop: '0.5rem' }}
-							>
-								<Stack gap="xs">
-									{suggestedPeriods.map((period) => (
-										<Radio
-											key={period.id}
-											value={period.id}
-											label={formatPeriodLabel(period.startDate, period.endDate)}
-										/>
-									))}
-								</Stack>
-							</Radio.Group>
-						) : (
-							<TextDescription color="var(--textSecondaryColor)">
-								{bbox ? 'Loading suggested periods...' : 'Please draw the extent first.'}
+					<SectionContainer>
+						<Group gap={'0.3rem'} align="baseline" mb="xs">
+							<FormLabel>2.1. Draw the extent (MIN: 900 sqm, MAX: 2 500 sqkm)</FormLabel>
+							{requiredAsterisk}
+						</Group>
+						<Box w="100%">
+							<MapBBox
+								mapSize={[1050, 460]}
+								minBboxArea={bboxSizeLimits.customProducts.min}
+								maxBboxArea={bboxSizeLimits.customProducts.max}
+								bbox={bbox?.map(Number)}
+								setBboxDescription={setBboxDescription}
+								setBboxExtent={setBBoxExtent}
+								setBboxIsInBounds={setBboxIsInBounds}
+								backgroundLayer={backgroundLayer}
+								setBackgroundLayer={(value) => setBackgroundLayer(value as CreateCustomProductsBackgroundLayerModel)}
+							/>
+						</Box>
+						<Box mt="xs">
+							<TextDescription className="step2-desc">
+								Current extent:{' '}
+								{bbox ? bbox.map((num) => Number(num).toFixed(2)).join(', ') : ''}{' '}
+								{bboxDescription ? `(${bboxDescription} sqkm)` : '(No extent selected)'}
 							</TextDescription>
-						)}
+						</Box>
+					</SectionContainer>
+					<Box>
+						<TextDescription className="step2-desc">
+							<b>Avoid too large areas to prevent excessive credit usage and long processing times!</b>
+						</TextDescription>
+						<TextDescription className="step2-desc">
+							A run of 250 km² will typically consume 40 credits and last around 20 mins.
+						</TextDescription>
+						<TextDescription className="step2-desc">
+							A run of 750 km² will typically consume 90 credits and last around 50 mins.
+						</TextDescription>
+						<TextDescription className="step2-desc">
+							A run of 2500 km² will typically consume 250 credits and last around 1h 40 mins.
+						</TextDescription>
+					</Box>
 					</div>
 
-					<div style={{ width: '100%' }}>
-						<Text>Adjust the date range</Text>
+					{/* 2.2. Select season of interest */}
+					<Stack gap="lg" w="100%" align="flex-start">
+						<Box>
+							<Group gap={'0.3rem'} align="baseline">
+								<FormLabel>2.2. Select season of interest</FormLabel>
+								{requiredAsterisk}
+							</Group>
+							<TextDescription className="step2-desc">
+								Pick a recommended period for your selected area and tweak as needed, or define your own.
+							</TextDescription>
+						</Box>
+
+						{/* 2.2.1. Pick a suggested period */}
 						<div>
-							<TextDescription>
-								Select a period between 2018 and {CURRENT_YEAR}.{' '}
-								{isCropType ? 'Min 3 months, Max 12 months.' : 'Exactly 12 months.'}
-							</TextDescription>
-
-							<Box p="lg" pt={60} bg="#1A1A1A" style={{ borderRadius: '8px', marginTop: '0.5rem' }}>
-								{/* Year Navigator Slider */}
-								<Box mb="xl">
-									<RangeSlider
-										min={0}
-										max={CURRENT_YEAR - START_YEAR}
-										step={1}
-										value={[yearWindow, yearWindow + YEAR_WINDOW_SIZE - 1]}
-										onChange={(val) => {
-											if (Array.isArray(val)) {
-												const maxVal = getMaxYearWindow();
-												// Calculate which thumb moved more
-												const prevStart = yearWindow;
-												const prevEnd = yearWindow + YEAR_WINDOW_SIZE - 1;
-												const startDiff = Math.abs(val[0] - prevStart);
-												const endDiff = Math.abs(val[1] - prevEnd);
-
-												let newStart: number;
-												if (startDiff >= endDiff) {
-													// Left thumb moved more or equal - use its position
-													newStart = Math.max(0, Math.min(val[0], maxVal));
-												} else {
-													// Right thumb moved more - derive start from end
-													newStart = Math.max(0, Math.min(val[1] - YEAR_WINDOW_SIZE + 1, maxVal));
-												}
-												// Deselect suggested period when year window changes
-												if (selectedPeriodId) {
-													setSelectedPeriodId(null);
-													setSuggestedPeriodSliderValues(null);
-												}
-												setYearWindow(newStart);
-											}
-										}}
-										classNames={{
-											root: 'step2-slider-root',
-											track: 'step2-slider-track',
-											bar: 'step2-slider-bar',
-											thumb: 'step2-slider-thumb',
-											mark: 'step2-slider-mark',
-											markLabel: 'step2-slider-mark-label',
-											label: 'step2-slider-label',
-										}}
-										label={(value) => {
-											const year = START_YEAR + value;
-											return (
-												<div className="step2-thumb-label">
-													{year}
-													<div className="step2-thumb-label-arrow" />
-												</div>
-											);
-										}}
-										labelAlwaysOn
-										restrictToMarks
-										marks={generateYearMarks()}
-									/>
-								</Box>
-
-								{/* Month Range Slider */}
-								<Box pt={20} mt={40}>
-									<RangeSlider
-										min={0}
-										max={monthSliderMax}
-										step={1}
-										minRange={isCropType ? minSliderRange : undefined}
-										maxRange={isCropType ? 11 : undefined}
-										marks={generateMonthMarks(yearWindow)}
-										value={
-											(suggestedPeriodSliderValues as [number, number] | undefined) ||
-											(isCropType ? [sliderStart, sliderEnd] : [sliderStart, sliderStart + minSliderRange])
-										}
-										onChange={handleMonthSliderChange}
-										classNames={{
-											root: 'step2-slider-root',
-											track: 'step2-slider-track',
-											bar: 'step2-slider-bar',
-											thumb: 'step2-slider-thumb',
-											mark: 'step2-slider-mark',
-											markLabel: 'step2-slider-mark-label',
-											label: 'step2-slider-label',
-										}}
-										labelAlwaysOn
-										label={(value) => {
-											const date = new Date(START_YEAR, yearWindow * 12 + value);
-											const text = date.toLocaleString('en-US', { month: 'short' });
-											return (
-												<div className="step2-thumb-label">
-													{text}
-													<div className="step2-thumb-label-arrow" />
-												</div>
-											);
-										}}
-									/>
-								</Box>
-							</Box>
-
-							{(startDate || endDate) && (
-								<Stack gap={2} mt="xs">
-									<Text>
-										Selected start date: <b>{formatToFirstOfMonth(startDate)}</b>
-									</Text>
-									<Text>
-										Selected end date: <b>{formatToEndOfMonth(endDate)}</b>
-									</Text>
-								</Stack>
+							<Text fw={700} size="md" c="white">
+								2.2.1. Pick a suggested period
+							</Text>
+							{suggestedPeriods.length > 0 ? (
+								<Radio.Group
+									value={selectedPeriodId}
+									onChange={onSuggestedPeriodChange}
+									name="suggestedPeriod"
+									style={{ marginTop: '0.5rem' }}
+								>
+									<div className="step2-suggested-periods">
+										{suggestedPeriods.map((period) => (
+											<Radio
+												key={period.id}
+												value={period.id}
+												label={formatPeriodLabel(period.startDate, period.endDate)}
+											/>
+										))}
+									</div>
+								</Radio.Group>
+							) : (
+								<TextDescription color="var(--textSecondaryColor)">
+									{bbox ? 'Loading suggested periods...' : 'Please draw the extent first.'}
+								</TextDescription>
 							)}
 						</div>
-					</div>
-					<div style={{ width: '100%' }}>
-						<FormLabel>Choose output file format</FormLabel>
-						<SegmentedControl
-							onChange={(value) => setOutputFileFormat(value as CreateCustomProductsOutputFileFormatModel)}
-							className="worldCereal-SegmentedControl"
+
+						{/* 2.2.2. Adjust the date range (full width) */}
+						<Box w="100%">
+							<Text fw={700} size="md" c="white">
+								2.2.2. Adjust the date range
+							</Text>
+							<TextDescription className="step2-desc">
+								Select a season between {START_YEAR} and {CURRENT_YEAR}.{' '}
+								{isCropType ? 'From 3 to 12 months.' : 'Exactly 12 months.'}
+							</TextDescription>
+
+							<Box p="lg" pt={60} bg="#000" style={{ borderRadius: '2px', marginTop: '0.5rem' }}>
+								<RangeSlider
+									min={0}
+									max={SLIDER_MAX}
+									step={1}
+									minRange={isCropType ? CROP_TYPE_MIN_DIFF : CROP_EXTENT_DIFF}
+									maxRange={isCropType ? CROP_TYPE_MAX_DIFF : CROP_EXTENT_DIFF}
+									marks={generateFullRangeMarks()}
+									value={sliderValue}
+									onChange={handleDateRangeChange}
+									classNames={{
+										root: 'step2-slider-root',
+										track: 'step2-slider-track',
+										bar: 'step2-slider-bar',
+										thumb: 'step2-slider-thumb',
+										mark: 'step2-slider-mark',
+										markLabel: 'step2-slider-mark-label',
+										label: 'step2-slider-label',
+									}}
+									labelAlwaysOn
+									label={(value) => {
+										const date = new Date(START_YEAR, value);
+										const text = date.toLocaleString('en-US', { month: 'short', year: 'numeric' });
+										const side = value === sliderValue[0] ? 'is-start' : 'is-end';
+										return (
+											<div className={`step2-thumb-label ${side}`}>
+												{text}
+												<div className="step2-thumb-label-arrow" />
+											</div>
+										);
+									}}
+								/>
+							</Box>
+						</Box>
+
+						{/* 2.2.3. Enter season ID */}
+						<Input.Wrapper
+							className="worldCereal-Input"
 							size="md"
-							value={outputFileFormat}
-							data={formParams.outputFileFormat.options}
-						/>
-					</div>
+							label="2.2.3. Enter season ID"
+							description="Enter your own season ID or use the generated one."
+						>
+							<TextInput
+								size="md"
+								placeholder="e.g. 2022"
+								value={customSeasonId}
+								onChange={(e) => setCustomSeasonId(e.currentTarget.value)}
+							/>
+						</Input.Wrapper>
+
+						{(startDate || endDate) && (
+							<Stack gap={2}>
+								<Text size="sm" c="white">
+									Selected start date: <b>{formatToFirstOfMonth(startDate)}</b>
+								</Text>
+								<Text size="sm" c="white">
+									Selected end date: <b>{formatToEndOfMonth(endDate)}</b>
+								</Text>
+							</Stack>
+						)}
+					</Stack>
+
+					{/* Crop Type specific controls */}
+					{isCropType && (
+						<Stack gap="md" w="100%">
+							{/* 2.3. Orbit state */}
+							<div>
+								<Group gap={'0.3rem'} align="baseline" mb="xs">
+									<FormLabel>2.3. Orbit state</FormLabel>
+									{requiredAsterisk}
+								</Group>
+								<TextDescription className="step2-desc">
+									Most dominant Sentinel-1 orbit for your area of interest, either &apos;ASCENDING&apos; or
+									&apos;DESCENDING&apos;. See details:{' '}
+									<a
+										href="https://sentiwiki.copernicus.eu/web/s1-mission#S1Mission-ObservationandProductionScenariosS1-Mission-Observation-and-Production-Scenarios"
+										target="_blank"
+										rel="noopener noreferrer"
+									>
+										https://sentiwiki.copernicus.eu/web/s1-mission#S1Mission-ObservationandProductionScenariosS1-Mission-Observation-and-Production-Scenarios
+									</a>
+								</TextDescription>
+								<Select
+									className="worldCereal-Select"
+									size="md"
+									allowDeselect={false}
+									placeholder="Pick one"
+									data={formParams.orbitState.options}
+									value={orbitState}
+									onChange={(value) => {
+										if (value === 'ASCENDING' || value === 'DESCENDING') {
+											dispatch({
+												type: WorldCerealStateActionType.CREATE_CUSTOM_PRODUCTS_SET_ORBIT_STATE,
+												payload: value,
+											});
+										}
+									}}
+								/>
+							</div>
+
+							{/* Cropland head postprocessing (shown when enableCroplandHead is true) */}
+							{(enableCroplandHead ?? true) && (
+								<>
+									{/* 2.4. Postprocess method - cropland */}
+									<div>
+										<Group gap={'0.3rem'} align="baseline" mb="xs">
+											<FormLabel>2.4. Postprocess method - cropland</FormLabel>
+											{requiredAsterisk}
+										</Group>
+										<TextDescription className="step2-desc">
+											The method used for cleaning your map after initial pixel-based predictions. Smooth
+											probabilities represents a minor cleaning step, whereas majority voting will introduce more
+											fierce post-processing, also depending on the selected kernel size.
+										</TextDescription>
+										<Select
+											className="worldCereal-Select"
+											size="md"
+											allowDeselect={false}
+											data={formParams.postprocessMethodCropland.options}
+											value={postprocessMethodCropland ?? 'majority_vote'}
+											onChange={(value) => {
+												if (value) {
+													dispatch({
+														type: WorldCerealStateActionType.CREATE_CUSTOM_PRODUCTS_SET_POSTPROCESS_METHOD_CROPLAND,
+														payload: value as CreateCustomProductsPostprocessMethodCroplandModel,
+													});
+												}
+											}}
+										/>
+									</div>
+
+									{/* 2.4.1. Kernel size - cropland */}
+									{postprocessMethodCropland === customProductsPostprocessMethods.majorityVote && (
+										<div>
+											<FormLabel>2.4.1. Kernel size - cropland</FormLabel>
+											<TextDescription className="step2-desc">
+												The larger the size of the kernel, the more pixel-to-pixel variations in the final map will be
+												eliminated. Must be an odd positive number not larger than 25.
+											</TextDescription>
+											<NumberInput
+												className="worldCereal-Input step2-number-input"
+												size="md"
+												value={postprocessKernelSizeCropland ?? 3}
+												onChange={(val) => {
+													const num = Number(val);
+													if (!isNaN(num)) {
+														dispatch({
+															type: WorldCerealStateActionType.CREATE_CUSTOM_PRODUCTS_SET_POSTPROCESS_KERNEL_SIZE_CROPLAND,
+															payload: num,
+														});
+													}
+												}}
+												min={1}
+												max={25}
+												step={2}
+											/>
+										</div>
+									)}
+
+									{/* 2.5. Apply Cropland Mask */}
+									<div>
+										<FormLabel>2.5. Apply Cropland Mask</FormLabel>
+										<TextDescription className="step2-desc">
+											Mask crop type predictions outside cropland areas using the generated cropland mask.
+										</TextDescription>
+										<Checkbox
+											className="worldCereal-Checkbox"
+											size="md"
+											label="Apply Cropland Mask"
+											checked={maskCropland ?? true}
+											onChange={(e) =>
+												dispatch({
+													type: WorldCerealStateActionType.CREATE_CUSTOM_PRODUCTS_SET_MASK_CROPLAND,
+													payload: e.currentTarget.checked,
+												})
+											}
+										/>
+									</div>
+								</>
+							)}
+
+							{/* 2.6. Postprocess method - croptype */}
+							<div>
+								<Group gap={'0.3rem'} align="baseline" mb="xs">
+									<FormLabel>2.6. Postprocess method - croptype</FormLabel>
+									{requiredAsterisk}
+								</Group>
+								<TextDescription className="step2-desc">
+									The method used for cleaning your map after initial pixel-based predictions. Smooth
+									probabilities represents a minor cleaning step, whereas majority voting will introduce more fierce
+									post-processing, also depending on the selected kernel size.
+								</TextDescription>
+								<Select
+									className="worldCereal-Select"
+									size="md"
+									allowDeselect={false}
+									data={formParams.postprocessMethod.options}
+									value={postprocessMethod ?? 'majority_vote'}
+									onChange={(value) => {
+										if (value) {
+											dispatch({
+												type: WorldCerealStateActionType.CREATE_CUSTOM_PRODUCTS_SET_POSTPROCESS_METHOD,
+												payload: value as 'smooth_probabilities' | 'majority_vote',
+											});
+										}
+									}}
+								/>
+							</div>
+
+							{/* 2.6.1. Kernel size - croptype */}
+							{postprocessMethod === customProductsPostprocessMethods.majorityVote && (
+								<div>
+									<FormLabel>2.6.1. Kernel size - croptype</FormLabel>
+									<TextDescription className="step2-desc">
+										The larger the size of the kernel, the more pixel-to-pixel variations in the final map will be
+										eliminated. Must be an odd positive number not larger than 25.
+									</TextDescription>
+									<NumberInput
+										className="worldCereal-Input step2-number-input"
+										size="md"
+										value={postprocessKernelSize ?? 5}
+										onChange={(val) => {
+											const num = Number(val);
+											if (!isNaN(num)) {
+												dispatch({
+													type: WorldCerealStateActionType.CREATE_CUSTOM_PRODUCTS_SET_POSTPROCESS_KERNEL_SIZE,
+													payload: num,
+												});
+											}
+										}}
+										min={1}
+										max={25}
+										step={2}
+									/>
+								</div>
+							)}
+						</Stack>
+					)}
+
+					{/* Cropland Extent specific controls */}
+					{isCropExtent && (
+						<Stack gap="md" w="100%">
+							{/* 2.3. Orbit state */}
+							<div>
+								<Group gap={'0.3rem'} align="baseline" mb="xs">
+									<FormLabel>2.3. Orbit state</FormLabel>
+									{requiredAsterisk}
+								</Group>
+								<TextDescription className="step2-desc">
+									Most dominant Sentinel-1 orbit for your area of interest, either &apos;ASCENDING&apos; or
+									&apos;DESCENDING&apos;. See details:{' '}
+									<a
+										href="https://sentiwiki.copernicus.eu/web/s1-mission#S1Mission-ObservationandProductionScenariosS1-Mission-Observation-and-Production-Scenarios"
+										target="_blank"
+										rel="noopener noreferrer"
+									>
+										https://sentiwiki.copernicus.eu/web/s1-mission#S1Mission-ObservationandProductionScenariosS1-Mission-Observation-and-Production-Scenarios
+									</a>
+								</TextDescription>
+								<Select
+									className="worldCereal-Select"
+									size="md"
+									placeholder="Pick one"
+									data={formParams.orbitState.options}
+									value={orbitState ?? null}
+									onChange={(value) => {
+										if (value === 'ASCENDING' || value === 'DESCENDING') {
+											dispatch({
+												type: WorldCerealStateActionType.CREATE_CUSTOM_PRODUCTS_SET_ORBIT_STATE,
+												payload: value,
+											});
+										}
+									}}
+								/>
+							</div>
+
+							{/* 2.4. Postprocess method */}
+							<div>
+								<Group gap={'0.3rem'} align="baseline" mb="xs">
+									<FormLabel>2.4. Postprocess method</FormLabel>
+									{requiredAsterisk}
+								</Group>
+								<TextDescription className="step2-desc">
+									The method used for cleaning your map after initial pixel-based predictions. Smooth probabilities
+									represents a minor cleaning step, whereas majority voting will introduce more fierce post-processing,
+									also depending on the selected kernel size.
+								</TextDescription>
+								<Select
+									className="worldCereal-Select"
+									size="md"
+									allowDeselect={false}
+									data={formParams.postprocessMethodCropland.options}
+									value={postprocessMethodCropland ?? 'majority_vote'}
+									onChange={(value) => {
+										if (value) {
+											dispatch({
+												type: WorldCerealStateActionType.CREATE_CUSTOM_PRODUCTS_SET_POSTPROCESS_METHOD_CROPLAND,
+												payload: value as CreateCustomProductsPostprocessMethodCroplandModel,
+											});
+										}
+									}}
+								/>
+							</div>
+
+							{/* 2.4.1. Kernel size */}
+							{postprocessMethodCropland === customProductsPostprocessMethods.majorityVote && (
+								<div>
+									<FormLabel>2.4.1. Kernel size</FormLabel>
+									<TextDescription className="step2-desc">
+										The larger the size of the kernel, the more pixel-to-pixel variations in the final map will be
+										eliminated. Must be an odd positive number not larger than 25.
+									</TextDescription>
+									<NumberInput
+										className="worldCereal-Input step2-number-input"
+										size="md"
+										value={postprocessKernelSizeCropland ?? 3}
+										onChange={(val) => {
+											const num = Number(val);
+											if (!isNaN(num)) {
+												dispatch({
+													type: WorldCerealStateActionType.CREATE_CUSTOM_PRODUCTS_SET_POSTPROCESS_KERNEL_SIZE_CROPLAND,
+													payload: num,
+												});
+											}
+										}}
+										min={3}
+										max={25}
+										step={2}
+									/>
+								</div>
+							)}
+						</Stack>
+					)}
+
+					{/* Navigation / Actions */}
+					<Group mt="xl">
+						<Button
+							className="worldCereal-Button is-secondary is-ghost"
+							variant="outline"
+							onClick={onBackClick}
+							leftSection={<IconArrowLeft size={14} />}
+						>
+							Back
+						</Button>
+						<Button
+							leftSection={<IconCheck size={14} />}
+							disabled={isLoading || nextStepDisabled}
+							className="worldCereal-Button"
+							onClick={onCreateProcessClick}
+						>
+							{isLoading ? 'Creating...' : 'Create process'}
+						</Button>
+					</Group>
+					{processError && (
+						<Box mt="md" p="sm" bg="var(--errorColor)" style={{ borderRadius: '4px' }}>
+							<Text size="sm" c="var(--base0)">
+								{processError}
+							</Text>
+						</Box>
+					)}
 				</Stack>
+				</div>
 			</Column>
 		</TwoColumns>
 	);

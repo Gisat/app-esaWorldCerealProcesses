@@ -15,13 +15,20 @@ import { resetSettingsHandler_customProducts } from '@features/state/reducers/cr
 import { setBackgroundLayerHandler_customProducts } from '@features/state/reducers/createCustomProducts/handler.setBackgroundLayer';
 import { setBBoxHandler_customProducts } from '@features/state/reducers/createCustomProducts/handler.setBBox';
 import { setCurrentJobKeyHandler_customProducts } from '@features/state/reducers/createCustomProducts/handler.setCurrentJobKey';
-import { setOutputFileFormatHandler_customProducts } from '@features/state/reducers/createCustomProducts/handler.setOutputFileFormat';
 import { setProductHandler_customProducts } from '@features/state/reducers/createCustomProducts/handler.setProduct';
 import { setModelHandler_customProducts } from '@features/state/reducers/createCustomProducts/handler.setModel';
 import { setEndDateHandler_customProducts } from '@features/state/reducers/createCustomProducts/handler.setEndDate';
 import { setOrbitStateHandler_customProducts } from './reducers/createCustomProducts/handler.setOrbitState';
 import { setPostprocessMethodHandler_customProducts } from './reducers/createCustomProducts/handler.setPostprocessMethod';
 import { setPostprocessKernelSizeHandler_customProducts } from './reducers/createCustomProducts/handler.setPostprocessKernelSize';
+import { setCropTypeModelTypeHandler_customProducts } from './reducers/createCustomProducts/handler.setCropTypeModelType';
+import { setSeasonalModelZipHandler_customProducts } from './reducers/createCustomProducts/handler.setSeasonalModelZip';
+import { setEnableCroplandHeadHandler_customProducts } from './reducers/createCustomProducts/handler.setEnableCroplandHead';
+import { setLandcoverHeadZipHandler_customProducts } from './reducers/createCustomProducts/handler.setLandcoverHeadZip';
+import { setCroptypeHeadZipHandler_customProducts } from './reducers/createCustomProducts/handler.setCroptypeHeadZip';
+import { setMaskCroplandHandler_customProducts } from './reducers/createCustomProducts/handler.setMaskCropland';
+import { setPostprocessMethodCroplandHandler_customProducts } from './reducers/createCustomProducts/handler.setPostprocessMethodCropland';
+import { setPostprocessKernelSizeCroplandHandler_customProducts } from './reducers/createCustomProducts/handler.setPostprocessKernelSizeCropland';
 
 /**
  * Creates and returns a map of reducer functions specific to the WorldCereal application state management.
@@ -80,10 +87,6 @@ export const stateReducerMapForWorldCerealApplication = (): AppSpecificReducerMa
 		WorldCerealStateActionType.CREATE_CUSTOM_PRODUCTS_SET_CURRENT_JOB_KEY as string,
 		setCurrentJobKeyHandler_customProducts
 	);
-	map.set(
-		WorldCerealStateActionType.CREATE_CUSTOM_PRODUCTS_SET_OUTPUT_FILE_FORMAT as string,
-		setOutputFileFormatHandler_customProducts
-	);
 	map.set(WorldCerealStateActionType.CREATE_CUSTOM_PRODUCTS_SET_PRODUCT as string, setProductHandler_customProducts);
 	map.set(WorldCerealStateActionType.CREATE_CUSTOM_PRODUCTS_SET_MODEL as string, setModelHandler_customProducts);
 	map.set(WorldCerealStateActionType.CREATE_CUSTOM_PRODUCTS_SET_END_DATE as string, setEndDateHandler_customProducts);
@@ -98,6 +101,38 @@ export const stateReducerMapForWorldCerealApplication = (): AppSpecificReducerMa
 	map.set(
 		WorldCerealStateActionType.CREATE_CUSTOM_PRODUCTS_SET_POSTPROCESS_KERNEL_SIZE as string,
 		setPostprocessKernelSizeHandler_customProducts
+	);
+	map.set(
+		WorldCerealStateActionType.CREATE_CUSTOM_PRODUCTS_SET_CROP_TYPE_MODEL_TYPE as string,
+		setCropTypeModelTypeHandler_customProducts
+	);
+	map.set(
+		WorldCerealStateActionType.CREATE_CUSTOM_PRODUCTS_SET_SEASONAL_MODEL_ZIP as string,
+		setSeasonalModelZipHandler_customProducts
+	);
+	map.set(
+		WorldCerealStateActionType.CREATE_CUSTOM_PRODUCTS_SET_ENABLE_CROPLAND_HEAD as string,
+		setEnableCroplandHeadHandler_customProducts
+	);
+	map.set(
+		WorldCerealStateActionType.CREATE_CUSTOM_PRODUCTS_SET_LANDCOVER_HEAD_ZIP as string,
+		setLandcoverHeadZipHandler_customProducts
+	);
+	map.set(
+		WorldCerealStateActionType.CREATE_CUSTOM_PRODUCTS_SET_CROPTYPE_HEAD_ZIP as string,
+		setCroptypeHeadZipHandler_customProducts
+	);
+	map.set(
+		WorldCerealStateActionType.CREATE_CUSTOM_PRODUCTS_SET_MASK_CROPLAND as string,
+		setMaskCroplandHandler_customProducts
+	);
+	map.set(
+		WorldCerealStateActionType.CREATE_CUSTOM_PRODUCTS_SET_POSTPROCESS_METHOD_CROPLAND as string,
+		setPostprocessMethodCroplandHandler_customProducts
+	);
+	map.set(
+		WorldCerealStateActionType.CREATE_CUSTOM_PRODUCTS_SET_POSTPROCESS_KERNEL_SIZE_CROPLAND as string,
+		setPostprocessKernelSizeCroplandHandler_customProducts
 	);
 
 	// Return the map to be merged with the default reducer map in the ptr-fe-core package.

@@ -12,10 +12,17 @@ export const resetSettingsHandler_customProducts: AppSpecficReducerFunc<WorldCer
 			backgroundLayer: undefined,
 			bbox: undefined,
 			product: undefined,
-			// currentJobKey: undefined,
-			outputFileFormat: 'GTiff', // Reset to default format
-			model: undefined,
-			endDate: undefined,
-		},
-	};
+			// 		currentJobKey: undefined,
+		model: undefined,
+		endDate: undefined,
+		cropTypeModelType: undefined,
+		seasonalModelZip: undefined,
+		enableCroplandHead: undefined,
+		landcoverHeadZip: undefined,
+		croptypeHeadZip: undefined,
+		maskCropland: undefined,
+		postprocessMethodCropland: undefined,
+		postprocessKernelSizeCropland: undefined,
+	},
+};
 };

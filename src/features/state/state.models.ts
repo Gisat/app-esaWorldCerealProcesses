@@ -12,13 +12,20 @@ export type CreateCustomProductsActiveStepModel = 1 | 2 | 3;
 export type CreateCustomProductsProductModel = string | undefined;
 export type CreateCustomProductsModelModel = string | null;
 export type CreateCustomProductsBackgroundLayerModel = string;
-export type CreateCustomProductsOutputFileFormatModel = 'GTiff' | 'NETCDF';
 export type CreateCustomProductsBBoxModel = [number, number, number, number] | undefined;
 export type CreateCustomProductsEndDateModel = string | undefined;
 export type CreateCustomProductsCurrentJobKeyModel = string | undefined;
 export type CreateCustomProductsOrbitStateModel = 'ASCENDING' | 'DESCENDING';
 export type CreateCustomProductsPostprocessMethodModel = 'smooth_probabilities' | 'majority_vote';
 export type CreateCustomProductsPostprocessKernelSizeModel = number;
+export type CreateCustomProductsCropTypeModelTypeModel = 'default' | 'custom';
+export type CreateCustomProductsSeasonalModelZipModel = string | null;
+export type CreateCustomProductsEnableCroplandHeadModel = boolean;
+export type CreateCustomProductsLandcoverHeadZipModel = string | null;
+export type CreateCustomProductsCroptypeHeadZipModel = string | null;
+export type CreateCustomProductsMaskCroplandModel = boolean;
+export type CreateCustomProductsPostprocessMethodCroplandModel = 'smooth_probabilities' | 'majority_vote';
+export type CreateCustomProductsPostprocessKernelSizeCroplandModel = number;
 
 /**
  * Interface representing the `downloadOfficialProducts` section of the application state.
@@ -56,7 +63,6 @@ export interface DownloadOfficialProductsModel {
  * @property {CreateCustomProductsProductModel} [product] - The current product, if defined.
  * @property {CreateCustomProductsModelModel} [model] - The model used in the process, typically an URL.
  * @property {CreateCustomProductsBackgroundLayerModel} [backgroundLayer] - The background layer used in the process.
- * @property {CreateCustomProductsOutputFileFormatModel} [outputFileFormat] - The format of the output file.
  * @property {CreateCustomProductsBBoxModel} [bbox] - The bounding box for the process, if defined.
  * @property {CreateCustomProductsEndDateModel} [endDate] - The end date for the process, if defined.
  * @property {CreateCustomProductsCurrentJobKeyModel} [currentJobKey] - The key of the current job, if defined.
@@ -70,13 +76,20 @@ export type CreateCustomProductsModel = {
 	product?: CreateCustomProductsProductModel;
 	model?: CreateCustomProductsModelModel;
 	backgroundLayer?: CreateCustomProductsBackgroundLayerModel;
-	outputFileFormat?: CreateCustomProductsOutputFileFormatModel;
 	bbox?: CreateCustomProductsBBoxModel;
 	endDate?: CreateCustomProductsEndDateModel;
 	currentJobKey?: CreateCustomProductsCurrentJobKeyModel;
 	orbitState?: CreateCustomProductsOrbitStateModel;
 	postprocessMethod?: CreateCustomProductsPostprocessMethodModel;
 	postprocessKernelSize?: CreateCustomProductsPostprocessKernelSizeModel;
+	cropTypeModelType?: CreateCustomProductsCropTypeModelTypeModel;
+	seasonalModelZip?: CreateCustomProductsSeasonalModelZipModel;
+	enableCroplandHead?: CreateCustomProductsEnableCroplandHeadModel;
+	landcoverHeadZip?: CreateCustomProductsLandcoverHeadZipModel;
+	croptypeHeadZip?: CreateCustomProductsCroptypeHeadZipModel;
+	maskCropland?: CreateCustomProductsMaskCroplandModel;
+	postprocessMethodCropland?: CreateCustomProductsPostprocessMethodCroplandModel;
+	postprocessKernelSizeCropland?: CreateCustomProductsPostprocessKernelSizeCroplandModel;
 };
 
 /**
