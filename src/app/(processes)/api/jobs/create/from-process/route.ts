@@ -34,6 +34,7 @@ export async function GET(req: NextRequest) {
 		const postprocessKernelSize = searchParams.get('postprocessKernelSize');
 		const seasonWindowsParam = searchParams.get('seasonWindows');
 		const seasonIdsParam = searchParams.get('seasonIds');
+		const customPropertiesRaw = searchParams.get('customProperties');
 
 		// validate inputs for safe aggregation
 		if (!endDate) {
@@ -102,6 +103,16 @@ export async function GET(req: NextRequest) {
 			}
 		}
 
+		let customProperties: Record<string, unknown> | undefined;
+		if (customPropertiesRaw) {
+			try {
+				customProperties = JSON.parse(customPropertiesRaw);
+			} catch {
+				loggyError('Jobs create from process GET', 'Invalid customProperties JSON');
+				throw new BaseHttpError('Invalid customProperties value', 400, ErrorBehavior.SSR);
+			}
+		}
+
 		// prepare data for the request
 		// Parse date as local time to avoid timezone issues
 		const [year, month, day] = endDate.split('-').map(Number);
@@ -125,6 +136,7 @@ export async function GET(req: NextRequest) {
 			...(postprocessMethod === customProductsPostprocessMethods.majorityVote && postprocessKernelSize
 				? { postprocessKernelSize: Number(postprocessKernelSize) }
 				: {}),
+			...(customProperties ? { customProperties } : {}),
 		};
 
 		console.log('data', data);
