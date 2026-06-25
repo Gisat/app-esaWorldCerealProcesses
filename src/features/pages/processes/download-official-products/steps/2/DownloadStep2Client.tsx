@@ -20,6 +20,7 @@ import {
 import { parseBbox, stringifyBbox } from '@features/(processes)/_utils/bbox';
 import type { BBoxModel } from '@features/(processes)/_utils/bbox';
 import { apiFetcher } from '@features/(shared)/_url/apiFetcher';
+import { backgroundLayers } from '@features/(map)/_components/mapBackgroundLayers/backgroundLayers';
 
 /**
  * Component representing the second step in the "Download Official Products" process.
@@ -103,12 +104,17 @@ export default function DownloadStep2Client() {
 	 * URL parameters for the API request.
 	 * @type {URLSearchParams}
 	 */
+	const productLabel = product ? (formParams.product.options.find((o) => o.value === product)?.label ?? product) : '';
+	const collectionLabel = collection ? (formParams.collection.options.find((o) => o.value === collection)?.label ?? collection) : '';
+	const title = productLabel && collectionLabel ? `Download: ${productLabel} (${collectionLabel})` : undefined;
+
 	const urlParams = new URLSearchParams({
 		bbox: bbox ?? '',
 		outputFileFormat: outputFileFormat ?? '',
 		collection: collection ?? '',
 		product: product ?? '',
-		...(product ? { customProperties: JSON.stringify({ process_type: processTypes.download }) } : {}),
+		...(title ? { title } : {}),
+		...(product ? { customProperties: JSON.stringify({ process_type: processTypes.download, ...(backgroundLayer ? { background_layer: backgroundLayers[backgroundLayer as keyof typeof backgroundLayers]?.name ?? backgroundLayer } : {}) }) } : {}),
 	});
 
 	/**

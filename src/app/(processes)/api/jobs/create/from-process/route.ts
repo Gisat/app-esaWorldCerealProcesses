@@ -34,6 +34,7 @@ export async function GET(req: NextRequest) {
 		const postprocessKernelSize = searchParams.get('postprocessKernelSize');
 		const seasonWindowsParam = searchParams.get('seasonWindows');
 		const seasonIdsParam = searchParams.get('seasonIds');
+		const title = searchParams.get('title');
 		const customPropertiesRaw = searchParams.get('customProperties');
 
 		// validate inputs for safe aggregation
@@ -131,6 +132,7 @@ export async function GET(req: NextRequest) {
 			seasonIds,
 			outputFileFormat,
 			model,
+			...(title ? { title } : {}),
 			...(orbitState && { orbitState }),
 			...(postprocessMethod && { postprocessMethod }),
 			...(postprocessMethod === customProductsPostprocessMethods.majorityVote && postprocessKernelSize

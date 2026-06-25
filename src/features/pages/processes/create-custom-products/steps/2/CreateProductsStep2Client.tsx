@@ -26,6 +26,7 @@ import {
 } from '@features/(processes)/_constants/generate-custom-products/searchParams';
 import { parseBbox, stringifyBbox } from '@features/(processes)/_utils/bbox';
 import { apiFetcher } from '@features/(shared)/_url/apiFetcher';
+import { backgroundLayers } from '@features/(map)/_components/mapBackgroundLayers/backgroundLayers';
 import './CreateProductsStep2Client.css';
 
 const START_YEAR = 2018;
@@ -358,6 +359,9 @@ export default function CreateProductsStep2Client() {
 		prevYearWindow.current = yearWindow;
 	}, [yearWindow]);
 
+	const productLabel = product ? (formParams.product.options.find((o) => o.value === product)?.label ?? product) : '';
+	const title = productLabel ? `Processing: ${productLabel}` : undefined;
+
 	const params: Record<string, string> = {
 		bbox: bbox ?? '',
 		outputFileFormat: outputFileFormat?.toString() || '',
@@ -365,7 +369,8 @@ export default function CreateProductsStep2Client() {
 		product: product?.toString() || '',
 		endDate: endDate?.toString() || '',
 		startDate: startDate ? transformDate(startDate) : '',
-		...(product ? { customProperties: JSON.stringify({ process_type: processTypes.product }) } : {}),
+		...(title ? { title } : {}),
+		...(product ? { customProperties: JSON.stringify({ process_type: processTypes.product, ...(backgroundLayer ? { background_layer: backgroundLayers[backgroundLayer as keyof typeof backgroundLayers]?.name ?? backgroundLayer } : {}) }) } : {}),
 	};
 
 	const selectedPeriod = selectedPeriodId ? suggestedPeriods.find((period) => period.id === selectedPeriodId) : null;

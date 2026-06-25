@@ -26,6 +26,7 @@ export async function GET(req: NextRequest) {
 		const outputFileFormat = searchParams.get("outputFileFormat");
 		const collection = searchParams.get("collection");
 		const product = searchParams.get("product");
+		const title = searchParams.get("title");
 		const customPropertiesRaw = searchParams.get("customProperties");
 		const startDate = formParams.collection.options.find(
 			(option) => option.value === collection
@@ -97,6 +98,7 @@ export async function GET(req: NextRequest) {
 			crs: "EPSG:4326",   // Make parametrized in the future, if needed
 			timeRange: [startDate, endDate],
 			outputFileFormat: outputFileFormat,
+			...(title ? { title } : {}),
 			...(customProperties ? { customProperties } : {}),
 		};
 
