@@ -1,6 +1,7 @@
 import {
 	createSearchParamsCache,
 	createSerializer,
+	parseAsBoolean,
 	parseAsInteger,
 	parseAsString,
 	parseAsStringLiteral,
@@ -12,6 +13,8 @@ const productValues = formParams.product.options.filter((o) => !o.disabled).map(
 const outputFileFormatValues = formParams.outputFileFormat.options.map((o) => o.value) as [string, ...string[]];
 const orbitStateValues = formParams.orbitState.options.map((o) => o.value) as [string, ...string[]];
 const postprocessMethodValues = formParams.postprocessMethod.options.map((o) => o.value) as [string, ...string[]];
+const cropTypeModelTypeValues = formParams.cropTypeModelType.options.map((o) => o.value) as [string, ...string[]];
+const postprocessMethodCroplandValues = formParams.postprocessMethodCropland.options.map((o) => o.value) as [string, ...string[]];
 
 /**
  * Shared parser map for generate-custom-products. Used by:
@@ -26,6 +29,7 @@ const postprocessMethodValues = formParams.postprocessMethod.options.map((o) => 
 export const generateCustomProductsSearchParams = {
 	product: parseAsStringLiteral(productValues),
 	model: parseAsString.withDefault(defaults.model ?? 'default'),
+	cropTypeModelType: parseAsStringLiteral(cropTypeModelTypeValues).withDefault(defaults.cropTypeModelType ?? 'default'),
 	outputFileFormat: parseAsStringLiteral(outputFileFormatValues).withDefault(defaults.outputFileFormat!),
 	bbox: parseAsString,
 	backgroundLayer: parseAsString,
@@ -33,6 +37,13 @@ export const generateCustomProductsSearchParams = {
 	orbitState: parseAsStringLiteral(orbitStateValues).withDefault(defaults.orbitState!),
 	postprocessMethod: parseAsStringLiteral(postprocessMethodValues).withDefault(defaults.postprocessMethod!),
 	postprocessKernelSize: parseAsInteger.withDefault(3),
+	seasonalModelZip: parseAsString,
+	enableCroplandHead: parseAsBoolean.withDefault(true),
+	landcoverHeadZip: parseAsString,
+	croptypeHeadZip: parseAsString,
+	maskCropland: parseAsBoolean.withDefault(true),
+	postprocessMethodCropland: parseAsStringLiteral(postprocessMethodCroplandValues).withDefault(defaults.postprocessMethodCropland!),
+	postprocessKernelSizeCropland: parseAsInteger.withDefault(3),
 	jobKey: parseAsString,
 };
 

@@ -54,13 +54,14 @@ export default function CreateProductsStep3Client() {
 	return (
 		<>
 			<TextParagraph color="var(--textAccentedColor)">
-				<b>You have created the Download official products process with following parameters:</b>
+				<b>You have created the Generate custom product process with following parameters:</b>
 			</TextParagraph>
 			{data && data.key === jobKey ? (
 				<Details
 					bbox={data.bbox}
 					resultFileFormat={
-						formParams.outputFileFormat.options.find((option) => option.value === data.resultFileFormat)?.label
+						({ GTiff: 'GeoTIFF', NETCDF: 'NetCDF' } as Record<string, string>)[data.resultFileFormat] ??
+						data.resultFileFormat
 					}
 					oeoProcessId={formParams.product.options.find((option) => option.value === data.oeoProcessId)?.label}
 					backgroundLayer={backgroundLayer}
@@ -72,6 +73,18 @@ export default function CreateProductsStep3Client() {
 						formParams.postprocessMethod.options.find((option) => option.value === data?.postprocessMethod)?.label
 					}
 					postprocessKernelSize={data?.postprocessKernelSize}
+					seasonId={data?.seasonIds?.[0]}
+					seasonalModelZip={data?.seasonalModelZip}
+					enableCroplandHead={data?.enableCroplandHead}
+					landcoverHeadZip={data?.landcoverHeadZip}
+					croptypeHeadZip={data?.croptypeHeadZip}
+					maskCropland={data?.maskCropland}
+					postprocessMethodCropland={
+						formParams.postprocessMethodCropland.options.find(
+							(option) => option.value === data?.postprocessMethodCropland
+						)?.label
+					}
+					postprocessKernelSizeCropland={data?.postprocessKernelSizeCropland}
 				/>
 			) : null}
 			<Group mt="xl">

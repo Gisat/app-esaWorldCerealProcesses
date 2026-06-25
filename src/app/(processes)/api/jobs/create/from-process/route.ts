@@ -36,6 +36,12 @@ export async function GET(req: NextRequest) {
 		const seasonIdsParam = searchParams.get('seasonIds');
 		const title = searchParams.get('title');
 		const customPropertiesRaw = searchParams.get('customProperties');
+		const enableCroplandHeadParam = searchParams.get('enableCroplandHead');
+		const landcoverHeadZip = searchParams.get('landcoverHeadZip');
+		const croptypeHeadZip = searchParams.get('croptypeHeadZip');
+		const maskCroplandParam = searchParams.get('maskCropland');
+		const postprocessMethodCropland = searchParams.get('postprocessMethodCropland');
+		const postprocessKernelSizeCropland = searchParams.get('postprocessKernelSizeCropland');
 
 		// validate inputs for safe aggregation
 		if (!endDate) {
@@ -122,6 +128,9 @@ export async function GET(req: NextRequest) {
 		const startDate = transformDate(boundaryDates.startDate);
 		const transformedEndDate = transformDate(boundaryDates.endDate);
 
+		const enableCroplandHead = enableCroplandHeadParam !== null ? enableCroplandHeadParam === 'true' : undefined;
+		const maskCropland = maskCroplandParam !== null ? maskCroplandParam === 'true' : undefined;
+
 		const data = {
 			processId,
 			namespace: getNamespaceByProcessId(processId),
@@ -137,6 +146,14 @@ export async function GET(req: NextRequest) {
 			...(postprocessMethod && { postprocessMethod }),
 			...(postprocessMethod === customProductsPostprocessMethods.majorityVote && postprocessKernelSize
 				? { postprocessKernelSize: Number(postprocessKernelSize) }
+				: {}),
+			...(enableCroplandHead !== undefined && { enableCroplandHead }),
+			...(enableCroplandHead && landcoverHeadZip ? { landcoverHeadZip } : {}),
+			...(croptypeHeadZip ? { croptypeHeadZip } : {}),
+			...(maskCropland !== undefined && enableCroplandHead ? { maskCropland } : {}),
+			...(postprocessMethodCropland && enableCroplandHead ? { postprocessMethodCropland } : {}),
+			...(postprocessMethodCropland === customProductsPostprocessMethods.majorityVote && postprocessKernelSizeCropland && enableCroplandHead
+				? { postprocessKernelSizeCropland: Number(postprocessKernelSizeCropland) }
 				: {}),
 			...(customProperties ? { customProperties } : {}),
 		};
