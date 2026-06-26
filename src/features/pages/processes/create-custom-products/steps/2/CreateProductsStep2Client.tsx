@@ -1,7 +1,7 @@
 'use client';
 import useSWR from 'swr';
 import { Checkbox, Text } from '@mantine/core';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { IconArrowLeft, IconCheck } from '@tabler/icons-react';
 import { useQueryStates } from 'nuqs';
@@ -119,6 +119,8 @@ export default function CreateProductsStep2Client() {
 			maskCropland,
 			postprocessMethodCropland,
 			postprocessKernelSizeCropland,
+			customSeasonId,
+			selectedPeriodId,
 		},
 		setParams,
 	] = useQueryStates(generateCustomProductsSearchParams);
@@ -136,7 +138,7 @@ export default function CreateProductsStep2Client() {
 	const isCroplandKernelValid =
 		postprocessMethodCropland !== customProductsPostprocessMethods.majorityVote ||
 		(typeof postprocessKernelSizeCropland === 'number' &&
-			postprocessKernelSizeCropland >= 1 &&
+			postprocessKernelSizeCropland >= 3 &&
 			postprocessKernelSizeCropland <= 25 &&
 			postprocessKernelSizeCropland % 2 === 1);
 
@@ -155,13 +157,11 @@ export default function CreateProductsStep2Client() {
 			postprocessKernelSizeCropland % 2 === 1);
 
 	const [startDate, setStartDate] = useState<Date | null>(null);
-	const [customSeasonId, setCustomSeasonId] = useState<string>('');
 	const [userTouchedSeasonId, setUserTouchedSeasonId] = useState<boolean>(false);
 
 	const [suggestedPeriods, setSuggestedPeriods] = useState<Array<{ id: string; startDate: string; endDate: string }>>(
 		[]
 	);
-	const [selectedPeriodId, setSelectedPeriodId] = useState<string | null>(null);
 
 	const nextStepDisabled =
 		!bboxIsInBounds ||
@@ -174,10 +174,15 @@ export default function CreateProductsStep2Client() {
 
 	const suggestedPeriodsApiUrl = '/api/seasons/get';
 	const [debouncedBbox, setDebouncedBbox] = useState<string | null>(null);
+	const isInitialBboxRef = useRef(true);
+	const prevPeriodsDataRef = useRef<typeof periodsData>(undefined);
 
 	useEffect(() => {
 		if (bbox && bboxIsInBounds) {
-			setSelectedPeriodId(null);
+			if (!isInitialBboxRef.current) {
+				setParams({ selectedPeriodId: null });
+			}
+			isInitialBboxRef.current = false;
 			const timer = setTimeout(() => {
 				setDebouncedBbox(bbox);
 			}, 500);
@@ -185,7 +190,9 @@ export default function CreateProductsStep2Client() {
 		} else {
 			setDebouncedBbox(null);
 			setSuggestedPeriods([]);
-			setSelectedPeriodId(null);
+			if (!isInitialBboxRef.current) {
+				setParams({ selectedPeriodId: null });
+			}
 		}
 	}, [bbox, bboxIsInBounds]);
 
@@ -197,10 +204,33 @@ export default function CreateProductsStep2Client() {
 	});
 
 	useEffect(() => {
-		if (periodsData) {
+		if (periodsData && periodsData !== prevPeriodsDataRef.current) {
+			prevPeriodsDataRef.current = periodsData;
 			setSuggestedPeriods(periodsData);
-			if (selectedPeriodId && !periodsData.find((p: { id: string }) => p.id === selectedPeriodId)) {
-				setSelectedPeriodId(null);
+			if (selectedPeriodId) {
+				const matchingPeriod = periodsData.find((p: { id: string }) => p.id === selectedPeriodId);
+				if (matchingPeriod) {
+					const [startYear, startMonth] = matchingPeriod.startDate.split('-').map(Number);
+					const [endYear, endMonth] = matchingPeriod.endDate.split('-').map(Number);
+
+					let startIdx = (startYear - START_YEAR) * 12 + (startMonth - 1);
+					const endIdx = Math.min(SLIDER_MAX, (endYear - START_YEAR) * 12 + (endMonth - 1));
+					const diff = endIdx - startIdx;
+
+					if (!isCropType) {
+						startIdx = endIdx - CROP_EXTENT_DIFF;
+					} else {
+						if (diff > CROP_TYPE_MAX_DIFF) startIdx = endIdx - CROP_TYPE_MAX_DIFF;
+						else if (diff < CROP_TYPE_MIN_DIFF) startIdx = endIdx - CROP_TYPE_MIN_DIFF;
+					}
+					startIdx = Math.max(0, startIdx);
+
+					setStartDate(getDateFromSliderValue(startIdx));
+					const endDateStr = transformDate(getDateFromSliderValue(endIdx, true));
+					setParams({ endDate: endDateStr });
+				} else {
+					setParams({ selectedPeriodId: null });
+				}
 			}
 		}
 	}, [periodsData, selectedPeriodId]);
@@ -244,8 +274,6 @@ export default function CreateProductsStep2Client() {
 		const period = suggestedPeriods.find((p) => p.id === value);
 		if (!period) return;
 
-		setSelectedPeriodId(value);
-
 		const [startYear, startMonth] = period.startDate.split('-').map(Number);
 		const [endYear, endMonth] = period.endDate.split('-').map(Number);
 
@@ -263,17 +291,16 @@ export default function CreateProductsStep2Client() {
 
 		setStartDate(getDateFromSliderValue(startIdx));
 		const endDateStr = transformDate(getDateFromSliderValue(endIdx, true));
-		setParams({ endDate: endDateStr });
+		setParams({ selectedPeriodId: value, endDate: endDateStr });
 	};
 
 	const handleDateRangeChange = (values: number[]) => {
 		if (!Array.isArray(values)) return;
 		const [startIdx, endIdx] = values;
 
-		setSelectedPeriodId(null);
 		setStartDate(getDateFromSliderValue(startIdx));
 		const endDateStr = transformDate(getDateFromSliderValue(endIdx, true));
-		setParams({ endDate: endDateStr });
+		setParams({ selectedPeriodId: null, endDate: endDateStr });
 	};
 
 	const resolvedModel = seasonalModelZip ? seasonalModelZip : model?.toString() || '';
@@ -285,10 +312,10 @@ export default function CreateProductsStep2Client() {
 	const generatedSeasonId = selectedPeriod?.id ?? (seasonEndDate ? seasonEndDate.slice(0, 4) : '');
 
 	useEffect(() => {
-		if (!userTouchedSeasonId && generatedSeasonId) {
-			setCustomSeasonId(generatedSeasonId);
+		if (!userTouchedSeasonId && !customSeasonId && generatedSeasonId) {
+			setParams({ customSeasonId: generatedSeasonId });
 		}
-	}, [generatedSeasonId, userTouchedSeasonId]);
+	}, [generatedSeasonId, userTouchedSeasonId, customSeasonId]);
 
 	const sliderValue: [number, number] = [
 		startDate ? getSliderValueFromDate(startDate) : DEFAULT_START_IDX,
@@ -547,10 +574,10 @@ export default function CreateProductsStep2Client() {
 								<TextInput
 									size="md"
 									placeholder="e.g. 2022"
-									value={customSeasonId}
+									value={customSeasonId ?? ''}
 									onChange={(e) => {
 										setUserTouchedSeasonId(true);
-										setCustomSeasonId(e.currentTarget.value);
+										setParams({ customSeasonId: e.currentTarget.value });
 									}}
 								/>
 							</Input.Wrapper>
@@ -643,7 +670,7 @@ export default function CreateProductsStep2Client() {
 															setParams({ postprocessKernelSizeCropland: num });
 														}
 													}}
-													min={1}
+													min={3}
 													max={25}
 													step={2}
 												/>
