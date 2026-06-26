@@ -65,12 +65,14 @@ export const MapBBox = function ({
 	setBboxIsInBounds,
 	backgroundLayer,
 	setBackgroundLayer,
+	minZoom,
 }: {
 	mapSize?: Array<number>;
 	disabled?: boolean;
 	bbox?: Array<number>;
 	minBboxArea?: number;
 	maxBboxArea?: number;
+	minZoom?: number;
 	setBboxDescription?: React.Dispatch<React.SetStateAction<string | string[] | null>>;
 	setBboxExtent?: (extent: BoundingBoxExtent | null) => void;
 	setBboxIsInBounds?: (isInBounds: boolean) => void;
@@ -230,6 +232,7 @@ export const MapBBox = function ({
 						initialView={initialView}
 						backgroundLayer={backgroundLayer}
 						setBackgroundLayer={setBackgroundLayer}
+						minZoom={minZoom}
 					/>
 				</BoundingBox>
 			)}

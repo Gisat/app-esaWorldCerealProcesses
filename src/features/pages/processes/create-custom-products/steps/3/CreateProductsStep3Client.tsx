@@ -4,20 +4,66 @@ import useSWR from 'swr';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { IconArrowRight, IconPlayerPlayFilled, IconPlus } from '@tabler/icons-react';
-import { Button, Group } from '@mantine/core';
+import { Button, Group, Text } from '@mantine/core';
 import { useSearchParams } from 'next/navigation';
 import { fetcher } from '@features/(shared)/_logic/utils';
 import { TextParagraph } from '@features/(shared)/_layout/_components/Content/TextParagraph';
-import Details from '@features/(processes)/_components/ProcessesTable/Details';
+import { MapBBox } from '@features/(shared)/_components/map/MapBBox';
 import formParams from '@features/(processes)/_constants/generate-custom-products/formParams';
+import { customProductsProductTypes } from '@features/(processes)/_constants/app';
+import { area as turfArea } from '@turf/area';
+import { polygon as turfPolygon } from '@turf/helpers';
+import './CreateProductsStep3Client.css';
+
+function AttributeItem({ label, value, isLink }: { label: string; value?: string; isLink?: boolean }) {
+	if (!value) return null;
+	return (
+		<div className="step3-attr-item">
+			<Text size="sm" c="var(--textSecondaryColor)">
+				{label}:
+			</Text>
+			{isLink ? (
+				<a href={value} target="_blank" rel="noopener noreferrer" className="step3-attr-link">
+					<Text size="sm" fw={700} c="white">
+						{value}
+					</Text>
+				</a>
+			) : (
+				<Text size="sm" fw={700} c="white">
+					{value}
+				</Text>
+			)}
+		</div>
+	);
+}
+
+function computeExtentText(bbox: number[]): string {
+	const [minLng, minLat, maxLng, maxLat] = bbox;
+	const coords = `${minLng.toFixed(2)}, ${minLat.toFixed(2)}, ${maxLng.toFixed(2)}, ${maxLat.toFixed(2)}`;
+	try {
+		const polygon = turfPolygon([
+			[
+				[minLng, minLat],
+				[maxLng, minLat],
+				[maxLng, maxLat],
+				[minLng, maxLat],
+				[minLng, minLat],
+			],
+		]);
+		const areaSqkm = Math.round(turfArea(polygon) / 1_000_000);
+		return `Extent: ${coords} (${areaSqkm.toLocaleString()} sqkm)`;
+	} catch {
+		return `Extent: ${coords}`;
+	}
+}
 
 export default function CreateProductsStep3Client() {
 	const searchParams = useSearchParams();
 	const jobKey = searchParams.get('jobKey') ?? undefined;
-	const backgroundLayer = searchParams.get('backgroundLayer') ?? undefined;
+
+	const [backgroundLayer, setBackgroundLayer] = useState<string | null>(null);
 
 	const router = useRouter();
-
 	const [shouldFetch, setShouldFetch] = useState(false);
 
 	const startJobUrl = `/api/jobs/start/${jobKey}`;
@@ -51,45 +97,96 @@ export default function CreateProductsStep3Client() {
 		router.push(`/processes-list`);
 	};
 
+	const activeBackgroundLayer = backgroundLayer ?? undefined;
+
 	return (
-		<>
+		<div className="step3-container">
 			<TextParagraph color="var(--textAccentedColor)">
 				<b>You have created the Generate custom product process with following parameters:</b>
 			</TextParagraph>
+
 			{data && data.key === jobKey ? (
-				<Details
-					bbox={data.bbox}
-					resultFileFormat={
-						({ GTiff: 'GeoTIFF', NETCDF: 'NetCDF' } as Record<string, string>)[data.resultFileFormat] ??
-						data.resultFileFormat
-					}
-					oeoProcessId={formParams.product.options.find((option) => option.value === data.oeoProcessId)?.label}
-					backgroundLayer={backgroundLayer}
-					startDate={data?.timeRange?.[0]}
-					endDate={data?.timeRange?.[1]}
-					model={data?.model}
-					orbitState={formParams.orbitState.options.find((option) => option.value === data?.orbitState)?.label}
-					postprocessMethod={
-						formParams.postprocessMethod.options.find((option) => option.value === data?.postprocessMethod)?.label
-					}
-					postprocessKernelSize={data?.postprocessKernelSize}
-					seasonId={data?.seasonIds?.[0]}
-					seasonalModelZip={data?.seasonalModelZip}
-					enableCroplandHead={data?.enableCroplandHead}
-					landcoverHeadZip={data?.landcoverHeadZip}
-					croptypeHeadZip={data?.croptypeHeadZip}
-					maskCropland={data?.maskCropland}
-					postprocessMethodCropland={
-						formParams.postprocessMethodCropland.options.find(
-							(option) => option.value === data?.postprocessMethodCropland
-						)?.label
-					}
-					postprocessKernelSizeCropland={data?.postprocessKernelSizeCropland}
-				/>
+				<div className="step3-content">
+					<div className="step3-map-section">
+						{data.bbox && (
+							<>
+								<Text size="sm" c="white" mb="xs">
+									{computeExtentText(data.bbox)}
+								</Text>
+								<MapBBox
+									mapSize={[550, 350]}
+									bbox={data.bbox}
+									disabled
+									backgroundLayer={activeBackgroundLayer}
+									setBackgroundLayer={setBackgroundLayer}
+								/>
+							</>
+						)}
+					</div>
+
+					<div className="step3-attributes">
+						<div className="step3-attr-column">
+							<AttributeItem
+								label="Product"
+								value={
+									formParams.product.options.find((o) => o.value === data.oeoProcessId)?.label ?? data.oeoProcessId
+								}
+							/>
+							<AttributeItem label="Model" value={data.model} />
+							{data.seasonalModelZip && <AttributeItem label="Base model" value={data.seasonalModelZip} isLink />}
+							{data.landcoverHeadZip && (
+								<AttributeItem label="Cropland head override" value={data.landcoverHeadZip} isLink />
+							)}
+							{data.croptypeHeadZip && (
+								<AttributeItem label="Crop type head override" value={data.croptypeHeadZip} isLink />
+							)}
+							{data.timeRange?.[0] && <AttributeItem label="Start date" value={data.timeRange[0]} />}
+							{data.timeRange?.[1] && <AttributeItem label="End date" value={data.timeRange[1]} />}
+						</div>
+
+						<div className="step3-attr-column">
+							{data.seasonIds?.[0] && <AttributeItem label="Season ID" value={data.seasonIds[0]} />}
+							{data.orbitState && (
+								<AttributeItem
+									label="Orbit state"
+									value={
+										formParams.orbitState.options.find((o) => o.value === data.orbitState)?.label ?? data.orbitState
+									}
+								/>
+							)}
+							{data.postprocessMethod && (
+								<AttributeItem
+									label="Post process method"
+									value={
+										formParams.postprocessMethod.options.find((o) => o.value === data.postprocessMethod)?.label ??
+										data.postprocessMethod
+									}
+								/>
+							)}
+							{data.postprocessKernelSize != null && (
+								<AttributeItem label="Post process kernel size" value={String(data.postprocessKernelSize)} />
+							)}
+							{data.postprocessMethodCropland && (
+								<AttributeItem
+									label="Cropland postprocess"
+									value={
+										formParams.postprocessMethodCropland.options.find(
+											(o) => o.value === data.postprocessMethodCropland
+										)?.label ?? data.postprocessMethodCropland
+									}
+								/>
+							)}
+							{data.postprocessKernelSizeCropland != null && (
+								<AttributeItem label="Cropland kernel size" value={String(data.postprocessKernelSizeCropland)} />
+							)}
+						</div>
+					</div>
+				</div>
 			) : null}
+
 			<Group mt="xl">
 				<Button
-					className="worldCereal-Button"
+					className="worldCereal-Button step3-button"
 					disabled={isLoading}
 					onClick={onStartProcess}
 					leftSection={<IconPlayerPlayFilled size={14} />}
@@ -97,7 +194,7 @@ export default function CreateProductsStep3Client() {
 					{isLoading ? 'Starting...' : 'Start process & go to the list'}
 				</Button>
 				<Button
-					className="worldCereal-Button is-secondary is-ghost"
+					className="worldCereal-Button is-secondary is-ghost step3-button"
 					variant="outline"
 					onClick={onNewProcessClick}
 					leftSection={<IconPlus size={14} />}
@@ -105,7 +202,7 @@ export default function CreateProductsStep3Client() {
 					Setup new process
 				</Button>
 				<Button
-					className="worldCereal-Button is-secondary is-ghost"
+					className="worldCereal-Button is-secondary is-ghost step3-button"
 					variant="outline"
 					onClick={onGoToList}
 					leftSection={<IconArrowRight size={14} />}
@@ -113,6 +210,6 @@ export default function CreateProductsStep3Client() {
 					Go to the list
 				</Button>
 			</Group>
-		</>
+		</div>
 	);
 }

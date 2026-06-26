@@ -62,6 +62,7 @@ type DetailsProps = {
 	collectionName?: string;
 	model?: string;
 	backgroundLayer?: string;
+	setBackgroundLayer?: React.Dispatch<React.SetStateAction<string | null>>;
 	orbitState?: string;
 	postprocessMethod?: string;
 	postprocessKernelSize?: number;
@@ -94,6 +95,7 @@ const Details = ({
 	collectionName,
 	model,
 	backgroundLayer,
+	setBackgroundLayer,
 	orbitState,
 	postprocessMethod,
 	postprocessKernelSize,
@@ -146,6 +148,7 @@ const Details = ({
 					mapSize={[500, 300]}
 					setBboxDescription={setBboxDescription}
 					backgroundLayer={backgroundLayer}
+					setBackgroundLayer={setBackgroundLayer}
 				/>
 			</div>
 			<div className="worldCereal-ProcessesTable-Details-column">

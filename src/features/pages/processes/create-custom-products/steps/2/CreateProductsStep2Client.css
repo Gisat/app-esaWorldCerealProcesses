@@ -135,3 +135,20 @@
 	flex-wrap: wrap;
 	column-gap: 1.5rem;
 }
+
+.step2-suggested-period-option {
+	background-color: transparent;
+}
+
+.step2-suggested-period-option .mantine-Radio-radio {
+	border-color: #fff;
+	background-color: transparent;
+}
+
+.step2-suggested-period-option[data-checked="true"] .mantine-Radio-radio {
+	background-color: #fdd835;
+}
+
+.step2-suggested-period-option[data-checked="true"] .mantine-Radio-icon {
+	color: white;
+}

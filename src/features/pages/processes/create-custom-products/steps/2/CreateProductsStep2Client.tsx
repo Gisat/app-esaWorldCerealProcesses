@@ -68,11 +68,11 @@ const getDateFromSliderValue = (sliderVal: number, isEnd = false) => {
 const formatPeriodDate = (dateStr: string) => {
 	const [year, month] = dateStr.split('-').map(Number);
 	const date = new Date(year, month - 1);
-	return date.toLocaleString('en-US', { month: 'short', year: 'numeric' });
+	return date.toLocaleString('en-US', { month: 'long' });
 };
 
 const formatPeriodLabel = (start: string, end: string) => {
-	return `${formatPeriodDate(start)} / ${formatPeriodDate(end)}`;
+	return `${formatPeriodDate(start)} → ${formatPeriodDate(end)}`;
 };
 
 const formatToFirstOfMonth = (date: Date | null) => {
@@ -107,7 +107,6 @@ export default function CreateProductsStep2Client() {
 			model,
 			outputFileFormat,
 			bbox,
-			backgroundLayer,
 			endDate,
 			orbitState,
 			postprocessMethod,
@@ -122,6 +121,8 @@ export default function CreateProductsStep2Client() {
 		},
 		setParams,
 	] = useQueryStates(generateCustomProductsSearchParams);
+
+	const [backgroundLayer, setBackgroundLayer] = useState<string | null>(null);
 
 	const [bboxIsInBounds, setBboxIsInBounds] = useState<boolean | null>(null);
 	const [bboxDescription, setBboxDescription] = useState<string | string[] | null>(null);
@@ -232,8 +233,8 @@ export default function CreateProductsStep2Client() {
 		}
 	}, []);
 
-	const setBackgroundLayer = (value: string | null) => {
-		if (value) setParams({ backgroundLayer: value });
+	const onSetBackgroundLayer = (value: string | null | ((prev: string | null) => string | null)) => {
+		setBackgroundLayer(typeof value === 'function' ? value(backgroundLayer) : value);
 	};
 
 	const setBBoxExtent = (extent: [number, number, number, number] | null) => {
@@ -396,13 +397,11 @@ export default function CreateProductsStep2Client() {
 
 	useEffect(() => {
 		if (data?.key) {
-			const baseHref = serializeGenerateCustomProductsSearchParams('/generate-custom-products/steps/3', {
-				backgroundLayer,
-			});
+			const baseHref = serializeGenerateCustomProductsSearchParams('/generate-custom-products/steps/3', {});
 			const separator = baseHref.includes('?') ? '&' : '?';
 			router.push(`${baseHref}${separator}jobKey=${encodeURIComponent(data.key)}`);
 		}
-	}, [data, router, backgroundLayer]);
+	}, [data, router]);
 
 	const requiredAsterisk = <span style={{ color: 'var(--deleteColor)', fontWeight: 'bold' }}>*</span>;
 
@@ -422,14 +421,13 @@ export default function CreateProductsStep2Client() {
 										mapSize={[1050, 460]}
 										minBboxArea={bboxSizeLimits.customProducts.min}
 										maxBboxArea={bboxSizeLimits.customProducts.max}
+										minZoom={2}
 										bbox={bboxArr}
 										setBboxDescription={setBboxDescription}
 										setBboxExtent={setBBoxExtent}
 										setBboxIsInBounds={setBboxIsInBounds}
-										backgroundLayer={backgroundLayer ?? undefined}
-										setBackgroundLayer={(value) =>
-											setBackgroundLayer(typeof value === 'function' ? value(backgroundLayer) : value)
-										}
+									backgroundLayer={backgroundLayer ?? undefined}
+									setBackgroundLayer={onSetBackgroundLayer}
 									/>
 								</Box>
 								<Box mt="xs">
@@ -468,7 +466,7 @@ export default function CreateProductsStep2Client() {
 
 							<div>
 								<Text fw={700} size="md" c="white">
-									2.2.1. Pick a suggested period
+									2.2.1. Pick a suggested season
 								</Text>
 								{suggestedPeriods.length > 0 ? (
 									<Radio.Group
@@ -480,6 +478,7 @@ export default function CreateProductsStep2Client() {
 										<div className="step2-suggested-periods">
 											{suggestedPeriods.map((period) => (
 												<Radio
+													className="step2-suggested-period-option"
 													key={period.id}
 													value={period.id}
 													label={formatPeriodLabel(period.startDate, period.endDate)}

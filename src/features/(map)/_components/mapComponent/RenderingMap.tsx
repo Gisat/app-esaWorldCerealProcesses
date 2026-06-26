@@ -39,6 +39,8 @@ export interface RenderMapProps {
 	onViewStateChange?: (info: object) => void;
 	/** Boolean to disable controls. */
 	disableControls?: boolean;
+	/** Minimum zoom level allowed for the map viewport. */
+	minZoom?: number;
 	/** Initial view state of the map. */
 	initialView: object | null;
 	/** Key of the selected background layer. */
@@ -102,7 +104,7 @@ const RenderingMap: React.FC<RenderMapProps> = (props: RenderMapProps) => {
 				ref={deckRef}
 				initialViewState={props.initialView}
 				layers={layers}
-				controller={!props.disableControls}
+				controller={!props.disableControls ? ({ minZoom: props.minZoom } as any) : false}
 				style={{
 					position: 'relative',
 					width: props.width,

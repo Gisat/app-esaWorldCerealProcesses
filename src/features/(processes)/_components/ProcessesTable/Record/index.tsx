@@ -49,6 +49,8 @@ type Props = {
 	postprocessMethod?: string;
 	postprocessKernelSize?: number;
 	title?: string;
+	backgroundLayer?: string | null;
+	setBackgroundLayer?: React.Dispatch<React.SetStateAction<string | null>>;
 };
 
 const StartJobButton = ({ jobKey, forceReloadList }: { jobKey?: string; forceReloadList?: () => void }) => {
@@ -260,6 +262,8 @@ const Record = ({
 	postprocessMethod,
 	postprocessKernelSize,
 	title,
+	backgroundLayer,
+	setBackgroundLayer,
 }: // details
 Props) => {
 	const [isExpanded, setIsExpanded] = useState(false);
@@ -286,6 +290,8 @@ Props) => {
 								(option) => option.start === `${timeRange?.[0]}` && option.end === `${timeRange?.[1]}`
 							)?.label
 						}
+						backgroundLayer={backgroundLayer ?? undefined}
+						setBackgroundLayer={setBackgroundLayer}
 					/>
 				);
 			case processTypes.product:
@@ -307,6 +313,8 @@ Props) => {
 								?.label
 						}
 						postprocessKernelSize={postprocessKernelSize}
+						backgroundLayer={backgroundLayer ?? undefined}
+						setBackgroundLayer={setBackgroundLayer}
 					/>
 				);
 			default:

@@ -10,6 +10,8 @@ import React from 'react';
 type Props = {
 	loading?: boolean;
 	forceReloadList?: () => void;
+	backgroundLayer?: string | null;
+	setBackgroundLayer?: React.Dispatch<React.SetStateAction<string | null>>;
 	data: {
 		bbox: Array<number>;
 		costs: number;
@@ -52,7 +54,7 @@ type Props = {
  *   forceReloadList={() => console.log("Reload triggered")}
  * />
  */
-export const ProcessesTable = ({ data, loading, forceReloadList }: Props) => {
+export const ProcessesTable = ({ data, loading, forceReloadList, backgroundLayer, setBackgroundLayer }: Props) => {
 	const rows = Array.isArray(data) ? (
 		data.map(
 			({
@@ -96,6 +98,8 @@ export const ProcessesTable = ({ data, loading, forceReloadList }: Props) => {
 					postprocessMethod={postprocessMethod}
 					postprocessKernelSize={postprocessKernelSize}
 					title={title}
+					backgroundLayer={backgroundLayer}
+					setBackgroundLayer={setBackgroundLayer}
 				/>
 			)
 		)
