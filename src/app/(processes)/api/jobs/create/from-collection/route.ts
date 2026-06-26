@@ -23,7 +23,7 @@ export async function GET(req: NextRequest) {
 		const {searchParams} = req.nextUrl;
 
 		const bbox = searchParams.get("bbox");
-		const outputFileFormat = searchParams.get("outputFileFormat");
+		const format = searchParams.get("format");
 		const collection = searchParams.get("collection");
 		const product = searchParams.get("product");
 		const title = searchParams.get("title");
@@ -51,9 +51,9 @@ export async function GET(req: NextRequest) {
 			throw new BaseHttpError("Missing bbox value", 400, ErrorBehavior.SSR);
 		}
 
-		if (!outputFileFormat) {
-			loggyError("Jobs create from collection GET", "Missing outputFileFormat value");
-			throw new BaseHttpError("Missing outputFileFormat value", 400, ErrorBehavior.SSR);
+		if (!format) {
+			loggyError("Jobs create from collection GET", "Missing format value");
+			throw new BaseHttpError("Missing format value", 400, ErrorBehavior.SSR);
 		}
 
 		if (!formParams.collection.options.some((option) => option.value === collection)) {
@@ -66,9 +66,9 @@ export async function GET(req: NextRequest) {
 			throw new BaseHttpError("Invalid product value", 400, ErrorBehavior.SSR);
 		}
 
-		if (!formParams.outputFileFormat.options.some((option) => option.value === outputFileFormat)) {
-			loggyError("Jobs create from collection GET", "Invalid outputFileFormat value");
-			throw new BaseHttpError("Invalid outputFileFormat value", 400, ErrorBehavior.SSR);
+		if (!formParams.format.options.some((option) => option.value === format)) {
+			loggyError("Jobs create from collection GET", "Invalid format value");
+			throw new BaseHttpError("Invalid format value", 400, ErrorBehavior.SSR);
 		}
 
 		if (!startDate) {
@@ -97,7 +97,7 @@ export async function GET(req: NextRequest) {
 			bbox: bbox.split(",").map(Number),
 			crs: "EPSG:4326",   // Make parametrized in the future, if needed
 			timeRange: [startDate, endDate],
-			outputFileFormat: outputFileFormat,
+			format: format,
 			...(title ? { title } : {}),
 			...(customProperties ? { customProperties } : {}),
 		};

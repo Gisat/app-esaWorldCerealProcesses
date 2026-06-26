@@ -103,14 +103,13 @@ export default function CreateProductsStep2Client() {
 
 	const [
 		{
-			product,
-			model,
-			outputFileFormat,
+			processId,
+			format,
 			bbox,
 			endDate,
 			orbitState,
-			postprocessMethod,
-			postprocessKernelSize,
+			postprocessMethodCroptype,
+			postprocessKernelSizeCroptype,
 			seasonalModelZip,
 			enableCroplandHead,
 			landcoverHeadZip,
@@ -133,8 +132,8 @@ export default function CreateProductsStep2Client() {
 
 	const bboxArr = parseBbox(bbox);
 
-	const isCropType = product === customProductsProductTypes.cropType;
-	const isCropExtent = product === customProductsProductTypes.cropExtent;
+	const isCropType = processId === customProductsProductTypes.cropType;
+	const isCropExtent = processId === customProductsProductTypes.cropExtent;
 
 	const isCroplandKernelValid =
 		postprocessMethodCropland !== customProductsPostprocessMethods.majorityVote ||
@@ -144,11 +143,11 @@ export default function CreateProductsStep2Client() {
 			postprocessKernelSizeCropland % 2 === 1);
 
 	const isCroptypeKernelValid =
-		postprocessMethod !== customProductsPostprocessMethods.majorityVote ||
-		(typeof postprocessKernelSize === 'number' &&
-			postprocessKernelSize >= 1 &&
-			postprocessKernelSize <= 25 &&
-			postprocessKernelSize % 2 === 1);
+		postprocessMethodCroptype !== customProductsPostprocessMethods.majorityVote ||
+		(typeof postprocessKernelSizeCroptype === 'number' &&
+			postprocessKernelSizeCroptype >= 3 &&
+			postprocessKernelSizeCroptype <= 25 &&
+			postprocessKernelSizeCroptype % 2 === 1);
 
 	const isCropExtentKernelValid =
 		postprocessMethodCropland !== customProductsPostprocessMethods.majorityVote ||
@@ -156,6 +155,10 @@ export default function CreateProductsStep2Client() {
 			postprocessKernelSizeCropland >= 3 &&
 			postprocessKernelSizeCropland <= 25 &&
 			postprocessKernelSizeCropland % 2 === 1);
+
+	const SEASON_ID_PATTERN = /^[a-zA-Z0-9_-]+$/;
+
+	const isSeasonIdValid = !customSeasonId || SEASON_ID_PATTERN.test(customSeasonId);
 
 	const [startDate, setStartDate] = useState<Date | null>(null);
 	const [userTouchedSeasonId, setUserTouchedSeasonId] = useState<boolean>(false);
@@ -167,9 +170,10 @@ export default function CreateProductsStep2Client() {
 	const nextStepDisabled =
 		!bboxIsInBounds ||
 		!bbox ||
-		!product ||
+		!processId ||
 		!startDate ||
 		!endDate ||
+		!isSeasonIdValid ||
 		(isCropType && (!orbitState || !isCroplandKernelValid || !isCroptypeKernelValid)) ||
 		(isCropExtent && !isCropExtentKernelValid);
 
@@ -246,11 +250,11 @@ export default function CreateProductsStep2Client() {
 		if (!orbitState && isCropType) {
 			setParams({ orbitState: 'DESCENDING' });
 		}
-		if (!postprocessMethod) {
-			setParams({ postprocessMethod: 'majority_vote' });
+		if (!postprocessMethodCroptype) {
+			setParams({ postprocessMethodCroptype: 'majority_vote' });
 		}
-		if (postprocessKernelSize === undefined) {
-			setParams({ postprocessKernelSize: 5 });
+		if (postprocessKernelSizeCroptype === undefined) {
+			setParams({ postprocessKernelSizeCroptype: 3 });
 		}
 		if (!postprocessMethodCropland) {
 			setParams({ postprocessMethodCropland: 'majority_vote' });
@@ -304,8 +308,6 @@ export default function CreateProductsStep2Client() {
 		setParams({ selectedPeriodId: null, endDate: endDateStr });
 	};
 
-	const resolvedModel = seasonalModelZip ? seasonalModelZip : model?.toString() || '';
-
 	const seasonStartDate = startDate ? transformDate(startDate) : null;
 	const seasonEndDate = endDate ? endDate.toString() : null;
 
@@ -313,28 +315,28 @@ export default function CreateProductsStep2Client() {
 	const generatedSeasonId = selectedPeriod?.id ?? (seasonEndDate ? seasonEndDate.slice(0, 4) : '');
 
 	useEffect(() => {
-		if (!userTouchedSeasonId && !customSeasonId && generatedSeasonId) {
+		if (!userTouchedSeasonId && generatedSeasonId) {
 			setParams({ customSeasonId: generatedSeasonId });
 		}
-	}, [generatedSeasonId, userTouchedSeasonId, customSeasonId]);
+	}, [generatedSeasonId, userTouchedSeasonId, setParams]);
 
 	const sliderValue: [number, number] = [
 		startDate ? getSliderValueFromDate(startDate) : DEFAULT_START_IDX,
 		endDate ? getSliderValueFromDate(endDate) : DEFAULT_END_IDX,
 	];
 
-	const productLabel = product ? (formParams.product.options.find((o) => o.value === product)?.label ?? product) : '';
+	const productLabel = processId ? (formParams.processId.options.find((o) => o.value === processId)?.label ?? processId) : '';
 	const title = productLabel ? `Processing: ${productLabel}` : undefined;
 
 	const params: Record<string, string> = {
 		bbox: bbox ?? '',
-		outputFileFormat: outputFileFormat?.toString() || '',
-		model: resolvedModel,
-		product: product?.toString() || '',
+		format: format?.toString() || '',
+		...(seasonalModelZip ? { seasonalModelZip } : {}),
+		processId: processId?.toString() || '',
 		endDate: endDate?.toString() || '',
 		startDate: startDate ? transformDate(startDate) : '',
 		...(title ? { title } : {}),
-		...(product
+		...(processId
 			? {
 					customProperties: JSON.stringify({
 						process_type: processTypes.product,
@@ -353,7 +355,6 @@ export default function CreateProductsStep2Client() {
 	if (finalSeasonId && seasonStartDate && seasonEndDate) {
 		const seasonWindows = { [finalSeasonId]: [seasonStartDate, seasonEndDate] };
 		params.seasonWindows = JSON.stringify(seasonWindows);
-		params.seasonIds = JSON.stringify([finalSeasonId]);
 	}
 
 	if (isCropType) {
@@ -371,9 +372,9 @@ export default function CreateProductsStep2Client() {
 				params.postprocessKernelSizeCropland = postprocessKernelSizeCropland.toString();
 			}
 		}
-		if (postprocessMethod) params.postprocessMethod = postprocessMethod.toString();
-		if (postprocessMethod === customProductsPostprocessMethods.majorityVote && postprocessKernelSize !== undefined) {
-			params.postprocessKernelSize = postprocessKernelSize.toString();
+		if (postprocessMethodCroptype) params.postprocessMethodCroptype = postprocessMethodCroptype.toString();
+		if (postprocessMethodCroptype === customProductsPostprocessMethods.majorityVote && postprocessKernelSizeCroptype !== undefined) {
+			params.postprocessKernelSizeCroptype = postprocessKernelSizeCroptype.toString();
 		}
 	} else if (isCropExtent) {
 		if (orbitState) params.orbitState = orbitState.toString();
@@ -402,8 +403,7 @@ export default function CreateProductsStep2Client() {
 	const onBackClick = () => {
 		router.push(
 			serializeGenerateCustomProductsSearchParams('/generate-custom-products/steps/1', {
-				product,
-				model,
+				processId,
 				cropTypeModelType: undefined,
 				seasonalModelZip,
 				enableCroplandHead,
@@ -568,12 +568,14 @@ export default function CreateProductsStep2Client() {
 								className="worldCereal-Input"
 								size="md"
 								label="2.2.3. Enter season ID"
-								description="Enter your own season ID or use the generated one."
+								description="Alphanumeric characters, underscores, and hyphens only."
+								error={!isSeasonIdValid ? 'Only letters, numbers, underscores, and hyphens are allowed.' : undefined}
 							>
 								<TextInput
 									size="md"
 									placeholder="e.g. 2022"
 									value={customSeasonId ?? ''}
+									error={!isSeasonIdValid}
 									onChange={(e) => {
 										setUserTouchedSeasonId(true);
 										setParams({ customSeasonId: e.currentTarget.value });
@@ -702,43 +704,43 @@ export default function CreateProductsStep2Client() {
 										represents a minor cleaning step, whereas majority voting will introduce more fierce
 										post-processing, also depending on the selected kernel size.
 									</TextDescription>
-									<Select
-										className="worldCereal-Select"
-										size="md"
-										allowDeselect={false}
-										data={formParams.postprocessMethod.options}
-										value={postprocessMethod ?? 'majority_vote'}
-										onChange={(value) => {
-											if (value) {
-												setParams({ postprocessMethod: value as typeof postprocessMethod });
-											}
-										}}
-									/>
+								<Select
+									className="worldCereal-Select"
+									size="md"
+									allowDeselect={false}
+									data={formParams.postprocessMethodCroptype.options}
+									value={postprocessMethodCroptype ?? 'majority_vote'}
+									onChange={(value) => {
+										if (value) {
+											setParams({ postprocessMethodCroptype: value as typeof postprocessMethodCroptype });
+										}
+									}}
+								/>
 								</div>
 
-								{postprocessMethod === customProductsPostprocessMethods.majorityVote && (
-									<div>
-										<FormLabel>2.6.1. Kernel size - croptype</FormLabel>
-										<TextDescription className="step2-desc">
-											The larger the size of the kernel, the more pixel-to-pixel variations in the final map will be
-											eliminated. Must be an odd positive number not larger than 25.
-										</TextDescription>
-										<NumberInput
-											className="worldCereal-Input step2-number-input"
-											size="md"
-											value={postprocessKernelSize ?? 5}
-											onChange={(val) => {
-												const num = Number(val);
-												if (!isNaN(num)) {
-													setParams({ postprocessKernelSize: num });
-												}
-											}}
-											min={1}
-											max={25}
-											step={2}
-										/>
-									</div>
-								)}
+							{postprocessMethodCroptype === customProductsPostprocessMethods.majorityVote && (
+								<div>
+									<FormLabel>2.6.1. Kernel size - croptype</FormLabel>
+									<TextDescription className="step2-desc">
+										The larger the size of the kernel, the more pixel-to-pixel variations in the final map will be
+										eliminated. Must be an odd positive number not larger than 25.
+									</TextDescription>
+									<NumberInput
+										className="worldCereal-Input step2-number-input"
+										size="md"
+										value={postprocessKernelSizeCroptype ?? 3}
+										onChange={(val) => {
+											const num = Number(val);
+											if (!isNaN(num)) {
+												setParams({ postprocessKernelSizeCroptype: num });
+											}
+										}}
+										min={3}
+										max={25}
+										step={2}
+									/>
+								</div>
+							)}
 							</Stack>
 						)}
 

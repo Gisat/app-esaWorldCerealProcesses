@@ -46,8 +46,8 @@ type Props = {
 	model?: string;
 	forceReloadList?: () => void;
 	orbitState?: string;
-	postprocessMethod?: string;
-	postprocessKernelSize?: number;
+	postprocessMethodCroptype?: string;
+	postprocessKernelSizeCroptype?: number;
 	title?: string;
 	backgroundLayer?: string | null;
 	setBackgroundLayer?: React.Dispatch<React.SetStateAction<string | null>>;
@@ -260,8 +260,8 @@ const Record = ({
 	model,
 	forceReloadList,
 	orbitState,
-	postprocessMethod,
-	postprocessKernelSize,
+	postprocessMethodCroptype,
+	postprocessKernelSizeCroptype,
 	title,
 	backgroundLayer,
 	setBackgroundLayer,
@@ -333,20 +333,20 @@ Props) => {
 						startDate={timeRange?.[0]}
 						endDate={timeRange?.[1]}
 						model={model}
-						resultFileFormat={resultFileFormat}
-						oeoProcessId={
-							customProductFormParams.product.options.find((option) => option.value === oeoProcessId)?.label
-						}
-						results={results}
-						status={status}
-						orbitState={customProductFormParams.orbitState.options.find((option) => option.value === orbitState)?.label}
-						postprocessMethod={
-							customProductFormParams.postprocessMethod.options.find((option) => option.value === postprocessMethod)
-								?.label
-						}
-						postprocessKernelSize={postprocessKernelSize}
-						backgroundLayer={backgroundLayer ?? undefined}
-						setBackgroundLayer={setBackgroundLayer}
+					resultFileFormat={resultFileFormat}
+					oeoProcessId={
+						customProductFormParams.processId.options.find((option) => option.value === oeoProcessId)?.label
+					}
+					results={results}
+					status={status}
+					orbitState={customProductFormParams.orbitState.options.find((option) => option.value === orbitState)?.label}
+					postprocessMethodCroptype={
+						customProductFormParams.postprocessMethodCroptype.options.find((option) => option.value === postprocessMethodCroptype)
+							?.label
+					}
+					postprocessKernelSizeCroptype={postprocessKernelSizeCroptype}
+					backgroundLayer={backgroundLayer ?? undefined}
+					setBackgroundLayer={setBackgroundLayer}
 					/>
 				);
 			default:
@@ -371,8 +371,8 @@ Props) => {
 						resultFileFormat={resultFileFormat}
 						oeoCollection={downloadFormParams.product.options.find((option) => option.value === oeoCollection)?.label}
 						oeoProcessId={
-							customProductFormParams.product.options.find((option) => option.value === oeoProcessId)?.label || ''
-						}
+						customProductFormParams.processId.options.find((option) => option.value === oeoProcessId)?.label || ''
+					}
 						collectionName={
 							downloadFormParams.collection.options.find(
 								(option) => option.start === `${timeRange?.[0]}` && option.end === `${timeRange?.[1]}`

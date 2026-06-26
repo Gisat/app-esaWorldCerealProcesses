@@ -17,7 +17,7 @@ const formParams: {
             default?: boolean;
         }[]
     };
-    outputFileFormat: {
+    format: {
         required?: boolean;
         options: {
             label: string;
@@ -68,7 +68,7 @@ const formParams: {
                 },
             ]
     },
-    outputFileFormat: {
+    format: {
         required: true,
         options: [
             {

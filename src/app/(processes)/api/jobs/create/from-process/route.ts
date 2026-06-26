@@ -25,15 +25,16 @@ export async function GET(req: NextRequest) {
 		const { searchParams } = req.nextUrl;
 
 		const bbox = searchParams.get('bbox');
-		const outputFileFormat = searchParams.get('outputFileFormat');
+		const format = searchParams.get('format');
 		const endDate = searchParams.get('endDate');
-		const processId = searchParams.get('product');
-		const model = searchParams.get('model');
+		const processId = searchParams.get('processId');
+		const seasonalModelZip = searchParams.get('seasonalModelZip');
 		const orbitState = searchParams.get('orbitState');
+		const postprocessMethodCroptype = searchParams.get('postprocessMethodCroptype');
+		const postprocessKernelSizeCroptype = searchParams.get('postprocessKernelSizeCroptype');
 		const postprocessMethod = searchParams.get('postprocessMethod');
 		const postprocessKernelSize = searchParams.get('postprocessKernelSize');
 		const seasonWindowsParam = searchParams.get('seasonWindows');
-		const seasonIdsParam = searchParams.get('seasonIds');
 		const title = searchParams.get('title');
 		const customPropertiesRaw = searchParams.get('customProperties');
 		const enableCroplandHeadParam = searchParams.get('enableCroplandHead');
@@ -54,14 +55,9 @@ export async function GET(req: NextRequest) {
 			throw new BaseHttpError('Missing bbox value', 400, ErrorBehavior.SSR);
 		}
 
-		if (!outputFileFormat) {
-			loggyError('Jobs create from process GET', 'Missing outputFileFormat value');
-			throw new BaseHttpError('Missing outputFileFormat value', 400, ErrorBehavior.SSR);
-		}
-
-		if (!model) {
-			loggyError('Jobs create from process GET', 'Missing model value');
-			throw new BaseHttpError('Missing model value', 400, ErrorBehavior.SSR);
+		if (!format) {
+			loggyError('Jobs create from process GET', 'Missing format value');
+			throw new BaseHttpError('Missing format value', 400, ErrorBehavior.SSR);
 		}
 
 		if (!seasonWindowsParam) {
@@ -70,10 +66,8 @@ export async function GET(req: NextRequest) {
 		}
 
 		let seasonWindows;
-		let seasonIds: string[] | undefined;
 		try {
 			seasonWindows = JSON.parse(seasonWindowsParam);
-			seasonIds = seasonIdsParam ? JSON.parse(seasonIdsParam) : Object.keys(seasonWindows);
 		} catch (error) {
 			loggyError('Jobs create from process GET', 'Invalid seasonWindows value');
 			throw new BaseHttpError('Invalid seasonWindows value', 400, ErrorBehavior.SSR);
@@ -90,19 +84,19 @@ export async function GET(req: NextRequest) {
 				loggyError('Jobs create from process GET', 'Missing orbitState for crop type');
 				throw new BaseHttpError('Missing orbitState for crop type', 400, ErrorBehavior.SSR);
 			}
-			if (!postprocessMethod) {
-				loggyError('Jobs create from process GET', 'Missing postprocessMethod for crop type');
-				throw new BaseHttpError('Missing postprocessMethod for crop type', 400, ErrorBehavior.SSR);
+			if (!postprocessMethodCroptype) {
+				loggyError('Jobs create from process GET', 'Missing postprocessMethodCroptype for crop type');
+				throw new BaseHttpError('Missing postprocessMethodCroptype for crop type', 400, ErrorBehavior.SSR);
 			}
-			if (postprocessKernelSize !== null && postprocessMethod === customProductsPostprocessMethods.majorityVote) {
-				const parsedSize = Number(postprocessKernelSize);
-				if (isNaN(parsedSize) || parsedSize < 1 || parsedSize > 25 || parsedSize % 2 === 0) {
+			if (postprocessKernelSizeCroptype !== null && postprocessMethodCroptype === customProductsPostprocessMethods.majorityVote) {
+				const parsedSize = Number(postprocessKernelSizeCroptype);
+				if (isNaN(parsedSize) || parsedSize < 3 || parsedSize > 25 || parsedSize % 2 === 0) {
 					loggyError(
 						'Jobs create from process GET',
-						'Invalid postprocessKernelSize for crop type with majority_vote'
+						'Invalid postprocessKernelSizeCroptype for crop type with majority_vote'
 					);
 					throw new BaseHttpError(
-						'Invalid postprocessKernelSize: must be an odd integer between 1 and 25',
+						'Invalid postprocessKernelSizeCroptype: must be an odd integer between 3 and 25',
 						400,
 						ErrorBehavior.SSR
 					);
@@ -131,6 +125,8 @@ export async function GET(req: NextRequest) {
 		const enableCroplandHead = enableCroplandHeadParam !== null ? enableCroplandHeadParam === 'true' : undefined;
 		const maskCropland = maskCroplandParam !== null ? maskCroplandParam === 'true' : undefined;
 
+		const isCropType = processId === customProductsProductTypes.cropType;
+
 		const data = {
 			processId,
 			namespace: getNamespaceByProcessId(processId),
@@ -138,13 +134,16 @@ export async function GET(req: NextRequest) {
 			crs: 'EPSG:4326',
 			timeRange: [startDate, transformedEndDate],
 			seasonWindows,
-			seasonIds,
-			outputFileFormat,
-			model,
+			format,
+			...(seasonalModelZip ? { seasonalModelZip } : {}),
 			...(title ? { title } : {}),
 			...(orbitState && { orbitState }),
-			...(postprocessMethod && { postprocessMethod }),
-			...(postprocessMethod === customProductsPostprocessMethods.majorityVote && postprocessKernelSize
+			...(isCropType && postprocessMethodCroptype ? { postprocessMethodCroptype } : {}),
+			...(isCropType && postprocessMethodCroptype === customProductsPostprocessMethods.majorityVote && postprocessKernelSizeCroptype
+				? { postprocessKernelSizeCroptype: Number(postprocessKernelSizeCroptype) }
+				: {}),
+			...(!isCropType && postprocessMethod ? { postprocessMethod } : {}),
+			...(!isCropType && postprocessMethod === customProductsPostprocessMethods.majorityVote && postprocessKernelSize
 				? { postprocessKernelSize: Number(postprocessKernelSize) }
 				: {}),
 			...(enableCroplandHead !== undefined && { enableCroplandHead }),
@@ -157,8 +156,6 @@ export async function GET(req: NextRequest) {
 				: {}),
 			...(customProperties ? { customProperties } : {}),
 		};
-
-		console.log('data', data);
 
 		const openeoUrlPrefix = process.env.OEO_URL;
 

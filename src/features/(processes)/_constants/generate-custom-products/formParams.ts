@@ -5,7 +5,7 @@ import {
 } from '@features/(processes)/_constants/app';
 
 const formParams: {
-	product: {
+	processId: {
 		required?: boolean;
 		options: {
 			label: string;
@@ -13,14 +13,6 @@ const formParams: {
 			namespace?: string;
 			default?: boolean;
 			disabled?: boolean;
-		}[];
-	};
-	model: {
-		required?: boolean;
-		options: {
-			label: string;
-			value: string;
-			default?: boolean;
 		}[];
 	};
 	endDate: {
@@ -38,7 +30,7 @@ const formParams: {
 			default?: boolean;
 		}[];
 	};
-	outputFileFormat: {
+	format: {
 		required?: boolean;
 		options: {
 			label: string;
@@ -54,7 +46,7 @@ const formParams: {
 			default?: boolean;
 		}[];
 	};
-	postprocessMethod: {
+	postprocessMethodCroptype: {
 		required?: boolean;
 		options: {
 			label: string;
@@ -71,7 +63,7 @@ const formParams: {
 		}[];
 	};
 } = {
-	product: {
+	processId: {
 		required: true,
 		options: [
 			{
@@ -88,16 +80,6 @@ const formParams: {
 				value: customProductsProductTypes.activeCropland,
 				label: 'Active cropland',
 				disabled: true,
-			},
-		],
-	},
-	model: {
-		required: true,
-		options: [
-			{
-				value: 'default',
-				label: 'Default',
-				default: true,
 			},
 		],
 	},
@@ -124,7 +106,7 @@ const formParams: {
 			},
 		],
 	},
-	outputFileFormat: {
+	format: {
 		required: true,
 		options: [
 			{
@@ -152,7 +134,7 @@ const formParams: {
 			},
 		],
 	},
-	postprocessMethod: {
+	postprocessMethodCroptype: {
 		required: false,
 		options: [
 			{

@@ -18,7 +18,7 @@ const zipUrlRegex = /^https?:\/\/.+\.zip$/i;
 export default function CreateProductsStep1Client() {
 	const [
 		{
-			product,
+			processId,
 			cropTypeModelType,
 			seasonalModelZip,
 			enableCroplandHead,
@@ -28,8 +28,8 @@ export default function CreateProductsStep1Client() {
 		setParams,
 	] = useQueryStates(generateCustomProductsSearchParams);
 
-	const isCropType = product === customProductsProductTypes.cropType;
-	const isCropExtent = product === customProductsProductTypes.cropExtent;
+	const isCropType = processId === customProductsProductTypes.cropType;
+	const isCropExtent = processId === customProductsProductTypes.cropExtent;
 	const isCustomModel = cropTypeModelType === 'custom';
 
 	const [localSeasonalModelZip, setLocalSeasonalModelZip] = useState<string>(seasonalModelZip ?? '');
@@ -46,16 +46,15 @@ export default function CreateProductsStep1Client() {
 			((isCropType ? (enableCroplandHead ?? true) : true) && !isLandcoverHeadZipValid) ||
 			(isCropType && !isCroptypeHeadZipValid));
 
-	const nextStepDisabled = !product || hasValidationErrors;
+	const nextStepDisabled = !processId || hasValidationErrors;
 
 	const setProduct = (value: string | null) => {
-		if (value && value !== product) {
+		if (value && value !== processId) {
 			setLocalSeasonalModelZip('');
 			setLocalLandcoverHeadZip('');
 			setLocalCroptypeHeadZip('');
 			setParams({
-				product: value as typeof product,
-				model: 'default',
+				processId: value as typeof processId,
 				cropTypeModelType: 'default',
 				seasonalModelZip: null,
 				landcoverHeadZip: null,
@@ -69,7 +68,6 @@ export default function CreateProductsStep1Client() {
 			setParams({ cropTypeModelType: value });
 			if (value === 'default') {
 				setParams({
-					model: 'default',
 					seasonalModelZip: null,
 					landcoverHeadZip: null,
 					croptypeHeadZip: null,
@@ -77,8 +75,6 @@ export default function CreateProductsStep1Client() {
 				setLocalSeasonalModelZip('');
 				setLocalLandcoverHeadZip('');
 				setLocalCroptypeHeadZip('');
-			} else {
-				setParams({ model: 'default' });
 			}
 		}
 	};
@@ -110,17 +106,16 @@ export default function CreateProductsStep1Client() {
 	};
 
 	useEffect(() => {
-		if (product && !cropTypeModelType) {
-			setParams({ cropTypeModelType: 'default', model: 'default' });
+		if (processId && !cropTypeModelType) {
+			setParams({ cropTypeModelType: 'default' });
 		}
 		if (isCropType && enableCroplandHead === undefined) {
 			setParams({ enableCroplandHead: true });
 		}
-	}, [product, isCropType]);
+	}, [processId, isCropType]);
 
 	const continueHref = serializeGenerateCustomProductsSearchParams('/generate-custom-products/steps/2', {
-		product,
-		model: 'default',
+		processId,
 		cropTypeModelType,
 		seasonalModelZip,
 		enableCroplandHead,
@@ -139,13 +134,13 @@ export default function CreateProductsStep1Client() {
 						allowDeselect={false}
 						label="1.1. Select your product"
 						placeholder="Pick one"
-						data={formParams.product.options}
-						value={product}
+						data={formParams.processId.options}
+						value={processId}
 						onChange={(value) => setProduct(value)}
 					/>
 					<Space h="md" />
 
-					{product && (
+					{processId && (
 						<Stack gap="md">
 							<Select
 								withAsterisk
