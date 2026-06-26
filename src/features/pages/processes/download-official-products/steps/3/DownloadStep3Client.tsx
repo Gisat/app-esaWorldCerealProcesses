@@ -106,7 +106,7 @@ export default function DownloadStep3Client() {
 				<Details
 					bbox={data.bbox}
 					resultFileFormat={
-						formParams.outputFileFormat.options.find((option) => option.value === data.resultFileFormat)?.label
+						formParams.format.options.find((option) => option.value === data.format)?.label
 					}
 					oeoCollection={formParams.product.options.find((option) => option.value === data.oeoCollection)?.label}
 					collectionName={data.timeRange?.[0]?.split('-')?.[0]}

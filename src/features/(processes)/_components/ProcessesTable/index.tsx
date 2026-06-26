@@ -22,16 +22,16 @@ type Props = {
 		name: string;
 		oeoCollection: string;
 		oeoProcessId: string;
-		resultFileFormat: string;
+		format: string;
 		results: Array<{ source_link: string }>;
 		status: string;
 		timeRange: Array<Date>;
 		updatedIso: Date;
 		collectionName: string;
-		model: string;
+		seasonalModelZip: string;
 		orbitState?: string;
-		postprocessMethod?: string;
-		postprocessKernelSize?: number;
+		postprocessMethodCroptype?: string;
+		postprocessKernelSizeCroptype?: number;
 		title?: string;
 		customProperties?: Record<string, unknown>;
 	}[];
@@ -58,7 +58,7 @@ export const ProcessesTable = ({ data, loading, forceReloadList, backgroundLayer
 	const rows = Array.isArray(data) ? (
 		data.map(
 			({
-				resultFileFormat,
+				format,
 				createdIso,
 				status,
 				results,
@@ -69,10 +69,10 @@ export const ProcessesTable = ({ data, loading, forceReloadList, backgroundLayer
 				oeoProcessId,
 				type,
 				collectionName,
-				model,
+				seasonalModelZip,
 				orbitState,
-				postprocessMethod,
-				postprocessKernelSize,
+				postprocessMethodCroptype,
+				postprocessKernelSizeCroptype,
 				title,
 			}) => (
 				<Record
@@ -84,19 +84,19 @@ export const ProcessesTable = ({ data, loading, forceReloadList, backgroundLayer
 					results={results}
 					bbox={bbox}
 					timeRange={timeRange}
-					resultFileFormat={resultFileFormat}
+					resultFileFormat={format}
 					oeoCollection={oeoCollection}
 					oeoProcessId={oeoProcessId}
 					forceReloadList={forceReloadList}
 					collectionName={collectionName}
 					model={
 						type === processTypes.product
-							? model || formParams.model.options.find((option) => option.default)?.label
+							? seasonalModelZip
 							: undefined
 					}
 					orbitState={orbitState}
-					postprocessMethod={postprocessMethod}
-					postprocessKernelSize={postprocessKernelSize}
+					postprocessMethodCroptype={postprocessMethodCroptype}
+					postprocessKernelSizeCroptype={postprocessKernelSizeCroptype}
 					title={title}
 					backgroundLayer={backgroundLayer}
 					setBackgroundLayer={setBackgroundLayer}

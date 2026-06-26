@@ -64,8 +64,8 @@ type DetailsProps = {
 	backgroundLayer?: string;
 	setBackgroundLayer?: React.Dispatch<React.SetStateAction<string | null>>;
 	orbitState?: string;
-	postprocessMethod?: string;
-	postprocessKernelSize?: number;
+	postprocessMethodCroptype?: string;
+	postprocessKernelSizeCroptype?: number;
 	title?: string;
 	seasonId?: string;
 	seasonalModelZip?: string;
@@ -97,8 +97,8 @@ const Details = ({
 	backgroundLayer,
 	setBackgroundLayer,
 	orbitState,
-	postprocessMethod,
-	postprocessKernelSize,
+	postprocessMethodCroptype,
+	postprocessKernelSizeCroptype,
 	title,
 	seasonId,
 	seasonalModelZip,
@@ -162,9 +162,9 @@ const Details = ({
 			</div>
 			<div className="worldCereal-ProcessesTable-Details-column">
 				{orbitState && <DetailsItem label={'Orbit state'}>{orbitState}</DetailsItem>}
-				{postprocessMethod && <DetailsItem label={'Postprocess method'}>{postprocessMethod}</DetailsItem>}
-				{typeof postprocessKernelSize === 'number' && (
-					<DetailsItem label={'Postprocess kernel size'}>{postprocessKernelSize}</DetailsItem>
+				{postprocessMethodCroptype && <DetailsItem label={'Postprocess method - croptype'}>{postprocessMethodCroptype}</DetailsItem>}
+				{typeof postprocessKernelSizeCroptype === 'number' && (
+					<DetailsItem label={'Postprocess kernel size - croptype'}>{postprocessKernelSizeCroptype}</DetailsItem>
 				)}
 				{seasonId && <DetailsItem label={'Season ID'}>{seasonId}</DetailsItem>}
 				{seasonalModelZip && (

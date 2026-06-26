@@ -42,7 +42,7 @@ export default function DownloadStep2Client() {
 	 */
 	const router = useRouter();
 
-	const [{ bbox, outputFileFormat, backgroundLayer, collection, product }, setParams] = useQueryStates(
+	const [{ bbox, format, backgroundLayer, collection, product }, setParams] = useQueryStates(
 		downloadOfficialProductsSearchParams
 	);
 
@@ -74,14 +74,14 @@ export default function DownloadStep2Client() {
 	 * Determines whether the next step is disabled based on the current state.
 	 * @type {boolean}
 	 */
-	const nextStepDisabled = !bboxIsInBounds || !bboxArr || !collection || !product || !outputFileFormat;
+	const nextStepDisabled = !bboxIsInBounds || !bboxArr || !collection || !product || !format;
 
 	/**
 	 * Updates the output file format in the URL state.
 	 * @param {'GTiff' | 'NETCDF'} value - The selected output file format.
 	 */
 	const setOutputFileFormat = (value: 'GTiff' | 'NETCDF') => {
-		setParams({ outputFileFormat: value });
+		setParams({ format: value });
 	};
 
 	/**
@@ -110,7 +110,7 @@ export default function DownloadStep2Client() {
 
 	const urlParams = new URLSearchParams({
 		bbox: bbox ?? '',
-		outputFileFormat: outputFileFormat ?? '',
+		format: format ?? '',
 		collection: collection ?? '',
 		product: product ?? '',
 		...(title ? { title } : {}),
@@ -229,8 +229,8 @@ export default function DownloadStep2Client() {
 							onChange={(value) => setOutputFileFormat(value as 'GTiff' | 'NETCDF')}
 							className="worldCereal-SegmentedControl"
 							size="md"
-							value={outputFileFormat}
-							data={formParams.outputFileFormat.options}
+						value={format}
+						data={formParams.format.options}
 						/>
 					</div>
 				</Stack>
