@@ -74,6 +74,7 @@ export const ProcessesTable = ({ data, loading, forceReloadList, backgroundLayer
 				postprocessMethod,
 				postprocessKernelSize,
 				title,
+				customProperties,
 			}) => (
 				<Record
 					key={key}
@@ -100,6 +101,7 @@ export const ProcessesTable = ({ data, loading, forceReloadList, backgroundLayer
 					title={title}
 					backgroundLayer={backgroundLayer}
 					setBackgroundLayer={setBackgroundLayer}
+					customProperties={customProperties}
 				/>
 			)
 		)
@@ -132,8 +134,9 @@ export const ProcessesTable = ({ data, loading, forceReloadList, backgroundLayer
 			<Table horizontalSpacing="md" className="worldCereal-ProcessesTable">
 				<Table.Thead>
 					<Table.Tr className="worldCereal-ProcessesTable-row">
-						<Table.Th>ID</Table.Th>
-						<Table.Th>Type</Table.Th>
+						<Table.Th>Type of process</Table.Th>
+						<Table.Th>Product</Table.Th>
+						<Table.Th>Collection/Season</Table.Th>
 						<Table.Th>Created</Table.Th>
 						<Table.Th>Status</Table.Th>
 						<Table.Th></Table.Th>

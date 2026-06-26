@@ -51,6 +51,7 @@ type Props = {
 	title?: string;
 	backgroundLayer?: string | null;
 	setBackgroundLayer?: React.Dispatch<React.SetStateAction<string | null>>;
+	customProperties?: Record<string, unknown>;
 };
 
 const StartJobButton = ({ jobKey, forceReloadList }: { jobKey?: string; forceReloadList?: () => void }) => {
@@ -264,10 +265,41 @@ const Record = ({
 	title,
 	backgroundLayer,
 	setBackgroundLayer,
+	customProperties,
 }: // details
 Props) => {
 	const [isExpanded, setIsExpanded] = useState(false);
 	const className = `worldCereal-ProcessesTable-row${isExpanded ? ' is-expanded' : ''}`;
+
+	const productLabel =
+		type === processTypes.download
+			? downloadFormParams.product.options.find((option) => option.value === oeoCollection)?.label
+			: customProductFormParams.product.options.find((option) => option.value === oeoProcessId)?.label;
+
+	const collectionSeasonLabel = (() => {
+		if (type === processTypes.download) {
+			return downloadFormParams.collection.options.find(
+				(option) => option.start === `${timeRange?.[0]}` && option.end === `${timeRange?.[1]}`
+			)?.label;
+		}
+		if (type === processTypes.product && timeRange?.[0] && timeRange?.[1]) {
+			const fmtDate = (d: Date) => {
+				const date = new Date(d);
+				return date.toLocaleString('en-US', { month: 'short', year: '2-digit' });
+			};
+			const range = `${fmtDate(timeRange[0])} - ${fmtDate(timeRange[1])}`;
+			const seasonId = (customProperties?.seasonIds as string[] | undefined)?.[0];
+			return seasonId ? `${range} (${seasonId})` : range;
+		}
+		return null;
+	})();
+
+	const createdFormatted = (() => {
+		if (!createdIso) return '';
+		const d = new Date(createdIso);
+		const pad = (n: number) => String(n).padStart(2, '0');
+		return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+	})();
 
 	/**
 	 * Returns the details component based on the process type.
@@ -325,11 +357,10 @@ Props) => {
 	return (
 		<>
 			<Table.Tr key={jobKey} className={className}>
-				<Table.Td className="smallTextCell">
-					{title ? <>{title}<br /><span style={{ opacity: 0.6, fontSize: '0.85em' }}>{jobKey}</span></> : jobKey}
-				</Table.Td>
 				<Table.Td className="highlightedCell">{type}</Table.Td>
-				<Table.Td>{createdIso && new Date(createdIso).toLocaleString()}</Table.Td>
+				<Table.Td>{productLabel}</Table.Td>
+				<Table.Td>{collectionSeasonLabel}</Table.Td>
+				<Table.Td>{createdFormatted}</Table.Td>
 				<Table.Td>{status ? <ProcessStatus status={status} /> : null}</Table.Td>
 				<Table.Td className="shrinkedCell alignRight">
 					<RemoveJobButton
