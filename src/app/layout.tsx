@@ -40,6 +40,12 @@ export default function RootLayout({
 }: Readonly<{
 	children: React.ReactNode;
 }>) {
+
+	const showInstanceWarning = process.env.INSTANCE_WARNING_HIDDEN !== 'true';
+	// Manually configure whether the InstanceWarning should occupy the full window.
+	// Set to `true` to show as fullWindow, or `false` to show inline. Change here instead of via env var.
+	const instanceWarningFullWindow = true;
+
 	return (
 		<html lang="en" className={`${roboto.variable} ${sen.variable}`}>
 			<head>
@@ -47,7 +53,7 @@ export default function RootLayout({
 			</head>
 			<body className={`esaWorldCerealProcesses`}>
 				<NuqsAdapter>
-					<InstanceWarning />
+					{showInstanceWarning ? <InstanceWarning fullWindow={instanceWarningFullWindow} /> : null}
 					<FaroClient />
 					{/*<FaroFrontendMonitoring envUrl="/api/faro" />*/}
 					<MantineProvider>
