@@ -23,7 +23,7 @@ const postprocessMethodCroplandValues = formParams.postprocessMethodCropland.opt
  *
  * Typing notes:
  *  - outputFileFormat / orbitState / postprocessMethod / postprocessKernelSize use .withDefault(...) -> return concrete type (never null).
- *  - product / model / bbox / backgroundLayer / endDate / jobKey have NO default -> return `string | null`.
+ *  - product / model / bbox / backgroundLayer / endDate / customSeasonId / selectedPeriodId / jobKey have NO default -> return `string | null`.
  *    `null` means "not set"; setting to null removes the key from the URL.
  */
 export const generateCustomProductsSearchParams = {
@@ -44,6 +44,8 @@ export const generateCustomProductsSearchParams = {
 	maskCropland: parseAsBoolean.withDefault(true),
 	postprocessMethodCropland: parseAsStringLiteral(postprocessMethodCroplandValues).withDefault(defaults.postprocessMethodCropland!),
 	postprocessKernelSizeCropland: parseAsInteger.withDefault(3),
+	customSeasonId: parseAsString,
+	selectedPeriodId: parseAsString,
 	jobKey: parseAsString,
 };
 
