@@ -10,7 +10,7 @@ import { BoundingBoxExtent } from '@features/(processes)/_types/boundingBoxExten
 
 const defaultMapSize: Array<number> = [500, 500]; // Default map size in pixels
 
-const defaultMapView = { latitude: 30, longitude: 0, zoom: 1 }; // Default map view settings
+const defaultMapView = { latitude: 30, longitude: 0, zoom: 2 }; // Default map view settings
 
 /**
  * Converts EPSG:4326 points to bbox extent in EPSG:4326.
