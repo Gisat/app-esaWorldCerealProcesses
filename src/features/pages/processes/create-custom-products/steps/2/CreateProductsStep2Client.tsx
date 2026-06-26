@@ -315,10 +315,10 @@ export default function CreateProductsStep2Client() {
 	const generatedSeasonId = selectedPeriod?.id ?? (seasonEndDate ? seasonEndDate.slice(0, 4) : '');
 
 	useEffect(() => {
-		if (!userTouchedSeasonId && !customSeasonId && generatedSeasonId) {
+		if (!userTouchedSeasonId && generatedSeasonId) {
 			setParams({ customSeasonId: generatedSeasonId });
 		}
-	}, [generatedSeasonId, userTouchedSeasonId, customSeasonId]);
+	}, [generatedSeasonId, userTouchedSeasonId, setParams]);
 
 	const sliderValue: [number, number] = [
 		startDate ? getSliderValueFromDate(startDate) : DEFAULT_START_IDX,
