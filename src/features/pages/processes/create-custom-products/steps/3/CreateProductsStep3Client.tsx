@@ -129,10 +129,10 @@ export default function CreateProductsStep3Client() {
 							<AttributeItem
 								label="Product"
 								value={
-									formParams.product.options.find((o) => o.value === data.oeoProcessId)?.label ?? data.oeoProcessId
+									formParams.processId.options.find((o) => o.value === data.oeoProcessId)?.label ?? data.oeoProcessId
 								}
 							/>
-							<AttributeItem label="Model" value={data.model} />
+							<AttributeItem label="Model" value={data.seasonalModelZip} />
 							{data.seasonalModelZip && <AttributeItem label="Base model" value={data.seasonalModelZip} isLink />}
 							{data.landcoverHeadZip && (
 								<AttributeItem label="Cropland head override" value={data.landcoverHeadZip} isLink />
@@ -154,17 +154,17 @@ export default function CreateProductsStep3Client() {
 									}
 								/>
 							)}
-							{data.postprocessMethod && (
+							{data.postprocessMethodCroptype && (
 								<AttributeItem
-									label="Post process method"
+									label="Post process method - croptype"
 									value={
-										formParams.postprocessMethod.options.find((o) => o.value === data.postprocessMethod)?.label ??
-										data.postprocessMethod
+										formParams.postprocessMethodCroptype.options.find((o) => o.value === data.postprocessMethodCroptype)?.label ??
+										data.postprocessMethodCroptype
 									}
 								/>
 							)}
-							{data.postprocessKernelSize != null && (
-								<AttributeItem label="Post process kernel size" value={String(data.postprocessKernelSize)} />
+							{data.postprocessKernelSizeCroptype != null && (
+								<AttributeItem label="Post process kernel size - croptype" value={String(data.postprocessKernelSizeCroptype)} />
 							)}
 							{data.postprocessMethodCropland && (
 								<AttributeItem

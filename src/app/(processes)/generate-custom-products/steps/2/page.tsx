@@ -7,8 +7,11 @@
  * @async
  * @returns {JSX.Element} The rendered `CreateProductsStep2Client` component.
  */
+import { Suspense } from 'react';
 import CreateProductsStep2Client from '@features/pages/processes/create-custom-products/steps/2/CreateProductsStep2Client';
 
+export const dynamic = 'force-dynamic';
+
 export default async function CreateProductsStep2() {
-	return <CreateProductsStep2Client />;
+	return <Suspense><CreateProductsStep2Client /></Suspense>;
 }

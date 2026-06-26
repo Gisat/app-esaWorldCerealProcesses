@@ -14,23 +14,23 @@ export const CreateCustomProductsStepper = ({ children }: { children: React.Reac
 	const pathname = usePathname();
 	const activeStep = Number(pathname.split('/').pop()) || 1;
 
-	const [{ product, model, outputFileFormat, bbox, endDate, backgroundLayer, orbitState, postprocessMethod, postprocessKernelSize }] =
+	const [{ processId, format, bbox, endDate, backgroundLayer, orbitState, postprocessMethodCroptype, postprocessKernelSizeCroptype }] =
 		useQueryStates(generateCustomProductsSearchParams);
 
 	const bboxArr = parseBbox(bbox);
 
 	const firstStepDisabled = activeStep === 3;
 
-	const secondStepDisabled = !model || !product || activeStep === 3;
+	const secondStepDisabled = !processId || activeStep === 3;
 
-	const thirdStepDisabled = !model || !product || !outputFileFormat || !bboxArr || !endDate;
+	const thirdStepDisabled = !processId || !format || !bboxArr || !endDate;
 
 	const setActive = (step: number) => {
 		const targetStep = step + 1;
 		if (targetStep === activeStep) return;
 		const href = serializeGenerateCustomProductsSearchParams(
 			`/generate-custom-products/steps/${targetStep}`,
-			{ product, model, outputFileFormat, bbox, endDate, backgroundLayer, orbitState, postprocessMethod, postprocessKernelSize }
+			{ processId, format, bbox, endDate, backgroundLayer, orbitState, postprocessMethodCroptype, postprocessKernelSizeCroptype }
 		);
 		router.push(href);
 	};
