@@ -156,6 +156,7 @@ export default function CreateProductsStep2Client() {
 
 	const [startDate, setStartDate] = useState<Date | null>(null);
 	const [customSeasonId, setCustomSeasonId] = useState<string>('');
+	const [userTouchedSeasonId, setUserTouchedSeasonId] = useState<boolean>(false);
 
 	const [suggestedPeriods, setSuggestedPeriods] = useState<Array<{ id: string; startDate: string; endDate: string }>>(
 		[]
@@ -282,16 +283,13 @@ export default function CreateProductsStep2Client() {
 
 	const selectedPeriod = selectedPeriodId ? suggestedPeriods.find((period) => period.id === selectedPeriodId) : null;
 	const generatedSeasonId =
-		selectedPeriod?.id ??
-		(seasonStartDate && seasonEndDate
-			? `season_${seasonStartDate.replaceAll('-', '_')}_${seasonEndDate.replaceAll('-', '_')}`
-			: '');
+		selectedPeriod?.id ?? (seasonEndDate ? seasonEndDate.slice(0, 4) : '');
 
 	useEffect(() => {
-		if (generatedSeasonId) {
+		if (!userTouchedSeasonId && generatedSeasonId) {
 			setCustomSeasonId(generatedSeasonId);
 		}
-	}, [generatedSeasonId]);
+	}, [generatedSeasonId, userTouchedSeasonId]);
 
 	const sliderValue: [number, number] = [
 		startDate ? getSliderValueFromDate(startDate) : DEFAULT_START_IDX,
@@ -549,7 +547,10 @@ export default function CreateProductsStep2Client() {
 									size="md"
 									placeholder="e.g. 2022"
 									value={customSeasonId}
-									onChange={(e) => setCustomSeasonId(e.currentTarget.value)}
+									onChange={(e) => {
+										setUserTouchedSeasonId(true);
+										setCustomSeasonId(e.currentTarget.value);
+									}}
 								/>
 							</Input.Wrapper>
 
