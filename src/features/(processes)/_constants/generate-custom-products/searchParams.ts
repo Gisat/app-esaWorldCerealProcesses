@@ -36,7 +36,7 @@ export const generateCustomProductsSearchParams = {
 	endDate: parseAsString.withDefault(defaults.endDate ?? '2025-09-30'),
 	orbitState: parseAsStringLiteral(orbitStateValues).withDefault(defaults.orbitState!),
 	postprocessMethod: parseAsStringLiteral(postprocessMethodValues).withDefault(defaults.postprocessMethod!),
-	postprocessKernelSize: parseAsInteger.withDefault(3),
+	postprocessKernelSize: parseAsInteger.withDefault(5),
 	seasonalModelZip: parseAsString,
 	enableCroplandHead: parseAsBoolean.withDefault(true),
 	landcoverHeadZip: parseAsString,

@@ -276,14 +276,13 @@ export default function CreateProductsStep2Client() {
 		setParams({ endDate: endDateStr });
 	};
 
-	const resolvedModel = seasonalModelZip ? seasonalModelZip : (model?.toString() || '');
+	const resolvedModel = seasonalModelZip ? seasonalModelZip : model?.toString() || '';
 
 	const seasonStartDate = startDate ? transformDate(startDate) : null;
 	const seasonEndDate = endDate ? endDate.toString() : null;
 
 	const selectedPeriod = selectedPeriodId ? suggestedPeriods.find((period) => period.id === selectedPeriodId) : null;
-	const generatedSeasonId =
-		selectedPeriod?.id ?? (seasonEndDate ? seasonEndDate.slice(0, 4) : '');
+	const generatedSeasonId = selectedPeriod?.id ?? (seasonEndDate ? seasonEndDate.slice(0, 4) : '');
 
 	useEffect(() => {
 		if (!userTouchedSeasonId && generatedSeasonId) {
@@ -312,10 +311,13 @@ export default function CreateProductsStep2Client() {
 					customProperties: JSON.stringify({
 						process_type: processTypes.product,
 						...(backgroundLayer
-							? { background_layer: backgroundLayers[backgroundLayer as keyof typeof backgroundLayers]?.name ?? backgroundLayer }
+							? {
+									background_layer:
+										backgroundLayers[backgroundLayer as keyof typeof backgroundLayers]?.name ?? backgroundLayer,
+								}
 							: {}),
 					}),
-			  }
+				}
 			: {}),
 	};
 
@@ -432,8 +434,7 @@ export default function CreateProductsStep2Client() {
 								</Box>
 								<Box mt="xs">
 									<TextDescription className="step2-desc">
-										Current extent:{' '}
-										{bboxArr ? bboxArr.map((num) => Number(num).toFixed(2)).join(', ') : ''}{' '}
+										Current extent: {bboxArr ? bboxArr.map((num) => Number(num).toFixed(2)).join(', ') : ''}{' '}
 										{bboxDescription ? `(${bboxDescription} sqkm)` : '(No extent selected)'}
 									</TextDescription>
 								</Box>
@@ -671,8 +672,8 @@ export default function CreateProductsStep2Client() {
 										{requiredAsterisk}
 									</Group>
 									<TextDescription className="step2-desc">
-										The method used for cleaning your map after initial pixel-based predictions. Smooth
-										probabilities represents a minor cleaning step, whereas majority voting will introduce more fierce
+										The method used for cleaning your map after initial pixel-based predictions. Smooth probabilities
+										represents a minor cleaning step, whereas majority voting will introduce more fierce
 										post-processing, also depending on the selected kernel size.
 									</TextDescription>
 									<Select
@@ -736,9 +737,10 @@ export default function CreateProductsStep2Client() {
 									<Select
 										className="worldCereal-Select"
 										size="md"
+										allowDeselect={false}
 										placeholder="Pick one"
 										data={formParams.orbitState.options}
-										value={orbitState ?? null}
+										value={orbitState}
 										onChange={(value) => {
 											if (value === 'ASCENDING' || value === 'DESCENDING') {
 												setParams({ orbitState: value });
@@ -754,8 +756,8 @@ export default function CreateProductsStep2Client() {
 									</Group>
 									<TextDescription className="step2-desc">
 										The method used for cleaning your map after initial pixel-based predictions. Smooth probabilities
-										represents a minor cleaning step, whereas majority voting will introduce more fierce post-processing,
-										also depending on the selected kernel size.
+										represents a minor cleaning step, whereas majority voting will introduce more fierce
+										post-processing, also depending on the selected kernel size.
 									</TextDescription>
 									<Select
 										className="worldCereal-Select"
