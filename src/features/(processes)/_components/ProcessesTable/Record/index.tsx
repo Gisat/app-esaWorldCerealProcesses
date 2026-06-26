@@ -274,7 +274,7 @@ Props) => {
 	const productLabel =
 		type === processTypes.download
 			? downloadFormParams.product.options.find((option) => option.value === oeoCollection)?.label
-			: customProductFormParams.product.options.find((option) => option.value === oeoProcessId)?.label;
+			: customProductFormParams.processId.options.find((option) => option.value === oeoProcessId)?.label;
 
 	const collectionSeasonLabel = (() => {
 		if (type === processTypes.download) {
@@ -333,20 +333,21 @@ Props) => {
 						startDate={timeRange?.[0]}
 						endDate={timeRange?.[1]}
 						model={model}
-					resultFileFormat={resultFileFormat}
-					oeoProcessId={
-						customProductFormParams.processId.options.find((option) => option.value === oeoProcessId)?.label
-					}
-					results={results}
-					status={status}
-					orbitState={customProductFormParams.orbitState.options.find((option) => option.value === orbitState)?.label}
-					postprocessMethodCroptype={
-						customProductFormParams.postprocessMethodCroptype.options.find((option) => option.value === postprocessMethodCroptype)
-							?.label
-					}
-					postprocessKernelSizeCroptype={postprocessKernelSizeCroptype}
-					backgroundLayer={backgroundLayer ?? undefined}
-					setBackgroundLayer={setBackgroundLayer}
+						resultFileFormat={resultFileFormat}
+						oeoProcessId={
+							customProductFormParams.processId.options.find((option) => option.value === oeoProcessId)?.label
+						}
+						results={results}
+						status={status}
+						orbitState={customProductFormParams.orbitState.options.find((option) => option.value === orbitState)?.label}
+						postprocessMethodCroptype={
+							customProductFormParams.postprocessMethodCropland.options.find(
+								(option) => option.value === postprocessMethodCroptype
+							)?.label
+						}
+						postprocessKernelSizeCroptype={postprocessKernelSizeCroptype}
+						backgroundLayer={backgroundLayer ?? undefined}
+						setBackgroundLayer={setBackgroundLayer}
 					/>
 				);
 			default:
@@ -371,8 +372,8 @@ Props) => {
 						resultFileFormat={resultFileFormat}
 						oeoCollection={downloadFormParams.product.options.find((option) => option.value === oeoCollection)?.label}
 						oeoProcessId={
-						customProductFormParams.processId.options.find((option) => option.value === oeoProcessId)?.label || ''
-					}
+							customProductFormParams.processId.options.find((option) => option.value === oeoProcessId)?.label || ''
+						}
 						collectionName={
 							downloadFormParams.collection.options.find(
 								(option) => option.start === `${timeRange?.[0]}` && option.end === `${timeRange?.[1]}`
@@ -415,7 +416,7 @@ Props) => {
 			</Table.Tr>
 			{isExpanded && (
 				<Table.Tr className={className}>
-					<Table.Td colSpan={7}>{getDetails()}</Table.Td>
+					<Table.Td colSpan={6}>{getDetails()}</Table.Td>
 				</Table.Tr>
 			)}
 		</>
