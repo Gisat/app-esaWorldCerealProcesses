@@ -17,9 +17,6 @@ export interface AppEnvironments {
 	FARO_URL: string | undefined;
 	DATABASE_FILE: string;
 	DATABASE_STATE_EXPIRATION_SEC: number;
-	INSTANCE_WARNING_HIDDEN: boolean | undefined;
-	INSTANCE_WARNING_COLOR: string | undefined; // Example: "#D81B1B"
-	INSTANCE_WARNING_TEXT: string | undefined; // Example: "DEV version"
 }
 
 /**
@@ -43,9 +40,5 @@ export const ssrUseEnvironments = async (): Promise<AppEnvironments> => {
 		DATABASE_STATE_EXPIRATION_SEC: parseInt(
 			process.env.DATABASE_STATE_EXPIRATION_SEC ?? DEFAULT_DB_STATE_EXPIRATION_SEC.toString()
 		),
-		INSTANCE_WARNING_HIDDEN:
-			process.env.INSTANCE_WARNING_HIDDEN === undefined ? undefined : process.env.INSTANCE_WARNING_HIDDEN === 'true',
-		INSTANCE_WARNING_COLOR: process.env.INSTANCE_WARNING_COLOR,
-		INSTANCE_WARNING_TEXT: process.env.INSTANCE_WARNING_TEXT,
 	};
 };
