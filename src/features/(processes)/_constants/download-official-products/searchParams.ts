@@ -4,7 +4,7 @@ import { downloadOfficialProductsDefaults as defaults } from './defaults';
 
 const collectionValues = formParams.collection.options.map((o) => o.value) as [string, ...string[]];
 const productValues = formParams.product.options.map((o) => o.value) as [string, ...string[]];
-const outputFileFormatValues = formParams.outputFileFormat.options.map((o) => o.value) as [
+const formatValues = formParams.format.options.map((o) => o.value) as [
 	string,
 	...string[]
 ];
@@ -15,14 +15,14 @@ const outputFileFormatValues = formParams.outputFileFormat.options.map((o) => o.
  *  - useQueryStates (client components)
  *
  * Typing notes:
- *  - collection / outputFileFormat use .withDefault(...) -> return `string` (never null).
+ *  - collection / format use .withDefault(...) -> return `string` (never null).
  *  - product / bbox / backgroundLayer have NO default -> return `string | null`.
  *    `null` means "not set"; setting to null removes the key from the URL.
  */
 export const downloadOfficialProductsSearchParams = {
 	collection: parseAsStringLiteral(collectionValues).withDefault(defaults.collection!),
 	product: parseAsStringLiteral(productValues),
-	outputFileFormat: parseAsStringLiteral(outputFileFormatValues).withDefault(defaults.outputFileFormat!),
+	format: parseAsStringLiteral(formatValues).withDefault(defaults.format!),
 	bbox: parseAsString,
 	backgroundLayer: parseAsString,
 };

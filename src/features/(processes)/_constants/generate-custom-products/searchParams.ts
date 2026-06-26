@@ -9,10 +9,10 @@ import {
 import formParams from './formParams';
 import { generateCustomProductsDefaults as defaults } from './defaults';
 
-const productValues = formParams.product.options.filter((o) => !o.disabled).map((o) => o.value) as [string, ...string[]];
-const outputFileFormatValues = formParams.outputFileFormat.options.map((o) => o.value) as [string, ...string[]];
+const processIdValues = formParams.processId.options.filter((o) => !o.disabled).map((o) => o.value) as [string, ...string[]];
+const formatValues = formParams.format.options.map((o) => o.value) as [string, ...string[]];
 const orbitStateValues = formParams.orbitState.options.map((o) => o.value) as [string, ...string[]];
-const postprocessMethodValues = formParams.postprocessMethod.options.map((o) => o.value) as [string, ...string[]];
+const postprocessMethodCroptypeValues = formParams.postprocessMethodCroptype.options.map((o) => o.value) as [string, ...string[]];
 const cropTypeModelTypeValues = formParams.cropTypeModelType.options.map((o) => o.value) as [string, ...string[]];
 const postprocessMethodCroplandValues = formParams.postprocessMethodCropland.options.map((o) => o.value) as [string, ...string[]];
 
@@ -22,21 +22,20 @@ const postprocessMethodCroplandValues = formParams.postprocessMethodCropland.opt
  *  - useQueryStates (client components)
  *
  * Typing notes:
- *  - outputFileFormat / orbitState / postprocessMethod / postprocessKernelSize use .withDefault(...) -> return concrete type (never null).
- *  - product / model / bbox / backgroundLayer / endDate / customSeasonId / selectedPeriodId / jobKey have NO default -> return `string | null`.
+ *  - format / orbitState / postprocessMethodCroptype / postprocessKernelSizeCroptype use .withDefault(...) -> return concrete type (never null).
+ *  - processId / bbox / backgroundLayer / endDate / customSeasonId / selectedPeriodId / jobKey have NO default -> return `string | null`.
  *    `null` means "not set"; setting to null removes the key from the URL.
  */
 export const generateCustomProductsSearchParams = {
-	product: parseAsStringLiteral(productValues),
-	model: parseAsString.withDefault(defaults.model ?? 'default'),
+	processId: parseAsStringLiteral(processIdValues),
 	cropTypeModelType: parseAsStringLiteral(cropTypeModelTypeValues).withDefault(defaults.cropTypeModelType ?? 'default'),
-	outputFileFormat: parseAsStringLiteral(outputFileFormatValues).withDefault(defaults.outputFileFormat!),
+	format: parseAsStringLiteral(formatValues).withDefault(defaults.format!),
 	bbox: parseAsString,
 	backgroundLayer: parseAsString,
 	endDate: parseAsString.withDefault(defaults.endDate ?? '2025-09-30'),
 	orbitState: parseAsStringLiteral(orbitStateValues).withDefault(defaults.orbitState!),
-	postprocessMethod: parseAsStringLiteral(postprocessMethodValues).withDefault(defaults.postprocessMethod!),
-	postprocessKernelSize: parseAsInteger.withDefault(5),
+	postprocessMethodCroptype: parseAsStringLiteral(postprocessMethodCroptypeValues).withDefault(defaults.postprocessMethodCroptype!),
+	postprocessKernelSizeCroptype: parseAsInteger.withDefault(3),
 	seasonalModelZip: parseAsString,
 	enableCroplandHead: parseAsBoolean.withDefault(true),
 	landcoverHeadZip: parseAsString,
@@ -57,7 +56,7 @@ export const generateCustomProductsSearchParamsCache = createSearchParamsCache(g
  * rules as `useQueryStates`, so values equal to their default are omitted.
  *
  * Usage:
- *   serializeGenerateCustomProductsSearchParams('/path', { product: 'X', model: 'Y' })
- *   // => '/path?product=X&model=Y'
+ *   serializeGenerateCustomProductsSearchParams('/path', { processId: 'X', format: 'Y' })
+ *   // => '/path?processId=X&format=Y'
  */
 export const serializeGenerateCustomProductsSearchParams = createSerializer(generateCustomProductsSearchParams);
