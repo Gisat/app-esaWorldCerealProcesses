@@ -156,6 +156,10 @@ export default function CreateProductsStep2Client() {
 			postprocessKernelSizeCropland <= 25 &&
 			postprocessKernelSizeCropland % 2 === 1);
 
+	const SEASON_ID_PATTERN = /^[a-zA-Z0-9_-]+$/;
+
+	const isSeasonIdValid = !customSeasonId || SEASON_ID_PATTERN.test(customSeasonId);
+
 	const [startDate, setStartDate] = useState<Date | null>(null);
 	const [userTouchedSeasonId, setUserTouchedSeasonId] = useState<boolean>(false);
 
@@ -169,6 +173,7 @@ export default function CreateProductsStep2Client() {
 		!processId ||
 		!startDate ||
 		!endDate ||
+		!isSeasonIdValid ||
 		(isCropType && (!orbitState || !isCroplandKernelValid || !isCroptypeKernelValid)) ||
 		(isCropExtent && !isCropExtentKernelValid);
 
@@ -563,12 +568,14 @@ export default function CreateProductsStep2Client() {
 								className="worldCereal-Input"
 								size="md"
 								label="2.2.3. Enter season ID"
-								description="Enter your own season ID or use the generated one."
+								description="Alphanumeric characters, underscores, and hyphens only."
+								error={!isSeasonIdValid ? 'Only letters, numbers, underscores, and hyphens are allowed.' : undefined}
 							>
 								<TextInput
 									size="md"
 									placeholder="e.g. 2022"
 									value={customSeasonId ?? ''}
+									error={!isSeasonIdValid}
 									onChange={(e) => {
 										setUserTouchedSeasonId(true);
 										setParams({ customSeasonId: e.currentTarget.value });
