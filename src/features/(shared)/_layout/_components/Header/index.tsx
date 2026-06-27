@@ -40,7 +40,7 @@ export const Header = () => {
 								size="sm"
 								component="a"
 								variant="outline"
-								href="api/auth/logout"
+								href="/api/auth/logout"
 							>
 								Logout
 							</Button>

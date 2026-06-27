@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { IconArrowRight } from '@tabler/icons-react';
 import { Button, Checkbox, Group, Input, Select, Space, Stack, TextInput } from '@mantine/core';
 import { useQueryStates } from 'nuqs';
@@ -247,16 +248,15 @@ export default function CreateProductsStep1Client() {
 					)}
 
 					<Group mt="xl">
-						<a href={continueHref}>
+						<Link href={continueHref}>
 							<Button
 								rightSection={<IconArrowRight size={14} />}
 								disabled={nextStepDisabled}
 								className={`worldCereal-Button${nextStepDisabled ? ' is-disabled' : ''}`}
-								onClick={() => {}}
 							>
 								Continue to set parameters & create process
 							</Button>
-						</a>
+						</Link>
 					</Group>
 				</div>
 			</Column>
