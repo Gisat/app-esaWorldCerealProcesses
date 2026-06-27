@@ -312,7 +312,7 @@ export default function CreateProductsStep2Client() {
 	const seasonEndDate = endDate ? endDate.toString() : null;
 
 	const selectedPeriod = selectedPeriodId ? suggestedPeriods.find((period) => period.id === selectedPeriodId) : null;
-	const generatedSeasonId = selectedPeriod?.id ?? (seasonEndDate ? seasonEndDate.slice(0, 4) : '');
+	const generatedSeasonId = seasonEndDate ? seasonEndDate.slice(0, 4) : '';
 
 	useEffect(() => {
 		if (!userTouchedSeasonId && generatedSeasonId) {
