@@ -28,3 +28,8 @@ export const backgroundLayers = {
 		url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
 	},
 };
+
+export function resolveBackgroundLayer(customProperties) {
+	const value = customProperties?.background_layer;
+	return typeof value === 'string' && value in backgroundLayers ? value : undefined;
+}

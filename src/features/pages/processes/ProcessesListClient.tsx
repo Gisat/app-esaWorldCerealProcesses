@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import useSWR from 'swr';
 import { apiFetcher } from '@features/(shared)/_url/apiFetcher';
 import { swrFetcher } from '@features/(shared)/_logic/utils';
@@ -27,8 +27,6 @@ export const ProcessesListClient = () => {
 		refreshInterval: 15000,
 	});
 
-	const [backgroundLayer, setBackgroundLayer] = useState<string | null>(null);
-
 	if (isUserInfoLoading) return null;
 
 	// Handle error state
@@ -50,8 +48,6 @@ export const ProcessesListClient = () => {
 			loading={isLoading}
 			data={data || []}
 			forceReloadList={forceReloadList}
-			backgroundLayer={backgroundLayer}
-			setBackgroundLayer={setBackgroundLayer}
 		/>
 	);
 };

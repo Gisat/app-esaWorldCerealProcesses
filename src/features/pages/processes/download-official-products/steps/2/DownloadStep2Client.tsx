@@ -20,7 +20,6 @@ import {
 import { parseBbox, stringifyBbox } from '@features/(processes)/_utils/bbox';
 import type { BBoxModel } from '@features/(processes)/_utils/bbox';
 import { apiFetcher } from '@features/(shared)/_url/apiFetcher';
-import { backgroundLayers } from '@features/(map)/_components/mapBackgroundLayers/backgroundLayers';
 
 /**
  * Component representing the second step in the "Download Official Products" process.
@@ -114,7 +113,7 @@ export default function DownloadStep2Client() {
 		collection: collection ?? '',
 		product: product ?? '',
 		...(title ? { title } : {}),
-		...(product ? { customProperties: JSON.stringify({ process_type: processTypes.download, ...(backgroundLayer ? { background_layer: backgroundLayers[backgroundLayer as keyof typeof backgroundLayers]?.name ?? backgroundLayer } : {}) }) } : {}),
+		...(product ? { customProperties: JSON.stringify({ process_type: processTypes.download, ...(backgroundLayer ? { background_layer: backgroundLayer } : {}) }) } : {}),
 	});
 
 	/**

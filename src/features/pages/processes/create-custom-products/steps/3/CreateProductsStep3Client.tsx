@@ -1,7 +1,7 @@
 'use client';
 
 import useSWR from 'swr';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { IconArrowRight, IconPlayerPlayFilled, IconPlus } from '@tabler/icons-react';
 import { Button, Group, Text } from '@mantine/core';
@@ -12,6 +12,7 @@ import { MapBBox } from '@features/(shared)/_components/map/MapBBox';
 import formParams from '@features/(processes)/_constants/generate-custom-products/formParams';
 import { customProductsProductTypes } from '@features/(processes)/_constants/app';
 import { area as turfArea } from '@turf/area';
+import { resolveBackgroundLayer } from '@features/(map)/_components/mapBackgroundLayers/backgroundLayers';
 import { polygon as turfPolygon } from '@turf/helpers';
 import './CreateProductsStep3Client.css';
 
@@ -74,6 +75,17 @@ export default function CreateProductsStep3Client() {
 	);
 
 	const { data } = useSWR(jobKey ? getJobUrl : null, fetcher);
+
+	/**
+	 * Initializes the background layer from the job's customProperties
+	 * when the job data is first loaded.
+	 */
+	useEffect(() => {
+		const key = resolveBackgroundLayer(data?.customProperties);
+		if (key && !backgroundLayer) {
+			setBackgroundLayer(key);
+		}
+	}, [data, backgroundLayer]);
 
 	if (shouldFetch && startedProcessData) {
 		setShouldFetch(false);
@@ -168,7 +180,7 @@ export default function CreateProductsStep3Client() {
 							)}
 							{data.postprocessMethodCropland && (
 								<AttributeItem
-									label="Cropland postprocess"
+									label="Post process method - cropland"
 									value={
 										formParams.postprocessMethodCropland.options.find(
 											(o) => o.value === data.postprocessMethodCropland
@@ -177,7 +189,7 @@ export default function CreateProductsStep3Client() {
 								/>
 							)}
 							{data.postprocessKernelSizeCropland != null && (
-								<AttributeItem label="Cropland kernel size" value={String(data.postprocessKernelSizeCropland)} />
+								<AttributeItem label="Post process kernel size - cropland" value={String(data.postprocessKernelSizeCropland)} />
 							)}
 						</div>
 					</div>

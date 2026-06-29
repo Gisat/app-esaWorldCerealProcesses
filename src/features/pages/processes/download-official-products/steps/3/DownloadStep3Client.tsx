@@ -1,7 +1,7 @@
 'use client';
 
 import useSWR from 'swr';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { IconArrowRight, IconPlayerPlayFilled, IconPlus } from '@tabler/icons-react';
 import { Button, Group } from '@mantine/core';
@@ -9,6 +9,7 @@ import { fetcher } from '@features/(shared)/_logic/utils';
 import { TextParagraph } from '@features/(shared)/_layout/_components/Content/TextParagraph';
 import Details from '@features/(processes)/_components/ProcessesTable/Details';
 import formParams from '@features/(processes)/_constants/download-official-products/formParams';
+import { resolveBackgroundLayer } from '@features/(map)/_components/mapBackgroundLayers/backgroundLayers';
 
 /**
  * Component representing the third step in the "Download Official Products" process.
@@ -22,7 +23,7 @@ export default function DownloadStep3Client() {
 	const router = useRouter();
 	const searchParams = useSearchParams();
 	const jobKey = searchParams.get('jobKey') ?? undefined;
-	const backgroundLayer = searchParams.get('backgroundLayer') ?? undefined;
+	const urlBackgroundLayer = searchParams.get('backgroundLayer') ?? undefined;
 
 	/**
 	 * State to determine whether to fetch process data.
@@ -53,6 +54,17 @@ export default function DownloadStep3Client() {
 	 * SWR hook for fetching job details.
 	 */
 	const { data } = useSWR(jobKey ? getJobUrl : null, fetcher);
+
+
+	/**
+	 * Resolves the background layer key for the map.
+	 * Prefers the URL param from step 2, falling back to
+	 * the job's customProperties.background_layer.
+	 */
+	const backgroundLayer = useMemo(() => {
+		if (urlBackgroundLayer) return urlBackgroundLayer;
+		return resolveBackgroundLayer(data?.customProperties);
+	}, [urlBackgroundLayer, data]);
 
 	/**
 	 * Effect to reset the fetch state when process data is retrieved.

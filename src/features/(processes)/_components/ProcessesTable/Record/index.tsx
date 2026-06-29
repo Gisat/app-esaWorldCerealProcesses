@@ -17,6 +17,7 @@ import { processTypes } from '@features/(processes)/_constants/app';
 import useSWR from 'swr';
 import Details from '../Details';
 import { Statuses } from '@features/(shared)/_logic/models.statuses';
+import { resolveBackgroundLayer } from '@features/(map)/_components/mapBackgroundLayers/backgroundLayers';
 
 import downloadFormParams from '@features/(processes)/_constants/download-official-products/formParams';
 import customProductFormParams from '@features/(processes)/_constants/generate-custom-products/formParams';
@@ -48,9 +49,9 @@ type Props = {
 	orbitState?: string;
 	postprocessMethodCroptype?: string;
 	postprocessKernelSizeCroptype?: number;
+	postprocessMethodCropland?: string;
+	postprocessKernelSizeCropland?: number;
 	title?: string;
-	backgroundLayer?: string | null;
-	setBackgroundLayer?: React.Dispatch<React.SetStateAction<string | null>>;
 	customProperties?: Record<string, unknown>;
 	seasonIds?: string[];
 	seasonWindows?: Array<{ start: string; end: string }>;
@@ -264,9 +265,9 @@ const Record = ({
 	orbitState,
 	postprocessMethodCroptype,
 	postprocessKernelSizeCroptype,
+	postprocessMethodCropland,
+	postprocessKernelSizeCropland,
 	title,
-	backgroundLayer,
-	setBackgroundLayer,
 	customProperties,
 	seasonIds,
 	seasonWindows,
@@ -274,6 +275,15 @@ const Record = ({
 Props) => {
 	const [isExpanded, setIsExpanded] = useState(false);
 	const className = `worldCereal-ProcessesTable-row${isExpanded ? ' is-expanded' : ''}`;
+
+	/**
+	 * Local background layer state for this record's map.
+	 * Initialized from customProperties.background_layer if valid,
+	 * otherwise falls back to the default layer.
+	 */
+	const [backgroundLayer, setBackgroundLayer] = useState<string | null>(
+		resolveBackgroundLayer(customProperties) ?? null
+	);
 
 	const productLabel =
 		type === processTypes.download
@@ -349,11 +359,17 @@ Props) => {
 						status={status}
 						orbitState={customProductFormParams.orbitState.options.find((option) => option.value === orbitState)?.label}
 						postprocessMethodCroptype={
-							customProductFormParams.postprocessMethodCropland.options.find(
+							customProductFormParams.postprocessMethodCroptype.options.find(
 								(option) => option.value === postprocessMethodCroptype
 							)?.label
 						}
 						postprocessKernelSizeCroptype={postprocessKernelSizeCroptype}
+						postprocessMethodCropland={
+							customProductFormParams.postprocessMethodCropland.options.find(
+								(option) => option.value === postprocessMethodCropland
+							)?.label
+						}
+						postprocessKernelSizeCropland={postprocessKernelSizeCropland}
 						backgroundLayer={backgroundLayer ?? undefined}
 						setBackgroundLayer={setBackgroundLayer}
 					/>

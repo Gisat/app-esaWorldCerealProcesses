@@ -195,10 +195,10 @@ const Details = ({
 					<DetailsItem label={'Cropland mask'}>{maskCropland ? 'Enabled' : 'Disabled'}</DetailsItem>
 				)}
 				{postprocessMethodCropland && (
-					<DetailsItem label={'Cropland postprocess'}>{postprocessMethodCropland}</DetailsItem>
+					<DetailsItem label={'Post process method - cropland'}>{postprocessMethodCropland}</DetailsItem>
 				)}
 				{typeof postprocessKernelSizeCropland === 'number' && (
-					<DetailsItem label={'Cropland kernel size'}>{postprocessKernelSizeCropland}</DetailsItem>
+					<DetailsItem label={'Post process kernel size - cropland'}>{postprocessKernelSizeCropland}</DetailsItem>
 				)}
 				{status === Statuses.error ? (
 					<div className="worldCereal-ProcessesTable-Details-error">

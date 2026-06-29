@@ -10,8 +10,6 @@ import React from 'react';
 type Props = {
 	loading?: boolean;
 	forceReloadList?: () => void;
-	backgroundLayer?: string | null;
-	setBackgroundLayer?: React.Dispatch<React.SetStateAction<string | null>>;
 	data: {
 		bbox: Array<number>;
 		costs: number;
@@ -32,6 +30,8 @@ type Props = {
 		orbitState?: string;
 		postprocessMethodCroptype?: string;
 		postprocessKernelSizeCroptype?: number;
+		postprocessMethodCropland?: string;
+		postprocessKernelSizeCropland?: number;
 		title?: string;
 		customProperties?: Record<string, unknown>;
 		seasonIds?: string[];
@@ -56,7 +56,7 @@ type Props = {
  *   forceReloadList={() => console.log("Reload triggered")}
  * />
  */
-export const ProcessesTable = ({ data, loading, forceReloadList, backgroundLayer, setBackgroundLayer }: Props) => {
+export const ProcessesTable = ({ data, loading, forceReloadList }: Props) => {
 	const rows = Array.isArray(data) ? (
 		data.map(
 			({
@@ -75,6 +75,8 @@ export const ProcessesTable = ({ data, loading, forceReloadList, backgroundLayer
 			orbitState,
 			postprocessMethodCroptype,
 			postprocessKernelSizeCroptype,
+			postprocessMethodCropland,
+			postprocessKernelSizeCropland,
 			title,
 			customProperties,
 			seasonIds,
@@ -102,9 +104,9 @@ export const ProcessesTable = ({ data, loading, forceReloadList, backgroundLayer
 					orbitState={orbitState}
 					postprocessMethodCroptype={postprocessMethodCroptype}
 					postprocessKernelSizeCroptype={postprocessKernelSizeCroptype}
+					postprocessMethodCropland={postprocessMethodCropland}
+					postprocessKernelSizeCropland={postprocessKernelSizeCropland}
 					title={title}
-					backgroundLayer={backgroundLayer}
-					setBackgroundLayer={setBackgroundLayer}
 					customProperties={customProperties}
 					seasonIds={seasonIds}
 					seasonWindows={seasonWindows}

@@ -25,7 +25,6 @@ import {
 } from '@features/(processes)/_constants/generate-custom-products/searchParams';
 import { parseBbox, stringifyBbox } from '@features/(processes)/_utils/bbox';
 import { apiFetcher } from '@features/(shared)/_url/apiFetcher';
-import { backgroundLayers } from '@features/(map)/_components/mapBackgroundLayers/backgroundLayers';
 import './CreateProductsStep2Client.css';
 
 const START_YEAR = 2018;
@@ -106,6 +105,7 @@ export default function CreateProductsStep2Client() {
 			processId,
 			format,
 			bbox,
+			backgroundLayer,
 			endDate,
 			orbitState,
 			postprocessMethodCroptype,
@@ -122,8 +122,6 @@ export default function CreateProductsStep2Client() {
 		},
 		setParams,
 	] = useQueryStates(generateCustomProductsSearchParams);
-
-	const [backgroundLayer, setBackgroundLayer] = useState<string | null>(null);
 
 	const [bboxIsInBounds, setBboxIsInBounds] = useState<boolean | null>(null);
 	const [bboxDescription, setBboxDescription] = useState<string | string[] | null>(null);
@@ -268,7 +266,8 @@ export default function CreateProductsStep2Client() {
 	}, []);
 
 	const onSetBackgroundLayer = (value: string | null | ((prev: string | null) => string | null)) => {
-		setBackgroundLayer(typeof value === 'function' ? value(backgroundLayer) : value);
+		const next = typeof value === 'function' ? value(backgroundLayer) : value;
+		setParams({ backgroundLayer: next });
 	};
 
 	const setBBoxExtent = (extent: [number, number, number, number] | null) => {
@@ -342,8 +341,7 @@ export default function CreateProductsStep2Client() {
 						process_type: processTypes.product,
 						...(backgroundLayer
 							? {
-									background_layer:
-										backgroundLayers[backgroundLayer as keyof typeof backgroundLayers]?.name ?? backgroundLayer,
+									background_layer: backgroundLayer,
 								}
 							: {}),
 					}),
