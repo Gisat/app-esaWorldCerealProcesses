@@ -13,4 +13,12 @@ export const generateCustomProductsDefaults = {
 		| 'smooth_probabilities'
 		| 'majority_vote'
 		| undefined,
+	postprocessKernelSizeCroptypeDefault: 5,
+	postprocessKernelSizeCroptypeMin: 1,
+	postprocessKernelSizeCroptypeMax: 25,
+	postprocessKernelSizeCroptypeStep: 2,
+	postprocessKernelSizeCroplandDefault: 3,
+	postprocessKernelSizeCroplandMin: 1,
+	postprocessKernelSizeCroplandMax: 25,
+	postprocessKernelSizeCroplandStep: 2,
 };

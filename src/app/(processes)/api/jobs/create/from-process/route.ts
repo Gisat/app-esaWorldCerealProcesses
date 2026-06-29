@@ -90,13 +90,13 @@ export async function GET(req: NextRequest) {
 			}
 			if (postprocessKernelSizeCroptype !== null && postprocessMethodCroptype === customProductsPostprocessMethods.majorityVote) {
 				const parsedSize = Number(postprocessKernelSizeCroptype);
-				if (isNaN(parsedSize) || parsedSize < 3 || parsedSize > 25 || parsedSize % 2 === 0) {
+				if (isNaN(parsedSize) || parsedSize < 1 || parsedSize > 25 || parsedSize % 2 === 0) {
 					loggyError(
 						'Jobs create from process GET',
 						'Invalid postprocessKernelSizeCroptype for crop type with majority_vote'
 					);
 					throw new BaseHttpError(
-						'Invalid postprocessKernelSizeCroptype: must be an odd integer between 3 and 25',
+						'Invalid postprocessKernelSizeCroptype: must be an odd integer between 1 and 25',
 						400,
 						ErrorBehavior.SSR
 					);

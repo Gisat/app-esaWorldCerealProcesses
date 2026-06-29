@@ -19,6 +19,7 @@ import {
 } from '@features/(processes)/_constants/app';
 import { transformDate } from '@features/(processes)/_utils/transformDate';
 import formParams from '@features/(processes)/_constants/generate-custom-products/formParams';
+import { generateCustomProductsDefaults as defaults } from '@features/(processes)/_constants/generate-custom-products/defaults';
 import {
 	generateCustomProductsSearchParams,
 	serializeGenerateCustomProductsSearchParams,
@@ -136,22 +137,22 @@ export default function CreateProductsStep2Client() {
 	const isCroplandKernelValid =
 		postprocessMethodCropland !== customProductsPostprocessMethods.majorityVote ||
 		(typeof postprocessKernelSizeCropland === 'number' &&
-			postprocessKernelSizeCropland >= 3 &&
-			postprocessKernelSizeCropland <= 25 &&
+			postprocessKernelSizeCropland >= defaults.postprocessKernelSizeCroplandMin &&
+			postprocessKernelSizeCropland <= defaults.postprocessKernelSizeCroplandMax &&
 			postprocessKernelSizeCropland % 2 === 1);
 
 	const isCroptypeKernelValid =
 		postprocessMethodCroptype !== customProductsPostprocessMethods.majorityVote ||
 		(typeof postprocessKernelSizeCroptype === 'number' &&
-			postprocessKernelSizeCroptype >= 3 &&
-			postprocessKernelSizeCroptype <= 25 &&
+			postprocessKernelSizeCroptype >= defaults.postprocessKernelSizeCroptypeMin &&
+			postprocessKernelSizeCroptype <= defaults.postprocessKernelSizeCroptypeMax &&
 			postprocessKernelSizeCroptype % 2 === 1);
 
 	const isCropExtentKernelValid =
 		postprocessMethodCropland !== customProductsPostprocessMethods.majorityVote ||
 		(typeof postprocessKernelSizeCropland === 'number' &&
-			postprocessKernelSizeCropland >= 3 &&
-			postprocessKernelSizeCropland <= 25 &&
+			postprocessKernelSizeCropland >= defaults.postprocessKernelSizeCroplandMin &&
+			postprocessKernelSizeCropland <= defaults.postprocessKernelSizeCroplandMax &&
 			postprocessKernelSizeCropland % 2 === 1);
 
 	const SEASON_ID_PATTERN = /^[a-zA-Z0-9_-]+$/;
@@ -243,25 +244,6 @@ export default function CreateProductsStep2Client() {
 			setStartDate(getDateFromSliderValue(DEFAULT_START_IDX));
 			const endStr = transformDate(getDateFromSliderValue(DEFAULT_END_IDX, true));
 			setParams({ endDate: endStr });
-		}
-
-		if (!orbitState && isCropType) {
-			setParams({ orbitState: 'DESCENDING' });
-		}
-		if (!postprocessMethodCroptype) {
-			setParams({ postprocessMethodCroptype: 'majority_vote' });
-		}
-		if (postprocessKernelSizeCroptype === undefined) {
-			setParams({ postprocessKernelSizeCroptype: 3 });
-		}
-		if (!postprocessMethodCropland) {
-			setParams({ postprocessMethodCropland: 'majority_vote' });
-		}
-		if (postprocessKernelSizeCropland === undefined) {
-			setParams({ postprocessKernelSizeCropland: 3 });
-		}
-		if (maskCropland === undefined) {
-			setParams({ maskCropland: true });
 		}
 	}, []);
 
@@ -662,16 +644,16 @@ export default function CreateProductsStep2Client() {
 												<NumberInput
 													className="worldCereal-Input step2-number-input"
 													size="md"
-													value={postprocessKernelSizeCropland ?? 3}
+													value={postprocessKernelSizeCropland ?? defaults.postprocessKernelSizeCroplandDefault}
 													onChange={(val) => {
 														const num = Number(val);
 														if (!isNaN(num)) {
 															setParams({ postprocessKernelSizeCropland: num });
 														}
 													}}
-													min={3}
-													max={25}
-													step={2}
+													min={defaults.postprocessKernelSizeCroplandMin}
+													max={defaults.postprocessKernelSizeCroplandMax}
+													step={defaults.postprocessKernelSizeCroplandStep}
 												/>
 											</div>
 										)}
@@ -726,21 +708,21 @@ export default function CreateProductsStep2Client() {
 									<NumberInput
 										className="worldCereal-Input step2-number-input"
 										size="md"
-										value={postprocessKernelSizeCroptype ?? 3}
-										onChange={(val) => {
-											const num = Number(val);
-											if (!isNaN(num)) {
-												setParams({ postprocessKernelSizeCroptype: num });
-											}
-										}}
-										min={3}
-										max={25}
-										step={2}
-									/>
-								</div>
-							)}
-							</Stack>
+										value={postprocessKernelSizeCroptype ?? defaults.postprocessKernelSizeCroptypeDefault}
+									onChange={(val) => {
+										const num = Number(val);
+										if (!isNaN(num)) {
+											setParams({ postprocessKernelSizeCroptype: num });
+										}
+									}}
+									min={defaults.postprocessKernelSizeCroptypeMin}
+									max={defaults.postprocessKernelSizeCroptypeMax}
+									step={defaults.postprocessKernelSizeCroptypeStep}
+								/>
+							</div>
 						)}
+						</Stack>
+					)}
 
 						{isCropExtent && (
 							<Stack gap="md" w="100%">
@@ -809,21 +791,21 @@ export default function CreateProductsStep2Client() {
 										<NumberInput
 											className="worldCereal-Input step2-number-input"
 											size="md"
-											value={postprocessKernelSizeCropland ?? 3}
-											onChange={(val) => {
-												const num = Number(val);
-												if (!isNaN(num)) {
-													setParams({ postprocessKernelSizeCropland: num });
-												}
-											}}
-											min={3}
-											max={25}
-											step={2}
-										/>
-									</div>
-								)}
-							</Stack>
-						)}
+											value={postprocessKernelSizeCropland ?? defaults.postprocessKernelSizeCroplandDefault}
+										onChange={(val) => {
+											const num = Number(val);
+											if (!isNaN(num)) {
+												setParams({ postprocessKernelSizeCropland: num });
+											}
+										}}
+										min={defaults.postprocessKernelSizeCroplandMin}
+										max={defaults.postprocessKernelSizeCroplandMax}
+										step={defaults.postprocessKernelSizeCroplandStep}
+									/>
+								</div>
+							)}
+						</Stack>
+					)}
 
 						<Group mt="xl">
 							<Button
