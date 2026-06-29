@@ -52,6 +52,8 @@ type Props = {
 	backgroundLayer?: string | null;
 	setBackgroundLayer?: React.Dispatch<React.SetStateAction<string | null>>;
 	customProperties?: Record<string, unknown>;
+	seasonIds?: string[];
+	seasonWindows?: Array<{ start: string; end: string }>;
 };
 
 const StartJobButton = ({ jobKey, forceReloadList }: { jobKey?: string; forceReloadList?: () => void }) => {
@@ -266,6 +268,8 @@ const Record = ({
 	backgroundLayer,
 	setBackgroundLayer,
 	customProperties,
+	seasonIds,
+	seasonWindows,
 }: // details
 Props) => {
 	const [isExpanded, setIsExpanded] = useState(false);
@@ -282,13 +286,17 @@ Props) => {
 				(option) => option.start === `${timeRange?.[0]}` && option.end === `${timeRange?.[1]}`
 			)?.label;
 		}
-		if (type === processTypes.product && timeRange?.[0] && timeRange?.[1]) {
-			const fmtDate = (d: Date) => {
+		if (type === processTypes.product) {
+			const fmtDate = (d: Date | string) => {
 				const date = new Date(d);
 				return date.toLocaleString('en-US', { month: 'short', year: '2-digit' });
 			};
-			const range = `${fmtDate(timeRange[0])} - ${fmtDate(timeRange[1])}`;
-			const seasonId = (customProperties?.seasonIds as string[] | undefined)?.[0];
+			const seasonWindow = seasonWindows?.[0];
+			const startDate = seasonWindow?.start ?? timeRange?.[0];
+			const endDate = seasonWindow?.end ?? timeRange?.[1];
+			if (!startDate || !endDate) return null;
+			const range = `${fmtDate(startDate)} - ${fmtDate(endDate)}`;
+			const seasonId = seasonIds?.[0];
 			return seasonId ? `${range} (${seasonId})` : range;
 		}
 		return null;

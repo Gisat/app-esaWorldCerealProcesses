@@ -34,6 +34,8 @@ type Props = {
 		postprocessKernelSizeCroptype?: number;
 		title?: string;
 		customProperties?: Record<string, unknown>;
+		seasonIds?: string[];
+		seasonWindows?: Array<{ start: string; end: string }>;
 	}[];
 };
 
@@ -58,23 +60,25 @@ export const ProcessesTable = ({ data, loading, forceReloadList, backgroundLayer
 	const rows = Array.isArray(data) ? (
 		data.map(
 			({
-				format,
-				createdIso,
-				status,
-				results,
-				key,
-				bbox,
-				timeRange,
-				oeoCollection,
-				oeoProcessId,
-				type,
-				collectionName,
-				seasonalModelZip,
-				orbitState,
-				postprocessMethodCroptype,
-				postprocessKernelSizeCroptype,
-				title,
-				customProperties,
+			format,
+			createdIso,
+			status,
+			results,
+			key,
+			bbox,
+			timeRange,
+			oeoCollection,
+			oeoProcessId,
+			type,
+			collectionName,
+			seasonalModelZip,
+			orbitState,
+			postprocessMethodCroptype,
+			postprocessKernelSizeCroptype,
+			title,
+			customProperties,
+			seasonIds,
+			seasonWindows,
 			}) => (
 				<Record
 					key={key}
@@ -102,6 +106,8 @@ export const ProcessesTable = ({ data, loading, forceReloadList, backgroundLayer
 					backgroundLayer={backgroundLayer}
 					setBackgroundLayer={setBackgroundLayer}
 					customProperties={customProperties}
+					seasonIds={seasonIds}
+					seasonWindows={seasonWindows}
 				/>
 			)
 		)
