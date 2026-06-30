@@ -114,32 +114,7 @@ export const generateStep1Schema = z
 		enableCroplandHead: z.boolean().default(DEFAULT_ENABLE_CROPLAND_HEAD),
 		landcoverHeadZip: z.union([z.literal(''), zipUrl]).default(DEFAULT_LANDCOVER_HEAD_ZIP),
 		croptypeHeadZip: z.union([z.literal(''), zipUrl]).default(DEFAULT_CROPTYPE_HEAD_ZIP),
-	})
-	.refine(
-		(data) => {
-			if (
-				data.cropTypeModelType === 'custom' &&
-				data.processId === 'worldcereal_crop_type' &&
-				data.enableCroplandHead
-			) {
-				return data.landcoverHeadZip !== '';
-			}
-			if (data.cropTypeModelType === 'custom' && data.processId === 'worldcereal_crop_extent') {
-				return data.landcoverHeadZip !== '';
-			}
-			return true;
-		},
-		{ message: 'Cropland Head Override URL is required', path: ['landcoverHeadZip'] }
-	)
-	.refine(
-		(data) => {
-			if (data.cropTypeModelType === 'custom' && data.processId === 'worldcereal_crop_type') {
-				return data.croptypeHeadZip !== '';
-			}
-			return true;
-		},
-		{ message: 'Crop Type Head Override URL is required', path: ['croptypeHeadZip'] }
-	);
+	});
 
 // --- Flow 1: Generate Custom Products (Step 2) ---
 
