@@ -130,6 +130,7 @@ export default function CreateProductsStep2Client() {
 			postprocessKernelSizeCropland,
 			customSeasonId,
 			selectedPeriodId,
+			cropTypeModelType,
 		},
 		setParams,
 	] = useQueryStates(generateCustomProductsSearchParams);
@@ -382,7 +383,7 @@ export default function CreateProductsStep2Client() {
 		router.push(
 			serializeGenerateCustomProductsSearchParams('/generate-custom-products/steps/1', {
 				processId,
-				cropTypeModelType: undefined,
+				cropTypeModelType,
 				seasonalModelZip,
 				enableCroplandHead,
 				landcoverHeadZip,

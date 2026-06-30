@@ -14,7 +14,7 @@ export const CreateCustomProductsStepper = ({ children }: { children: React.Reac
 	const pathname = usePathname();
 	const activeStep = Number(pathname.split('/').pop()) || 1;
 
-	const [{ processId, format, bbox, endDate, backgroundLayer, orbitState, postprocessMethodCroptype, postprocessKernelSizeCroptype }] =
+	const [{ processId, format, bbox, endDate, backgroundLayer, orbitState, postprocessMethodCroptype, postprocessKernelSizeCroptype, cropTypeModelType }] =
 		useQueryStates(generateCustomProductsSearchParams);
 
 	const bboxArr = parseBbox(bbox);
@@ -30,7 +30,7 @@ export const CreateCustomProductsStepper = ({ children }: { children: React.Reac
 		if (targetStep === activeStep) return;
 		const href = serializeGenerateCustomProductsSearchParams(
 			`/generate-custom-products/steps/${targetStep}`,
-			{ processId, format, bbox, endDate, backgroundLayer, orbitState, postprocessMethodCroptype, postprocessKernelSizeCroptype }
+			{ processId, format, bbox, endDate, backgroundLayer, orbitState, postprocessMethodCroptype, postprocessKernelSizeCroptype, cropTypeModelType }
 		);
 		router.push(href);
 	};
