@@ -30,6 +30,7 @@ export default function DownloadStep3Client() {
 	 * @type {boolean}
 	 */
 	const [shouldFetch, setShouldFetch] = useState(false);
+	const [startedData, setStartedData] = useState<{ key: string; status: string } | null>(null);
 
 	/**
 	 * URL for starting the job process.
@@ -67,11 +68,12 @@ export default function DownloadStep3Client() {
 	}, [urlBackgroundLayer, data]);
 
 	/**
-	 * Effect to reset the fetch state when process data is retrieved.
+	 * Effect to reset the fetch state and capture started process data.
 	 */
 	useEffect(() => {
 		if (shouldFetch && startedProcessData) {
 			setShouldFetch(false);
+			setStartedData(startedProcessData);
 		}
 	}, [shouldFetch, startedProcessData]);
 
@@ -79,13 +81,13 @@ export default function DownloadStep3Client() {
 	 * Effect to navigate to the process list when the process is successfully started.
 	 */
 	useEffect(() => {
-		if (startedProcessData?.key && startedProcessData?.status) {
+		if (startedData?.key && startedData?.status) {
 			const timer = setTimeout(() => {
 				router.push('/processes-list');
 			}, 50);
 			return () => clearTimeout(timer);
 		}
-	}, [startedProcessData, router]);
+	}, [startedData, router]);
 
 	/**
 	 * Handler to start the process and fetch data.
