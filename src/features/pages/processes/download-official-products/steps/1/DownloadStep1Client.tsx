@@ -13,6 +13,7 @@ import {
 	downloadOfficialProductsSearchParams,
 	serializeDownloadOfficialProductsSearchParams,
 } from '@features/(processes)/_constants/download-official-products/searchParams';
+import { downloadStep1Schema, nullsToUndefined } from '@features/(processes)/_constants/validation';
 
 /**
  * Component representing the first step in the "Download Official Products" process.
@@ -25,11 +26,12 @@ import {
 export default function DownloadStep1Client() {
 	const [{ collection, product }, setParams] = useQueryStates(downloadOfficialProductsSearchParams);
 
-	/**
-	 * Determines whether the next step is disabled based on the current state.
-	 * @type {boolean}
-	 */
-	const nextStepDisabled = !collection || !product;
+	const validation = downloadStep1Schema.safeParse(nullsToUndefined({
+		collection,
+		product,
+	}));
+
+	const nextStepDisabled = !validation.success;
 
 	/**
 	 * Updates the selected product collection in the URL state.

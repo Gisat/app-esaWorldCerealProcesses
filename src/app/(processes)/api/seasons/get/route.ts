@@ -1,6 +1,7 @@
 import { fetchWithSessions } from '@features/(auth)/_ssr/handlers.sessionFetch';
 import { handleRouteError } from "@gisatcz/ptr-fe-core/globals";
 import { NextRequest, NextResponse } from 'next/server';
+import { seasonsParamsSchema } from '@features/(processes)/_constants/validation';
 
 const handleSeasonsRequest = async (request: NextRequest) => {
 	try {
@@ -9,27 +10,26 @@ const handleSeasonsRequest = async (request: NextRequest) => {
 
 		if (request.method === 'POST') {
 			const body = await request.json();
-			bbox = body.bbox;
-			epsg = body.epsg;
+			if (Array.isArray(body.bbox)) {
+				body.bbox = body.bbox.join(',');
+			}
+			const result = seasonsParamsSchema.safeParse(body);
+			if (!result.success) {
+				return NextResponse.json({ error: result.error.issues[0].message }, { status: 400 });
+			}
+			bbox = result.data.bbox.split(',').map(Number);
+			epsg = result.data.epsg;
 		} else {
 			const searchParams = request.nextUrl.searchParams;
-			const bboxStr = searchParams.get('bbox');
-			const epsgStr = searchParams.get('epsg');
-
-			if (!bboxStr || !epsgStr) {
-				return NextResponse.json({ error: 'Missing required parameters: bbox and epsg are required' }, { status: 400 });
+			const result = seasonsParamsSchema.safeParse({
+				bbox: searchParams.get('bbox') ?? '',
+				epsg: searchParams.get('epsg') ?? '',
+			});
+			if (!result.success) {
+				return NextResponse.json({ error: result.error.issues[0].message }, { status: 400 });
 			}
-
-			bbox = bboxStr.split(',').map(Number);
-			epsg = Number(epsgStr);
-		}
-
-		if (!bbox || !epsg) {
-			return NextResponse.json({ error: 'Missing required parameters: bbox and epsg are required' }, { status: 400 });
-		}
-
-		if (isNaN(epsg)) {
-			return NextResponse.json({ error: 'Invalid epsg code' }, { status: 400 });
+			bbox = result.data.bbox.split(',').map(Number);
+			epsg = result.data.epsg;
 		}
 
 		const openeoUrlPrefix = process.env.OEO_URL;

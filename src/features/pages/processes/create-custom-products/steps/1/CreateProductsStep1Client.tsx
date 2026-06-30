@@ -12,9 +12,8 @@ import {
 	serializeGenerateCustomProductsSearchParams,
 } from '@features/(processes)/_constants/generate-custom-products/searchParams';
 import { customProductsProductTypes } from '@features/(processes)/_constants/app';
+import { generateStep1Schema } from '@features/(processes)/_constants/validation';
 import './CreateProductsStep1Client.css';
-
-const zipUrlRegex = /^https?:\/\/.+\.zip$/i;
 
 export default function CreateProductsStep1Client() {
 	const [
@@ -37,17 +36,16 @@ export default function CreateProductsStep1Client() {
 	const [localLandcoverHeadZip, setLocalLandcoverHeadZip] = useState<string>(landcoverHeadZip ?? '');
 	const [localCroptypeHeadZip, setLocalCroptypeHeadZip] = useState<string>(croptypeHeadZip ?? '');
 
-	const isSeasonalModelZipValid = localSeasonalModelZip === '' || zipUrlRegex.test(localSeasonalModelZip);
-	const isLandcoverHeadZipValid = localLandcoverHeadZip === '' || zipUrlRegex.test(localLandcoverHeadZip);
-	const isCroptypeHeadZipValid = localCroptypeHeadZip === '' || zipUrlRegex.test(localCroptypeHeadZip);
+	const validation = generateStep1Schema.safeParse({
+		processId,
+		cropTypeModelType,
+		seasonalModelZip: localSeasonalModelZip,
+		enableCroplandHead,
+		landcoverHeadZip: localLandcoverHeadZip,
+		croptypeHeadZip: localCroptypeHeadZip,
+	});
 
-	const hasValidationErrors =
-		isCustomModel &&
-		(!isSeasonalModelZipValid ||
-			((isCropType ? (enableCroplandHead ?? true) : true) && !isLandcoverHeadZipValid) ||
-			(isCropType && !isCroptypeHeadZipValid));
-
-	const nextStepDisabled = !processId || hasValidationErrors;
+	const nextStepDisabled = !processId || !validation.success;
 
 	const setProduct = (value: string | null) => {
 		if (value && value !== processId) {
@@ -82,20 +80,41 @@ export default function CreateProductsStep1Client() {
 
 	const handleSeasonalModelZipChange = (value: string) => {
 		setLocalSeasonalModelZip(value);
-		const isValid = value === '' || zipUrlRegex.test(value);
-		setParams({ seasonalModelZip: isValid && value !== '' ? value : null });
+		const result = generateStep1Schema.safeParse({
+			processId,
+			cropTypeModelType,
+			seasonalModelZip: value,
+			enableCroplandHead,
+			landcoverHeadZip: localLandcoverHeadZip,
+			croptypeHeadZip: localCroptypeHeadZip,
+		});
+		setParams({ seasonalModelZip: result.success && value !== '' ? value : null });
 	};
 
 	const handleLandcoverHeadZipChange = (value: string) => {
 		setLocalLandcoverHeadZip(value);
-		const isValid = value === '' || zipUrlRegex.test(value);
-		setParams({ landcoverHeadZip: isValid && value !== '' ? value : null });
+		const result = generateStep1Schema.safeParse({
+			processId,
+			cropTypeModelType,
+			seasonalModelZip: localSeasonalModelZip,
+			enableCroplandHead,
+			landcoverHeadZip: value,
+			croptypeHeadZip: localCroptypeHeadZip,
+		});
+		setParams({ landcoverHeadZip: result.success && value !== '' ? value : null });
 	};
 
 	const handleCroptypeHeadZipChange = (value: string) => {
 		setLocalCroptypeHeadZip(value);
-		const isValid = value === '' || zipUrlRegex.test(value);
-		setParams({ croptypeHeadZip: isValid && value !== '' ? value : null });
+		const result = generateStep1Schema.safeParse({
+			processId,
+			cropTypeModelType,
+			seasonalModelZip: localSeasonalModelZip,
+			enableCroplandHead,
+			landcoverHeadZip: localLandcoverHeadZip,
+			croptypeHeadZip: value,
+		});
+		setParams({ croptypeHeadZip: result.success && value !== '' ? value : null });
 	};
 
 	const handleEnableCroplandHeadChange = (checked: boolean) => {
@@ -114,6 +133,8 @@ export default function CreateProductsStep1Client() {
 			setParams({ enableCroplandHead: true });
 		}
 	}, [processId, isCropType]);
+
+	const fieldErrors = validation.success ? {} : validation.error.flatten().fieldErrors;
 
 	const continueHref = serializeGenerateCustomProductsSearchParams('/generate-custom-products/steps/2', {
 		processId,
@@ -166,7 +187,7 @@ export default function CreateProductsStep1Client() {
 										<TextInput
 											size="md"
 											placeholder="https://example.zip"
-											error={!isSeasonalModelZipValid ? 'URL not valid (must end with .zip)' : null}
+											error={fieldErrors.seasonalModelZip?.[0] ?? null}
 											value={localSeasonalModelZip}
 											onChange={(e) => handleSeasonalModelZipChange(e.currentTarget.value)}
 										/>
@@ -182,7 +203,7 @@ export default function CreateProductsStep1Client() {
 											<TextInput
 												size="md"
 												placeholder="https://example.zip"
-												error={!isLandcoverHeadZipValid ? 'URL not valid (must end with .zip)' : null}
+												error={fieldErrors.landcoverHeadZip?.[0] ?? null}
 												value={localLandcoverHeadZip}
 												onChange={(e) => handleLandcoverHeadZipChange(e.currentTarget.value)}
 											/>
@@ -217,7 +238,7 @@ export default function CreateProductsStep1Client() {
 															<TextInput
 																size="md"
 																placeholder="https://example.zip"
-																error={!isLandcoverHeadZipValid ? 'URL not valid (must end with .zip)' : null}
+																error={fieldErrors.landcoverHeadZip?.[0] ?? null}
 																value={localLandcoverHeadZip}
 																onChange={(e) => handleLandcoverHeadZipChange(e.currentTarget.value)}
 															/>
@@ -235,7 +256,7 @@ export default function CreateProductsStep1Client() {
 												<TextInput
 													size="md"
 													placeholder="https://example.zip"
-													error={!isCroptypeHeadZipValid ? 'URL not valid (must end with .zip)' : null}
+													error={fieldErrors.croptypeHeadZip?.[0] ?? null}
 													value={localCroptypeHeadZip}
 													onChange={(e) => handleCroptypeHeadZipChange(e.currentTarget.value)}
 												/>

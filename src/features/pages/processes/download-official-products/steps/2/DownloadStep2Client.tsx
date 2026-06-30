@@ -17,6 +17,7 @@ import {
 	downloadOfficialProductsSearchParams,
 	serializeDownloadOfficialProductsSearchParams,
 } from '@features/(processes)/_constants/download-official-products/searchParams';
+import { downloadStep2Schema, nullsToUndefined } from '@features/(processes)/_constants/validation';
 import { parseBbox, stringifyBbox } from '@features/(processes)/_utils/bbox';
 import type { BBoxModel } from '@features/(processes)/_utils/bbox';
 import { apiFetcher } from '@features/(shared)/_url/apiFetcher';
@@ -69,11 +70,14 @@ export default function DownloadStep2Client() {
 	 */
 	const bboxArr = parseBbox(bbox);
 
-	/**
-	 * Determines whether the next step is disabled based on the current state.
-	 * @type {boolean}
-	 */
-	const nextStepDisabled = !bboxIsInBounds || !bboxArr || !collection || !product || !format;
+	const validation = downloadStep2Schema.safeParse(nullsToUndefined({
+		collection,
+		product,
+		bbox,
+		format,
+	}));
+
+	const nextStepDisabled = !bboxIsInBounds || !validation.success;
 
 	/**
 	 * Updates the output file format in the URL state.

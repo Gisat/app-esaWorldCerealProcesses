@@ -8,6 +8,7 @@ import getBoundaryDates from '@features/(processes)/_utils/boundaryDates';
 import { transformDate } from '@features/(processes)/_utils/transformDate';
 import { getRequireSessionId } from '@features/(auth)/_utils/requireSessionId';
 import { customProductsPostprocessMethods, customProductsProductTypes } from '@features/(processes)/_constants/app';
+import { fromProcessParamsSchema } from '@features/(processes)/_constants/validation';
 import { UsedAuthCookies } from '@features/(shared)/ssr/ssr-auth/enums.auth';
 import { loggyError, loggyWarn } from '@gisatcz/ptr-be-core/node';
 
@@ -23,96 +24,35 @@ export async function GET(req: NextRequest) {
 
 		// read query params from the request URL
 		const { searchParams } = req.nextUrl;
-
-		const bbox = searchParams.get('bbox');
-		const format = searchParams.get('format');
-		const endDate = searchParams.get('endDate');
-		const processId = searchParams.get('processId');
-		const seasonalModelZip = searchParams.get('seasonalModelZip');
-		const orbitState = searchParams.get('orbitState');
-		const postprocessMethodCroptype = searchParams.get('postprocessMethodCroptype');
-		const postprocessKernelSizeCroptype = searchParams.get('postprocessKernelSizeCroptype');
-		const postprocessMethod = searchParams.get('postprocessMethod');
-		const postprocessKernelSize = searchParams.get('postprocessKernelSize');
-		const seasonWindowsParam = searchParams.get('seasonWindows');
 		const title = searchParams.get('title');
-		const customPropertiesRaw = searchParams.get('customProperties');
-		const enableCroplandHeadParam = searchParams.get('enableCroplandHead');
-		const landcoverHeadZip = searchParams.get('landcoverHeadZip');
-		const croptypeHeadZip = searchParams.get('croptypeHeadZip');
-		const maskCroplandParam = searchParams.get('maskCropland');
-		const postprocessMethodCropland = searchParams.get('postprocessMethodCropland');
-		const postprocessKernelSizeCropland = searchParams.get('postprocessKernelSizeCropland');
 
-		// validate inputs for safe aggregation
-		if (!endDate) {
-			loggyError('Jobs create from process GET', 'Missing endDate value');
-			throw new BaseHttpError('Missing endDate value', 400, ErrorBehavior.SSR);
+		const result = fromProcessParamsSchema.safeParse(Object.fromEntries(searchParams));
+		if (!result.success) {
+			const firstIssue = result.error.issues[0];
+			loggyError('Jobs create from process GET', firstIssue.message);
+			throw new BaseHttpError(firstIssue.message, 400, ErrorBehavior.SSR);
 		}
 
-		if (!bbox) {
-			loggyError('Jobs create from process GET', 'Missing bbox value');
-			throw new BaseHttpError('Missing bbox value', 400, ErrorBehavior.SSR);
-		}
-
-		if (!format) {
-			loggyError('Jobs create from process GET', 'Missing format value');
-			throw new BaseHttpError('Missing format value', 400, ErrorBehavior.SSR);
-		}
-
-		if (!seasonWindowsParam) {
-			loggyError('Jobs create from process GET', 'Missing seasonWindows value');
-			throw new BaseHttpError('Missing seasonWindows value', 400, ErrorBehavior.SSR);
-		}
-
-		let seasonWindows;
-		try {
-			seasonWindows = JSON.parse(seasonWindowsParam);
-		} catch (error) {
-			loggyError('Jobs create from process GET', 'Invalid seasonWindows value');
-			throw new BaseHttpError('Invalid seasonWindows value', 400, ErrorBehavior.SSR);
-		}
-
-		if (!seasonWindows || typeof seasonWindows !== 'object' || Array.isArray(seasonWindows)) {
-			loggyError('Jobs create from process GET', 'Invalid seasonWindows payload shape');
-			throw new BaseHttpError('Invalid seasonWindows payload shape', 400, ErrorBehavior.SSR);
-		}
-
-		// Additional validation for crop type parameters
-		if (processId === customProductsProductTypes.cropType) {
-			if (!orbitState) {
-				loggyError('Jobs create from process GET', 'Missing orbitState for crop type');
-				throw new BaseHttpError('Missing orbitState for crop type', 400, ErrorBehavior.SSR);
-			}
-			if (!postprocessMethodCroptype) {
-				loggyError('Jobs create from process GET', 'Missing postprocessMethodCroptype for crop type');
-				throw new BaseHttpError('Missing postprocessMethodCroptype for crop type', 400, ErrorBehavior.SSR);
-			}
-			if (postprocessKernelSizeCroptype !== null && postprocessMethodCroptype === customProductsPostprocessMethods.majorityVote) {
-				const parsedSize = Number(postprocessKernelSizeCroptype);
-				if (isNaN(parsedSize) || parsedSize < 1 || parsedSize > 25 || parsedSize % 2 === 0) {
-					loggyError(
-						'Jobs create from process GET',
-						'Invalid postprocessKernelSizeCroptype for crop type with majority_vote'
-					);
-					throw new BaseHttpError(
-						'Invalid postprocessKernelSizeCroptype: must be an odd integer between 1 and 25',
-						400,
-						ErrorBehavior.SSR
-					);
-				}
-			}
-		}
-
-		let customProperties: Record<string, unknown> | undefined;
-		if (customPropertiesRaw) {
-			try {
-				customProperties = JSON.parse(customPropertiesRaw);
-			} catch {
-				loggyError('Jobs create from process GET', 'Invalid customProperties JSON');
-				throw new BaseHttpError('Invalid customProperties value', 400, ErrorBehavior.SSR);
-			}
-		}
+		const {
+			processId,
+			bbox: bboxStr,
+			format,
+			endDate,
+			seasonWindows,
+			seasonalModelZip,
+			orbitState,
+			postprocessMethodCroptype,
+			postprocessKernelSizeCroptype,
+			postprocessMethod,
+			postprocessKernelSize,
+			postprocessMethodCropland,
+			postprocessKernelSizeCropland,
+			enableCroplandHead,
+			landcoverHeadZip,
+			croptypeHeadZip,
+			maskCropland,
+			customProperties,
+		} = result.data;
 
 		// prepare data for the request
 		// Parse date as local time to avoid timezone issues
@@ -122,15 +62,12 @@ export async function GET(req: NextRequest) {
 		const startDate = transformDate(boundaryDates.startDate);
 		const transformedEndDate = transformDate(boundaryDates.endDate);
 
-		const enableCroplandHead = enableCroplandHeadParam !== null ? enableCroplandHeadParam === 'true' : undefined;
-		const maskCropland = maskCroplandParam !== null ? maskCroplandParam === 'true' : undefined;
-
 		const isCropType = processId === customProductsProductTypes.cropType;
 
 		const data = {
 			processId,
 			namespace: getNamespaceByProcessId(processId),
-			bbox: bbox.split(',').map(Number),
+			bbox: bboxStr.split(',').map(Number),
 			crs: 'EPSG:4326',
 			timeRange: [startDate, transformedEndDate],
 			seasonWindows,
@@ -140,11 +77,11 @@ export async function GET(req: NextRequest) {
 			...(orbitState && { orbitState }),
 			...(isCropType && postprocessMethodCroptype ? { postprocessMethodCroptype } : {}),
 			...(isCropType && postprocessMethodCroptype === customProductsPostprocessMethods.majorityVote && postprocessKernelSizeCroptype
-				? { postprocessKernelSizeCroptype: Number(postprocessKernelSizeCroptype) }
+				? { postprocessKernelSizeCroptype }
 				: {}),
 			...(!isCropType && postprocessMethod ? { postprocessMethod } : {}),
 			...(!isCropType && postprocessMethod === customProductsPostprocessMethods.majorityVote && postprocessKernelSize
-				? { postprocessKernelSize: Number(postprocessKernelSize) }
+				? { postprocessKernelSize }
 				: {}),
 			...(enableCroplandHead !== undefined && { enableCroplandHead }),
 			...(enableCroplandHead && landcoverHeadZip ? { landcoverHeadZip } : {}),
@@ -152,7 +89,7 @@ export async function GET(req: NextRequest) {
 			...(maskCropland !== undefined && enableCroplandHead ? { maskCropland } : {}),
 			...(postprocessMethodCropland && enableCroplandHead ? { postprocessMethodCropland } : {}),
 			...(postprocessMethodCropland === customProductsPostprocessMethods.majorityVote && postprocessKernelSizeCropland && enableCroplandHead
-				? { postprocessKernelSizeCropland: Number(postprocessKernelSizeCropland) }
+				? { postprocessKernelSizeCropland }
 				: {}),
 			...(customProperties ? { customProperties } : {}),
 		};

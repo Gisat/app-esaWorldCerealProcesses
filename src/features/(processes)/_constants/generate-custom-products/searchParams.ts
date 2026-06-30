@@ -1,5 +1,4 @@
 import {
-	createSearchParamsCache,
 	createSerializer,
 	parseAsBoolean,
 	parseAsInteger,
@@ -7,7 +6,16 @@ import {
 	parseAsStringLiteral,
 } from 'nuqs/server';
 import formParams from './formParams';
-import { generateCustomProductsDefaults as defaults } from './defaults';
+import {
+	DEFAULT_CROP_TYPE_MODEL_TYPE,
+	DEFAULT_END_DATE,
+	DEFAULT_FORMAT,
+	DEFAULT_ORBIT_STATE,
+	DEFAULT_POSTPROCESS_KERNEL_SIZE_CROPLAND,
+	DEFAULT_POSTPROCESS_KERNEL_SIZE_CROPTYPE,
+	DEFAULT_POSTPROCESS_METHOD_CROPLAND,
+	DEFAULT_POSTPROCESS_METHOD_CROPTYPE,
+} from '@features/(processes)/_constants/defaults';
 
 const processIdValues = formParams.processId.options.filter((o) => !o.disabled).map((o) => o.value) as [string, ...string[]];
 const formatValues = formParams.format.options.map((o) => o.value) as [string, ...string[]];
@@ -18,7 +26,6 @@ const postprocessMethodCroplandValues = formParams.postprocessMethodCropland.opt
 
 /**
  * Shared parser map for generate-custom-products. Used by:
- *  - createSearchParamsCache (server hydration)
  *  - useQueryStates (client components)
  *
  * Typing notes:
@@ -28,27 +35,25 @@ const postprocessMethodCroplandValues = formParams.postprocessMethodCropland.opt
  */
 export const generateCustomProductsSearchParams = {
 	processId: parseAsStringLiteral(processIdValues),
-	cropTypeModelType: parseAsStringLiteral(cropTypeModelTypeValues).withDefault(defaults.cropTypeModelType ?? 'default'),
-	format: parseAsStringLiteral(formatValues).withDefault(defaults.format!),
+	cropTypeModelType: parseAsStringLiteral(cropTypeModelTypeValues).withDefault(DEFAULT_CROP_TYPE_MODEL_TYPE),
+	format: parseAsStringLiteral(formatValues).withDefault(DEFAULT_FORMAT),
 	bbox: parseAsString,
 	backgroundLayer: parseAsString,
-	endDate: parseAsString.withDefault(defaults.endDate ?? '2025-09-30'),
-	orbitState: parseAsStringLiteral(orbitStateValues).withDefault(defaults.orbitState!),
-	postprocessMethodCroptype: parseAsStringLiteral(postprocessMethodCroptypeValues).withDefault(defaults.postprocessMethodCroptype!),
-	postprocessKernelSizeCroptype: parseAsInteger.withDefault(defaults.postprocessKernelSizeCroptypeDefault!),
+	endDate: parseAsString.withDefault(DEFAULT_END_DATE),
+	orbitState: parseAsStringLiteral(orbitStateValues).withDefault(DEFAULT_ORBIT_STATE),
+	postprocessMethodCroptype: parseAsStringLiteral(postprocessMethodCroptypeValues).withDefault(DEFAULT_POSTPROCESS_METHOD_CROPTYPE),
+	postprocessKernelSizeCroptype: parseAsInteger.withDefault(DEFAULT_POSTPROCESS_KERNEL_SIZE_CROPTYPE),
 	seasonalModelZip: parseAsString,
 	enableCroplandHead: parseAsBoolean.withDefault(true),
 	landcoverHeadZip: parseAsString,
 	croptypeHeadZip: parseAsString,
 	maskCropland: parseAsBoolean.withDefault(true),
-	postprocessMethodCropland: parseAsStringLiteral(postprocessMethodCroplandValues).withDefault(defaults.postprocessMethodCropland!),
-	postprocessKernelSizeCropland: parseAsInteger.withDefault(defaults.postprocessKernelSizeCroplandDefault!),
+	postprocessMethodCropland: parseAsStringLiteral(postprocessMethodCroplandValues).withDefault(DEFAULT_POSTPROCESS_METHOD_CROPLAND),
+	postprocessKernelSizeCropland: parseAsInteger.withDefault(DEFAULT_POSTPROCESS_KERNEL_SIZE_CROPLAND),
 	customSeasonId: parseAsString,
 	selectedPeriodId: parseAsString,
 	jobKey: parseAsString,
 };
-
-export const generateCustomProductsSearchParamsCache = createSearchParamsCache(generateCustomProductsSearchParams);
 
 /**
  * Serializes a partial set of generate-custom-products URL state values into

@@ -11,6 +11,3 @@ export function stringifyBbox(bbox: BBoxModel): string | null {
 	if (!bbox || bbox.length !== 4) return null;
 	return bbox.join(',');
 }
-
-/** @deprecated Use BBoxModel instead */
-export type DownloadOfficialProductsBBoxModel = BBoxModel;

@@ -1,6 +1,6 @@
-import { createSearchParamsCache, createSerializer, parseAsStringLiteral, parseAsString } from 'nuqs/server';
+import { createSerializer, parseAsStringLiteral, parseAsString } from 'nuqs/server';
 import formParams from './formParams';
-import { downloadOfficialProductsDefaults as defaults } from './defaults';
+import { DEFAULT_COLLECTION, DEFAULT_FORMAT } from '@features/(processes)/_constants/defaults';
 
 const collectionValues = formParams.collection.options.map((o) => o.value) as [string, ...string[]];
 const productValues = formParams.product.options.map((o) => o.value) as [string, ...string[]];
@@ -11,7 +11,6 @@ const formatValues = formParams.format.options.map((o) => o.value) as [
 
 /**
  * Shared parser map. Used by:
- *  - createSearchParamsCache (server hydration)
  *  - useQueryStates (client components)
  *
  * Typing notes:
@@ -20,16 +19,12 @@ const formatValues = formParams.format.options.map((o) => o.value) as [
  *    `null` means "not set"; setting to null removes the key from the URL.
  */
 export const downloadOfficialProductsSearchParams = {
-	collection: parseAsStringLiteral(collectionValues).withDefault(defaults.collection!),
+	collection: parseAsStringLiteral(collectionValues).withDefault(DEFAULT_COLLECTION),
 	product: parseAsStringLiteral(productValues),
-	format: parseAsStringLiteral(formatValues).withDefault(defaults.format!),
+	format: parseAsStringLiteral(formatValues).withDefault(DEFAULT_FORMAT),
 	bbox: parseAsString,
 	backgroundLayer: parseAsString,
 };
-
-export const downloadOfficialProductsSearchParamsCache = createSearchParamsCache(
-	downloadOfficialProductsSearchParams
-);
 
 /**
  * Serializes a partial set of download-official-products URL state values into

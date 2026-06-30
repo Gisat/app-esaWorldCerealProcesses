@@ -19,11 +19,21 @@ import {
 } from '@features/(processes)/_constants/app';
 import { transformDate } from '@features/(processes)/_utils/transformDate';
 import formParams from '@features/(processes)/_constants/generate-custom-products/formParams';
-import { generateCustomProductsDefaults as defaults } from '@features/(processes)/_constants/generate-custom-products/defaults';
+import {
+	DEFAULT_POSTPROCESS_KERNEL_SIZE_CROPLAND,
+	DEFAULT_POSTPROCESS_KERNEL_SIZE_CROPTYPE,
+	KERNEL_SIZE_CROPLAND_MAX,
+	KERNEL_SIZE_CROPLAND_MIN,
+	KERNEL_SIZE_CROPLAND_STEP,
+	KERNEL_SIZE_CROPTYPE_MAX,
+	KERNEL_SIZE_CROPTYPE_MIN,
+	KERNEL_SIZE_CROPTYPE_STEP,
+} from '@features/(processes)/_constants/defaults';
 import {
 	generateCustomProductsSearchParams,
 	serializeGenerateCustomProductsSearchParams,
 } from '@features/(processes)/_constants/generate-custom-products/searchParams';
+import { generateStep2Schema, nullsToUndefined } from '@features/(processes)/_constants/validation';
 import { parseBbox, stringifyBbox } from '@features/(processes)/_utils/bbox';
 import { apiFetcher } from '@features/(shared)/_url/apiFetcher';
 import './CreateProductsStep2Client.css';
@@ -134,30 +144,20 @@ export default function CreateProductsStep2Client() {
 	const isCropType = processId === customProductsProductTypes.cropType;
 	const isCropExtent = processId === customProductsProductTypes.cropExtent;
 
-	const isCroplandKernelValid =
-		postprocessMethodCropland !== customProductsPostprocessMethods.majorityVote ||
-		(typeof postprocessKernelSizeCropland === 'number' &&
-			postprocessKernelSizeCropland >= defaults.postprocessKernelSizeCroplandMin &&
-			postprocessKernelSizeCropland <= defaults.postprocessKernelSizeCroplandMax &&
-			postprocessKernelSizeCropland % 2 === 1);
-
-	const isCroptypeKernelValid =
-		postprocessMethodCroptype !== customProductsPostprocessMethods.majorityVote ||
-		(typeof postprocessKernelSizeCroptype === 'number' &&
-			postprocessKernelSizeCroptype >= defaults.postprocessKernelSizeCroptypeMin &&
-			postprocessKernelSizeCroptype <= defaults.postprocessKernelSizeCroptypeMax &&
-			postprocessKernelSizeCroptype % 2 === 1);
-
-	const isCropExtentKernelValid =
-		postprocessMethodCropland !== customProductsPostprocessMethods.majorityVote ||
-		(typeof postprocessKernelSizeCropland === 'number' &&
-			postprocessKernelSizeCropland >= defaults.postprocessKernelSizeCroplandMin &&
-			postprocessKernelSizeCropland <= defaults.postprocessKernelSizeCroplandMax &&
-			postprocessKernelSizeCropland % 2 === 1);
-
-	const SEASON_ID_PATTERN = /^[a-zA-Z0-9_-]+$/;
-
-	const isSeasonIdValid = !customSeasonId || SEASON_ID_PATTERN.test(customSeasonId);
+	const validation = generateStep2Schema.safeParse(nullsToUndefined({
+		processId,
+		bbox,
+		endDate,
+		customSeasonId,
+		format,
+		orbitState,
+		postprocessMethodCroptype,
+		postprocessKernelSizeCroptype,
+		postprocessMethodCropland,
+		postprocessKernelSizeCropland,
+		maskCropland,
+		enableCroplandHead,
+	}));
 
 	const [startDate, setStartDate] = useState<Date | null>(null);
 	const [userTouchedSeasonId, setUserTouchedSeasonId] = useState<boolean>(false);
@@ -172,9 +172,7 @@ export default function CreateProductsStep2Client() {
 		!processId ||
 		!startDate ||
 		!endDate ||
-		!isSeasonIdValid ||
-		(isCropType && (!orbitState || !isCroplandKernelValid || !isCroptypeKernelValid)) ||
-		(isCropExtent && !isCropExtentKernelValid);
+		!validation.success;
 
 	const suggestedPeriodsApiUrl = '/api/seasons/get';
 	const [debouncedBbox, setDebouncedBbox] = useState<string | null>(null);
@@ -549,13 +547,13 @@ export default function CreateProductsStep2Client() {
 								size="md"
 								label="2.2.3. Enter season ID"
 								description="Alphanumeric characters, underscores, and hyphens only."
-								error={!isSeasonIdValid ? 'Only letters, numbers, underscores, and hyphens are allowed.' : undefined}
+								error={!validation.success && validation.error?.flatten().fieldErrors.customSeasonId?.[0]}
 							>
 								<TextInput
 									size="md"
 									placeholder="e.g. 2022"
 									value={customSeasonId ?? ''}
-									error={!isSeasonIdValid}
+									error={!validation.success && validation.error?.flatten().fieldErrors.customSeasonId?.[0]}
 									onChange={(e) => {
 										setUserTouchedSeasonId(true);
 										setParams({ customSeasonId: e.currentTarget.value });
@@ -644,16 +642,16 @@ export default function CreateProductsStep2Client() {
 												<NumberInput
 													className="worldCereal-Input step2-number-input"
 													size="md"
-													value={postprocessKernelSizeCropland ?? defaults.postprocessKernelSizeCroplandDefault}
+													value={postprocessKernelSizeCropland ?? DEFAULT_POSTPROCESS_KERNEL_SIZE_CROPLAND}
 													onChange={(val) => {
 														const num = Number(val);
 														if (!isNaN(num)) {
 															setParams({ postprocessKernelSizeCropland: num });
 														}
 													}}
-													min={defaults.postprocessKernelSizeCroplandMin}
-													max={defaults.postprocessKernelSizeCroplandMax}
-													step={defaults.postprocessKernelSizeCroplandStep}
+													min={KERNEL_SIZE_CROPLAND_MIN}
+													max={KERNEL_SIZE_CROPLAND_MAX}
+													step={KERNEL_SIZE_CROPLAND_STEP}
 												/>
 											</div>
 										)}
@@ -708,16 +706,16 @@ export default function CreateProductsStep2Client() {
 									<NumberInput
 										className="worldCereal-Input step2-number-input"
 										size="md"
-										value={postprocessKernelSizeCroptype ?? defaults.postprocessKernelSizeCroptypeDefault}
+										value={postprocessKernelSizeCroptype ?? DEFAULT_POSTPROCESS_KERNEL_SIZE_CROPTYPE}
 									onChange={(val) => {
 										const num = Number(val);
 										if (!isNaN(num)) {
 											setParams({ postprocessKernelSizeCroptype: num });
 										}
 									}}
-									min={defaults.postprocessKernelSizeCroptypeMin}
-									max={defaults.postprocessKernelSizeCroptypeMax}
-									step={defaults.postprocessKernelSizeCroptypeStep}
+									min={KERNEL_SIZE_CROPTYPE_MIN}
+									max={KERNEL_SIZE_CROPTYPE_MAX}
+									step={KERNEL_SIZE_CROPTYPE_STEP}
 								/>
 							</div>
 						)}
@@ -791,16 +789,16 @@ export default function CreateProductsStep2Client() {
 										<NumberInput
 											className="worldCereal-Input step2-number-input"
 											size="md"
-											value={postprocessKernelSizeCropland ?? defaults.postprocessKernelSizeCroplandDefault}
+											value={postprocessKernelSizeCropland ?? DEFAULT_POSTPROCESS_KERNEL_SIZE_CROPLAND}
 										onChange={(val) => {
 											const num = Number(val);
 											if (!isNaN(num)) {
 												setParams({ postprocessKernelSizeCropland: num });
 											}
 										}}
-										min={defaults.postprocessKernelSizeCroplandMin}
-										max={defaults.postprocessKernelSizeCroplandMax}
-										step={defaults.postprocessKernelSizeCroplandStep}
+										min={KERNEL_SIZE_CROPLAND_MIN}
+										max={KERNEL_SIZE_CROPLAND_MAX}
+										step={KERNEL_SIZE_CROPLAND_STEP}
 									/>
 								</div>
 							)}
