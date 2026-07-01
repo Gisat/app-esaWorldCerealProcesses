@@ -10,5 +10,5 @@ import formParams from "../_constants/generate-custom-products/formParams";
  * @returns The namespace string associated with the process ID, or an empty string if not found
  */
 export default function getNamespaceByProcessId(processId: string | null): string {
-  return formParams.product.options.find((product) => product.value === processId)?.namespace || "";
+  return formParams.processId.options.find((product) => product.value === processId)?.namespace || "";
 }

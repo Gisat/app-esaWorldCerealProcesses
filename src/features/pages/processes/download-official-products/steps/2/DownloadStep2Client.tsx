@@ -3,29 +3,23 @@ import useSWR from 'swr';
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { IconArrowLeft, IconCheck } from '@tabler/icons-react';
-import { WorldCerealStateActionType } from '@features/state/state.actionTypes';
-import { useSharedState } from '@gisatcz/ptr-fe-core/client';
-import {
-	DownloadOfficialProductsBackgroundLayerModel,
-	DownloadOfficialProductsBBoxModel,
-	DownloadOfficialProductsOutputFileFormatModel,
-	WorldCerealState,
-} from '@features/state/state.models';
-import { OneOfWorldCerealActions } from '@features/state/state.actions';
+import { useQueryStates } from 'nuqs';
 import TwoColumns, { Column } from '@features/(shared)/_layout/_components/Content/TwoColumns';
 import { SectionContainer } from '@features/(shared)/_layout/_components/Content/SectionContainer';
 import { Button, Group, SegmentedControl, Stack } from '@mantine/core';
 import FormLabel from '@features/(shared)/_layout/_components/Content/FormLabel';
 import { TextDescription } from '@features/(shared)/_layout/_components/Content/TextDescription';
 import { MapBBox } from '@features/(shared)/_components/map/MapBBox';
-import { bboxSizeLimits } from '@features/(processes)/_constants/app';
+import { bboxSizeLimits, processTypes } from '@features/(processes)/_constants/app';
 import { TextLink } from '@features/(shared)/_layout/_components/Content/TextLink';
 import formParams from '@features/(processes)/_constants/download-official-products/formParams';
-import { getOutputFileFormat } from '@features/state/selectors/downloadOfficialProducts/getOutputFileFormat';
-import { getBBox } from '@features/state/selectors/downloadOfficialProducts/getBBox';
-import { getBackgroundLayer } from '@features/state/selectors/downloadOfficialProducts/getBackgroundLayer';
-import { getCollection } from '@features/state/selectors/downloadOfficialProducts/getCollection';
-import { getProduct } from '@features/state/selectors/downloadOfficialProducts/getProduct';
+import {
+	downloadOfficialProductsSearchParams,
+	serializeDownloadOfficialProductsSearchParams,
+} from '@features/(processes)/_constants/download-official-products/searchParams';
+import { downloadStep2Schema, nullsToUndefined } from '@features/(processes)/_constants/validation';
+import { parseBbox, stringifyBbox } from '@features/(processes)/_utils/bbox';
+import type { BBoxModel } from '@features/(processes)/_utils/bbox';
 import { apiFetcher } from '@features/(shared)/_url/apiFetcher';
 
 /**
@@ -48,11 +42,9 @@ export default function DownloadStep2Client() {
 	 */
 	const router = useRouter();
 
-	/**
-	 * Shared state hook for accessing and dispatching application state.
-	 * @type {[WorldCerealState, React.Dispatch<OneOfWorldCerealActions>]}
-	 */
-	const [state, dispatch] = useSharedState<WorldCerealState, OneOfWorldCerealActions>();
+	const [{ bbox, format, backgroundLayer, collection, product }, setParams] = useQueryStates(
+		downloadOfficialProductsSearchParams
+	);
 
 	/**
 	 * State to determine if the bounding box is within valid bounds.
@@ -73,102 +65,59 @@ export default function DownloadStep2Client() {
 	const [shouldFetch, setShouldFetch] = useState(false);
 
 	/**
-	 * Selector to retrieve the output file format from the state.
-	 * @type {string | undefined}
+	 * Parsed bbox tuple from the URL state.
+	 * @type {BBoxModel}
 	 */
-	const outputFileFormat = getOutputFileFormat(state);
+	const bboxArr = parseBbox(bbox);
+
+	const validation = downloadStep2Schema.safeParse(nullsToUndefined({
+		collection,
+		product,
+		bbox,
+		format,
+	}));
+
+	const nextStepDisabled = !bboxIsInBounds || !validation.success;
 
 	/**
-	 * Selector to retrieve the bounding box from the state.
-	 * @type {string[] | undefined}
+	 * Updates the output file format in the URL state.
+	 * @param {'GTiff' | 'NETCDF'} value - The selected output file format.
 	 */
-	const bbox = getBBox(state);
-
-	/**
-	 * Selector to retrieve the background layer from the state.
-	 * @type {string | undefined}
-	 */
-	const backgroundLayer = getBackgroundLayer(state);
-
-	/**
-	 * Selector to retrieve the collection from the state.
-	 * @type {string | undefined}
-	 */
-	const collection = getCollection(state);
-
-	/**
-	 * Selector to retrieve the product from the state.
-	 * @type {string | undefined}
-	 */
-	const product = getProduct(state);
-
-	/**
-	 * Determines whether the next step is disabled based on the current state.
-	 * @type {boolean}
-	 */
-	const nextStepDisabled = !bboxIsInBounds || !bbox || !collection || !product || !outputFileFormat;
-
-	/**
-	 * Effect to initialize the active step and set default output file format.
-	 */
-	useEffect(() => {
-		dispatch({
-			type: WorldCerealStateActionType.DOWNLOAD_OFFICIAL_PRODUCT_SET_ACTIVE_STEP,
-			payload: 2,
-		});
-
-		if (!outputFileFormat) {
-			const defaultValue = formParams.outputFileFormat.options.find((option) => option.default)?.value;
-			if (defaultValue) {
-				setOutputFileFormat(defaultValue as DownloadOfficialProductsOutputFileFormatModel);
-			}
-		}
-	}, []);
-
-	/**
-	 * Updates the output file format in the state.
-	 * @param {DownloadOfficialProductsOutputFileFormatModel} value - The selected output file format.
-	 */
-	const setOutputFileFormat = (value: DownloadOfficialProductsOutputFileFormatModel) => {
-		dispatch({
-			type: WorldCerealStateActionType.DOWNLOAD_OFFICIAL_PRODUCT_SET_OUTPUT_FILE_FORMAT,
-			payload: value,
-		});
+	const setOutputFileFormat = (value: 'GTiff' | 'NETCDF') => {
+		setParams({ format: value });
 	};
 
 	/**
-	 * Updates the background layer in the state.
-	 * @param {DownloadOfficialProductsBackgroundLayerModel} value - The selected background layer.
+	 * Updates the background layer in the URL state.
+	 * @param {string | null} value - The selected background layer.
 	 */
-	const setBackgroundLayer = (value: DownloadOfficialProductsBackgroundLayerModel) => {
-		if (value) {
-			dispatch({
-				type: WorldCerealStateActionType.DOWNLOAD_OFFICIAL_PRODUCT_SET_BACKGROUND_LAYER,
-				payload: value,
-			});
-		}
+	const setBackgroundLayer = (value: string | null) => {
+		if (value) setParams({ backgroundLayer: value });
 	};
 
 	/**
-	 * Updates the bounding box extent in the state.
-	 * @param {DownloadOfficialProductsBBoxModel | null} extent - The bounding box extent.
+	 * Updates the bounding box extent in the URL state.
+	 * @param {[number, number, number, number] | null} extent - The bounding box extent.
 	 */
-	const setBBoxExtent = (extent: DownloadOfficialProductsBBoxModel | null) => {
-		dispatch({
-			type: WorldCerealStateActionType.DOWNLOAD_OFFICIAL_PRODUCT_SET_BBOX,
-			payload: extent ?? undefined,
-		});
+	const setBBoxExtent = (extent: [number, number, number, number] | null) => {
+		setParams({ bbox: extent ? stringifyBbox(extent) : null });
 	};
 
 	/**
 	 * URL parameters for the API request.
 	 * @type {URLSearchParams}
 	 */
+	const productLabel = product ? (formParams.product.options.find((o) => o.value === product)?.label ?? product) : '';
+	const collectionLabel = collection ? (formParams.collection.options.find((o) => o.value === collection)?.label ?? collection) : '';
+	const title = productLabel && collectionLabel ? `Download: ${productLabel} (${collectionLabel})` : undefined;
+
 	const urlParams = new URLSearchParams({
-		bbox: bbox ? bbox.join(',') : '',
-		outputFileFormat: outputFileFormat?.toString() || '',
-		collection: collection?.toString() || '',
-		product: product?.toString() || '',
+		bbox: bbox ?? '',
+		format: format ?? '',
+		collection: collection ?? '',
+		product: product ?? '',
+		...(title ? { title } : {}),
+		...(product ? { customProperties: JSON.stringify({ process_type: processTypes.download, ...(backgroundLayer ? { background_layer: backgroundLayer } : {}) }) } : {}),
 	});
 
 	/**
@@ -189,7 +138,12 @@ export default function DownloadStep2Client() {
 	 * Handler to navigate back to the previous step.
 	 */
 	const onBackClick = () => {
-		router.push(`/download-official-products/steps/1`);
+		router.push(
+			serializeDownloadOfficialProductsSearchParams('/download-official-products/steps/1', {
+				collection,
+				product,
+			})
+		);
 	};
 
 	/**
@@ -202,17 +156,18 @@ export default function DownloadStep2Client() {
 	}, [shouldFetch, data]);
 
 	/**
-	 * Effect to update URL parameters and navigate to the next step when job data is received.
+	 * Effect to navigate to the next step when job data is received.
 	 */
 	useEffect(() => {
 		if (data?.key) {
-			dispatch({
-				type: WorldCerealStateActionType.DOWNLOAD_OFFICIAL_PRODUCT_SET_CURRENT_JOB_KEY,
-				payload: data.key,
-			});
-			router.push(`/download-official-products/steps/3`);
+			const baseHref = serializeDownloadOfficialProductsSearchParams(
+				'/download-official-products/steps/3',
+				{ backgroundLayer }
+			);
+			const separator = baseHref.includes('?') ? '&' : '?';
+			router.push(`${baseHref}${separator}jobKey=${encodeURIComponent(data.key)}`);
 		}
-	}, [data, router]);
+	}, [data, router, backgroundLayer]);
 
 	return (
 		<TwoColumns>
@@ -228,12 +183,12 @@ export default function DownloadStep2Client() {
 						mapSize={[650, 400]}
 						minBboxArea={bboxSizeLimits.downloadProducts.min}
 						maxBboxArea={bboxSizeLimits.downloadProducts.max}
-						bbox={bbox?.map(Number)}
+						bbox={bboxArr}
 						setBboxDescription={setBboxDescription}
 						setBboxExtent={setBBoxExtent}
 						setBboxIsInBounds={setBboxIsInBounds}
-						backgroundLayer={backgroundLayer}
-						setBackgroundLayer={(value) => setBackgroundLayer(value as DownloadOfficialProductsBackgroundLayerModel)}
+						backgroundLayer={backgroundLayer ?? undefined}
+						setBackgroundLayer={(value) => setBackgroundLayer(typeof value === 'function' ? value(backgroundLayer) : value)}
 					/>
 					<TextDescription>
 						Current extent:{' '}
@@ -274,11 +229,11 @@ export default function DownloadStep2Client() {
 					<div style={{ width: '100%' }}>
 						<FormLabel>Choose output file format</FormLabel>
 						<SegmentedControl
-							onChange={(value) => setOutputFileFormat(value as DownloadOfficialProductsOutputFileFormatModel)}
+							onChange={(value) => setOutputFileFormat(value as 'GTiff' | 'NETCDF')}
 							className="worldCereal-SegmentedControl"
 							size="md"
-							value={outputFileFormat}
-							data={formParams.outputFileFormat.options}
+						value={format}
+						data={formParams.format.options}
 						/>
 					</div>
 				</Stack>

@@ -1,15 +1,13 @@
 'use client';
 import React from 'react';
-import { useRouter } from 'next/navigation';
-import { useSharedState } from '@gisatcz/ptr-fe-core/client';
+import { useRouter, usePathname } from 'next/navigation';
 import { Stepper } from '@mantine/core';
-import { getActiveStep } from '@features/state/selectors/downloadOfficialProducts/getActiveStep';
-import { WorldCerealState } from '@features/state/state.models';
-import { OneOfWorldCerealActions } from '@features/state/state.actions';
-import { getCollection } from '@features/state/selectors/downloadOfficialProducts/getCollection';
-import { getProduct } from '@features/state/selectors/downloadOfficialProducts/getProduct';
-import { getOutputFileFormat } from '@features/state/selectors/downloadOfficialProducts/getOutputFileFormat';
-import { getBBox } from '@features/state/selectors/downloadOfficialProducts/getBBox';
+import { useQueryStates } from 'nuqs';
+import {
+	downloadOfficialProductsSearchParams,
+	serializeDownloadOfficialProductsSearchParams,
+} from '@features/(processes)/_constants/download-official-products/searchParams';
+import { parseBbox } from '@features/(processes)/_utils/bbox';
 
 /**
  * Component representing a stepper for the "Download Official Products" process.
@@ -24,12 +22,14 @@ import { getBBox } from '@features/state/selectors/downloadOfficialProducts/getB
  */
 export const DownloadOfficialProductsStepper = ({ children }: { children: React.ReactNode }) => {
 	const router = useRouter();
-	const [state] = useSharedState<WorldCerealState, OneOfWorldCerealActions>();
-	const activeStep = getActiveStep(state);
-	const collection = getCollection(state);
-	const product = getProduct(state);
-	const outputFileFormat = getOutputFileFormat(state);
-	const bbox = getBBox(state);
+	const pathname = usePathname();
+	const activeStep = Number(pathname.split('/').pop()) || 1;
+
+	const [{ collection, product, format, bbox, backgroundLayer }] = useQueryStates(
+		downloadOfficialProductsSearchParams
+	);
+
+	const bboxArr = parseBbox(bbox);
 
 	// Determines if the first step is disabled based on the active step.
 	const firstStepDisabled = activeStep === 3;
@@ -38,15 +38,22 @@ export const DownloadOfficialProductsStepper = ({ children }: { children: React.
 	const secondStepDisabled = !collection || !product || activeStep === 3;
 
 	// Determines if the third step is disabled based on the collection, product, output file format, and bounding box.
-	const thirdStepDisabled = !collection || !product || !outputFileFormat || !bbox;
+	const thirdStepDisabled = !collection || !product || !format || !bboxArr;
 
 	/**
-	 * Navigates to the specified step in the process.
+	 * Navigates to the specified step in the process, forwarding the current URL state
+	 * so the user's selections survive the route change.
 	 *
-	 * @param {number} step - The step number to navigate to.
+	 * @param {number} step - The 0-indexed step in the Stepper (0 -> steps/1, 1 -> steps/2, 2 -> steps/3).
 	 */
 	const setActive = (step: number) => {
-		router.push(`/download-official-products/steps/${step + 1}`); // navigates to the corresponding step URL
+		const targetStep = step + 1;
+		if (targetStep === activeStep) return;
+		const href = serializeDownloadOfficialProductsSearchParams(
+			`/download-official-products/steps/${targetStep}`,
+			{ collection, product, format, bbox, backgroundLayer }
+		);
+		router.push(href);
 	};
 
 	return (

@@ -20,16 +20,22 @@ type Props = {
 		name: string;
 		oeoCollection: string;
 		oeoProcessId: string;
-		resultFileFormat: string;
+		format: string;
 		results: Array<{ source_link: string }>;
 		status: string;
 		timeRange: Array<Date>;
 		updatedIso: Date;
 		collectionName: string;
-		model: string;
+		seasonalModelZip: string;
 		orbitState?: string;
-		postprocessMethod?: string;
-		postprocessKernelSize?: number;
+		postprocessMethodCroptype?: string;
+		postprocessKernelSizeCroptype?: number;
+		postprocessMethodCropland?: string;
+		postprocessKernelSizeCropland?: number;
+		title?: string;
+		customProperties?: Record<string, unknown>;
+		seasonIds?: string[];
+		seasonWindows?: Array<{ start: string; end: string }>;
 	}[];
 };
 
@@ -54,21 +60,27 @@ export const ProcessesTable = ({ data, loading, forceReloadList }: Props) => {
 	const rows = Array.isArray(data) ? (
 		data.map(
 			({
-				resultFileFormat,
-				createdIso,
-				status,
-				results,
-				key,
-				bbox,
-				timeRange,
-				oeoCollection,
-				oeoProcessId,
-				type,
-				collectionName,
-				model,
-				orbitState,
-				postprocessMethod,
-				postprocessKernelSize,
+			format,
+			createdIso,
+			status,
+			results,
+			key,
+			bbox,
+			timeRange,
+			oeoCollection,
+			oeoProcessId,
+			type,
+			collectionName,
+			seasonalModelZip,
+			orbitState,
+			postprocessMethodCroptype,
+			postprocessKernelSizeCroptype,
+			postprocessMethodCropland,
+			postprocessKernelSizeCropland,
+			title,
+			customProperties,
+			seasonIds,
+			seasonWindows,
 			}) => (
 				<Record
 					key={key}
@@ -79,19 +91,25 @@ export const ProcessesTable = ({ data, loading, forceReloadList }: Props) => {
 					results={results}
 					bbox={bbox}
 					timeRange={timeRange}
-					resultFileFormat={resultFileFormat}
+					resultFileFormat={format}
 					oeoCollection={oeoCollection}
 					oeoProcessId={oeoProcessId}
 					forceReloadList={forceReloadList}
 					collectionName={collectionName}
 					model={
 						type === processTypes.product
-							? model || formParams.model.options.find((option) => option.default)?.label
+							? seasonalModelZip
 							: undefined
 					}
 					orbitState={orbitState}
-					postprocessMethod={postprocessMethod}
-					postprocessKernelSize={postprocessKernelSize}
+					postprocessMethodCroptype={postprocessMethodCroptype}
+					postprocessKernelSizeCroptype={postprocessKernelSizeCroptype}
+					postprocessMethodCropland={postprocessMethodCropland}
+					postprocessKernelSizeCropland={postprocessKernelSizeCropland}
+					title={title}
+					customProperties={customProperties}
+					seasonIds={seasonIds}
+					seasonWindows={seasonWindows}
 				/>
 			)
 		)
@@ -124,8 +142,9 @@ export const ProcessesTable = ({ data, loading, forceReloadList }: Props) => {
 			<Table horizontalSpacing="md" className="worldCereal-ProcessesTable">
 				<Table.Thead>
 					<Table.Tr className="worldCereal-ProcessesTable-row">
-						<Table.Th>ID</Table.Th>
-						<Table.Th>Type</Table.Th>
+						<Table.Th>Type of process</Table.Th>
+						<Table.Th>Product</Table.Th>
+						<Table.Th>Collection/Season</Table.Th>
 						<Table.Th>Created</Table.Th>
 						<Table.Th>Status</Table.Th>
 						<Table.Th></Table.Th>

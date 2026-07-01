@@ -10,7 +10,7 @@ import { BoundingBoxExtent } from '@features/(processes)/_types/boundingBoxExten
 
 const defaultMapSize: Array<number> = [500, 500]; // Default map size in pixels
 
-const defaultMapView = { latitude: 30, longitude: 0, zoom: 1 }; // Default map view settings
+const defaultMapView = { latitude: 30, longitude: 0, zoom: 2 }; // Default map view settings
 
 /**
  * Converts EPSG:4326 points to bbox extent in EPSG:4326.
@@ -65,12 +65,14 @@ export const MapBBox = function ({
 	setBboxIsInBounds,
 	backgroundLayer,
 	setBackgroundLayer,
+	minZoom,
 }: {
 	mapSize?: Array<number>;
 	disabled?: boolean;
 	bbox?: Array<number>;
 	minBboxArea?: number;
 	maxBboxArea?: number;
+	minZoom?: number;
 	setBboxDescription?: React.Dispatch<React.SetStateAction<string | string[] | null>>;
 	setBboxExtent?: (extent: BoundingBoxExtent | null) => void;
 	setBboxIsInBounds?: (isInBounds: boolean) => void;
@@ -230,6 +232,7 @@ export const MapBBox = function ({
 						initialView={initialView}
 						backgroundLayer={backgroundLayer}
 						setBackgroundLayer={setBackgroundLayer}
+						minZoom={minZoom}
 					/>
 				</BoundingBox>
 			)}

@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import CreateProductsStep1 from '@app/(processes)/generate-custom-products/steps/1/page';
+
+export const dynamic = 'force-dynamic';
 
 /**
  * Page component for the "Create Custom Products" section.
@@ -12,5 +14,5 @@ import CreateProductsStep1 from '@app/(processes)/generate-custom-products/steps
  * @returns {JSX.Element} The rendered page component for the "Create Custom Products" section.
  */
 export default async function CreateCustomProductsPage() {
-	return <CreateProductsStep1 />;
+	return <Suspense><CreateProductsStep1 /></Suspense>;
 }

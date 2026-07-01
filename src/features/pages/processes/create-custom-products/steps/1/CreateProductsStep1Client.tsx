@@ -1,218 +1,287 @@
 'use client';
 
-import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { IconArrowRight } from '@tabler/icons-react';
-import { Button, Group, Input, Select, Space, Stack, Text, TextInput } from '@mantine/core';
-import { useSharedState } from '@gisatcz/ptr-fe-core/client';
+import { Button, Checkbox, Group, Input, Select, Space, Stack, TextInput } from '@mantine/core';
+import { useQueryStates } from 'nuqs';
 import TwoColumns, { Column } from '@features/(shared)/_layout/_components/Content/TwoColumns';
 import formParams from '@features/(processes)/_constants/generate-custom-products/formParams';
-import { WorldCerealState } from '@features/state/state.models';
-import { OneOfWorldCerealActions } from '@features/state/state.actions';
-import { WorldCerealStateActionType } from '@features/state/state.actionTypes';
-import { getModel_customProducts } from '@features/state/selectors/createCustomProducts/getModel';
-import { getProduct_customProducts } from '@features/state/selectors/createCustomProducts/getProduct';
-import { TextLink } from '@features/(shared)/_layout/_components/Content/TextLink';
-import CropTypeOptions from './CropTypeOptions/CropTypeOptions';
-import { getOrbitState_customProducts } from '@features/state/selectors/createCustomProducts/getOrbitState';
-import { getPostProcessMethod_customProducts } from '@features/state/selectors/createCustomProducts/getPostProcessMethod';
-import { getPostProcessKernelSize_customProducts } from '@features/state/selectors/createCustomProducts/getPostProcessKernelSize';
-import { customProductsPostprocessMethods, customProductsProductTypes } from '@features/(processes)/_constants/app';
+import {
+	generateCustomProductsSearchParams,
+	serializeGenerateCustomProductsSearchParams,
+} from '@features/(processes)/_constants/generate-custom-products/searchParams';
+import { customProductsProductTypes } from '@features/(processes)/_constants/app';
+import { generateStep1Schema } from '@features/(processes)/_constants/validation';
+import './CreateProductsStep1Client.css';
 
-/**
- * React component for the first step of creating custom products.
- *
- * This component allows users to select a product and model, and proceed to the next step.
- *
- * @returns {JSX.Element} The rendered step 1 UI for creating custom products.
- */
 export default function CreateProductsStep1Client() {
-	/**
-	 * Shared state hook for accessing and dispatching application state.
-	 * @type {[WorldCerealState, React.Dispatch<OneOfWorldCerealActions>]}
-	 */
-	const [state, dispatch] = useSharedState<WorldCerealState, OneOfWorldCerealActions>();
+	const [
+		{
+			processId,
+			cropTypeModelType,
+			seasonalModelZip,
+			enableCroplandHead,
+			landcoverHeadZip,
+			croptypeHeadZip,
+		},
+		setParams,
+	] = useQueryStates(generateCustomProductsSearchParams);
 
-	/**
-	 * Selector to retrieve the selected model from the state.
-	 * @type {string | undefined}
-	 */
-	const model = getModel_customProducts(state);
+	const isCropType = processId === customProductsProductTypes.cropType;
+	const isCropExtent = processId === customProductsProductTypes.cropExtent;
+	const isCustomModel = cropTypeModelType === 'custom';
 
-	/**
-	 * Local state for the current model URL input.
-	 * @type {[string | null, Function]}
-	 */
-	const [currentModelUrl, setCurrentModelUrl] = useState<string | null>(model ? model : '');
+	const [localSeasonalModelZip, setLocalSeasonalModelZip] = useState<string>(seasonalModelZip ?? '');
+	const [localLandcoverHeadZip, setLocalLandcoverHeadZip] = useState<string>(landcoverHeadZip ?? '');
+	const [localCroptypeHeadZip, setLocalCroptypeHeadZip] = useState<string>(croptypeHeadZip ?? '');
 
-	/**
-	 * Selector to retrieve the selected product from the state.
-	 * @type {string | undefined}
-	 */
-	const product = getProduct_customProducts(state);
+	const validation = generateStep1Schema.safeParse({
+		processId,
+		cropTypeModelType,
+		seasonalModelZip: localSeasonalModelZip,
+		enableCroplandHead,
+		landcoverHeadZip: localLandcoverHeadZip,
+		croptypeHeadZip: localCroptypeHeadZip,
+	});
 
-	const orbitState = getOrbitState_customProducts(state);
-	const postprocessMethod = getPostProcessMethod_customProducts(state);
-	const kernelSize = getPostProcessKernelSize_customProducts(state);
+	const nextStepDisabled = !processId || !validation.success;
 
-	// Enhanced nextStepDisabled logic
-	const isCropType = product === customProductsProductTypes.cropType;
-	const isKernelValid =
-		!isCropType || (typeof kernelSize === 'number' && kernelSize >= 1 && kernelSize <= 25 && kernelSize % 2 === 1);
-
-	const areCropTypeParamsValid =
-		!isCropType ||
-		(orbitState &&
-			postprocessMethod &&
-			(postprocessMethod !== customProductsPostprocessMethods.majorityVote || isKernelValid));
-
-	/**
-	 * Determines whether the next step is disabled based on the current state.
-	 * @type {boolean}
-	 */
-	const nextStepDisabled = !model || !product || !areCropTypeParamsValid;
-
-	/**
-	 * Updates the selected model in the state.
-	 * @param {string | null} value - The selected model.
-	 */
-	const setModel = (value: string | null) => {
-		dispatch({
-			type: WorldCerealStateActionType.CREATE_CUSTOM_PRODUCTS_SET_MODEL,
-			payload: value,
-		});
-	};
-
-	/**
-	 * Updates the selected product in the state and resets the model.
-	 * @param {string | null} value - The selected product.
-	 */
 	const setProduct = (value: string | null) => {
-		if (value && value !== product) {
-			setCurrentModelUrl(''); // Reset model URL when product changes
-			dispatch({
-				type: WorldCerealStateActionType.CREATE_CUSTOM_PRODUCTS_SET_PRODUCT,
-				payload: value,
-			});
-			dispatch({
-				type: WorldCerealStateActionType.CREATE_CUSTOM_PRODUCTS_SET_MODEL,
-				payload: null, // Reset model when product changes
+		if (value && value !== processId) {
+			setLocalSeasonalModelZip('');
+			setLocalLandcoverHeadZip('');
+			setLocalCroptypeHeadZip('');
+			setParams({
+				processId: value as typeof processId,
+				cropTypeModelType: 'default',
+				seasonalModelZip: null,
+				landcoverHeadZip: null,
+				croptypeHeadZip: null,
 			});
 		}
 	};
 
-	/**
-	 * Effect to initialize the active step in the state when the component mounts.
-	 */
-	useEffect(() => {
-		dispatch({
-			type: WorldCerealStateActionType.CREATE_CUSTOM_PRODUCTS_SET_ACTIVE_STEP,
-			payload: 1,
+	const setCropTypeModelType = (value: string | null) => {
+		if (value === 'default' || value === 'custom') {
+			setParams({ cropTypeModelType: value });
+			if (value === 'default') {
+				setParams({
+					seasonalModelZip: null,
+					landcoverHeadZip: null,
+					croptypeHeadZip: null,
+				});
+				setLocalSeasonalModelZip('');
+				setLocalLandcoverHeadZip('');
+				setLocalCroptypeHeadZip('');
+			}
+		}
+	};
+
+	const handleSeasonalModelZipChange = (value: string) => {
+		setLocalSeasonalModelZip(value);
+		const result = generateStep1Schema.safeParse({
+			processId,
+			cropTypeModelType,
+			seasonalModelZip: value,
+			enableCroplandHead,
+			landcoverHeadZip: localLandcoverHeadZip,
+			croptypeHeadZip: localCroptypeHeadZip,
 		});
-	}, []);
+		setParams({ seasonalModelZip: result.success && value !== '' ? value : null });
+	};
 
-	/**
-	 * Effect to update the current model URL when the model changes.
-	 */
-	useEffect(() => {
-		if (model) {
-			setCurrentModelUrl(model);
-		}
-	}, [model]);
+	const handleLandcoverHeadZipChange = (value: string) => {
+		setLocalLandcoverHeadZip(value);
+		const result = generateStep1Schema.safeParse({
+			processId,
+			cropTypeModelType,
+			seasonalModelZip: localSeasonalModelZip,
+			enableCroplandHead,
+			landcoverHeadZip: value,
+			croptypeHeadZip: localCroptypeHeadZip,
+		});
+		setParams({ landcoverHeadZip: result.success && value !== '' ? value : null });
+	};
 
-	/**
-	 * Validates and updates the model URL input.
-	 * If the URL is valid, dispatches it to the state; otherwise, resets the model in the state.
-	 *
-	 * @param {string} value - The model URL to validate and set.
-	 */
-	const setModelUrl = (value: string) => {
-		setCurrentModelUrl(value);
-		const regex = /^https?:\/\/.+\.(onnx|zip)$/i;
-		const isValid = regex.test(value);
+	const handleCroptypeHeadZipChange = (value: string) => {
+		setLocalCroptypeHeadZip(value);
+		const result = generateStep1Schema.safeParse({
+			processId,
+			cropTypeModelType,
+			seasonalModelZip: localSeasonalModelZip,
+			enableCroplandHead,
+			landcoverHeadZip: localLandcoverHeadZip,
+			croptypeHeadZip: value,
+		});
+		setParams({ croptypeHeadZip: result.success && value !== '' ? value : null });
+	};
 
-		if (isValid) {
-			setModel(value);
-		} else if (model) {
-			setModel(null);
+	const handleEnableCroplandHeadChange = (checked: boolean) => {
+		setParams({ enableCroplandHead: checked });
+		if (!checked) {
+			setParams({ landcoverHeadZip: null });
+			setLocalLandcoverHeadZip('');
 		}
 	};
+
+	useEffect(() => {
+		if (processId && !cropTypeModelType) {
+			setParams({ cropTypeModelType: 'default' });
+		}
+		if (isCropType && enableCroplandHead === undefined) {
+			setParams({ enableCroplandHead: true });
+		}
+	}, [processId, isCropType]);
+
+	const fieldErrors = validation.success ? {} : validation.error.flatten().fieldErrors;
+
+	const continueHref = serializeGenerateCustomProductsSearchParams('/generate-custom-products/steps/2', {
+		processId,
+		cropTypeModelType,
+		seasonalModelZip,
+		enableCroplandHead,
+		landcoverHeadZip,
+		croptypeHeadZip,
+	});
 
 	return (
-		/**
-		 * Layout with two columns for the step UI.
-		 */
 		<TwoColumns>
 			<Column>
-				<Select
-					withAsterisk
-					className="worldCereal-Select"
-					size="md"
-					allowDeselect={false}
-					label="Select your product"
-					placeholder="Pick one"
-					data={formParams.product.options}
-					value={product}
-					onChange={(value) => setProduct(value)}
-				/>
-				<Space h="md" />
-				{product === customProductsProductTypes.cropType ? (
-					<Stack>
-						<Input.Wrapper
-							className="worldCereal-Input"
-							size="md"
-							label="Enter model URL"
-							description="Write the URL of the product model"
-							withAsterisk
-						>
-							<TextInput
-								size="md"
-								placeholder="Valid URL..."
-								error={!model && currentModelUrl !== '' ? 'URL not valid' : null}
-								value={currentModelUrl ?? ''}
-								onChange={(event) => setModelUrl(event.currentTarget.value)}
-							/>
-						</Input.Wrapper>
-						<Text size="sm" c="var(--textSecondaryColor)">
-							This service only works with custom models, learn more{' '}
-							<TextLink
-								url={
-									'https://github.com/WorldCereal/worldcereal-classification/blob/main/notebooks/worldcereal_custom_croptype.ipynb'
-								}
-							>
-								here
-							</TextLink>
-							.
-						</Text>
-					</Stack>
-				) : (
+				<div className="step1-container">
 					<Select
 						withAsterisk
 						className="worldCereal-Select"
 						size="md"
 						allowDeselect={false}
-						label="Select model"
+						label="1.1. Select your product"
 						placeholder="Pick one"
-						description="Select model for the product"
-						data={formParams.model.options}
-						value={model}
-						onChange={(value) => setModel(value)}
+						data={formParams.processId.options}
+						value={processId}
+						onChange={(value) => setProduct(value)}
 					/>
-				)}
-				<Group mt="xl">
-					<Link href="/generate-custom-products/steps/2">
-						<Button
-							rightSection={<IconArrowRight size={14} />}
-							disabled={nextStepDisabled}
-							className={`worldCereal-Button${nextStepDisabled ? ' is-disabled' : ''}`}
-							onClick={() => {}}
-						>
-							Continue to set parameters & create process
-						</Button>
-					</Link>
-				</Group>
+					<Space h="md" />
+
+					{processId && (
+						<Stack gap="md">
+							<Select
+								withAsterisk
+								className="worldCereal-Select"
+								size="md"
+								allowDeselect={false}
+								label="1.2. Select model"
+								placeholder="Pick one"
+								data={formParams.cropTypeModelType.options}
+								value={cropTypeModelType ?? 'default'}
+								onChange={(value) => setCropTypeModelType(value)}
+							/>
+
+							{isCustomModel && (
+								<Stack gap="lg">
+									<Input.Wrapper
+										className="worldCereal-Input"
+										size="md"
+										label="1.3. Base model"
+										description="Optional. Provide a publicly accessible URL to a complete WorldCereal model package (.zip). This replaces the default model, including the feature extractor and all prediction heads. If no model is provided, the default WorldCereal model is used."
+									>
+										<TextInput
+											size="md"
+											placeholder="https://example.zip"
+											error={fieldErrors.seasonalModelZip?.[0] ?? null}
+											value={localSeasonalModelZip}
+											onChange={(e) => handleSeasonalModelZipChange(e.currentTarget.value)}
+										/>
+									</Input.Wrapper>
+
+									{isCropExtent && (
+										<Input.Wrapper
+											className="worldCereal-Input"
+											size="md"
+											label="1.4. Cropland Head Override"
+											description="Optional. Provide a publicly accessible URL to a custom cropland prediction head (.zip). When provided, it replaces the cropland head of either the default model or the specified base model."
+										>
+											<TextInput
+												size="md"
+												placeholder="https://example.zip"
+												error={fieldErrors.landcoverHeadZip?.[0] ?? null}
+												value={localLandcoverHeadZip}
+												onChange={(e) => handleLandcoverHeadZipChange(e.currentTarget.value)}
+											/>
+										</Input.Wrapper>
+									)}
+
+									{isCropType && (
+										<>
+											<Stack gap="xs">
+												<Input.Wrapper
+													className="worldCereal-Input"
+													size="md"
+													label="1.4. Generate cropland product"
+													description="Generate a cropland mask alongside the crop type product"
+												>
+													<Checkbox
+														style={{ marginTop: '0.5rem' }}
+														className="worldCereal-Checkbox"
+														size="md"
+														label="Enable cropland head"
+														checked={enableCroplandHead ?? true}
+														onChange={(e) => handleEnableCroplandHeadChange(e.currentTarget.checked)}
+													/>
+													<br />
+													{(enableCroplandHead ?? true) && (
+														<Input.Wrapper
+															className="worldCereal-Input"
+															size="md"
+															label="1.4.1 Cropland Head Override"
+															description="Optional. Provide a publicly accessible URL to a custom cropland prediction head (.zip). When provided, it replaces the cropland head of either the default model or the specified base model."
+														>
+															<TextInput
+																size="md"
+																placeholder="https://example.zip"
+																error={fieldErrors.landcoverHeadZip?.[0] ?? null}
+																value={localLandcoverHeadZip}
+																onChange={(e) => handleLandcoverHeadZipChange(e.currentTarget.value)}
+															/>
+														</Input.Wrapper>
+													)}
+												</Input.Wrapper>
+											</Stack>
+
+											<Input.Wrapper
+												className="worldCereal-Input"
+												size="md"
+												label="1.5. Crop Type Head Override"
+												description="Optional. Provide a publicly accessible URL to a custom crop type prediction head (.zip). When provided, it replaces the crop type head of either the default model or the specified base model."
+											>
+												<TextInput
+													size="md"
+													placeholder="https://example.zip"
+													error={fieldErrors.croptypeHeadZip?.[0] ?? null}
+													value={localCroptypeHeadZip}
+													onChange={(e) => handleCroptypeHeadZipChange(e.currentTarget.value)}
+												/>
+											</Input.Wrapper>
+										</>
+									)}
+								</Stack>
+							)}
+						</Stack>
+					)}
+
+					<Group mt="xl">
+						<Link href={continueHref}>
+							<Button
+								rightSection={<IconArrowRight size={14} />}
+								disabled={nextStepDisabled}
+								className={`worldCereal-Button${nextStepDisabled ? ' is-disabled' : ''}`}
+							>
+								Continue to set parameters & create process
+							</Button>
+						</Link>
+					</Group>
+				</div>
 			</Column>
-			<Column>{product === customProductsProductTypes.cropType ? <CropTypeOptions /> : null}</Column>
+			<Column>{null}</Column>
 		</TwoColumns>
 	);
 }

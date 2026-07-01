@@ -8,6 +8,7 @@ import getBoundaryDates from '@features/(processes)/_utils/boundaryDates';
 import { transformDate } from '@features/(processes)/_utils/transformDate';
 import { getRequireSessionId } from '@features/(auth)/_utils/requireSessionId';
 import { customProductsPostprocessMethods, customProductsProductTypes } from '@features/(processes)/_constants/app';
+import { fromProcessParamsSchema } from '@features/(processes)/_constants/validation';
 import { UsedAuthCookies } from '@features/(shared)/ssr/ssr-auth/enums.auth';
 import { loggyError, loggyWarn } from '@gisatcz/ptr-be-core/node';
 
@@ -23,84 +24,35 @@ export async function GET(req: NextRequest) {
 
 		// read query params from the request URL
 		const { searchParams } = req.nextUrl;
+		const title = searchParams.get('title');
 
-		const bbox = searchParams.get('bbox');
-		const outputFileFormat = searchParams.get('outputFileFormat');
-		const endDate = searchParams.get('endDate');
-		const processId = searchParams.get('product');
-		const model = searchParams.get('model');
-		const orbitState = searchParams.get('orbitState');
-		const postprocessMethod = searchParams.get('postprocessMethod');
-		const postprocessKernelSize = searchParams.get('postprocessKernelSize');
-		const seasonWindowsParam = searchParams.get('seasonWindows');
-		const seasonIdsParam = searchParams.get('seasonIds');
-
-		// validate inputs for safe aggregation
-		if (!endDate) {
-			loggyError('Jobs create from process GET', 'Missing endDate value');
-			throw new BaseHttpError('Missing endDate value', 400, ErrorBehavior.SSR);
+		const result = fromProcessParamsSchema.safeParse(Object.fromEntries(searchParams));
+		if (!result.success) {
+			const firstIssue = result.error.issues[0];
+			loggyError('Jobs create from process GET', firstIssue.message);
+			throw new BaseHttpError(firstIssue.message, 400, ErrorBehavior.SSR);
 		}
 
-		if (!bbox) {
-			loggyError('Jobs create from process GET', 'Missing bbox value');
-			throw new BaseHttpError('Missing bbox value', 400, ErrorBehavior.SSR);
-		}
-
-		if (!outputFileFormat) {
-			loggyError('Jobs create from process GET', 'Missing outputFileFormat value');
-			throw new BaseHttpError('Missing outputFileFormat value', 400, ErrorBehavior.SSR);
-		}
-
-		if (!model) {
-			loggyError('Jobs create from process GET', 'Missing model value');
-			throw new BaseHttpError('Missing model value', 400, ErrorBehavior.SSR);
-		}
-
-		if (!seasonWindowsParam) {
-			loggyError('Jobs create from process GET', 'Missing seasonWindows value');
-			throw new BaseHttpError('Missing seasonWindows value', 400, ErrorBehavior.SSR);
-		}
-
-		let seasonWindows;
-		let seasonIds: string[] | undefined;
-		try {
-			seasonWindows = JSON.parse(seasonWindowsParam);
-			seasonIds = seasonIdsParam ? JSON.parse(seasonIdsParam) : Object.keys(seasonWindows);
-		} catch (error) {
-			loggyError('Jobs create from process GET', 'Invalid seasonWindows value');
-			throw new BaseHttpError('Invalid seasonWindows value', 400, ErrorBehavior.SSR);
-		}
-
-		if (!seasonWindows || typeof seasonWindows !== 'object' || Array.isArray(seasonWindows)) {
-			loggyError('Jobs create from process GET', 'Invalid seasonWindows payload shape');
-			throw new BaseHttpError('Invalid seasonWindows payload shape', 400, ErrorBehavior.SSR);
-		}
-
-		// Additional validation for crop type parameters
-		if (processId === customProductsProductTypes.cropType) {
-			if (!orbitState) {
-				loggyError('Jobs create from process GET', 'Missing orbitState for crop type');
-				throw new BaseHttpError('Missing orbitState for crop type', 400, ErrorBehavior.SSR);
-			}
-			if (!postprocessMethod) {
-				loggyError('Jobs create from process GET', 'Missing postprocessMethod for crop type');
-				throw new BaseHttpError('Missing postprocessMethod for crop type', 400, ErrorBehavior.SSR);
-			}
-			if (postprocessKernelSize !== null && postprocessMethod === customProductsPostprocessMethods.majorityVote) {
-				const parsedSize = Number(postprocessKernelSize);
-				if (isNaN(parsedSize) || parsedSize < 1 || parsedSize > 25 || parsedSize % 2 === 0) {
-					loggyError(
-						'Jobs create from process GET',
-						'Invalid postprocessKernelSize for crop type with majority_vote'
-					);
-					throw new BaseHttpError(
-						'Invalid postprocessKernelSize: must be an odd integer between 1 and 25',
-						400,
-						ErrorBehavior.SSR
-					);
-				}
-			}
-		}
+		const {
+			processId,
+			bbox: bboxStr,
+			format,
+			endDate,
+			seasonWindows,
+			seasonalModelZip,
+			orbitState,
+			postprocessMethodCroptype,
+			postprocessKernelSizeCroptype,
+			postprocessMethod,
+			postprocessKernelSize,
+			postprocessMethodCropland,
+			postprocessKernelSizeCropland,
+			enableCroplandHead,
+			landcoverHeadZip,
+			croptypeHeadZip,
+			maskCropland,
+			customProperties,
+		} = result.data;
 
 		// prepare data for the request
 		// Parse date as local time to avoid timezone issues
@@ -110,24 +62,37 @@ export async function GET(req: NextRequest) {
 		const startDate = transformDate(boundaryDates.startDate);
 		const transformedEndDate = transformDate(boundaryDates.endDate);
 
+		const isCropType = processId === customProductsProductTypes.cropType;
+
 		const data = {
 			processId,
 			namespace: getNamespaceByProcessId(processId),
-			bbox: bbox.split(',').map(Number),
+			bbox: bboxStr.split(',').map(Number),
 			crs: 'EPSG:4326',
 			timeRange: [startDate, transformedEndDate],
 			seasonWindows,
-			seasonIds,
-			outputFileFormat,
-			model,
+			format,
+			...(seasonalModelZip ? { seasonalModelZip } : {}),
+			...(title ? { title } : {}),
 			...(orbitState && { orbitState }),
-			...(postprocessMethod && { postprocessMethod }),
-			...(postprocessMethod === customProductsPostprocessMethods.majorityVote && postprocessKernelSize
-				? { postprocessKernelSize: Number(postprocessKernelSize) }
+			...(isCropType && postprocessMethodCroptype ? { postprocessMethodCroptype } : {}),
+			...(isCropType && postprocessMethodCroptype === customProductsPostprocessMethods.majorityVote && postprocessKernelSizeCroptype
+				? { postprocessKernelSizeCroptype }
 				: {}),
+			...(!isCropType && postprocessMethod ? { postprocessMethod } : {}),
+			...(!isCropType && postprocessMethod === customProductsPostprocessMethods.majorityVote && postprocessKernelSize
+				? { postprocessKernelSize }
+				: {}),
+			...(enableCroplandHead !== undefined && { enableCroplandHead }),
+			...(enableCroplandHead && landcoverHeadZip ? { landcoverHeadZip } : {}),
+			...(croptypeHeadZip ? { croptypeHeadZip } : {}),
+			...(maskCropland !== undefined && enableCroplandHead ? { maskCropland } : {}),
+			...(postprocessMethodCropland && enableCroplandHead ? { postprocessMethodCropland } : {}),
+			...(postprocessMethodCropland === customProductsPostprocessMethods.majorityVote && postprocessKernelSizeCropland && enableCroplandHead
+				? { postprocessKernelSizeCropland }
+				: {}),
+			...(customProperties ? { customProperties } : {}),
 		};
-
-		console.log('data', data);
 
 		const openeoUrlPrefix = process.env.OEO_URL;
 

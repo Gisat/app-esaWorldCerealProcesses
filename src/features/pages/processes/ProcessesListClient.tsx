@@ -43,5 +43,11 @@ export const ProcessesListClient = () => {
 
 	// Render the ProcessesTable component with the fetched data
 	// If no data is available, show a loading state
-	return <ProcessesTable loading={isLoading} data={data || []} forceReloadList={forceReloadList} />;
+	return (
+		<ProcessesTable
+			loading={isLoading}
+			data={data || []}
+			forceReloadList={forceReloadList}
+		/>
+	);
 };

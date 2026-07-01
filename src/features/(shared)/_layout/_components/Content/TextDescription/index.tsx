@@ -11,12 +11,14 @@ import { Text } from '@mantine/core';
 export const TextDescription = ({
 	children,
 	color = 'var(--textSecondaryColor)',
+	className,
 }: Readonly<{
 	children: React.ReactNode;
 	color?: string;
+	className?: string;
 }>) => {
 	return (
-		<Text className="worldCereal-TextDescription" fz="sm" c={color}>
+		<Text className={`worldCereal-TextDescription${className ? ` ${className}` : ''}`} fz="sm" c={color}>
 			{children}
 		</Text>
 	);

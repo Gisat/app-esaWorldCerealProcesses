@@ -5,7 +5,7 @@ import {
 } from '@features/(processes)/_constants/app';
 
 const formParams: {
-	product: {
+	processId: {
 		required?: boolean;
 		options: {
 			label: string;
@@ -15,14 +15,6 @@ const formParams: {
 			disabled?: boolean;
 		}[];
 	};
-	model: {
-		required?: boolean;
-		options: {
-			label: string;
-			value: string;
-			default?: boolean;
-		}[];
-	};
 	endDate: {
 		required?: boolean;
 		options: {
@@ -30,7 +22,15 @@ const formParams: {
 			default?: boolean;
 		}[];
 	};
-	outputFileFormat: {
+	cropTypeModelType: {
+		required?: boolean;
+		options: {
+			label: string;
+			value: string;
+			default?: boolean;
+		}[];
+	};
+	format: {
 		required?: boolean;
 		options: {
 			label: string;
@@ -46,7 +46,15 @@ const formParams: {
 			default?: boolean;
 		}[];
 	};
-	postprocessMethod: {
+	postprocessMethodCroptype: {
+		required?: boolean;
+		options: {
+			label: string;
+			value: string;
+			default?: boolean;
+		}[];
+	};
+	postprocessMethodCropland: {
 		required?: boolean;
 		options: {
 			label: string;
@@ -55,12 +63,12 @@ const formParams: {
 		}[];
 	};
 } = {
-	product: {
+	processId: {
 		required: true,
 		options: [
 			{
 				value: customProductsProductTypes.cropExtent,
-				label: 'Cropland',
+				label: 'Cropland extent',
 				namespace: 'https://raw.githubusercontent.com/WorldCereal/worldcereal-classification/refs/heads/main/scripts/udp/worldcereal_crop_extent.json',
 			},
 			{
@@ -75,13 +83,17 @@ const formParams: {
 			},
 		],
 	},
-	model: {
+	cropTypeModelType: {
 		required: true,
 		options: [
 			{
 				value: 'default',
 				label: 'Default',
 				default: true,
+			},
+			{
+				value: 'custom',
+				label: 'Custom',
 			},
 		],
 	},
@@ -94,7 +106,7 @@ const formParams: {
 			},
 		],
 	},
-	outputFileFormat: {
+	format: {
 		required: true,
 		options: [
 			{
@@ -122,7 +134,21 @@ const formParams: {
 			},
 		],
 	},
-	postprocessMethod: {
+	postprocessMethodCroptype: {
+		required: false,
+		options: [
+			{
+				value: customProductsPostprocessMethods.smoothProbabilities,
+				label: 'Smooth probabilities',
+			},
+			{
+				value: customProductsPostprocessMethods.majorityVote,
+				label: 'Majority vote',
+				default: true,
+			},
+		],
+	},
+	postprocessMethodCropland: {
 		required: false,
 		options: [
 			{

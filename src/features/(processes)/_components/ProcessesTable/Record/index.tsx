@@ -17,6 +17,7 @@ import { processTypes } from '@features/(processes)/_constants/app';
 import useSWR from 'swr';
 import Details from '../Details';
 import { Statuses } from '@features/(shared)/_logic/models.statuses';
+import { resolveBackgroundLayer } from '@features/(map)/_components/mapBackgroundLayers/backgroundLayers';
 
 import downloadFormParams from '@features/(processes)/_constants/download-official-products/formParams';
 import customProductFormParams from '@features/(processes)/_constants/generate-custom-products/formParams';
@@ -46,8 +47,14 @@ type Props = {
 	model?: string;
 	forceReloadList?: () => void;
 	orbitState?: string;
-	postprocessMethod?: string;
-	postprocessKernelSize?: number;
+	postprocessMethodCroptype?: string;
+	postprocessKernelSizeCroptype?: number;
+	postprocessMethodCropland?: string;
+	postprocessKernelSizeCropland?: number;
+	title?: string;
+	customProperties?: Record<string, unknown>;
+	seasonIds?: string[];
+	seasonWindows?: Array<{ start: string; end: string }>;
 };
 
 const StartJobButton = ({ jobKey, forceReloadList }: { jobKey?: string; forceReloadList?: () => void }) => {
@@ -97,6 +104,7 @@ type RemoveJobButtonProps = {
 	forceReloadList?: () => void;
 	collectionName?: string;
 	model?: string;
+	title?: string;
 };
 
 const RemoveJobButton = ({
@@ -109,6 +117,7 @@ const RemoveJobButton = ({
 	oeoProcessId,
 	collectionName,
 	model,
+	title,
 }: RemoveJobButtonProps) => {
 	const [shouldFetch, setShouldFetch] = useState(false);
 	const [opened, { open, close }] = useDisclosure(false);
@@ -152,6 +161,7 @@ const RemoveJobButton = ({
 					oeoProcessId={oeoProcessId}
 					collectionName={collectionName}
 					model={model}
+					title={title}
 				/>
 				<Flex mih={50} gap="lg" justify="flex-start" align="flex-end" direction="row" wrap="wrap">
 					<Button
@@ -253,12 +263,61 @@ const Record = ({
 	model,
 	forceReloadList,
 	orbitState,
-	postprocessMethod,
-	postprocessKernelSize,
+	postprocessMethodCroptype,
+	postprocessKernelSizeCroptype,
+	postprocessMethodCropland,
+	postprocessKernelSizeCropland,
+	title,
+	customProperties,
+	seasonIds,
+	seasonWindows,
 }: // details
 Props) => {
 	const [isExpanded, setIsExpanded] = useState(false);
 	const className = `worldCereal-ProcessesTable-row${isExpanded ? ' is-expanded' : ''}`;
+
+	/**
+	 * Local background layer state for this record's map.
+	 * Initialized from customProperties.background_layer if valid,
+	 * otherwise falls back to the default layer.
+	 */
+	const [backgroundLayer, setBackgroundLayer] = useState<string | null>(
+		resolveBackgroundLayer(customProperties) ?? null
+	);
+
+	const productLabel =
+		type === processTypes.download
+			? downloadFormParams.product.options.find((option) => option.value === oeoCollection)?.label
+			: customProductFormParams.processId.options.find((option) => option.value === oeoProcessId)?.label;
+
+	const collectionSeasonLabel = (() => {
+		if (type === processTypes.download) {
+			return downloadFormParams.collection.options.find(
+				(option) => option.start === `${timeRange?.[0]}` && option.end === `${timeRange?.[1]}`
+			)?.label;
+		}
+		if (type === processTypes.product) {
+			const fmtDate = (d: Date | string) => {
+				const date = new Date(d);
+				return date.toLocaleString('en-US', { month: 'short', year: '2-digit' });
+			};
+			const seasonWindow = seasonWindows?.[0];
+			const startDate = seasonWindow?.start ?? timeRange?.[0];
+			const endDate = seasonWindow?.end ?? timeRange?.[1];
+			if (!startDate || !endDate) return null;
+			const range = `${fmtDate(startDate)} - ${fmtDate(endDate)}`;
+			const seasonId = seasonIds?.[0];
+			return seasonId ? `${range} (${seasonId})` : range;
+		}
+		return null;
+	})();
+
+	const createdFormatted = (() => {
+		if (!createdIso) return '';
+		const d = new Date(createdIso);
+		const pad = (n: number) => String(n).padStart(2, '0');
+		return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+	})();
 
 	/**
 	 * Returns the details component based on the process type.
@@ -275,11 +334,14 @@ Props) => {
 						oeoCollection={downloadFormParams.product.options.find((option) => option.value === oeoCollection)?.label}
 						results={results}
 						status={status}
+						title={title}
 						collectionName={
 							downloadFormParams.collection.options.find(
 								(option) => option.start === `${timeRange?.[0]}` && option.end === `${timeRange?.[1]}`
 							)?.label
 						}
+						backgroundLayer={backgroundLayer ?? undefined}
+						setBackgroundLayer={setBackgroundLayer}
 					/>
 				);
 			case processTypes.product:
@@ -291,16 +353,25 @@ Props) => {
 						model={model}
 						resultFileFormat={resultFileFormat}
 						oeoProcessId={
-							customProductFormParams.product.options.find((option) => option.value === oeoProcessId)?.label
+							customProductFormParams.processId.options.find((option) => option.value === oeoProcessId)?.label
 						}
 						results={results}
 						status={status}
 						orbitState={customProductFormParams.orbitState.options.find((option) => option.value === orbitState)?.label}
-						postprocessMethod={
-							customProductFormParams.postprocessMethod.options.find((option) => option.value === postprocessMethod)
-								?.label
+						postprocessMethodCroptype={
+							customProductFormParams.postprocessMethodCroptype.options.find(
+								(option) => option.value === postprocessMethodCroptype
+							)?.label
 						}
-						postprocessKernelSize={postprocessKernelSize}
+						postprocessKernelSizeCroptype={postprocessKernelSizeCroptype}
+						postprocessMethodCropland={
+							customProductFormParams.postprocessMethodCropland.options.find(
+								(option) => option.value === postprocessMethodCropland
+							)?.label
+						}
+						postprocessKernelSizeCropland={postprocessKernelSizeCropland}
+						backgroundLayer={backgroundLayer ?? undefined}
+						setBackgroundLayer={setBackgroundLayer}
 					/>
 				);
 			default:
@@ -311,9 +382,10 @@ Props) => {
 	return (
 		<>
 			<Table.Tr key={jobKey} className={className}>
-				<Table.Td className="smallTextCell">{jobKey}</Table.Td>
 				<Table.Td className="highlightedCell">{type}</Table.Td>
-				<Table.Td>{createdIso && new Date(createdIso).toLocaleString()}</Table.Td>
+				<Table.Td>{productLabel}</Table.Td>
+				<Table.Td>{collectionSeasonLabel}</Table.Td>
+				<Table.Td>{createdFormatted}</Table.Td>
 				<Table.Td>{status ? <ProcessStatus status={status} /> : null}</Table.Td>
 				<Table.Td className="shrinkedCell alignRight">
 					<RemoveJobButton
@@ -324,7 +396,7 @@ Props) => {
 						resultFileFormat={resultFileFormat}
 						oeoCollection={downloadFormParams.product.options.find((option) => option.value === oeoCollection)?.label}
 						oeoProcessId={
-							customProductFormParams.product.options.find((option) => option.value === oeoProcessId)?.label || ''
+							customProductFormParams.processId.options.find((option) => option.value === oeoProcessId)?.label || ''
 						}
 						collectionName={
 							downloadFormParams.collection.options.find(
@@ -332,6 +404,7 @@ Props) => {
 							)?.label || ''
 						}
 						model={model}
+						title={title}
 					/>
 					{results?.[0] ? <OpenInfoButton descriptionType={type} /> : null}
 					{status === Statuses.created ? <StartJobButton jobKey={jobKey} forceReloadList={forceReloadList} /> : null}
@@ -367,7 +440,7 @@ Props) => {
 			</Table.Tr>
 			{isExpanded && (
 				<Table.Tr className={className}>
-					<Table.Td colSpan={7}>{getDetails()}</Table.Td>
+					<Table.Td colSpan={6}>{getDetails()}</Table.Td>
 				</Table.Tr>
 			)}
 		</>

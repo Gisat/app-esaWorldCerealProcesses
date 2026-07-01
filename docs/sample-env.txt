@@ -1,9 +1,20 @@
-OID_CLIENT_ID="my-client"
-OID_IAM_ISSUER_URL="https://sso.example.com/auth/realms/myapp"
-OID_SELF_REDIRECT_URL="http://localhost:3000/api/auth/callback"
-PID_URL=http://localhost:6111
-OEO_URL=http://localhost:6100
-FARO_URL=https://collector.example.com/collect/your-collector-id
+# CLIENT_ID=worldcereal-vdm   # Terrascope
+OID_CLIENT_ID=openeo-worldcereal-vdm  # CDSE
+OIDC_MODE=user # user (default) or device
+# OID_IAM_ISSUER_URL=https://sso.terrascope.be/auth/realms/terrascope
+OID_IAM_ISSUER_URL=https://identity.dataspace.copernicus.eu/auth/realms/CDSE
+OID_SELF_REDIRECT_URL=http://localhost:3000/api/auth/callback
+PID_URL=https://worldcerealprocesses-dev.gisat.cz/be-identity
+OEO_URL=https://worldcerealprocesses-dev.gisat.cz/be-interface-openeo
+# OEO_URL=http://localhost:6100
+FARO_URL=https://faro-collector-prod-us-central-0.grafana.net/collect/7894d9033ca0fbdef8abefb07e88c4bd
+DATABASE_FILE=./db.sqlite
+DATABASE_STATE_EXPIRATION_SEC=3600
+
+# Warning instance
 INSTANCE_WARNING_HIDDEN=false
-INSTANCE_WARNING_COLOR=#00ff00
-INSTANCE_WARNING_TEXT=I am a testing instance
+INSTANCE_WARNING_COLOR="#0026bd"
+INSTANCE_WARNING_TEXT="Work in progress. This page is subject to change or service interruptions as we make improvements. (Production link is fe-core temporarily)"
+INSTANCE_WARNING_LINK="https://pantherdocs-dev.gisat.cz/"
+INSTANCE_WARNING_LINK_TEXT="Explore official version"
+INSTANCE_WARNING_CONTINUE_TEXT="Continue to developer version"

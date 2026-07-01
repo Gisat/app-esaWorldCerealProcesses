@@ -31,7 +31,7 @@ const getProcessesWithCorrectProductType = (processes: any[]): any[] => {
     }
 
     // Check if processId is one of custom products ones
-    if (customProductFormParams.product.options.map((p: any) => p.value).includes(p.oeoProcessId)) {
+    if (customProductFormParams.processId.options.map((p: any) => p.value).includes(p.oeoProcessId)) {
       processWithCorrectProductType.type = processTypes.product;
     }
 

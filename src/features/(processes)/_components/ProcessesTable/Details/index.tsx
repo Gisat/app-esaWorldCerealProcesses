@@ -2,8 +2,6 @@ import './style.css';
 import React, { useState } from 'react';
 import { MapBBox } from '@features/(shared)/_components/map/MapBBox';
 import { TextDescription } from '@features/(shared)/_layout/_components/Content/TextDescription';
-import ProductValuesInfo from '@features/(processes)/_components/ProcessesTable/ProductValuesInfo';
-import ProductResultsInfo from '@features/(processes)/_components/ProcessesTable/ProductResultsInfo';
 import { Statuses } from '@features/(shared)/_logic/models.statuses';
 
 type DetailsItemProps = {
@@ -64,9 +62,19 @@ type DetailsProps = {
 	collectionName?: string;
 	model?: string;
 	backgroundLayer?: string;
+	setBackgroundLayer?: React.Dispatch<React.SetStateAction<string | null>>;
 	orbitState?: string;
-	postprocessMethod?: string;
-	postprocessKernelSize?: number;
+	postprocessMethodCroptype?: string;
+	postprocessKernelSizeCroptype?: number;
+	title?: string;
+	seasonId?: string;
+	seasonalModelZip?: string;
+	enableCroplandHead?: boolean;
+	landcoverHeadZip?: string;
+	croptypeHeadZip?: string;
+	maskCropland?: boolean;
+	postprocessMethodCropland?: string;
+	postprocessKernelSizeCropland?: number;
 };
 
 /**
@@ -87,9 +95,19 @@ const Details = ({
 	collectionName,
 	model,
 	backgroundLayer,
+	setBackgroundLayer,
 	orbitState,
-	postprocessMethod,
-	postprocessKernelSize,
+	postprocessMethodCroptype,
+	postprocessKernelSizeCroptype,
+	title,
+	seasonId,
+	seasonalModelZip,
+	enableCroplandHead,
+	landcoverHeadZip,
+	croptypeHeadZip,
+	maskCropland,
+	postprocessMethodCropland,
+	postprocessKernelSizeCropland,
 }: DetailsProps) => {
 	const [bboxDescription, setBboxDescription] = useState<string | string[] | null>(null);
 	const collection = oeoCollection;
@@ -130,9 +148,11 @@ const Details = ({
 					mapSize={[500, 300]}
 					setBboxDescription={setBboxDescription}
 					backgroundLayer={backgroundLayer}
+					setBackgroundLayer={setBackgroundLayer}
 				/>
 			</div>
 			<div className="worldCereal-ProcessesTable-Details-column">
+				<DetailsItem label={'Title'}>{title}</DetailsItem>
 				<DetailsItem label={'Product collection'}>{collectionName}</DetailsItem>
 				<DetailsItem label={'Product'}>{collection || process}</DetailsItem>
 				<DetailsItem label={'Model'}>{getModelLink()}</DetailsItem>
@@ -142,9 +162,43 @@ const Details = ({
 			</div>
 			<div className="worldCereal-ProcessesTable-Details-column">
 				{orbitState && <DetailsItem label={'Orbit state'}>{orbitState}</DetailsItem>}
-				{postprocessMethod && <DetailsItem label={'Postprocess method'}>{postprocessMethod}</DetailsItem>}
-				{typeof postprocessKernelSize === 'number' && (
-					<DetailsItem label={'Postprocess kernel size'}>{postprocessKernelSize}</DetailsItem>
+				{postprocessMethodCroptype && <DetailsItem label={'Postprocess method - croptype'}>{postprocessMethodCroptype}</DetailsItem>}
+				{typeof postprocessKernelSizeCroptype === 'number' && (
+					<DetailsItem label={'Postprocess kernel size - croptype'}>{postprocessKernelSizeCroptype}</DetailsItem>
+				)}
+				{seasonId && <DetailsItem label={'Season ID'}>{seasonId}</DetailsItem>}
+				{seasonalModelZip && (
+					<DetailsItem label={'Custom model'}>
+						<a href={seasonalModelZip} target="_blank" rel="noopener noreferrer">
+							{seasonalModelZip}
+						</a>
+					</DetailsItem>
+				)}
+				{enableCroplandHead !== undefined && (
+					<DetailsItem label={'Cropland head'}>{enableCroplandHead ? 'Enabled' : 'Disabled'}</DetailsItem>
+				)}
+				{landcoverHeadZip && (
+					<DetailsItem label={'Landcover head ZIP'}>
+						<a href={landcoverHeadZip} target="_blank" rel="noopener noreferrer">
+							{landcoverHeadZip}
+						</a>
+					</DetailsItem>
+				)}
+				{croptypeHeadZip && (
+					<DetailsItem label={'Croptype head ZIP'}>
+						<a href={croptypeHeadZip} target="_blank" rel="noopener noreferrer">
+							{croptypeHeadZip}
+						</a>
+					</DetailsItem>
+				)}
+				{maskCropland !== undefined && (
+					<DetailsItem label={'Cropland mask'}>{maskCropland ? 'Enabled' : 'Disabled'}</DetailsItem>
+				)}
+				{postprocessMethodCropland && (
+					<DetailsItem label={'Post process method - cropland'}>{postprocessMethodCropland}</DetailsItem>
+				)}
+				{typeof postprocessKernelSizeCropland === 'number' && (
+					<DetailsItem label={'Post process kernel size - cropland'}>{postprocessKernelSizeCropland}</DetailsItem>
 				)}
 				{status === Statuses.error ? (
 					<div className="worldCereal-ProcessesTable-Details-error">
