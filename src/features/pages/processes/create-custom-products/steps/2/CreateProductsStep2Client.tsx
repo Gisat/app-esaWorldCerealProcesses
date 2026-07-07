@@ -306,7 +306,7 @@ export default function CreateProductsStep2Client() {
 	];
 
 	const productLabel = processId ? (formParams.processId.options.find((o) => o.value === processId)?.label ?? processId) : '';
-	const title = productLabel ? `Processing: ${productLabel}` : undefined;
+	const title = productLabel ? `WorldCereal Processing Hub: ${productLabel}` : undefined;
 
 	const params: Record<string, string> = {
 		bbox: bbox ?? '',
