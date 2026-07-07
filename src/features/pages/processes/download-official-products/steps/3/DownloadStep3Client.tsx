@@ -125,7 +125,6 @@ export default function DownloadStep3Client() {
 					oeoCollection={formParams.product.options.find((option) => option.value === data.oeoCollection)?.label}
 					collectionName={data.timeRange?.[0]?.split('-')?.[0]}
 					backgroundLayer={backgroundLayer}
-					title={data.title}
 				/>
 			) : null}
 			<Group mt="xl">

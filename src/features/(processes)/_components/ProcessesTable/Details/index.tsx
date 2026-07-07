@@ -53,6 +53,7 @@ type DetailsProps = {
 	bbox?: number[];
 	costs?: number;
 	duration?: number;
+	jobKey?: string;
 	showValuesInfo?: boolean;
 	oeoCollection?: string;
 	oeoProcessId?: string;
@@ -66,7 +67,6 @@ type DetailsProps = {
 	orbitState?: string;
 	postprocessMethodCroptype?: string;
 	postprocessKernelSizeCroptype?: number;
-	title?: string;
 	seasonId?: string;
 	seasonalModelZip?: string;
 	enableCroplandHead?: boolean;
@@ -99,7 +99,6 @@ const Details = ({
 	orbitState,
 	postprocessMethodCroptype,
 	postprocessKernelSizeCroptype,
-	title,
 	seasonId,
 	seasonalModelZip,
 	enableCroplandHead,
@@ -108,6 +107,7 @@ const Details = ({
 	maskCropland,
 	postprocessMethodCropland,
 	postprocessKernelSizeCropland,
+	jobKey,
 }: DetailsProps) => {
 	const [bboxDescription, setBboxDescription] = useState<string | string[] | null>(null);
 	const collection = oeoCollection;
@@ -152,7 +152,7 @@ const Details = ({
 				/>
 			</div>
 			<div className="worldCereal-ProcessesTable-Details-column">
-				<DetailsItem label={'Title'}>{title}</DetailsItem>
+				<DetailsItem label={'Job ID'}>{jobKey}</DetailsItem>
 				<DetailsItem label={'Product collection'}>{collectionName}</DetailsItem>
 				<DetailsItem label={'Product'}>{collection || process}</DetailsItem>
 				<DetailsItem label={'Model'}>{getModelLink()}</DetailsItem>

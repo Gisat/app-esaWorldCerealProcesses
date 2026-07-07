@@ -161,7 +161,7 @@ const RemoveJobButton = ({
 					oeoProcessId={oeoProcessId}
 					collectionName={collectionName}
 					model={model}
-					title={title}
+					jobKey={jobKey}
 				/>
 				<Flex mih={50} gap="lg" justify="flex-start" align="flex-end" direction="row" wrap="wrap">
 					<Button
@@ -334,7 +334,6 @@ Props) => {
 						oeoCollection={downloadFormParams.product.options.find((option) => option.value === oeoCollection)?.label}
 						results={results}
 						status={status}
-						title={title}
 						collectionName={
 							downloadFormParams.collection.options.find(
 								(option) => option.start === `${timeRange?.[0]}` && option.end === `${timeRange?.[1]}`
@@ -342,6 +341,7 @@ Props) => {
 						}
 						backgroundLayer={backgroundLayer ?? undefined}
 						setBackgroundLayer={setBackgroundLayer}
+						jobKey={jobKey}
 					/>
 				);
 			case processTypes.product:
@@ -372,6 +372,7 @@ Props) => {
 						postprocessKernelSizeCropland={postprocessKernelSizeCropland}
 						backgroundLayer={backgroundLayer ?? undefined}
 						setBackgroundLayer={setBackgroundLayer}
+						jobKey={jobKey}
 					/>
 				);
 			default:
