@@ -1,0 +1,8 @@
+.worldCereal-ProductResultsInfo {
+  color: var(--textPrimaryColor);
+}
+
+.worldCereal-ProductResultsInfo .mantine-List-item {
+  color: var(--textPrimaryColor);
+  font-size: var(--font-size-sm);
+}
