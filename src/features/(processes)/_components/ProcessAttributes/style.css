@@ -1,0 +1,37 @@
+.process-attr {
+	margin-bottom: 0.5rem;
+	min-width: 0;
+	break-inside: avoid;
+}
+
+.process-attr-label {
+	color: var(--textSecondaryColor);
+	font-size: var(--font-size-sm);
+	display: block;
+}
+
+.process-attr-value {
+	color: var(--textPrimaryColor);
+	font-size: var(--font-size-md);
+	display: block;
+	word-break: break-all;
+}
+
+.process-attr-link {
+	text-decoration: none;
+	color: inherit;
+	word-break: break-all;
+}
+
+.process-attr-link:hover {
+	text-decoration: underline;
+}
+
+.process-attr-copy.process-attr-copy {
+	cursor: pointer;
+	color: var(--textPrimaryColor);
+	font-size: var(--font-size-md);
+}
+.process-attr-copy:hover {
+	opacity: 0.8;
+}
