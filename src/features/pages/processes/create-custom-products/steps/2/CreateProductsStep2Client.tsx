@@ -534,7 +534,9 @@ export default function CreateProductsStep2Client() {
 								</Text>
 								<TextDescription className="step2-desc">
 									Select a season between {START_YEAR} and {CURRENT_YEAR}.{' '}
-									{isCropType ? 'From 3 to 12 months.' : 'Exactly 12 months.'}{' '}
+									{isCropType ? 'From 3 to 12 months.' : 'Exactly 12 months.'}
+								</TextDescription>
+								<TextDescription className="step2-desc">
 									Use the arrows on the slider to shift the selected season to the previous or next year.
 								</TextDescription>
 
