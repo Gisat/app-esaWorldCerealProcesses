@@ -3,11 +3,11 @@ import useSWR from 'swr';
 import { Checkbox, Text } from '@mantine/core';
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { IconArrowLeft, IconCheck } from '@tabler/icons-react';
+import { IconArrowLeft, IconArrowRight, IconCheck } from '@tabler/icons-react';
 import { useQueryStates } from 'nuqs';
 import TwoColumns, { Column } from '@features/(shared)/_layout/_components/Content/TwoColumns';
 import { SectionContainer } from '@features/(shared)/_layout/_components/Content/SectionContainer';
-import { Button, Group, NumberInput, Select, Stack, Radio, RangeSlider, Box, TextInput, Input } from '@mantine/core';
+import { Button, Group, NumberInput, Select, Stack, Radio, RangeSlider, Box, TextInput, Input, ActionIcon } from '@mantine/core';
 import FormLabel from '@features/(shared)/_layout/_components/Content/FormLabel';
 import { TextDescription } from '@features/(shared)/_layout/_components/Content/TextDescription';
 import { MapBBox } from '@features/(shared)/_components/map/MapBBox';
@@ -288,6 +288,35 @@ export default function CreateProductsStep2Client() {
 		setParams({ selectedPeriodId: null, endDate: endDateStr });
 	};
 
+	const shiftRangeByYear = (direction: -1 | 1) => {
+		if (!startDate || !endDate) return;
+
+		const startM = startDate.getMonth();
+		const endM = new Date(endDate).getMonth();
+		const prevStartIdx = getSliderValueFromDate(startDate);
+		const prevEndIdx = getSliderValueFromDate(endDate);
+		const prevEndYear = Math.floor(prevEndIdx / 12);
+
+		const minEndYear = startM > endM ? 1 : 0;
+		const maxEndYear = Math.min(
+			Math.floor((SLIDER_MAX - endM) / 12),
+			startM <= endM
+				? Math.floor((SLIDER_MAX - startM) / 12)
+				: Math.floor((SLIDER_MAX - startM + 12) / 12),
+		);
+		const newEndYear = Math.max(minEndYear, Math.min(maxEndYear, prevEndYear + direction));
+
+		if (newEndYear === prevEndYear) return;
+
+		const endIdx = newEndYear * 12 + endM;
+		const startIdx = startM <= endM
+			? newEndYear * 12 + startM
+			: (newEndYear - 1) * 12 + startM;
+
+		setStartDate(getDateFromSliderValue(startIdx));
+		setParams({ selectedPeriodId: null, endDate: transformDate(getDateFromSliderValue(endIdx, true)) });
+	};
+
 	const seasonStartDate = startDate ? transformDate(startDate) : null;
 	const seasonEndDate = endDate ? endDate.toString() : null;
 
@@ -505,42 +534,69 @@ export default function CreateProductsStep2Client() {
 								</Text>
 								<TextDescription className="step2-desc">
 									Select a season between {START_YEAR} and {CURRENT_YEAR}.{' '}
-									{isCropType ? 'From 3 to 12 months.' : 'Exactly 12 months.'}
+									{isCropType ? 'From 3 to 12 months.' : 'Exactly 12 months.'}{' '}
+									Use the arrows on the slider to shift the selected season to the previous or next year.
 								</TextDescription>
 
 								<Box p="lg" pt={60} bg="#000" style={{ borderRadius: '2px', marginTop: '0.5rem' }}>
-									<RangeSlider
-										min={0}
-										max={SLIDER_MAX}
-										step={1}
-										minRange={isCropType ? CROP_TYPE_MIN_DIFF : CROP_EXTENT_DIFF}
-										maxRange={isCropType ? CROP_TYPE_MAX_DIFF : CROP_EXTENT_DIFF}
-										marks={generateFullRangeMarks()}
-										value={sliderValue}
-										onChange={handleDateRangeChange}
-										classNames={{
-											root: 'step2-slider-root',
-											track: 'step2-slider-track',
-											trackContainer: 'step2-slider-track-container',
-											bar: 'step2-slider-bar',
-											thumb: 'step2-slider-thumb',
-											mark: 'step2-slider-mark',
-											markLabel: 'step2-slider-mark-label',
-											label: 'step2-slider-label',
-										}}
-										labelAlwaysOn
-										label={(value) => {
-											const date = new Date(START_YEAR, value);
-											const text = date.toLocaleString('en-US', { month: 'short', year: 'numeric' });
-											const side = value === sliderValue[0] ? 'is-start' : 'is-end';
-											return (
-												<div className={`step2-thumb-label ${side}`}>
-													{text}
-													<div className="step2-thumb-label-arrow" />
-												</div>
-											);
-										}}
-									/>
+									<Group gap="xs" align="center" wrap="nowrap">
+										<ActionIcon
+											variant="filled"
+											color="accented"
+											c="white"
+											onClick={() => shiftRangeByYear(-1)}
+											disabled={!startDate || !endDate}
+											size="lg"
+											radius="sm"
+										>
+											<IconArrowLeft size={24} stroke={3} />
+										</ActionIcon>
+										<Box style={{ flex: 1 }}>
+											<RangeSlider
+												min={0}
+												max={SLIDER_MAX}
+												step={1}
+												minRange={isCropType ? CROP_TYPE_MIN_DIFF : CROP_EXTENT_DIFF}
+												maxRange={isCropType ? CROP_TYPE_MAX_DIFF : CROP_EXTENT_DIFF}
+												marks={generateFullRangeMarks()}
+												value={sliderValue}
+												onChange={handleDateRangeChange}
+												classNames={{
+													root: 'step2-slider-root',
+													track: 'step2-slider-track',
+													trackContainer: 'step2-slider-track-container',
+													bar: 'step2-slider-bar',
+													thumb: 'step2-slider-thumb',
+													mark: 'step2-slider-mark',
+													markLabel: 'step2-slider-mark-label',
+													label: 'step2-slider-label',
+												}}
+												labelAlwaysOn
+												label={(value) => {
+													const date = new Date(START_YEAR, value);
+													const text = date.toLocaleString('en-US', { month: 'short', year: 'numeric' });
+													const side = value === sliderValue[0] ? 'is-start' : 'is-end';
+													return (
+														<div className={`step2-thumb-label ${side}`}>
+															{text}
+															<div className="step2-thumb-label-arrow" />
+														</div>
+													);
+												}}
+											/>
+										</Box>
+										<ActionIcon
+											variant="filled"
+											color="accented"
+											c="white"
+											onClick={() => shiftRangeByYear(1)}
+											disabled={!startDate || !endDate}
+											size="lg"
+											radius="sm"
+										>
+											<IconArrowRight size={24} stroke={3} />
+										</ActionIcon>
+									</Group>
 								</Box>
 							</Box>
 
