@@ -123,7 +123,6 @@ export default function CreateProductsStep3Client() {
 							seasonalModelZip={data.seasonalModelZip}
 							landcoverHeadZip={data.landcoverHeadZip}
 							croptypeHeadZip={data.croptypeHeadZip}
-							resultFileFormat={data.format}
 							startDate={data.timeRange?.[0]}
 							endDate={data.timeRange?.[1]}
 							seasonId={data.seasonIds?.[0]}
