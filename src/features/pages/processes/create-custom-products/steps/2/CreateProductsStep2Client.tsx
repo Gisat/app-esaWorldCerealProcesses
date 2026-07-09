@@ -521,6 +521,7 @@ export default function CreateProductsStep2Client() {
 										classNames={{
 											root: 'step2-slider-root',
 											track: 'step2-slider-track',
+											trackContainer: 'step2-slider-track-container',
 											bar: 'step2-slider-bar',
 											thumb: 'step2-slider-thumb',
 											mark: 'step2-slider-mark',
