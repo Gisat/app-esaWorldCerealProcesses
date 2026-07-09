@@ -84,7 +84,7 @@ export async function GET(req: NextRequest) {
 				? { postprocessKernelSize }
 				: {}),
 			...(enableCroplandHead !== undefined && { enableCroplandHead }),
-			...(enableCroplandHead && landcoverHeadZip ? { landcoverHeadZip } : {}),
+			...(landcoverHeadZip ? { landcoverHeadZip } : {}),
 			...(croptypeHeadZip ? { croptypeHeadZip } : {}),
 			...(maskCropland !== undefined && enableCroplandHead ? { maskCropland } : {}),
 			...(postprocessMethodCropland && enableCroplandHead ? { postprocessMethodCropland } : {}),

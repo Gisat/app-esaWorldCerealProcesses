@@ -1,75 +1,70 @@
 'use client';
 
 import useSWR from 'swr';
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { IconArrowRight, IconPlayerPlayFilled, IconPlus } from '@tabler/icons-react';
-import { Button, Group } from '@mantine/core';
+import { Button, Group, Text } from '@mantine/core';
 import { fetcher } from '@features/(shared)/_logic/utils';
 import { TextParagraph } from '@features/(shared)/_layout/_components/Content/TextParagraph';
-import Details from '@features/(processes)/_components/ProcessesTable/Details';
+import { MapBBox } from '@features/(shared)/_components/map/MapBBox';
+import ProcessAttributes from '@features/(processes)/_components/ProcessAttributes';
 import formParams from '@features/(processes)/_constants/download-official-products/formParams';
 import { resolveBackgroundLayer } from '@features/(map)/_components/mapBackgroundLayers/backgroundLayers';
+import { area as turfArea } from '@turf/area';
+import { polygon as turfPolygon } from '@turf/helpers';
+import '@features/pages/processes/create-custom-products/steps/3/CreateProductsStep3Client.css';
 
-/**
- * Component representing the third step in the "Download Official Products" process.
- *
- * This step allows users to review the process parameters and start the process.
- *
- * @component
- * @returns {JSX.Element} The rendered component for step 3 of the process.
- */
+function computeExtentText(bbox: number[]): string {
+	const [minLng, minLat, maxLng, maxLat] = bbox;
+	const coords = `${minLng.toFixed(2)}, ${minLat.toFixed(2)}, ${maxLng.toFixed(2)}, ${maxLat.toFixed(2)}`;
+	try {
+		const polygon = turfPolygon([
+			[
+				[minLng, minLat],
+				[maxLng, minLat],
+				[maxLng, maxLat],
+				[minLng, maxLat],
+				[minLng, minLat],
+			],
+		]);
+		const areaSqkm = Math.round(turfArea(polygon) / 1_000_000);
+		return `Extent: ${coords} (${areaSqkm.toLocaleString()} sqkm)`;
+	} catch {
+		return `Extent: ${coords}`;
+	}
+}
+
 export default function DownloadStep3Client() {
 	const router = useRouter();
 	const searchParams = useSearchParams();
 	const jobKey = searchParams.get('jobKey') ?? undefined;
 	const urlBackgroundLayer = searchParams.get('backgroundLayer') ?? undefined;
 
-	/**
-	 * State to determine whether to fetch process data.
-	 * @type {boolean}
-	 */
+	const [backgroundLayer, setBackgroundLayer] = useState<string | null>(null);
 	const [shouldFetch, setShouldFetch] = useState(false);
 	const [startedData, setStartedData] = useState<{ key: string; status: string } | null>(null);
 
-	/**
-	 * URL for starting the job process.
-	 * @type {string}
-	 */
 	const startJobUrl = `/api/jobs/start/${jobKey}`;
-
-	/**
-	 * URL for retrieving job details.
-	 * @type {string}
-	 */
 	const getJobUrl = `/api/jobs/get/${jobKey}`;
 
-	/**
-	 * SWR hook for fetching data when the process starts.
-	 */
 	const { data: startedProcessData, isLoading } = useSWR(shouldFetch && jobKey ? startJobUrl : null, () =>
 		fetcher(startJobUrl)
 	);
 
-	/**
-	 * SWR hook for fetching job details.
-	 */
 	const { data } = useSWR(jobKey ? getJobUrl : null, fetcher);
 
-
-	/**
-	 * Resolves the background layer key for the map.
-	 * Prefers the URL param from step 2, falling back to
-	 * the job's customProperties.background_layer.
-	 */
-	const backgroundLayer = useMemo(() => {
+	const initialBackgroundLayer = useMemo(() => {
 		if (urlBackgroundLayer) return urlBackgroundLayer;
 		return resolveBackgroundLayer(data?.customProperties);
 	}, [urlBackgroundLayer, data]);
 
-	/**
-	 * Effect to reset the fetch state and capture started process data.
-	 */
+	useEffect(() => {
+		if (initialBackgroundLayer && !backgroundLayer) {
+			setBackgroundLayer(initialBackgroundLayer);
+		}
+	}, [initialBackgroundLayer, backgroundLayer]);
+
 	useEffect(() => {
 		if (shouldFetch && startedProcessData) {
 			setShouldFetch(false);
@@ -77,9 +72,6 @@ export default function DownloadStep3Client() {
 		}
 	}, [shouldFetch, startedProcessData]);
 
-	/**
-	 * Effect to navigate to the process list when the process is successfully started.
-	 */
 	useEffect(() => {
 		if (startedData?.key && startedData?.status) {
 			const timer = setTimeout(() => {
@@ -89,44 +81,56 @@ export default function DownloadStep3Client() {
 		}
 	}, [startedData, router]);
 
-	/**
-	 * Handler to start the process and fetch data.
-	 */
 	const onStartProcess = () => {
 		setShouldFetch(true);
 	};
 
-	/**
-	 * Handler to navigate to the first step for setting up a new process.
-	 * Navigating to a bare path drops all URL params, so the wizard starts fresh.
-	 */
 	const onNewProcessClick = () => {
 		router.push('/download-official-products/steps/1');
 	};
 
-	/**
-	 * Handler to navigate to the process list.
-	 */
 	const onGoToList = () => {
 		router.push('/processes-list');
 	};
 
+	const activeBackgroundLayer = backgroundLayer ?? undefined;
+
 	return (
-		<>
+		<div className="step3-container">
 			<TextParagraph color="var(--textAccentedColor)">
 				<b>You have created the Download official products process with following parameters:</b>
 			</TextParagraph>
 			{data && data.key === jobKey ? (
-				<Details
-					bbox={data.bbox}
-					resultFileFormat={
-						formParams.format.options.find((option) => option.value === data.format)?.label
-					}
-					oeoCollection={formParams.product.options.find((option) => option.value === data.oeoCollection)?.label}
-					collectionName={data.timeRange?.[0]?.split('-')?.[0]}
-					backgroundLayer={backgroundLayer}
-					title={data.title}
-				/>
+				<div className="step3-content">
+					<div className="step3-map-section">
+						{data.bbox && (
+							<>
+							<Text size="sm" c="dimmed" mb="xs">
+								{computeExtentText(data.bbox)}
+							</Text>
+								<MapBBox
+									mapSize={[550, 350]}
+									bbox={data.bbox}
+									disabled
+									backgroundLayer={activeBackgroundLayer}
+									setBackgroundLayer={setBackgroundLayer}
+								/>
+							</>
+						)}
+					</div>
+					<div className="step3-attributes">
+						<ProcessAttributes
+							jobKey={jobKey}
+							product={
+								formParams.product.options.find((option) => option.value === data.oeoCollection)?.label
+							}
+							collectionName={data.timeRange?.[0]?.split('-')?.[0]}
+							resultFileFormat={
+								formParams.format.options.find((option) => option.value === data.format)?.label
+							}
+						/>
+					</div>
+				</div>
 			) : null}
 			<Group mt="xl">
 				<Button
@@ -154,6 +158,6 @@ export default function DownloadStep3Client() {
 					Go to the list
 				</Button>
 			</Group>
-		</>
+		</div>
 	);
 }

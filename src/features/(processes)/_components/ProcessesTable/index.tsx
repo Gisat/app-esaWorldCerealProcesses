@@ -32,10 +32,16 @@ type Props = {
 		postprocessKernelSizeCroptype?: number;
 		postprocessMethodCropland?: string;
 		postprocessKernelSizeCropland?: number;
+		postprocessMethod?: string;
+		postprocessKernelSize?: number;
 		title?: string;
 		customProperties?: Record<string, unknown>;
 		seasonIds?: string[];
 		seasonWindows?: Array<{ start: string; end: string }>;
+		croptypeHeadZip?: string;
+		enableCroplandHead?: boolean;
+		landcoverHeadZip?: string;
+		maskCropland?: boolean;
 	}[];
 };
 
@@ -77,10 +83,16 @@ export const ProcessesTable = ({ data, loading, forceReloadList }: Props) => {
 			postprocessKernelSizeCroptype,
 			postprocessMethodCropland,
 			postprocessKernelSizeCropland,
+			postprocessMethod,
+			postprocessKernelSize,
 			title,
 			customProperties,
 			seasonIds,
 			seasonWindows,
+			croptypeHeadZip,
+			enableCroplandHead,
+			landcoverHeadZip,
+			maskCropland,
 			}) => (
 				<Record
 					key={key}
@@ -106,10 +118,16 @@ export const ProcessesTable = ({ data, loading, forceReloadList }: Props) => {
 					postprocessKernelSizeCroptype={postprocessKernelSizeCroptype}
 					postprocessMethodCropland={postprocessMethodCropland}
 					postprocessKernelSizeCropland={postprocessKernelSizeCropland}
+					postprocessMethod={postprocessMethod}
+					postprocessKernelSize={postprocessKernelSize}
 					title={title}
 					customProperties={customProperties}
 					seasonIds={seasonIds}
 					seasonWindows={seasonWindows}
+					croptypeHeadZip={croptypeHeadZip}
+					enableCroplandHead={enableCroplandHead}
+					landcoverHeadZip={landcoverHeadZip}
+					maskCropland={maskCropland}
 				/>
 			)
 		)

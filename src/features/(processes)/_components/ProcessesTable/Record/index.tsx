@@ -51,10 +51,16 @@ type Props = {
 	postprocessKernelSizeCroptype?: number;
 	postprocessMethodCropland?: string;
 	postprocessKernelSizeCropland?: number;
+	postprocessMethod?: string;
+	postprocessKernelSize?: number;
 	title?: string;
 	customProperties?: Record<string, unknown>;
 	seasonIds?: string[];
 	seasonWindows?: Array<{ start: string; end: string }>;
+	croptypeHeadZip?: string;
+	enableCroplandHead?: boolean;
+	landcoverHeadZip?: string;
+	maskCropland?: boolean;
 };
 
 const StartJobButton = ({ jobKey, forceReloadList }: { jobKey?: string; forceReloadList?: () => void }) => {
@@ -160,8 +166,8 @@ const RemoveJobButton = ({
 					oeoCollection={oeoCollection}
 					oeoProcessId={oeoProcessId}
 					collectionName={collectionName}
-					model={model}
-					title={title}
+					seasonalModelZip={model}
+					jobKey={jobKey}
 				/>
 				<Flex mih={50} gap="lg" justify="flex-start" align="flex-end" direction="row" wrap="wrap">
 					<Button
@@ -267,10 +273,16 @@ const Record = ({
 	postprocessKernelSizeCroptype,
 	postprocessMethodCropland,
 	postprocessKernelSizeCropland,
+	postprocessMethod,
+	postprocessKernelSize,
 	title,
 	customProperties,
 	seasonIds,
 	seasonWindows,
+	croptypeHeadZip,
+	enableCroplandHead,
+	landcoverHeadZip,
+	maskCropland,
 }: // details
 Props) => {
 	const [isExpanded, setIsExpanded] = useState(false);
@@ -334,7 +346,6 @@ Props) => {
 						oeoCollection={downloadFormParams.product.options.find((option) => option.value === oeoCollection)?.label}
 						results={results}
 						status={status}
-						title={title}
 						collectionName={
 							downloadFormParams.collection.options.find(
 								(option) => option.start === `${timeRange?.[0]}` && option.end === `${timeRange?.[1]}`
@@ -342,6 +353,7 @@ Props) => {
 						}
 						backgroundLayer={backgroundLayer ?? undefined}
 						setBackgroundLayer={setBackgroundLayer}
+						jobKey={jobKey}
 					/>
 				);
 			case processTypes.product:
@@ -350,8 +362,7 @@ Props) => {
 						bbox={bbox}
 						startDate={timeRange?.[0]}
 						endDate={timeRange?.[1]}
-						model={model}
-						resultFileFormat={resultFileFormat}
+						seasonalModelZip={model}
 						oeoProcessId={
 							customProductFormParams.processId.options.find((option) => option.value === oeoProcessId)?.label
 						}
@@ -364,14 +375,20 @@ Props) => {
 							)?.label
 						}
 						postprocessKernelSizeCroptype={postprocessKernelSizeCroptype}
+						seasonId={seasonIds?.[0]}
 						postprocessMethodCropland={
 							customProductFormParams.postprocessMethodCropland.options.find(
 								(option) => option.value === postprocessMethodCropland
 							)?.label
 						}
 						postprocessKernelSizeCropland={postprocessKernelSizeCropland}
+						croptypeHeadZip={croptypeHeadZip}
+						enableCroplandHead={enableCroplandHead}
+						landcoverHeadZip={landcoverHeadZip}
+						maskCropland={maskCropland}
 						backgroundLayer={backgroundLayer ?? undefined}
 						setBackgroundLayer={setBackgroundLayer}
+						jobKey={jobKey}
 					/>
 				);
 			default:

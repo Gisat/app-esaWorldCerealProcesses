@@ -10,33 +10,11 @@ import { fetcher } from '@features/(shared)/_logic/utils';
 import { TextParagraph } from '@features/(shared)/_layout/_components/Content/TextParagraph';
 import { MapBBox } from '@features/(shared)/_components/map/MapBBox';
 import formParams from '@features/(processes)/_constants/generate-custom-products/formParams';
-import { customProductsProductTypes } from '@features/(processes)/_constants/app';
 import { area as turfArea } from '@turf/area';
 import { resolveBackgroundLayer } from '@features/(map)/_components/mapBackgroundLayers/backgroundLayers';
 import { polygon as turfPolygon } from '@turf/helpers';
+import ProcessAttributes from '@features/(processes)/_components/ProcessAttributes';
 import './CreateProductsStep3Client.css';
-
-function AttributeItem({ label, value, isLink }: { label: string; value?: string; isLink?: boolean }) {
-	if (!value) return null;
-	return (
-		<div className="step3-attr-item">
-			<Text size="sm" c="var(--textSecondaryColor)">
-				{label}:
-			</Text>
-			{isLink ? (
-				<a href={value} target="_blank" rel="noopener noreferrer" className="step3-attr-link">
-					<Text size="sm" fw={700} c="white">
-						{value}
-					</Text>
-				</a>
-			) : (
-				<Text size="sm" fw={700} c="white">
-					{value}
-				</Text>
-			)}
-		</div>
-	);
-}
 
 function computeExtentText(bbox: number[]): string {
 	const [minLng, minLat, maxLng, maxLat] = bbox;
@@ -122,7 +100,7 @@ export default function CreateProductsStep3Client() {
 					<div className="step3-map-section">
 						{data.bbox && (
 							<>
-								<Text size="sm" c="white" mb="xs">
+								<Text size="sm" c="dimmed" mb="xs">
 									{computeExtentText(data.bbox)}
 								</Text>
 								<MapBBox
@@ -137,61 +115,42 @@ export default function CreateProductsStep3Client() {
 					</div>
 
 					<div className="step3-attributes">
-						<div className="step3-attr-column">
-							<AttributeItem
-								label="Product"
-								value={
-									formParams.processId.options.find((o) => o.value === data.oeoProcessId)?.label ?? data.oeoProcessId
-								}
-							/>
-							<AttributeItem label="Model" value={data.seasonalModelZip} />
-							{data.seasonalModelZip && <AttributeItem label="Base model" value={data.seasonalModelZip} isLink />}
-							{data.landcoverHeadZip && (
-								<AttributeItem label="Cropland head override" value={data.landcoverHeadZip} isLink />
-							)}
-							{data.croptypeHeadZip && (
-								<AttributeItem label="Crop type head override" value={data.croptypeHeadZip} isLink />
-							)}
-							{data.timeRange?.[0] && <AttributeItem label="Start date" value={data.timeRange[0]} />}
-							{data.timeRange?.[1] && <AttributeItem label="End date" value={data.timeRange[1]} />}
-						</div>
-
-						<div className="step3-attr-column">
-							{data.seasonIds?.[0] && <AttributeItem label="Season ID" value={data.seasonIds[0]} />}
-							{data.orbitState && (
-								<AttributeItem
-									label="Orbit state"
-									value={
-										formParams.orbitState.options.find((o) => o.value === data.orbitState)?.label ?? data.orbitState
-									}
-								/>
-							)}
-							{data.postprocessMethodCroptype && (
-								<AttributeItem
-									label="Post process method - croptype"
-									value={
-										formParams.postprocessMethodCroptype.options.find((o) => o.value === data.postprocessMethodCroptype)?.label ??
-										data.postprocessMethodCroptype
-									}
-								/>
-							)}
-							{data.postprocessKernelSizeCroptype != null && (
-								<AttributeItem label="Post process kernel size - croptype" value={String(data.postprocessKernelSizeCroptype)} />
-							)}
-							{data.postprocessMethodCropland && (
-								<AttributeItem
-									label="Post process method - cropland"
-									value={
-										formParams.postprocessMethodCropland.options.find(
+						<ProcessAttributes
+							jobKey={data.key}
+							product={
+								formParams.processId.options.find((o) => o.value === data.oeoProcessId)?.label ?? data.oeoProcessId
+							}
+							seasonalModelZip={data.seasonalModelZip}
+							landcoverHeadZip={data.landcoverHeadZip}
+							croptypeHeadZip={data.croptypeHeadZip}
+							resultFileFormat={data.format}
+							startDate={data.timeRange?.[0]}
+							endDate={data.timeRange?.[1]}
+							seasonId={data.seasonIds?.[0]}
+							orbitState={
+								data.orbitState
+									? formParams.orbitState.options.find((o) => o.value === data.orbitState)?.label ?? data.orbitState
+									: undefined
+							}
+							postprocessMethodCroptype={
+								data.postprocessMethodCroptype
+									? formParams.postprocessMethodCroptype.options.find(
+											(o) => o.value === data.postprocessMethodCroptype
+									  )?.label ?? data.postprocessMethodCroptype
+									: undefined
+							}
+							postprocessKernelSizeCroptype={data.postprocessKernelSizeCroptype}
+							postprocessMethodCropland={
+								data.postprocessMethodCropland
+									? formParams.postprocessMethodCropland.options.find(
 											(o) => o.value === data.postprocessMethodCropland
-										)?.label ?? data.postprocessMethodCropland
-									}
-								/>
-							)}
-							{data.postprocessKernelSizeCropland != null && (
-								<AttributeItem label="Post process kernel size - cropland" value={String(data.postprocessKernelSizeCropland)} />
-							)}
-						</div>
+									  )?.label ?? data.postprocessMethodCropland
+									: undefined
+							}
+							postprocessKernelSizeCropland={data.postprocessKernelSizeCropland}
+							enableCroplandHead={data.enableCroplandHead}
+							maskCropland={data.maskCropland}
+						/>
 					</div>
 				</div>
 			) : null}

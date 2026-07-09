@@ -87,6 +87,19 @@
 	box-shadow: none;
 }
 
+.step2-slider-track-container {
+	pointer-events: none;
+}
+
+.step2-slider-track-container * {
+	pointer-events: none;
+}
+
+.step2-slider-track-container .step2-slider-thumb,
+.step2-slider-track-container .step2-slider-thumb * {
+	pointer-events: auto;
+}
+
 .step2-thumb-label {
 	background-color: #999;
 	color: #1a1a1a;

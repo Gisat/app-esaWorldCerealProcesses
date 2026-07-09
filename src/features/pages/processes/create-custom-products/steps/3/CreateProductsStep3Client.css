@@ -14,25 +14,11 @@
 
 .step3-attributes {
 	flex: 1;
-	display: grid;
-	grid-template-columns: 1fr 1fr;
-	gap: 0.25rem 2rem;
-	align-content: start;
-}
-
-.step3-attr-item {
-	display: flex;
-	flex-direction: column;
-	gap: 0;
-	padding: 0.5rem 0;
-}
-
-.step3-attr-link {
-	text-decoration: none;
-}
-
-.step3-attr-link:hover {
-	text-decoration: underline;
+	min-width: 0;
+	column-count: 2;
+	column-fill: auto;
+	column-gap: 2rem;
+	height: 370px;
 }
 
 .step3-button {

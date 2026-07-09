@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { MapBBox } from '@features/(shared)/_components/map/MapBBox';
 import { TextDescription } from '@features/(shared)/_layout/_components/Content/TextDescription';
 import { Statuses } from '@features/(shared)/_logic/models.statuses';
+import ProcessAttributes from '@features/(processes)/_components/ProcessAttributes';
 
 type DetailsItemProps = {
 	children: React.ReactNode;
@@ -53,6 +54,7 @@ type DetailsProps = {
 	bbox?: number[];
 	costs?: number;
 	duration?: number;
+	jobKey?: string;
 	showValuesInfo?: boolean;
 	oeoCollection?: string;
 	oeoProcessId?: string;
@@ -66,7 +68,6 @@ type DetailsProps = {
 	orbitState?: string;
 	postprocessMethodCroptype?: string;
 	postprocessKernelSizeCroptype?: number;
-	title?: string;
 	seasonId?: string;
 	seasonalModelZip?: string;
 	enableCroplandHead?: boolean;
@@ -93,13 +94,11 @@ const Details = ({
 	results,
 	status,
 	collectionName,
-	model,
 	backgroundLayer,
 	setBackgroundLayer,
 	orbitState,
 	postprocessMethodCroptype,
 	postprocessKernelSizeCroptype,
-	title,
 	seasonId,
 	seasonalModelZip,
 	enableCroplandHead,
@@ -108,32 +107,15 @@ const Details = ({
 	maskCropland,
 	postprocessMethodCropland,
 	postprocessKernelSizeCropland,
+	jobKey,
 }: DetailsProps) => {
 	const [bboxDescription, setBboxDescription] = useState<string | string[] | null>(null);
-	const collection = oeoCollection;
-	const process = oeoProcessId;
 
-	/**
-	 * Extracts the filename from a given result object containing a source link.
-	 *
-	 * @param result - An object containing a `source_link` property which is a URL string.
-	 * @returns The filename extracted from the URL's pathname, with the "openEO_" prefix removed if present.
-	 */
 	const getFilenameFromResult = (result: { source_link: string }) => {
 		const url = new URL(result.source_link);
 		const pathname = url.pathname;
 		const filename = pathname.substring(pathname.lastIndexOf('/') + 1);
 		return filename.replace(/^openEO_/, '');
-	};
-
-	const getModelLink = () => {
-		if (!model) return null;
-		if (model.toLowerCase() === 'default') return 'Default';
-		return (
-			<a href={model} target="_blank" rel="noopener noreferrer">
-				Custom
-			</a>
-		);
 	};
 
 	return (
@@ -152,54 +134,26 @@ const Details = ({
 				/>
 			</div>
 			<div className="worldCereal-ProcessesTable-Details-column">
-				<DetailsItem label={'Title'}>{title}</DetailsItem>
-				<DetailsItem label={'Product collection'}>{collectionName}</DetailsItem>
-				<DetailsItem label={'Product'}>{collection || process}</DetailsItem>
-				<DetailsItem label={'Model'}>{getModelLink()}</DetailsItem>
-				<DetailsItem label={'Start date'}>{startDate ? new Date(startDate).toLocaleDateString() : null}</DetailsItem>
-				<DetailsItem label={'End date'}>{endDate ? new Date(endDate).toLocaleDateString() : null}</DetailsItem>
-				<DetailsItem label={'Output file format'}>{resultFileFormat}</DetailsItem>
-			</div>
-			<div className="worldCereal-ProcessesTable-Details-column">
-				{orbitState && <DetailsItem label={'Orbit state'}>{orbitState}</DetailsItem>}
-				{postprocessMethodCroptype && <DetailsItem label={'Postprocess method - croptype'}>{postprocessMethodCroptype}</DetailsItem>}
-				{typeof postprocessKernelSizeCroptype === 'number' && (
-					<DetailsItem label={'Postprocess kernel size - croptype'}>{postprocessKernelSizeCroptype}</DetailsItem>
-				)}
-				{seasonId && <DetailsItem label={'Season ID'}>{seasonId}</DetailsItem>}
-				{seasonalModelZip && (
-					<DetailsItem label={'Custom model'}>
-						<a href={seasonalModelZip} target="_blank" rel="noopener noreferrer">
-							{seasonalModelZip}
-						</a>
-					</DetailsItem>
-				)}
-				{enableCroplandHead !== undefined && (
-					<DetailsItem label={'Cropland head'}>{enableCroplandHead ? 'Enabled' : 'Disabled'}</DetailsItem>
-				)}
-				{landcoverHeadZip && (
-					<DetailsItem label={'Landcover head ZIP'}>
-						<a href={landcoverHeadZip} target="_blank" rel="noopener noreferrer">
-							{landcoverHeadZip}
-						</a>
-					</DetailsItem>
-				)}
-				{croptypeHeadZip && (
-					<DetailsItem label={'Croptype head ZIP'}>
-						<a href={croptypeHeadZip} target="_blank" rel="noopener noreferrer">
-							{croptypeHeadZip}
-						</a>
-					</DetailsItem>
-				)}
-				{maskCropland !== undefined && (
-					<DetailsItem label={'Cropland mask'}>{maskCropland ? 'Enabled' : 'Disabled'}</DetailsItem>
-				)}
-				{postprocessMethodCropland && (
-					<DetailsItem label={'Post process method - cropland'}>{postprocessMethodCropland}</DetailsItem>
-				)}
-				{typeof postprocessKernelSizeCropland === 'number' && (
-					<DetailsItem label={'Post process kernel size - cropland'}>{postprocessKernelSizeCropland}</DetailsItem>
-				)}
+				<div className="details-process-attributes">
+					<ProcessAttributes
+						jobKey={jobKey}
+						collectionName={collectionName}
+						resultFileFormat={resultFileFormat}
+						seasonalModelZip={seasonalModelZip}
+						landcoverHeadZip={landcoverHeadZip}
+					croptypeHeadZip={croptypeHeadZip}
+					startDate={startDate}
+					endDate={endDate}
+					orbitState={orbitState}
+					seasonId={seasonId}
+					postprocessMethodCroptype={postprocessMethodCroptype}
+					postprocessKernelSizeCroptype={postprocessKernelSizeCroptype}
+					enableCroplandHead={enableCroplandHead}
+					maskCropland={maskCropland}
+					postprocessMethodCropland={postprocessMethodCropland}
+					postprocessKernelSizeCropland={postprocessKernelSizeCropland}
+				/>
+				</div>
 				{status === Statuses.error ? (
 					<div className="worldCereal-ProcessesTable-Details-error">
 						Your processing job resulted in an error. Please reach out to us on the{' '}
