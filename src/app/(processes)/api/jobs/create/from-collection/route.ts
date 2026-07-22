@@ -9,6 +9,7 @@ import { UsedAuthCookies } from '@features/(shared)/ssr/ssr-auth/enums.auth';
 import formParams from "@features/(processes)/_constants/download-official-products/formParams";
 import { getRequireSessionId } from "@features/(auth)/_utils/requireSessionId";
 import { fromCollectionParamsSchema } from "@features/(processes)/_constants/validation";
+import { SUPPORTED_OUTPUT_FORMAT } from '@features/(processes)/_constants/defaults';
 
 /**
  * Handles the GET request to create a job from a collection.
@@ -31,7 +32,7 @@ export async function GET(req: NextRequest) {
 			throw new BaseHttpError(firstIssue.message, 400, ErrorBehavior.SSR);
 		}
 
-		const { collection, product, bbox, format, customProperties } = result.data;
+		const { collection, product, bbox, customProperties } = result.data;
 
 		const startDate = formParams.collection.options.find(
 			(option) => option.value === collection
@@ -56,7 +57,7 @@ export async function GET(req: NextRequest) {
 			bbox: bbox.split(",").map(Number),
 			crs: "EPSG:4326",   // Make parametrized in the future, if needed
 			timeRange: [startDate, endDate],
-			format: format,
+			format: SUPPORTED_OUTPUT_FORMAT,
 			...(title ? { title } : {}),
 			...(customProperties ? { customProperties } : {}),
 		};

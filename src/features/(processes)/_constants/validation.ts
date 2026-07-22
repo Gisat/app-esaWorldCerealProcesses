@@ -5,7 +5,6 @@ import {
 	DEFAULT_CUSTOM_SEASON_ID,
 	DEFAULT_ENABLE_CROPLAND_HEAD,
 	DEFAULT_END_DATE,
-	DEFAULT_FORMAT,
 	DEFAULT_LANDCOVER_HEAD_ZIP,
 	DEFAULT_MASK_CROPLAND,
 	DEFAULT_ORBIT_STATE,
@@ -32,8 +31,6 @@ export function nullsToUndefined<T extends Record<string, unknown>>(obj: T): { [
 }
 
 // --- Enum values (mirrored from formParams/app.ts constants) ---
-
-export const OutputFormat = z.enum(['GTiff', 'NETCDF']);
 
 export const OrbitState = z.enum(['ASCENDING', 'DESCENDING']);
 
@@ -123,7 +120,6 @@ export const generateStep2Schema = z.object({
 	bbox: bboxString,
 	endDate: dateString.default(DEFAULT_END_DATE),
 	customSeasonId: z.union([z.literal(''), seasonId]).default(DEFAULT_CUSTOM_SEASON_ID),
-	format: OutputFormat.default(DEFAULT_FORMAT),
 	orbitState: OrbitState.default(DEFAULT_ORBIT_STATE),
 	postprocessMethodCroptype: PostprocessMethod.default(DEFAULT_POSTPROCESS_METHOD_CROPTYPE),
 	postprocessKernelSizeCroptype: kernelSize.default(DEFAULT_POSTPROCESS_KERNEL_SIZE_CROPTYPE),
@@ -146,7 +142,6 @@ export const downloadStep2Schema = z.object({
 	collection: DownloadCollection.default(DEFAULT_COLLECTION),
 	product: DownloadProduct,
 	bbox: bboxString,
-	format: OutputFormat.default(DEFAULT_FORMAT),
 });
 
 // --- Server-side: from-process API route ---
@@ -154,7 +149,6 @@ export const downloadStep2Schema = z.object({
 export const fromProcessParamsSchema = z.object({
 	processId: ProcessId,
 	bbox: bboxString,
-	format: OutputFormat,
 	endDate: dateString,
 	seasonWindows: z.string().transform((val, ctx) => {
 		try {
@@ -207,7 +201,6 @@ export const fromCollectionParamsSchema = z.object({
 	collection: DownloadCollection,
 	product: DownloadProduct,
 	bbox: bboxString,
-	format: OutputFormat,
 	customProperties: z
 		.string()
 		.optional()

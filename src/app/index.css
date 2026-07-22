@@ -134,14 +134,6 @@ input {
   }
 }
 
-/* SegmentedControl */
-.worldCereal-appContent .worldCereal-SegmentedControl {
-    width: 20rem;
-  .mantine-SegmentedControl-label:where([data-active]) .mantine-SegmentedControl-innerLabel {
-    font-weight: bold;
-  }
-}
-
 /* Radio */
 .worldCereal-Radio {
 	font-family: var(--headingsFontFamily) sans-serif;

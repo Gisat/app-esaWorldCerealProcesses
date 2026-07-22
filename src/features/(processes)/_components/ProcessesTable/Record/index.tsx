@@ -208,8 +208,21 @@ const RemoveJobButton = ({
  * Shows ProductValuesInfo for downloads and ProductResultsInfo for products.
  *
  * @param descriptionType - The process type string (e.g., "download" or "product").
+ * @param oeoProcessId - The openEO process id (used to tailor the product description).
+ * @param enableCroplandHead - Whether the cropland head was enabled for the job.
+ * @param maskCropland - Whether cropland masking was enabled for the job.
  */
-const OpenInfoButton = ({ descriptionType }: { descriptionType: string | undefined }) => {
+const OpenInfoButton = ({
+	descriptionType,
+	oeoProcessId,
+	enableCroplandHead,
+	maskCropland,
+}: {
+	descriptionType: string | undefined;
+	oeoProcessId?: string;
+	enableCroplandHead?: boolean;
+	maskCropland?: boolean;
+}) => {
 	const [opened, setOpened] = useState(false);
 
 	const getDescriptionInfo = () => {
@@ -217,7 +230,13 @@ const OpenInfoButton = ({ descriptionType }: { descriptionType: string | undefin
 			case processTypes.download:
 				return <ProductValuesInfo />;
 			case processTypes.product:
-				return <ProductResultsInfo />;
+				return (
+					<ProductResultsInfo
+						oeoProcessId={oeoProcessId}
+						enableCroplandHead={enableCroplandHead}
+						maskCropland={maskCropland}
+					/>
+				);
 			default:
 				return null;
 		}
@@ -423,7 +442,14 @@ Props) => {
 						model={model}
 						title={title}
 					/>
-					{results?.[0] ? <OpenInfoButton descriptionType={type} /> : null}
+					{results?.[0] ? (
+						<OpenInfoButton
+							descriptionType={type}
+							oeoProcessId={oeoProcessId}
+							enableCroplandHead={enableCroplandHead}
+							maskCropland={maskCropland}
+						/>
+					) : null}
 					{status === Statuses.created ? <StartJobButton jobKey={jobKey} forceReloadList={forceReloadList} /> : null}
 					{results?.[0] ? (
 						<Tooltip label="Go to downloads" openDelay={500}>

@@ -1,5 +1,9 @@
 # Plan: Simplify ProductResultsInfo and fix text visibility
 
+> **Superseded by [`dynamic-product-descriptions-and-year-relative-season.md`](./dynamic-product-descriptions-and-year-relative-season.md)**
+>
+> The simplification from this plan is preserved (band-only descriptions, no file headers). The new plan replaces the "simplify to one static description" step with a richer, per-variant description block driven by `oeoProcessId` / `enableCroplandHead` / `maskCropland` (per kvantricht's request in WorldCereal/worldcereal-vdm issue #31, comment 4980928666). The text-visibility CSS fix is unchanged and still applies.
+
 ## Context
 
 Issue [#233](https://github.com/Gisat/app-esaWorldCerealProcesses/issues/233)

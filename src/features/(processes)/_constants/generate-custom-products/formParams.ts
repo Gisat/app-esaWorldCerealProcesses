@@ -30,14 +30,6 @@ const formParams: {
 			default?: boolean;
 		}[];
 	};
-	format: {
-		required?: boolean;
-		options: {
-			label: string;
-			value: string;
-			default?: boolean;
-		}[];
-	};
 	orbitState: {
 		required?: boolean;
 		options: {
@@ -103,20 +95,6 @@ const formParams: {
 			{
 				value: customProductsDateLimits.max,
 				default: true,
-			},
-		],
-	},
-	format: {
-		required: true,
-		options: [
-			{
-				value: 'GTiff',
-				label: 'GeoTIFF',
-				default: true,
-			},
-			{
-				label: 'NetCDF',
-				value: 'NETCDF',
 			},
 		],
 	},
