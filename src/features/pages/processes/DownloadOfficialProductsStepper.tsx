@@ -37,8 +37,11 @@ export const DownloadOfficialProductsStepper = ({ children }: { children: React.
 	// Determines if the second step is disabled based on the collection, product, and active step.
 	const secondStepDisabled = !collection || !product || activeStep === 3;
 
-	// Determines if the third step is disabled based on the collection, product, and bounding box.
-	const thirdStepDisabled = !collection || !product || !bboxArr;
+	// Step 3 ("Start process") is never clickable in the Stepper. The user reaches it
+	// only via the "Create process" button on step 2, which redirects with a jobKey.
+	// Clicking the Stepper label here previously navigated to step 3 without a jobKey,
+	// leaving an empty process that could not actually be started (issue #245).
+	const thirdStepDisabled = true;
 
 	/**
 	 * Navigates to the specified step in the process, forwarding the current URL state
