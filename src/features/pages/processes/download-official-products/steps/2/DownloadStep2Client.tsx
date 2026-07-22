@@ -4,9 +4,8 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { IconArrowLeft, IconCheck } from '@tabler/icons-react';
 import { useQueryStates } from 'nuqs';
-import TwoColumns, { Column } from '@features/(shared)/_layout/_components/Content/TwoColumns';
 import { SectionContainer } from '@features/(shared)/_layout/_components/Content/SectionContainer';
-import { Button, Group, SegmentedControl, Stack } from '@mantine/core';
+import { Button, Group } from '@mantine/core';
 import FormLabel from '@features/(shared)/_layout/_components/Content/FormLabel';
 import { TextDescription } from '@features/(shared)/_layout/_components/Content/TextDescription';
 import { MapBBox } from '@features/(shared)/_components/map/MapBBox';
@@ -25,7 +24,7 @@ import { apiFetcher } from '@features/(shared)/_url/apiFetcher';
 /**
  * Component representing the second step in the "Download Official Products" process.
  *
- * This step allows users to define the bounding box, select output file format, and create a process.
+ * This step allows users to define the bounding box and create a process.
  *
  * @component
  * @returns {JSX.Element} The rendered component for step 2 of the process.
@@ -42,7 +41,7 @@ export default function DownloadStep2Client() {
 	 */
 	const router = useRouter();
 
-	const [{ bbox, format, backgroundLayer, collection, product }, setParams] = useQueryStates(
+	const [{ bbox, backgroundLayer, collection, product }, setParams] = useQueryStates(
 		downloadOfficialProductsSearchParams
 	);
 
@@ -74,18 +73,9 @@ export default function DownloadStep2Client() {
 		collection,
 		product,
 		bbox,
-		format,
 	}));
 
 	const nextStepDisabled = !bboxIsInBounds || !validation.success;
-
-	/**
-	 * Updates the output file format in the URL state.
-	 * @param {'GTiff' | 'NETCDF'} value - The selected output file format.
-	 */
-	const setOutputFileFormat = (value: 'GTiff' | 'NETCDF') => {
-		setParams({ format: value });
-	};
 
 	/**
 	 * Updates the background layer in the URL state.
@@ -113,7 +103,6 @@ export default function DownloadStep2Client() {
 
 	const urlParams = new URLSearchParams({
 		bbox: bbox ?? '',
-		format: format ?? '',
 		collection: collection ?? '',
 		product: product ?? '',
 		...(title ? { title } : {}),
@@ -170,74 +159,56 @@ export default function DownloadStep2Client() {
 	}, [data, router, backgroundLayer]);
 
 	return (
-		<TwoColumns>
-			<Column>
-				<SectionContainer>
-					<Group gap={'0.3rem'} align="baseline">
-						<FormLabel>Draw the extent</FormLabel>
-						<TextDescription color={'var(--textSecondaryColor)'}>
-							(MIN: 900 m<sup>2</sup>, MAX: 100 000 km<sup>2</sup>)
-						</TextDescription>
-					</Group>
-					<MapBBox
-						mapSize={[650, 400]}
-						minBboxArea={bboxSizeLimits.downloadProducts.min}
-						maxBboxArea={bboxSizeLimits.downloadProducts.max}
-						bbox={bboxArr}
-						setBboxDescription={setBboxDescription}
-						setBboxExtent={setBBoxExtent}
-						setBboxIsInBounds={setBboxIsInBounds}
-						backgroundLayer={backgroundLayer ?? undefined}
-						setBackgroundLayer={(value) => setBackgroundLayer(typeof value === 'function' ? value(backgroundLayer) : value)}
-					/>
-					<TextDescription>
-						Current extent:{' '}
-						{bboxDescription ? (
-							<>
-								{bboxDescription} km<sup>2</sup>
-							</>
-						) : (
-							'No extent selected'
-						)}
-					</TextDescription>
-				</SectionContainer>
-				<TextDescription>
-					In case you are interested in larger areas, we recommend to download the AEZ-based products directly from{' '}
-					<TextLink url="https://zenodo.org/records/7875105">Zenodo</TextLink>.
+		<SectionContainer>
+			<Group gap={'0.3rem'} align="baseline">
+				<FormLabel>Draw the extent</FormLabel>
+				<TextDescription color={'var(--textSecondaryColor)'}>
+					(MIN: 900 m<sup>2</sup>, MAX: 100 000 km<sup>2</sup>)
 				</TextDescription>
-				<Group mt="xl">
-					<Button
-						className="worldCereal-Button is-secondary is-ghost"
-						variant="outline"
-						onClick={onBackClick}
-						leftSection={<IconArrowLeft size={14} />}
-					>
-						Back
-					</Button>
-					<Button
-						leftSection={<IconCheck size={14} />}
-						disabled={isLoading || nextStepDisabled}
-						className="worldCereal-Button"
-						onClick={onCreateProcessClick}
-					>
-						{isLoading ? 'Creating...' : 'Create process'}
-					</Button>
-				</Group>
-			</Column>
-			<Column>
-				<Stack gap="lg" w="100%" align="flex-start">
-					<div style={{ width: '100%' }}>
-						<FormLabel>Choose output file format</FormLabel>
-						<SegmentedControl
-							onChange={(value) => setOutputFileFormat(value as 'GTiff' | 'NETCDF')}
-							className="worldCereal-SegmentedControl"
-							size="md"
-						value={format}
-						data={formParams.format.options}
-						/>
-					</div>
-				</Stack>
-			</Column>
-		</TwoColumns>
+			</Group>
+			<MapBBox
+				mapSize={[1050, 460]}
+				minBboxArea={bboxSizeLimits.downloadProducts.min}
+				maxBboxArea={bboxSizeLimits.downloadProducts.max}
+				bbox={bboxArr}
+				setBboxDescription={setBboxDescription}
+				setBboxExtent={setBBoxExtent}
+				setBboxIsInBounds={setBboxIsInBounds}
+				backgroundLayer={backgroundLayer ?? undefined}
+				setBackgroundLayer={(value) => setBackgroundLayer(typeof value === 'function' ? value(backgroundLayer) : value)}
+			/>
+			<TextDescription>
+				Current extent:{' '}
+				{bboxDescription ? (
+					<>
+						{bboxDescription} km<sup>2</sup>
+					</>
+				) : (
+					'No extent selected'
+				)}
+			</TextDescription>
+			<TextDescription>
+				In case you are interested in larger areas, we recommend to download the AEZ-based products directly from{' '}
+				<TextLink url="https://zenodo.org/records/7875105">Zenodo</TextLink>.
+			</TextDescription>
+			<Group mt="xl">
+				<Button
+					className="worldCereal-Button is-secondary is-ghost"
+					variant="outline"
+					onClick={onBackClick}
+					leftSection={<IconArrowLeft size={14} />}
+				>
+					Back
+				</Button>
+				<Button
+					leftSection={<IconCheck size={14} />}
+					disabled={isLoading || nextStepDisabled}
+					className="worldCereal-Button"
+					onClick={onCreateProcessClick}
+				>
+					{isLoading ? 'Creating...' : 'Create process'}
+				</Button>
+			</Group>
+		</SectionContainer>
 	);
 }

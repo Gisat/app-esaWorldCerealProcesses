@@ -9,7 +9,6 @@ import formParams from './formParams';
 import {
 	DEFAULT_CROP_TYPE_MODEL_TYPE,
 	DEFAULT_END_DATE,
-	DEFAULT_FORMAT,
 	DEFAULT_ORBIT_STATE,
 	DEFAULT_POSTPROCESS_KERNEL_SIZE_CROPLAND,
 	DEFAULT_POSTPROCESS_KERNEL_SIZE_CROPTYPE,
@@ -18,7 +17,6 @@ import {
 } from '@features/(processes)/_constants/defaults';
 
 const processIdValues = formParams.processId.options.filter((o) => !o.disabled).map((o) => o.value) as [string, ...string[]];
-const formatValues = formParams.format.options.map((o) => o.value) as [string, ...string[]];
 const orbitStateValues = formParams.orbitState.options.map((o) => o.value) as [string, ...string[]];
 const postprocessMethodCroptypeValues = formParams.postprocessMethodCroptype.options.map((o) => o.value) as [string, ...string[]];
 const cropTypeModelTypeValues = formParams.cropTypeModelType.options.map((o) => o.value) as [string, ...string[]];
@@ -29,14 +27,13 @@ const postprocessMethodCroplandValues = formParams.postprocessMethodCropland.opt
  *  - useQueryStates (client components)
  *
  * Typing notes:
- *  - format / orbitState / postprocessMethodCroptype / postprocessKernelSizeCroptype use .withDefault(...) -> return concrete type (never null).
+ *  - orbitState / postprocessMethodCroptype / postprocessKernelSizeCroptype use .withDefault(...) -> return concrete type (never null).
  *  - processId / bbox / backgroundLayer / endDate / customSeasonId / selectedPeriodId / jobKey have NO default -> return `string | null`.
  *    `null` means "not set"; setting to null removes the key from the URL.
  */
 export const generateCustomProductsSearchParams = {
 	processId: parseAsStringLiteral(processIdValues),
 	cropTypeModelType: parseAsStringLiteral(cropTypeModelTypeValues).withDefault(DEFAULT_CROP_TYPE_MODEL_TYPE),
-	format: parseAsStringLiteral(formatValues).withDefault(DEFAULT_FORMAT),
 	bbox: parseAsString,
 	backgroundLayer: parseAsString,
 	endDate: parseAsString.withDefault(DEFAULT_END_DATE),
@@ -61,7 +58,7 @@ export const generateCustomProductsSearchParams = {
  * rules as `useQueryStates`, so values equal to their default are omitted.
  *
  * Usage:
- *   serializeGenerateCustomProductsSearchParams('/path', { processId: 'X', format: 'Y' })
- *   // => '/path?processId=X&format=Y'
+ *   serializeGenerateCustomProductsSearchParams('/path', { processId: 'X' })
+ *   // => '/path?processId=X'
  */
 export const serializeGenerateCustomProductsSearchParams = createSerializer(generateCustomProductsSearchParams);

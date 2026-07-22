@@ -114,7 +114,6 @@ export default function CreateProductsStep2Client() {
 	const [
 		{
 			processId,
-			format,
 			bbox,
 			backgroundLayer,
 			endDate,
@@ -150,7 +149,6 @@ export default function CreateProductsStep2Client() {
 		bbox,
 		endDate,
 		customSeasonId,
-		format,
 		orbitState,
 		postprocessMethodCroptype,
 		postprocessKernelSizeCroptype,
@@ -339,7 +337,6 @@ export default function CreateProductsStep2Client() {
 
 	const params: Record<string, string> = {
 		bbox: bbox ?? '',
-		format: format?.toString() || '',
 		...(seasonalModelZip ? { seasonalModelZip } : {}),
 		processId: processId?.toString() || '',
 		endDate: endDate?.toString() || '',

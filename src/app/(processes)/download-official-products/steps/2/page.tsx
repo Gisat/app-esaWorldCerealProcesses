@@ -4,7 +4,7 @@ import DownloadStep2Client from '@features/pages/processes/download-official-pro
 /**
  * Component representing the second step in the "Download Official Products" process.
  *
- * This step allows users to define the bounding box, select output file format, and create a process.
+ * This step allows users to define the bounding box and create a process.
  *
  * @component
  * @returns {JSX.Element} The rendered component for step 2 of the process.

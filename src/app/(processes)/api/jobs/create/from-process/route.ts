@@ -9,6 +9,7 @@ import { transformDate } from '@features/(processes)/_utils/transformDate';
 import { getRequireSessionId } from '@features/(auth)/_utils/requireSessionId';
 import { customProductsPostprocessMethods, customProductsProductTypes } from '@features/(processes)/_constants/app';
 import { fromProcessParamsSchema } from '@features/(processes)/_constants/validation';
+import { SUPPORTED_OUTPUT_FORMAT } from '@features/(processes)/_constants/defaults';
 import { UsedAuthCookies } from '@features/(shared)/ssr/ssr-auth/enums.auth';
 import { loggyError, loggyWarn } from '@gisatcz/ptr-be-core/node';
 
@@ -36,7 +37,6 @@ export async function GET(req: NextRequest) {
 		const {
 			processId,
 			bbox: bboxStr,
-			format,
 			endDate,
 			seasonWindows,
 			seasonalModelZip,
@@ -71,7 +71,7 @@ export async function GET(req: NextRequest) {
 			crs: 'EPSG:4326',
 			timeRange: [startDate, transformedEndDate],
 			seasonWindows,
-			format,
+			format: SUPPORTED_OUTPUT_FORMAT,
 			...(seasonalModelZip ? { seasonalModelZip } : {}),
 			...(title ? { title } : {}),
 			...(orbitState && { orbitState }),

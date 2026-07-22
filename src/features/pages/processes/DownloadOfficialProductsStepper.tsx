@@ -25,7 +25,7 @@ export const DownloadOfficialProductsStepper = ({ children }: { children: React.
 	const pathname = usePathname();
 	const activeStep = Number(pathname.split('/').pop()) || 1;
 
-	const [{ collection, product, format, bbox, backgroundLayer }] = useQueryStates(
+	const [{ collection, product, bbox, backgroundLayer }] = useQueryStates(
 		downloadOfficialProductsSearchParams
 	);
 
@@ -37,8 +37,8 @@ export const DownloadOfficialProductsStepper = ({ children }: { children: React.
 	// Determines if the second step is disabled based on the collection, product, and active step.
 	const secondStepDisabled = !collection || !product || activeStep === 3;
 
-	// Determines if the third step is disabled based on the collection, product, output file format, and bounding box.
-	const thirdStepDisabled = !collection || !product || !format || !bboxArr;
+	// Determines if the third step is disabled based on the collection, product, and bounding box.
+	const thirdStepDisabled = !collection || !product || !bboxArr;
 
 	/**
 	 * Navigates to the specified step in the process, forwarding the current URL state
@@ -51,7 +51,7 @@ export const DownloadOfficialProductsStepper = ({ children }: { children: React.
 		if (targetStep === activeStep) return;
 		const href = serializeDownloadOfficialProductsSearchParams(
 			`/download-official-products/steps/${targetStep}`,
-			{ collection, product, format, bbox, backgroundLayer }
+			{ collection, product, bbox, backgroundLayer }
 		);
 		router.push(href);
 	};

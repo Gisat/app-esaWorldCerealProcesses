@@ -17,14 +17,6 @@ const formParams: {
             default?: boolean;
         }[]
     };
-    format: {
-        required?: boolean;
-        options: {
-            label: string;
-            value: string;
-            default?: boolean;
-        }[]
-    }
 } = {
     collection: {
         required: true,
@@ -67,20 +59,6 @@ const formParams: {
                     label: "Spring cereals",
                 },
             ]
-    },
-    format: {
-        required: true,
-        options: [
-            {
-                value: "GTiff",
-                label: "GeoTIFF",
-                default: true
-            },
-            {
-                label: "NetCDF",
-                value: "NETCDF"
-            }
-        ]
     }
 }
 

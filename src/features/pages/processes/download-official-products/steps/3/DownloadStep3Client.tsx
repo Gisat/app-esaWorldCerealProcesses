@@ -125,9 +125,7 @@ export default function DownloadStep3Client() {
 								formParams.product.options.find((option) => option.value === data.oeoCollection)?.label
 							}
 							collectionName={data.timeRange?.[0]?.split('-')?.[0]}
-							resultFileFormat={
-								formParams.format.options.find((option) => option.value === data.format)?.label
-							}
+							resultFileFormat={data.format === 'GTiff' ? 'GeoTIFF' : data.format}
 						/>
 					</div>
 				</div>

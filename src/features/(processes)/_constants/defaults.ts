@@ -38,8 +38,8 @@ export const DEFAULT_END_DATE = '2025-09-30';
 /** Empty season ID means "auto-generate from end date year". */
 export const DEFAULT_CUSTOM_SEASON_ID = '';
 
-/** Default output format for generated products. */
-export const DEFAULT_FORMAT = 'GTiff' as const;
+/** Output format supported by the backend. */
+export const SUPPORTED_OUTPUT_FORMAT = 'GTiff' as const;
 
 /** Default orbit direction for Sentinel-1 data. */
 export const DEFAULT_ORBIT_STATE = 'DESCENDING' as const;
