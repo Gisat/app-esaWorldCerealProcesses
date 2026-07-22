@@ -18,6 +18,12 @@ import {
 	processTypes,
 } from '@features/(processes)/_constants/app';
 import { transformDate } from '@features/(processes)/_utils/transformDate';
+import {
+	findLatestFullyAvailableShiftedPeriod,
+	findSuggestedPeriodByMonth,
+	shiftPeriodToLatestFullyPastYear,
+	shiftPeriodToYear,
+} from '@features/(processes)/_utils/suggestedPeriods';
 import formParams from '@features/(processes)/_constants/generate-custom-products/formParams';
 import {
 	DEFAULT_POSTPROCESS_KERNEL_SIZE_CROPLAND,
@@ -40,13 +46,19 @@ import './CreateProductsStep2Client.css';
 
 const START_YEAR = 2018;
 const CURRENT_YEAR = new Date().getFullYear();
-const SLIDER_MAX = (CURRENT_YEAR - START_YEAR) * 12;
+const CURRENT_MONTH = new Date().getMonth();
+/**
+ * Cap the slider at the last fully-past month (the current month is not
+ * yet complete and cannot be selected). E.g. today = July 22, 2026 ->
+ * SLIDER_MAX represents end of June 2026.
+ */
+const SLIDER_MAX = (CURRENT_YEAR - START_YEAR) * 12 + (CURRENT_MONTH - 1);
 
 const CROP_TYPE_MIN_DIFF = 2;
 const CROP_TYPE_MAX_DIFF = 11;
 const CROP_EXTENT_DIFF = 11;
 
-const DEFAULT_END_IDX = SLIDER_MAX - 6;
+const DEFAULT_END_IDX = SLIDER_MAX;
 const DEFAULT_START_IDX = Math.max(0, DEFAULT_END_IDX - CROP_EXTENT_DIFF);
 
 const generateFullRangeMarks = () => {
@@ -177,6 +189,13 @@ export default function CreateProductsStep2Client() {
 	const [debouncedBbox, setDebouncedBbox] = useState<string | null>(null);
 	const isInitialBboxRef = useRef(true);
 	const prevPeriodsDataRef = useRef<typeof periodsData>(undefined);
+	/**
+	 * Holds the end year the user has manually shifted the slider to (via the
+	 * year arrow buttons). Used to preserve the same year when the user then
+	 * switches to a different suggested season. Cleared when the user manually
+	 * edits the slider range.
+	 */
+	const manualYearOverrideRef = useRef<number | null>(null);
 
 	useEffect(() => {
 		if (bbox && bboxIsInBounds) {
@@ -211,11 +230,15 @@ export default function CreateProductsStep2Client() {
 			if (selectedPeriodId) {
 				const matchingPeriod = periodsData.find((p: { id: string }) => p.id === selectedPeriodId);
 				if (matchingPeriod) {
-					const [startYear, startMonth] = matchingPeriod.startDate.split('-').map(Number);
-					const [endYear, endMonth] = matchingPeriod.endDate.split('-').map(Number);
+					/**
+					 * Year-shift the restored period to the latest fully-past
+					 * occurrence (see comment 4991015885). The baseline year in
+					 * the API response is treated as a year-agnostic pattern.
+					 */
+					const shifted = shiftPeriodToLatestFullyPastYear(matchingPeriod, new Date());
 
-					let startIdx = (startYear - START_YEAR) * 12 + (startMonth - 1);
-					const endIdx = Math.min(SLIDER_MAX, (endYear - START_YEAR) * 12 + (endMonth - 1));
+					let startIdx = getSliderValueFromDate(shifted.shiftedStartDate);
+					let endIdx = Math.min(SLIDER_MAX, getSliderValueFromDate(shifted.shiftedEndDate));
 					const diff = endIdx - startIdx;
 
 					if (!isCropType) {
@@ -231,6 +254,34 @@ export default function CreateProductsStep2Client() {
 					setParams({ endDate: endDateStr });
 				} else {
 					setParams({ selectedPeriodId: null });
+				}
+			} else if (isInitialBboxRef.current === false) {
+				/**
+				 * No period is currently selected and the user has just drawn/moved the bbox.
+				 * Auto-select the latest suggested period (year-shifted to the latest
+				 * fully-past occurrence per kvantricht, comment 4991015885).
+				 */
+				const pick = findLatestFullyAvailableShiftedPeriod(periodsData);
+				if (pick) {
+					const { period, shiftedStartDate, shiftedEndDate } = pick;
+
+					let startIdx = getSliderValueFromDate(shiftedStartDate);
+					let endIdx = Math.min(SLIDER_MAX, getSliderValueFromDate(shiftedEndDate));
+					const diff = endIdx - startIdx;
+
+					if (!isCropType) {
+						startIdx = endIdx - CROP_EXTENT_DIFF;
+					} else {
+						if (diff > CROP_TYPE_MAX_DIFF) startIdx = endIdx - CROP_TYPE_MAX_DIFF;
+						else if (diff < CROP_TYPE_MIN_DIFF) startIdx = endIdx - CROP_TYPE_MIN_DIFF;
+					}
+					startIdx = Math.max(0, startIdx);
+
+					setStartDate(getDateFromSliderValue(startIdx));
+					setParams({
+						selectedPeriodId: period.id,
+						endDate: transformDate(getDateFromSliderValue(endIdx, true)),
+					});
 				}
 			}
 		}
@@ -257,11 +308,20 @@ export default function CreateProductsStep2Client() {
 		const period = suggestedPeriods.find((p) => p.id === value);
 		if (!period) return;
 
-		const [startYear, startMonth] = period.startDate.split('-').map(Number);
-		const [endYear, endMonth] = period.endDate.split('-').map(Number);
+		/**
+		 * If the user has previously shifted the year (via the year arrow
+		 * buttons), reuse that same target end year so switching seasons
+		 * doesn't jump back to "latest fully available". The helper clamps
+		 * the target year down if it would put the new season's end in the
+		 * future.
+		 */
+		const overrideYear = manualYearOverrideRef.current;
+		const shifted = overrideYear !== null
+			? shiftPeriodToYear(period, overrideYear, new Date())
+			: shiftPeriodToLatestFullyPastYear(period, new Date());
 
-		let startIdx = (startYear - START_YEAR) * 12 + (startMonth - 1);
-		const endIdx = Math.min(SLIDER_MAX, (endYear - START_YEAR) * 12 + (endMonth - 1));
+		let startIdx = getSliderValueFromDate(shifted.shiftedStartDate);
+		const endIdx = Math.min(SLIDER_MAX, getSliderValueFromDate(shifted.shiftedEndDate));
 		const diff = endIdx - startIdx;
 
 		if (!isCropType) {
@@ -281,9 +341,30 @@ export default function CreateProductsStep2Client() {
 		if (!Array.isArray(values)) return;
 		const [startIdx, endIdx] = values;
 
-		setStartDate(getDateFromSliderValue(startIdx));
-		const endDateStr = transformDate(getDateFromSliderValue(endIdx, true));
-		setParams({ selectedPeriodId: null, endDate: endDateStr });
+		const newStartDate = getDateFromSliderValue(startIdx);
+		const newEndDate = getDateFromSliderValue(endIdx, true);
+
+		/**
+		 * If the new slider range's month pair matches one of the suggested
+		 * seasons, auto-pick it so the user gets visual feedback that they've
+		 * landed on a valid season. The year override is preserved in this
+		 * case so a subsequent radio pick keeps the same year.
+		 *
+		 * If the new range doesn't match any season, the user has moved to a
+		 * fully custom range and the override is cleared.
+		 */
+		const matchingPeriod = findSuggestedPeriodByMonth(suggestedPeriods, newStartDate, newEndDate);
+
+		if (!matchingPeriod) {
+			manualYearOverrideRef.current = null;
+		}
+
+		setStartDate(newStartDate);
+		const endDateStr = transformDate(newEndDate);
+		setParams({
+			selectedPeriodId: matchingPeriod ? matchingPeriod.id : null,
+			endDate: endDateStr,
+		});
 	};
 
 	const shiftRangeByYear = (direction: -1 | 1) => {
@@ -311,8 +392,29 @@ export default function CreateProductsStep2Client() {
 			? newEndYear * 12 + startM
 			: (newEndYear - 1) * 12 + startM;
 
-		setStartDate(getDateFromSliderValue(startIdx));
-		setParams({ selectedPeriodId: null, endDate: transformDate(getDateFromSliderValue(endIdx, true)) });
+		const newStartDate = getDateFromSliderValue(startIdx);
+		const newEndDate = getDateFromSliderValue(endIdx, true);
+
+		/**
+		 * Remember the manually-chosen end year so a subsequent suggested-season
+		 * selection preserves the same year (clamped as needed for the new
+		 * season's month pair).
+		 */
+		manualYearOverrideRef.current = START_YEAR + newEndYear;
+
+		/**
+		 * Preserve the currently selected suggested period across year shifts.
+		 * The user is only changing the year, not the season. Re-matching by
+		 * slider position would incorrectly deselect for products whose
+		 * slider range doesn't align with the season's month pair (e.g.
+		 * cropland extent uses a fixed 12-month range ending at the season's
+		 * last month).
+		 */
+		setStartDate(newStartDate);
+		setParams({
+			selectedPeriodId,
+			endDate: transformDate(newEndDate),
+		});
 	};
 
 	const seasonStartDate = startDate ? transformDate(startDate) : null;
