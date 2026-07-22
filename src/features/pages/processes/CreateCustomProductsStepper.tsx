@@ -23,7 +23,12 @@ export const CreateCustomProductsStepper = ({ children }: { children: React.Reac
 
 	const secondStepDisabled = !processId || activeStep === 3;
 
-	const thirdStepDisabled = !processId || !bboxArr || !endDate;
+	// Step 3 ("Start process") is never clickable in the Stepper. The user reaches it
+	// only via the "Create process" button on step 2, which redirects with a processId.
+	// Clicking the Stepper label here previously navigated to step 3 without a processId,
+	// leaving an empty process that could not actually be started (same bug as issue #245
+	// in the Download official products flow).
+	const thirdStepDisabled = true;
 
 	const setActive = (step: number) => {
 		const targetStep = step + 1;
