@@ -1,8 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 
-interface InstanceWarningProps {
+import { useInstanceWarningDismissed } from '@features/(shared)/_hooks/useInstanceWarningDismissed';
+
+interface InstanceWarningClientProps {
 	color?: string | undefined;
 	hidden?: boolean;
 	text?: string | undefined;
@@ -15,7 +17,7 @@ interface InstanceWarningProps {
 /**
  * Instance warning strip
  */
-export const InstanceWarningPresentation: React.FC<InstanceWarningProps> = ({
+export const InstanceWarningClient: React.FC<InstanceWarningClientProps> = ({
 	color,
 	hidden,
 	text,
@@ -23,8 +25,13 @@ export const InstanceWarningPresentation: React.FC<InstanceWarningProps> = ({
 	linkText = 'Open production',
 	continueText = 'Continue',
 	fullWindow = false,
-}: InstanceWarningProps) => {
-	const [closed, setClosed] = useState(hidden);
+}: InstanceWarningClientProps) => {
+	// The dismissed snapshot reports true during SSR (via the hook's server
+	// snapshot), so the banner is never part of the server-rendered HTML and
+	// cannot blink in on refresh. The real sessionStorage value is read after
+	// hydration; fresh sessions show the banner then.
+	const [dismissed, dismiss] = useInstanceWarningDismissed();
+	const closed = hidden === true || dismissed;
 
 	if (closed) return null;
 
@@ -90,7 +97,7 @@ export const InstanceWarningPresentation: React.FC<InstanceWarningProps> = ({
 
 					{/* "Continue anyway" dismiss link */}
 					<button
-						onClick={() => setClosed(true)}
+						onClick={dismiss}
 						style={{
 							background: 'none',
 							border: 'none',
@@ -153,11 +160,11 @@ export const InstanceWarningPresentation: React.FC<InstanceWarningProps> = ({
 			<div
 				role="button"
 				tabIndex={0}
-				onClick={() => setClosed(true)}
+				onClick={dismiss}
 				onKeyDown={e => {
 					if (e.key === 'Enter' || e.key === ' ') {
 						e.preventDefault();
-						setClosed(true);
+						dismiss();
 					}
 				}}
 				style={{

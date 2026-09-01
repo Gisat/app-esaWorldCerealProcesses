@@ -15,7 +15,7 @@ import './index.css';
 import { Header } from '@features/(shared)/_layout/_components/Header';
 // TODO uncomment when Faro is ready for react 19
 // import FaroFrontendMonitoring from '../features/(grafana)/_components/FaroFrontendMonitoring';
-import InstanceWarning from '@features/(shared)/_components/InstanceWarning';
+import { InstanceWarningServer } from '@features/(shared)/_components/InstanceWarning/InstanceWarning.server';
 
 const roboto = Roboto({
 	weight: ['300', '400', '500', '700'],
@@ -53,7 +53,7 @@ export default function RootLayout({
 			</head>
 			<body className={`esaWorldCerealProcesses`}>
 				<NuqsAdapter>
-					{showInstanceWarning ? <InstanceWarning fullWindow={instanceWarningFullWindow} /> : null}
+					{showInstanceWarning ? <InstanceWarningServer fullWindow={instanceWarningFullWindow} /> : null}
 					<FaroClient />
 					{/*<FaroFrontendMonitoring envUrl="/api/faro" />*/}
 					<MantineProvider>
