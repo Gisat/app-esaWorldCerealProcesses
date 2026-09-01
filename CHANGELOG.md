@@ -1,3 +1,14 @@
+## [0.8.0](https://github.com/Gisat/app-esaWorldCerealProcesses/compare/v0.7.1...v0.8.0) (2026-09-01)
+
+### Features
+
+* persist instance warning dismissal in session storage ([8dd79fd](https://github.com/Gisat/app-esaWorldCerealProcesses/commit/8dd79fd307951a7bbdd745d5d6d82ba944441362))
+* point processing hub UDPs to processinghub-udps tag ([b7e04d9](https://github.com/Gisat/app-esaWorldCerealProcesses/commit/b7e04d949de589eb544da5d1a404e742f1915878)), closes [#252](https://github.com/Gisat/app-esaWorldCerealProcesses/issues/252)
+
+### Bug Fixes
+
+* **ci:** pin conventional-changelog-conventionalcommits to v9 ([d834e2f](https://github.com/Gisat/app-esaWorldCerealProcesses/commit/d834e2fbf93412b903966505be03676ed8a0c751)), closes [semantic-release/release-notes-generator#992](https://github.com/semantic-release/release-notes-generator/issues/992)
+
 ## [0.7.1](https://github.com/Gisat/app-esaWorldCerealProcesses/compare/v0.7.0...v0.7.1) (2026-07-22)
 
 ## [0.7.0](https://github.com/Gisat/app-esaWorldCerealProcesses/compare/v0.6.1...v0.7.0) (2026-07-22)
