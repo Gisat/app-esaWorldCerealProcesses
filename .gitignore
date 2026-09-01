@@ -48,3 +48,5 @@ db.sqlite
 # Kilocode
 .kilocode/
 opencode.*
+# Kilo CLI workspace temp dir (managed by kilo-docker wrapper)
+tmp/
