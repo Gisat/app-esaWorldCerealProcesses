@@ -1,11 +1,11 @@
-import { InstanceWarningPresentation } from './InstanceWarningPresentation';
+import { InstanceWarningClient } from './InstanceWarning.client';
 
 /**
- * Props for the InstanceWarning server component.
+ * Props for the InstanceWarningServer component.
  *
  * @property {boolean} [fullWindow] - If true, the banner is rendered with fixed positioning across the entire viewport.
  */
-interface InstanceWarningProps {
+interface InstanceWarningServerProps {
 	/** If true, the banner is rendered with fixed positioning across the entire viewport. */
 	fullWindow?: boolean;
 }
@@ -21,11 +21,11 @@ export const DEFAULT_INSTANCE_WARNING = {
 };
 
 /**
- * Server component that fetches instance environment variables and renders
- * the InstanceWarningPresentation component with the fetched values.
+ * Server component that reads the instance environment variables and renders
+ * the InstanceWarningClient component with the fetched values.
  *
- * This component performs a server-side fetch to the internal `/api/envs` endpoint
- * (no-cache) to obtain the following environment flags that control the banner:
+ * Reads the following environment variables that control the banner directly
+ * from `process.env` (no extra client round-trip needed):
  * - INSTANCE_WARNING_HIDDEN
  * - INSTANCE_WARNING_COLOR
  * - INSTANCE_WARNING_TEXT
@@ -33,10 +33,10 @@ export const DEFAULT_INSTANCE_WARNING = {
  * - INSTANCE_WARNING_LINK_TEXT
  * - INSTANCE_WARNING_CONTINUE_TEXT
  *
- * @param {InstanceWarningProps} [props] - Component props.
- * @returns {Promise<JSX.Element>} The presentation component.
+ * @param {InstanceWarningServerProps} [props] - Component props.
+ * @returns {React.ReactElement} The client warning component.
  */
-export default function InstanceWarning({ fullWindow }: InstanceWarningProps = {}) {
+export function InstanceWarningServer({ fullWindow }: InstanceWarningServerProps = {}) {
 	// Read the instance warning configuration directly from process.env
 	// (this is a server component so process.env is available). The
 	// endpoint `/api/envs` is not necessary anymore and caused an extra
@@ -61,7 +61,7 @@ export default function InstanceWarning({ fullWindow }: InstanceWarningProps = {
 	};
 
 	return (
-		<InstanceWarningPresentation
+		<InstanceWarningClient
 			hidden={merged.hidden}
 			color={merged.color}
 			text={merged.text}
