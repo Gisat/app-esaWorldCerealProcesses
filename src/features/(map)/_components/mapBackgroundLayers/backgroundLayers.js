@@ -30,7 +30,7 @@ export const getBackgroundLayers = (cartoApiKey) => {
 		cartoVoyager: {
 			key: 'cartoVoyager',
 			name: 'Carto DB Voyager',
-			url: `https://basemaps.cartocdn.com/rastertiles/light_all/{z}/{x}/{y}.png${cartoKey}`,
+			url: `https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png${cartoKey}`,
 		},
 		openStreetMap_Mapnik: {
 			key: 'openStreetMap_Mapnik',
