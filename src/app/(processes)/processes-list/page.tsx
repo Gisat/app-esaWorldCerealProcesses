@@ -10,6 +10,8 @@
 
 import { ProcessesListClient } from '@features/pages/processes/ProcessesListClient';
 
+export const dynamic = 'force-dynamic';
+
 export default async function ProcessesList() {
 	// Render the ProcessesListClient component
 	return <ProcessesListClient />;
