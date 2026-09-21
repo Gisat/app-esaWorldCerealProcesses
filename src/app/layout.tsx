@@ -16,6 +16,7 @@ import { Header } from '@features/(shared)/_layout/_components/Header';
 // TODO uncomment when Faro is ready for react 19
 // import FaroFrontendMonitoring from '../features/(grafana)/_components/FaroFrontendMonitoring';
 import { InstanceWarningServer } from '@features/(shared)/_components/InstanceWarning/InstanceWarning.server';
+import { CartoApiKeyProvider } from '@features/(map)/_components/mapBackgroundLayers/CartoApiKeyProvider.server';
 
 const roboto = Roboto({
 	weight: ['300', '400', '500', '700'],
@@ -40,7 +41,6 @@ export default function RootLayout({
 }: Readonly<{
 	children: React.ReactNode;
 }>) {
-
 	const showInstanceWarning = process.env.INSTANCE_WARNING_HIDDEN !== 'true';
 	// Manually configure whether the InstanceWarning should occupy the full window.
 	// Set to `true` to show as fullWindow, or `false` to show inline. Change here instead of via env var.
@@ -56,12 +56,14 @@ export default function RootLayout({
 					{showInstanceWarning ? <InstanceWarningServer fullWindow={instanceWarningFullWindow} /> : null}
 					<FaroClient />
 					{/*<FaroFrontendMonitoring envUrl="/api/faro" />*/}
-					<MantineProvider>
-						<AppShell withBorder={false} padding={0} className={'worldCereal-appContent'}>
-							<Header />
-							<AppShellMain pt={`calc(${rem(64)})`}>{children}</AppShellMain>
-						</AppShell>
-					</MantineProvider>
+					<CartoApiKeyProvider>
+						<MantineProvider>
+							<AppShell withBorder={false} padding={0} className={'worldCereal-appContent'}>
+								<Header />
+								<AppShellMain pt={`calc(${rem(64)})`}>{children}</AppShellMain>
+							</AppShell>
+						</MantineProvider>
+					</CartoApiKeyProvider>
 				</NuqsAdapter>
 			</body>
 		</html>

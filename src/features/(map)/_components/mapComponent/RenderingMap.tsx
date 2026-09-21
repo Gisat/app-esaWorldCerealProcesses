@@ -7,7 +7,8 @@ import DeckGL from '@deck.gl/react';
 import { TileLayer } from '@deck.gl/geo-layers';
 import { BitmapLayer } from '@deck.gl/layers';
 import BackgroundLayersControl from '../mapBackgroundLayers/BackgroundLayersControl';
-import { backgroundLayers } from '../mapBackgroundLayers/backgroundLayers.js';
+import { getBackgroundLayers } from '../mapBackgroundLayers/backgroundLayers.js';
+import { useCartoApiKey } from '../mapBackgroundLayers/CartoApiKeyProvider.client';
 
 /**
  * Interface for the RenderMapProps.
@@ -59,6 +60,10 @@ const RenderingMap: React.FC<RenderMapProps> = (props: RenderMapProps) => {
 	// Internal ref to track DeckGL instance for cleanup
 	const internalMapRef = useRef<any>(null);
 
+	// Carto basemap API key provided by the server component (see CartoApiKeyProvider)
+	const cartoApiKey = useCartoApiKey();
+	const backgroundLayers = useMemo(() => getBackgroundLayers(cartoApiKey), [cartoApiKey]);
+
 	// Use internal ref if no external ref provided, otherwise use external ref
 	// This ensures we can always clean up the DeckGL instance
 	const deckRef = props.mapRef || internalMapRef;
@@ -75,9 +80,12 @@ const RenderingMap: React.FC<RenderMapProps> = (props: RenderMapProps) => {
 		};
 	}, [props.mapRef]);
 	const tileLayer = useMemo(() => {
+		const backgroundLayerKey = props.backgroundLayer || 'esri_WorldImagery';
+		const backgroundLayer = backgroundLayers[backgroundLayerKey] ?? backgroundLayers.esri_WorldImagery;
+
 		return new TileLayer({
 			id: 'TileLayer',
-			data: backgroundLayers[(props.backgroundLayer as keyof typeof backgroundLayers) || 'esri_WorldImagery'].url,
+			data: backgroundLayer.url,
 			maxZoom: 17,
 			minZoom: 0,
 			tileSize: 256,
@@ -92,7 +100,7 @@ const RenderingMap: React.FC<RenderMapProps> = (props: RenderMapProps) => {
 				});
 			},
 		});
-	}, [props.backgroundLayer]);
+	}, [props.backgroundLayer, backgroundLayers]);
 
 	const layers = [props.customBaseMap ? props.customBaseMap : tileLayer, props.layer].filter(
 		(layer) => layer !== undefined
