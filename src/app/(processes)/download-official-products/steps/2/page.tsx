@@ -1,6 +1,8 @@
 import { Suspense } from 'react';
 import DownloadStep2Client from '@features/pages/processes/download-official-products/steps/2/DownloadStep2Client';
 
+export const dynamic = 'force-dynamic';
+
 /**
  * Component representing the second step in the "Download Official Products" process.
  *
