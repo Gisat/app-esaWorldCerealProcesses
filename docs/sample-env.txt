@@ -11,6 +11,10 @@ FARO_URL=https://faro-collector-prod-us-central-0.grafana.net/collect/7894d9033c
 DATABASE_FILE=./db.sqlite
 DATABASE_STATE_EXPIRATION_SEC=3600
 
+# Carto basemap API key — required for the Carto background layer.
+# Request a free key at https://carto.com/basemaps/apikey
+CARTO_API_KEY=
+
 # Warning instance
 INSTANCE_WARNING_HIDDEN=false
 INSTANCE_WARNING_COLOR="#0026bd"
