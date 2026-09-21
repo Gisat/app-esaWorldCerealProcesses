@@ -1,3 +1,15 @@
+## [0.9.0](https://github.com/Gisat/app-esaWorldCerealProcesses/compare/v0.8.0...v0.9.0) (2026-09-21)
+
+### Features
+
+* added carto api key ([c365af0](https://github.com/Gisat/app-esaWorldCerealProcesses/commit/c365af0f0a7ff27d9913b9f69ad79d8727daa625))
+
+### Bug Fixes
+
+* drop unused CARTO_API_KEY from ssr environments ([687dd12](https://github.com/Gisat/app-esaWorldCerealProcesses/commit/687dd123b7d6302e8a81c5be0f0a3f18d1ebcd51))
+* render Carto map routes at request time ([2e2fcc5](https://github.com/Gisat/app-esaWorldCerealProcesses/commit/2e2fcc5d5916fa7740b029631d298a209ebfe041))
+* use Voyager raster tiles for cartoVoyager layer ([3e51070](https://github.com/Gisat/app-esaWorldCerealProcesses/commit/3e510706d5948bf59f981d2b6cc709fc7680822f))
+
 ## [0.8.0](https://github.com/Gisat/app-esaWorldCerealProcesses/compare/v0.7.1...v0.8.0) (2026-09-01)
 
 ### Features
