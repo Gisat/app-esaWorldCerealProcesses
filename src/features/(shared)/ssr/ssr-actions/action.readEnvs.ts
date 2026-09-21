@@ -15,7 +15,6 @@ export interface AppEnvironments {
 	METADATA_URL: string | undefined;
 	PID_URL: string | undefined;
 	FARO_URL: string | undefined;
-	CARTO_API_KEY: string | undefined;
 	DATABASE_FILE: string;
 	DATABASE_STATE_EXPIRATION_SEC: number;
 }
@@ -37,7 +36,6 @@ export const ssrUseEnvironments = async (): Promise<AppEnvironments> => {
 		METADATA_URL: process.env.METADATA_URL,
 		PID_URL: process.env.PID_URL,
 		FARO_URL: process.env.FARO_URL,
-		CARTO_API_KEY: process.env.CARTO_API_KEY,
 		DATABASE_FILE: process.env.DATABASE_FILE ?? DEFAULT_DB_NAME,
 		DATABASE_STATE_EXPIRATION_SEC: parseInt(
 			process.env.DATABASE_STATE_EXPIRATION_SEC ?? DEFAULT_DB_STATE_EXPIRATION_SEC.toString()
