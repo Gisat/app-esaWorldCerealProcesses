@@ -1,3 +1,9 @@
+## [0.9.1](https://github.com/Gisat/app-esaWorldCerealProcesses/compare/v0.9.0...v0.9.1) (2026-09-29)
+
+### Bug Fixes
+
+* accept pre-signed model URLs with query parameters ([1f0cf72](https://github.com/Gisat/app-esaWorldCerealProcesses/commit/1f0cf723bd94e54051247cde7100dae4314f11b6)), closes [WorldCereal/worldcereal-vdm#51](https://github.com/WorldCereal/worldcereal-vdm/issues/51) [Gisat/be-interface-openeo#109](https://github.com/Gisat/be-interface-openeo/issues/109)
+
 ## [0.9.0](https://github.com/Gisat/app-esaWorldCerealProcesses/compare/v0.8.0...v0.9.0) (2026-09-21)
 
 ### Features
