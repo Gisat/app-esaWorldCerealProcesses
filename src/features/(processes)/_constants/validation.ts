@@ -53,9 +53,24 @@ export const DownloadProduct = z.enum([
 
 // --- Shared field schemas ---
 
+const isZipUrl = (value: string): boolean => {
+	let url: URL;
+	try {
+		url = new URL(value);
+	} catch {
+		return false;
+	}
+	if (url.protocol !== 'http:' && url.protocol !== 'https:') return false;
+	if (url.pathname.toLowerCase().endsWith('.zip')) return true;
+	return Array.from(url.searchParams.values()).some((param) => param.toLowerCase().endsWith('.zip'));
+};
+
 const zipUrl = z
 	.string()
-	.regex(/^https?:\/\/.+\.zip$/i, 'URL not valid (must end with .zip)');
+	.refine(
+		isZipUrl,
+		'URL not valid (must be a valid http(s) URL whose path or a query parameter points to a .zip file)'
+	);
 
 const seasonId = z
 	.string()
