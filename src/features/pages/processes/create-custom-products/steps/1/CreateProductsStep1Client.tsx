@@ -182,11 +182,11 @@ export default function CreateProductsStep1Client() {
 										className="worldCereal-Input"
 										size="md"
 										label="1.3. Base model"
-										description="Optional. Provide a publicly accessible URL to a complete WorldCereal model package (.zip). This replaces the default model, including the feature extractor and all prediction heads. If no model is provided, the default WorldCereal model is used."
+										description="Optional. Provide a publicly accessible URL to a complete WorldCereal model package (.zip). Pre-signed URLs with query parameters are supported. This replaces the default model, including the feature extractor and all prediction heads. If no model is provided, the default WorldCereal model is used."
 									>
 										<TextInput
 											size="md"
-											placeholder="https://example.zip"
+											placeholder="https://example.com/model.zip?token=…"
 											error={fieldErrors.seasonalModelZip?.[0] ?? null}
 											value={localSeasonalModelZip}
 											onChange={(e) => handleSeasonalModelZipChange(e.currentTarget.value)}
@@ -198,11 +198,11 @@ export default function CreateProductsStep1Client() {
 											className="worldCereal-Input"
 											size="md"
 											label="1.4. Cropland Head Override"
-											description="Optional. Provide a publicly accessible URL to a custom cropland prediction head (.zip). When provided, it replaces the cropland head of either the default model or the specified base model."
+											description="Optional. Provide a publicly accessible URL to a custom cropland prediction head (.zip). Pre-signed URLs with query parameters are supported. When provided, it replaces the cropland head of either the default model or the specified base model."
 										>
 											<TextInput
 												size="md"
-												placeholder="https://example.zip"
+												placeholder="https://example.com/model.zip?token=…"
 												error={fieldErrors.landcoverHeadZip?.[0] ?? null}
 												value={localLandcoverHeadZip}
 												onChange={(e) => handleLandcoverHeadZipChange(e.currentTarget.value)}
@@ -233,11 +233,11 @@ export default function CreateProductsStep1Client() {
 															className="worldCereal-Input"
 															size="md"
 															label="1.4.1 Cropland Head Override"
-															description="Optional. Provide a publicly accessible URL to a custom cropland prediction head (.zip). When provided, it replaces the cropland head of either the default model or the specified base model."
+															description="Optional. Provide a publicly accessible URL to a custom cropland prediction head (.zip). Pre-signed URLs with query parameters are supported. When provided, it replaces the cropland head of either the default model or the specified base model."
 														>
 															<TextInput
 																size="md"
-																placeholder="https://example.zip"
+																placeholder="https://example.com/model.zip?token=…"
 																error={fieldErrors.landcoverHeadZip?.[0] ?? null}
 																value={localLandcoverHeadZip}
 																onChange={(e) => handleLandcoverHeadZipChange(e.currentTarget.value)}
@@ -251,11 +251,11 @@ export default function CreateProductsStep1Client() {
 												className="worldCereal-Input"
 												size="md"
 												label="1.5. Crop Type Head Override"
-												description="Optional. Provide a publicly accessible URL to a custom crop type prediction head (.zip). When provided, it replaces the crop type head of either the default model or the specified base model."
+												description="Optional. Provide a publicly accessible URL to a custom crop type prediction head (.zip). Pre-signed URLs with query parameters are supported. When provided, it replaces the crop type head of either the default model or the specified base model."
 											>
 												<TextInput
 													size="md"
-													placeholder="https://example.zip"
+													placeholder="https://example.com/model.zip?token=…"
 													error={fieldErrors.croptypeHeadZip?.[0] ?? null}
 													value={localCroptypeHeadZip}
 													onChange={(e) => handleCroptypeHeadZipChange(e.currentTarget.value)}
